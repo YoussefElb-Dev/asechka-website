@@ -2,5 +2,12 @@
   "name": "a-little-universe-for-asechka",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "node serve.mjs", "preview": "node serve.mjs" }
+  "scripts": {
+    "dev": "node serve.mjs",
+    "preview": "node serve.mjs",
+    "test": "node --test tests/auth.test.mjs"
+  },
+  "dependencies": {
+    "@vercel/functions": "3.9.11"
+  }
 }

@@ -11,7 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="memories.css">
   <script type="module" src="app.js"></script>
+  <script type="module" src="memory-gallery.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the love letter</a>
@@ -25,7 +27,7 @@
 
   <header class="site-header wrap">
     <a class="brand" href="#" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
-    <nav aria-label="Main navigation"><a href="#little-things">The little things</a><a href="#letter">A little letter</a><a class="nav-secret" href="#surprise">A little mystery <svg><use href="#sparkle"/></svg></a></nav>
+    <nav aria-label="Main navigation"><a href="#little-things">The little things</a><a href="#quotes">Quotes</a><a href="#photos">Pictures</a><a href="#letter">A little letter</a><a class="nav-secret" href="#surprise">A little mystery <svg><use href="#sparkle"/></svg></a></nav>
   </header>
 
   <main id="main">
@@ -55,9 +57,11 @@
         <svg class="decoration art-star star-three" aria-hidden="true"><use href="#sparkle"/></svg>
         <span class="art-dot dot-one" aria-hidden="true"></span><span class="art-dot dot-two" aria-hidden="true"></span>
         <span class="art-caption handwritten">my happy place</span>
-        <img class="cats-image" src="assets/our-little-universe.png" width="1024" height="1024" alt="Two realistic fluffy cats, one blue-gray and one ivory, cuddling on a cloud beneath a crescent moon." fetchpriority="high">
+        <img class="cats-image" src="assets/cats-cuddle.jpg" width="1124" height="750" alt="A real ginger cat nuzzling a sleepy tabby cat curled up beside a window." fetchpriority="high">
+        <img class="cat-memory-photo" src="assets/cats-cozy.jpg" width="1200" height="800" alt="Two real cats snuggled together, with a little cream kitten sleeping in front." decoding="async">
         <button class="love-sticker" id="send-love" aria-label="Send Asechka a little love"><svg><use href="#heart"/></svg><span>you + me + a little magic</span><span class="sticker-sparkle">✧</span></button>
         <p class="love-status" id="love-status" role="status"></p>
+        <p class="cat-photo-credit">Photos: <a href="https://www.pexels.com/photo/a-cuddling-tabby-and-ginger-cat-7725998/" target="_blank" rel="noopener noreferrer">Arina Krasnikova</a> &amp; <a href="https://unsplash.com/photos/two-cats-cuddling-on-a-blanket-Ln72daSueik" target="_blank" rel="noopener noreferrer">Griffin Taylor</a></p>
       </div>
     </section>
 
@@ -71,6 +75,20 @@
         <button class="feeling-card card-cream" aria-expanded="false"><span class="card-number">03 / a little wish</span><span class="card-illustration cloud-illustration"><span class="mini-cloud"><i></i><i></i></span><b>✦</b></span><span class="card-title">More moments with you</span><span class="card-teaser">That's my kind of wish.</span><span class="card-reveal" hidden>More conversations. More little laughs. More time beside you. If I could wish for one thing, it would be more of us.</span><span class="card-prompt">tap for a little more <span>↗</span></span></button>
       </div>
       <p class="little-things-footer handwritten">and approximately a million other little things…</p>
+    </section>
+
+    <section class="memories-section wrap" id="quotes" aria-labelledby="quotes-title">
+      <div class="section-intro"><p class="eyebrow">WORDS I WANT US TO KEEP</p><h2 id="quotes-title">All those things <span class="handwritten">I tell you.</span></h2><p>The random quotes, the sweet ones, and the ones we shouldn't forget.</p></div>
+      <ol class="quote-list" id="quote-list"></ol>
+      <div class="quote-empty" id="quote-empty"><span class="empty-quote-mark" aria-hidden="true">“</span><p class="handwritten">A little place for all those things I say to you.</p><p>Our first quote goes right here.</p></div>
+      <p class="collection-count" id="quote-count" hidden></p>
+    </section>
+
+    <section class="memories-section wrap" id="photos" aria-labelledby="photos-title">
+      <div class="section-intro"><p class="eyebrow">MOMENTS I WANT US TO KEEP</p><h2 id="photos-title">A little collection <span class="handwritten">of us.</span></h2><p>Our favorite days. Our silly faces. Even the blurry pictures.</p></div>
+      <div class="photo-grid" id="photo-grid"></div>
+      <div class="photo-empty" id="photo-empty"><div class="empty-polaroid" aria-hidden="true"><span class="tape"></span><div><svg viewBox="0 0 80 64" fill="none"><rect x="9" y="16" width="62" height="40" rx="5"/><path d="m25 16 5-9h20l5 9"/><circle cx="40" cy="36" r="12"/><path d="M58 24h5"/></svg></div><span class="handwritten">you + me, soon ♡</span></div><div class="empty-photo-copy"><p class="handwritten">Leaving some room<br>for our favorite days.</p><p>We haven’t filled this page yet.<br>I’m looking forward to it.</p></div></div>
+      <p class="collection-count" id="photo-count" hidden></p>
     </section>
 
     <section class="letter-section wrap" id="letter" aria-labelledby="letter-title">
@@ -87,13 +105,18 @@
     </section>
   </main>
 
-  <footer class="site-footer wrap"><div><a class="brand footer-brand" href="#">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><span class="footer-heart" aria-hidden="true">♡</span><button class="motion-toggle" id="motion-toggle" aria-pressed="false">Pause the magic <span>Ⅱ</span></button></footer>
+  <footer class="site-footer wrap"><div><a class="brand footer-brand" href="#">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><span class="footer-heart" aria-hidden="true">♡</span><div class="footer-controls"><button class="motion-toggle" id="motion-toggle" aria-pressed="false">Pause the magic <span>Ⅱ</span></button><form method="post" action="/api/logout"><button class="lock-site" type="submit">Lock our little door ↗</button></form></div></footer>
 
   <dialog id="letter-dialog" aria-labelledby="dialog-title">
     <button class="dialog-close" id="close-letter" aria-label="Close letter">×</button>
     <div class="dialog-paper"><span class="letter-label">A LETTER, JUST FOR YOU</span><h2 id="dialog-title" class="handwritten">Dear Asechka,</h2><p>Asnat to the world. Asechka to me.</p><p>I wanted to make you something small, but filled with a feeling that isn't small at all.</p><p>I love you. And I love that, in a world this big, I get to know you. Just thinking about you can turn the most ordinary moment into something I want to keep.</p><p>This little website is a piece of that feeling. A few stars, two cats, and a whole lot of things I wish I could say perfectly.</p><p>There's one more little thing I've been keeping close to my heart. I won't give it away here. Just save a moment for me on Friday.</p><p>Until then, let this be your reminder: you mean so much to me.</p><p class="letter-signature handwritten">With all my love,<br>me ♡</p></div>
   </dialog>
+  <dialog id="photo-dialog" class="photo-dialog" aria-labelledby="photo-dialog-title">
+    <h2 id="photo-dialog-title" class="sr-only">Pictures of us</h2><button class="dialog-close" id="close-photo" aria-label="Close photo">×</button>
+    <div class="lightbox-image-wrap"><img id="lightbox-image" alt=""><p id="lightbox-error" hidden>This photo couldn’t load.</p></div>
+    <div class="lightbox-bottom"><button id="previous-photo" class="photo-arrow" aria-label="Previous photo">←</button><div class="lightbox-caption" aria-live="polite"><p id="lightbox-caption" class="handwritten"></p><p id="lightbox-date"></p><p id="lightbox-position"></p></div><button id="next-photo" class="photo-arrow" aria-label="Next photo">→</button></div>
+  </dialog>
   <div class="heart-particles" id="heart-particles" aria-hidden="true"></div>
-  <noscript><p class="noscript-notice">The surprise is waiting for Friday, October 16 at 3:00 PM Eastern. Enable JavaScript for the live countdown and to open your letter.</p></noscript>
+  <noscript><p class="noscript-notice">The surprise is waiting for Friday, October 16 at 3:00 PM Eastern. Enable JavaScript for the countdown, your letter, our quotes, and our pictures.</p></noscript>
 </body>
 </html>
