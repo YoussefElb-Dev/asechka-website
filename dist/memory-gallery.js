@@ -1,5 +1,3 @@
-import { quotes, photos } from './memories.js';
-
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 function formatDate(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return '';
@@ -16,6 +14,7 @@ function addDate(parent, value) {
   parent.append(time);
 }
 
+function renderQuotes(quotes) {
 const savedQuotes = (Array.isArray(quotes) ? quotes : [])
   .map(quote => typeof quote === 'string' ? { text: quote } : quote)
   .filter(quote => quote && typeof quote.text === 'string' && quote.text.trim());
@@ -45,21 +44,14 @@ savedQuotes.slice().reverse().forEach((quote, index) => {
   item.append(number, block);
   quoteFragment.append(item);
 });
-quoteList.append(quoteFragment);
+quoteList.replaceChildren(quoteFragment);
 document.getElementById('quote-empty').hidden = savedQuotes.length > 0;
 const quoteCount = document.getElementById('quote-count');
 quoteCount.hidden = savedQuotes.length === 0;
 quoteCount.textContent = `${savedQuotes.length} ${savedQuotes.length === 1 ? 'quote' : 'quotes'} kept here. And counting.`;
-
-const savedPhotos = (Array.isArray(photos) ? photos : [])
-  .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
-  .map(photo => ({ ...photo, src: photo.src.trim() }))
-  .filter(photo => {
-    try { return ['http:', 'https:'].includes(new URL(photo.src, document.baseURI).protocol); }
-    catch { return false; }
-  }).reverse();
+}
+let savedPhotos = [];
 const photoGrid = document.getElementById('photo-grid');
-const photoFragment = document.createDocumentFragment();
 const photoDialog = document.getElementById('photo-dialog');
 const lightboxImage = document.getElementById('lightbox-image');
 const lightboxError = document.getElementById('lightbox-error');
@@ -67,6 +59,7 @@ const previousButton = document.getElementById('previous-photo');
 const nextButton = document.getElementById('next-photo');
 let currentPhoto = 0;
 let photoOpener;
+let waitingContent;
 
 function photoCaption(photo) {
   return typeof photo.caption === 'string' && photo.caption.trim() ? photo.caption : 'A moment with you';
@@ -75,6 +68,7 @@ function photoAlt(photo) {
   return typeof photo.alt === 'string' && photo.alt.trim() ? photo.alt : photoCaption(photo);
 }
 function showPhoto(index) {
+  if (!savedPhotos.length) return;
   currentPhoto = (index + savedPhotos.length) % savedPhotos.length;
   const photo = savedPhotos[currentPhoto];
   lightboxImage.hidden = false;
@@ -95,10 +89,21 @@ lightboxImage.addEventListener('load', () => {
   lightboxError.hidden = true;
 });
 
+function renderPhotos(photos) {
+const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
+savedPhotos = (Array.isArray(photos) ? photos : [])
+  .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
+  .map(photo => ({ ...photo, src: photo.src.trim() }))
+  .filter(photo => {
+    try { return ['http:', 'https:'].includes(new URL(photo.src, document.baseURI).protocol); }
+    catch { return false; }
+  }).reverse();
+const photoFragment = document.createDocumentFragment();
 savedPhotos.forEach((photo, index) => {
   const button = document.createElement('button');
   button.className = 'photo-print';
   button.type = 'button';
+  button.dataset.photoSrc = photo.src;
   button.setAttribute('aria-label', `Open photo: ${photoCaption(photo)}${formatDate(photo.date) ? `, ${formatDate(photo.date)}` : ''}`);
   const tape = document.createElement('span');
   tape.className = 'tape';
@@ -129,11 +134,13 @@ savedPhotos.forEach((photo, index) => {
   });
   photoFragment.append(button);
 });
-photoGrid.append(photoFragment);
+photoGrid.replaceChildren(photoFragment);
+if (focusedSrc) [...photoGrid.children].find(button => button.dataset.photoSrc === focusedSrc)?.focus({ preventScroll: true });
 document.getElementById('photo-empty').hidden = savedPhotos.length > 0;
 const photoCount = document.getElementById('photo-count');
 photoCount.hidden = savedPhotos.length === 0;
 photoCount.textContent = `${savedPhotos.length} ${savedPhotos.length === 1 ? 'moment' : 'moments'} I want to keep.`;
+}
 
 document.getElementById('close-photo').addEventListener('click', () => photoDialog.close());
 previousButton.addEventListener('click', () => showPhoto(currentPhoto - 1));
@@ -153,4 +160,35 @@ photoDialog.addEventListener('close', () => {
   document.body.classList.remove('dialog-open');
   lightboxImage.removeAttribute('src');
   photoOpener?.focus({ preventScroll: true });
+  if (waitingContent) { const content = waitingContent; waitingContent = null; renderContent(content); }
 });
+
+function renderContent(content) {
+  // Keep the image and keyboard focus steady while someone is browsing a photo.
+  if (photoDialog.open) { waitingContent = content; return; }
+  renderQuotes(content.quotes);
+  renderPhotos(content.photos);
+}
+let lastContent = '';
+let checking = false;
+async function checkForMemories() {
+  if (checking || document.hidden) return;
+  checking = true;
+  try {
+    const response = await fetch('./memories.json', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(10000) });
+    if (response.redirected && new URL(response.url).pathname === '/login') {
+      window.location.replace('/login');
+      return;
+    }
+    if (!response.ok) return;
+    const content = await response.json();
+    if (content.version !== 1 || !Array.isArray(content.quotes) || !Array.isArray(content.photos)) return;
+    const serialized = JSON.stringify(content);
+    if (serialized !== lastContent) { renderContent(content); lastContent = serialized; }
+  } catch { /* Keep the last loaded memories when the connection briefly drops. */ }
+  finally { checking = false; }
+}
+checkForMemories();
+setInterval(checkForMemories, 15000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkForMemories(); });
+window.addEventListener('focus', checkForMemories);

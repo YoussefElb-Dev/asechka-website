@@ -14,7 +14,7 @@ const login = (password, headers = {}) => request('/api/session', {
 });
 
 test('every private path is gated, including images, source files and HEAD requests', async () => {
-  for (const path of ['/', '/index.html', '/memories.js', '/assets/photos/us.jpg', '/assets/cats-cuddle.jpg', '/welcome', '/styles.css', '/app.js', '/assets/our-little-universe.png']) {
+  for (const path of ['/', '/index.html', '/memories.js', '/memories.json', '/assets/photos/us.jpg', '/assets/cats-cuddle.jpg', '/welcome', '/styles.css', '/app.js', '/assets/our-little-universe.png']) {
     const denied = await authorize(request(path));
     assert.equal(denied.status, 303, path);
     assert.equal(denied.headers.get('location'), '/login', path);
@@ -42,7 +42,7 @@ test('correct password grants a signed secure cookie, greeting and private asset
   assert.match(setCookie, /HttpOnly; SameSite=Strict; Max-Age=604800; Secure/);
   assert.ok(!setCookie.includes(process.env.SITE_PASSWORD));
   const cookie = setCookie.split(';')[0];
-  for (const path of ['/', '/memories.js', '/assets/photos/us.jpg']) assert.equal(await authorize(request(path, { headers: { cookie } })), null);
+  for (const path of ['/', '/memories.js', '/memories.json', '/assets/photos/us.jpg']) assert.equal(await authorize(request(path, { headers: { cookie } })), null);
   const welcome = await (await authorize(request('/welcome', { headers: { cookie } }))).text();
   assert.match(welcome, /Welcome back/);
   assert.match(welcome, /моя радость/);
