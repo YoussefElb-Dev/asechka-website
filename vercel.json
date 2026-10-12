@@ -3,6 +3,5 @@
   "framework": null,
   "buildCommand": "",
   "installCommand": "",
-  "outputDirectory": "dist",
-  "public": false
+  "outputDirectory": "dist"
 }
