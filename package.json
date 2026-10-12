@@ -1,0 +1,6 @@
+{
+  "name": "a-little-universe-for-asechka",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "node serve.mjs", "preview": "node serve.mjs" }
+}
