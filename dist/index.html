@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf2ff">
+  <meta name="description" content="A little universe of love, made just for Asechka. A letter, a few little stars, and a surprise worth waiting for.">
+  <title>A little universe for Asechka ♡</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the love letter</a>
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="star" viewBox="0 0 32 32"><path d="m16 2 4.3 9.2L30 13l-7 7 1.5 10L16 25l-8.5 5L9 20l-7-7 9.7-1.8Z"/></symbol>
+    <symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol>
+    <symbol id="heart" viewBox="0 0 32 32"><path d="M16 27S3 19.3 3 10.8C3 3.5 12 2.5 16 8c4-5.5 13-4.5 13 2.8C29 19.3 16 27 16 27Z"/></symbol>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="envelope" viewBox="0 0 32 32"><rect x="3" y="7" width="26" height="19" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m4 9 12 10L28 9M4 24l8-8m16 8-8-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <header class="site-header wrap">
+    <a class="brand" href="#" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
+    <nav aria-label="Main navigation"><a href="#little-things">The little things</a><a href="#letter">A little letter</a><a class="nav-secret" href="#surprise">A little mystery <svg><use href="#sparkle"/></svg></a></nav>
+  </header>
+
+  <main id="main">
+    <section class="countdown wrap" aria-label="Countdown to Friday's surprise">
+      <div class="countdown-story"><span class="tiny-star">✦</span><div><p class="countdown-title" id="countdown-title">Something lovely is on its way.</p><p class="countdown-subtitle" id="countdown-subtitle">A little secret. A few butterflies. Just for you.</p></div></div>
+      <div class="countdown-digits" role="timer" aria-live="off" aria-label="Time remaining until October 16, 2026 at 3 PM Eastern">
+        <div><strong id="days">--</strong><span>days</span></div><b aria-hidden="true">:</b>
+        <div><strong id="hours">--</strong><span>hours</span></div><b aria-hidden="true">:</b>
+        <div><strong id="minutes">--</strong><span>mins</span></div><b aria-hidden="true">:</b>
+        <div><strong id="seconds">--</strong><span>secs</span></div>
+      </div>
+      <div class="countdown-date"><span>save a little moment</span><time datetime="2026-10-16T15:00:00-04:00">Fri, Oct 16 · 3 PM ET</time></div>
+    </section>
+
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> FOR ASNAT. MY ASECHKA.</p>
+        <h1 id="hero-title">My favorite<br>little universe.<br><span>It's you, Asechka.</span></h1>
+        <p class="hero-description">Of all the people, in all the places,<br>somehow my heart keeps finding you.</p>
+        <div class="hero-actions"><button class="button button-primary" data-open-letter><svg><use href="#envelope"/></svg>A little note for you<svg class="button-arrow"><use href="#arrow"/></svg></button><a class="text-link" href="#little-things">Follow the stars <span>↘</span></a></div>
+        <p class="handwritten hero-footnote">a whole lot of love, in one little website <span>♡</span></p>
+      </div>
+      <div class="hero-art">
+        <div class="orbit orbit-one" aria-hidden="true"></div><div class="orbit orbit-two" aria-hidden="true"></div>
+        <svg class="decoration art-star star-one" aria-hidden="true"><use href="#sparkle"/></svg>
+        <svg class="decoration art-star star-two" aria-hidden="true"><use href="#star"/></svg>
+        <svg class="decoration art-star star-three" aria-hidden="true"><use href="#sparkle"/></svg>
+        <span class="art-dot dot-one" aria-hidden="true"></span><span class="art-dot dot-two" aria-hidden="true"></span>
+        <span class="art-caption handwritten">my happy place</span>
+        <img class="cats-image" src="assets/our-little-universe.png" width="1024" height="1024" alt="Two realistic fluffy cats, one blue-gray and one ivory, cuddling on a cloud beneath a crescent moon." fetchpriority="high">
+        <button class="love-sticker" id="send-love" aria-label="Send Asechka a little love"><svg><use href="#heart"/></svg><span>you + me + a little magic</span><span class="sticker-sparkle">✧</span></button>
+        <p class="love-status" id="love-status" role="status"></p>
+      </div>
+    </section>
+
+    <div class="between-sections" aria-hidden="true"><span></span><svg><use href="#sparkle"/></svg><span></span></div>
+
+    <section class="little-things wrap" id="little-things" aria-labelledby="little-things-title">
+      <div class="section-intro"><p class="eyebrow">THE LITTLE THINGS, THE BIG FEELINGS</p><h2 id="little-things-title">You make my world a little <span class="handwritten">softer.</span></h2><p>Some feelings are too big for one sentence. So here are a few little ones.</p></div>
+      <div class="feeling-cards">
+        <button class="feeling-card card-blue" aria-expanded="false"><span class="card-number">01 / a little thought</span><span class="card-illustration"><svg><use href="#star"/></svg><i>✧</i></span><span class="card-title">My favorite thought</span><span class="card-teaser">The one I keep coming back to.</span><span class="card-reveal" hidden>Even in the middle of an ordinary day, a thought of you makes everything feel a little brighter.</span><span class="card-prompt">tap for a little more <span>↗</span></span></button>
+        <button class="feeling-card card-lavender" aria-expanded="false"><span class="card-number">02 / a little feeling</span><span class="card-illustration"><svg><use href="#heart"/></svg><i>✧</i></span><span class="card-title">My soft spot</span><span class="card-teaser">You have a very special place here.</span><span class="card-reveal" hidden>I love you, Asechka. In the quiet moments, in the little things, and in all the ways I'm still learning to say.</span><span class="card-prompt">tap for a little more <span>↗</span></span></button>
+        <button class="feeling-card card-cream" aria-expanded="false"><span class="card-number">03 / a little wish</span><span class="card-illustration cloud-illustration"><span class="mini-cloud"><i></i><i></i></span><b>✦</b></span><span class="card-title">More moments with you</span><span class="card-teaser">That's my kind of wish.</span><span class="card-reveal" hidden>More conversations. More little laughs. More time beside you. If I could wish for one thing, it would be more of us.</span><span class="card-prompt">tap for a little more <span>↗</span></span></button>
+      </div>
+      <p class="little-things-footer handwritten">and approximately a million other little things…</p>
+    </section>
+
+    <section class="letter-section wrap" id="letter" aria-labelledby="letter-title">
+      <div class="letter-drawing" aria-hidden="true"><span class="letter-sparkle sparkle-a">✦</span><span class="letter-sparkle sparkle-b">✧</span><div class="paper-peek"><span>Dear Asechka,</span><i></i><i></i><i></i><b>♡</b></div><div class="big-envelope"><div class="envelope-flap"></div><div class="envelope-front"></div><span class="wax-seal">♡</span></div><span class="handwritten drawing-note">a little piece of my heart</span></div>
+      <div class="letter-copy"><p class="eyebrow">SIGNED, WITH ALL MY LOVE</p><h2 id="letter-title">Some things are easier<br>to write <span class="handwritten">from the heart.</span></h2><p>I made this little corner of the internet because you deserve something that feels as special as you are to me.</p><p>No grand speech. Just me, finding a few more ways to say that you mean so much.</p><button class="button button-outline" data-open-letter>Open your letter <svg><use href="#arrow"/></svg></button><span class="letter-postscript handwritten">P.S. yes, all of this is for you.</span></div>
+    </section>
+
+    <section class="surprise-section wrap" id="surprise" aria-labelledby="surprise-title">
+      <div class="secret-stars" aria-hidden="true">✧ <span>✦</span> ✧</div><p class="eyebrow">A LITTLE CHAPTER, STILL UNWRITTEN</p><h2 id="surprise-title">Something is waiting<br><span class="handwritten">just around the corner.</span></h2><p class="surprise-description" id="surprise-description">I've been saving a little moment for us.<br>Some things are better said when you're right beside me.</p>
+      <div class="secret-date"><svg aria-hidden="true"><use href="#envelope"/></svg><span>Friday, October 16 <b>·</b> 3:00 PM Eastern</span><span class="secret-lock" aria-hidden="true">✧</span></div>
+      <button class="hint-button" id="hint-button" aria-controls="hint-text">Can I have a tiny hint? <span>↗</span></button>
+      <p class="hint-text handwritten" id="hint-text" role="status">No spoilers. Just a few butterflies.</p>
+      <p class="hint-progress" id="hint-progress" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap"><div><a class="brand footer-brand" href="#">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><span class="footer-heart" aria-hidden="true">♡</span><button class="motion-toggle" id="motion-toggle" aria-pressed="false">Pause the magic <span>Ⅱ</span></button></footer>
+
+  <dialog id="letter-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" id="close-letter" aria-label="Close letter">×</button>
+    <div class="dialog-paper"><span class="letter-label">A LETTER, JUST FOR YOU</span><h2 id="dialog-title" class="handwritten">Dear Asechka,</h2><p>Asnat to the world. Asechka to me.</p><p>I wanted to make you something small, but filled with a feeling that isn't small at all.</p><p>I love you. And I love that, in a world this big, I get to know you. Just thinking about you can turn the most ordinary moment into something I want to keep.</p><p>This little website is a piece of that feeling. A few stars, two cats, and a whole lot of things I wish I could say perfectly.</p><p>There's one more little thing I've been keeping close to my heart. I won't give it away here. Just save a moment for me on Friday.</p><p>Until then, let this be your reminder: you mean so much to me.</p><p class="letter-signature handwritten">With all my love,<br>me ♡</p></div>
+  </dialog>
+  <div class="heart-particles" id="heart-particles" aria-hidden="true"></div>
+  <noscript><p class="noscript-notice">The surprise is waiting for Friday, October 16 at 3:00 PM Eastern. Enable JavaScript for the live countdown and to open your letter.</p></noscript>
+</body>
+</html>
