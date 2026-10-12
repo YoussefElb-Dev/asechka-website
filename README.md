@@ -4,46 +4,61 @@ The original powder-blue and lavender website for Asnat: a letter, a mysterious 
 
 Live site: https://asechka-website.vercel.app
 
-## Add a quote
+## Asechka Studio: add memories from your desktop
 
-Edit **`dist/memories.js`**. Add a line at the end of the `quotes` list, before its closing `];`. Keep the old lines so the collection keeps growing. Newest entries appear first.
+Double-click **Asechka Studio** on your Windows desktop.
 
-```js
-export const quotes = [
-  "Your first quote",
-  "The next thing you told her",
-  { text: "Another quote", date: "2026-10-16", note: "after our call" },
-];
+1. **Add a quote**: write the quote, keep today's date or change it, and optionally add a note. For multiple lines, enter `/multi` and finish with a line containing only `.`.
+2. **Add pictures**: choose one or several photos in the file picker and add captions. All selected photos publish together in one update. The picker supports JPG, PNG, BMP and TIFF; export HEIC photos as JPG first.
+3. **Publish pending memories**: retry anything saved while offline.
+4. **Status / saved drafts**: see pending entries and the last successful GitHub save.
+5. **Connect GitHub**: one-time connection instructions, or reconnect after revoking the key.
+6. **Open the website**.
+
+Each addition saves locally first, then pushes to the private GitHub repository. Vercel automatically deploys the commit. An open website checks for new memories every **15 seconds** while visible and also checks when you return to the tab. Updates appear after Vercel finishes deploying; this is automatic but not instantaneous. A photo you're currently viewing stays steady until you close it.
+
+Photos become JPEG copies with a longest side of at most 1,800 pixels and a size of at most 1 MB. Originals stay untouched. The copies have no EXIF location metadata. UUID filenames avoid collisions, and folders are organized by year and month.
+
+Drafts, prepared photos, the publishing key, and a dedicated Git clone live in `%LOCALAPPDATA%\AsechkaStudio`, outside the project and outside OneDrive. Drafts survive closing the terminal, restarting Windows, or losing internet. The app clears a pending entry only after it is confirmed saved on GitHub. Stable IDs prevent duplicates if a push succeeds but its response is lost. Concurrent GitHub edits are fetched and preserved before retrying. It never force-pushes.
+
+The website source and the Studio source are saved in the private repository. **The private key and local drafts are never committed.** Do not upload the `credentials` directory, `.env`, or runtime configuration. The Studio-owned clone is disposable; the app never resets your development checkout.
+
+### One-time GitHub connection
+
+Studio creates a separate SSH deploy key for this repository. Open option 5, add its **public** key in the repository's **Settings → Deploy keys**, and select **Allow write access**. The private key stays on this computer with access limited to your Windows account. This is persistent repository access; revoke it on that same settings page if you no longer want automatic publishing. GitHub host identity is checked against its published Ed25519 host key. Studio uses GitHub's supported SSH port 443.
+
+The desktop shortcut uses the existing Node.js and Git installations. If you move the project or uninstall those runtimes, recreate the shortcut with `publisher/Install Desktop Shortcut.cmd` using their new paths (Node.js and Git must be installed). The installer does not change PowerShell's execution policy. No background service, browser extension, cloud database, paid storage or paid publishing tool is required.
+
+### Free-plan limits
+
+This uses your existing GitHub private repository and Vercel Hobby project. Hobby is free for personal, noncommercial use and currently permits **100 deployments per day**. GitHub storage is **not unlimited**: its repository recommendations and file limits still apply. Keeping photos small and publishing a batch together helps keep this personal album within the free plans. Git history retains old photo versions even when files are deleted; repository size grows over time.
+
+References: [GitHub repository limits](https://docs.github.com/en/repositories/creating-and-managing-repositories/repository-limits), [Vercel Hobby limits](https://vercel.com/docs/plans/hobby), [GitHub deploy keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys).
+
+## Edit one content file manually
+
+The shared content file is now **`dist/memories.json`**. It replaces `dist/memories.js` and is used by both the terminal and the website. You can still edit just this one file on GitHub. Keep the old entries and append new ones; newest entries appear first.
+
+```json
+{
+  "version": 1,
+  "updatedAt": null,
+  "quotes": [
+    { "text": "Your exact words", "date": "2026-10-16", "note": "after our call" }
+  ],
+  "photos": [
+    { "src": "assets/photos/us.jpg", "caption": "My favorite day with you", "date": "2026-10-16" }
+  ]
+}
 ```
 
-Dates and notes are optional. Use dates as `YYYY-MM-DD`. Put a comma after each entry. Double quotes let you write apostrophes normally. For quotation marks inside a quote, write `\"`, for example `"She said \"really?\""`. For multiple lines, use `\n` within the string. Text is displayed literally, so HTML in a quote will not run.
+For a manual photo addition, first upload its file into `dist/assets/photos/`, then add the entry above. Dates, notes, captions and photo `alt` text are optional. Use `YYYY-MM-DD` dates. Keep valid JSON: double quotes, commas between entries, no trailing comma. Studio creates IDs itself; leave those IDs intact if editing its entries. Changing `updatedAt` is optional because the page compares the complete content.
 
-On GitHub: open `dist/memories.js`, click the pencil, add your line, and commit to `main`. Vercel automatically redeploys. Refresh the site after the deployment finishes. You never need to edit the page layout.
-
-## Add pictures
-
-1. Upload your JPG, PNG, WebP, AVIF, or GIF files into **`dist/assets/photos/`**. On GitHub, open that folder, choose **Add file → Upload files**, then commit to `main`.
-2. In the same **`dist/memories.js`** file, append an entry to the `photos` list:
-
-```js
-export const photos = [
-  {
-    src: "assets/photos/us.jpg",
-    caption: "My favorite day with you",
-    date: "2026-10-16",
-    alt: "Us smiling together",
-  },
-  { src: "assets/photos/another-photo.jpg", caption: "Still smiling" },
-];
-```
-
-Match the filename exactly (including capital letters). `caption`, `date`, and `alt` are optional; `src` is required. Newest photos appear first. Click a photo to see it full size; use arrow keys to browse and Escape to close. Photos are stored in the private repository and deployed with the site. The password gate protects their direct file URLs as well as the page.
-
-The quote and photo lists start empty, ready for your actual words and pictures.
+Quotes display literally, so HTML does not execute. Click photos to see them full size, use arrow keys to browse, and Escape to close. Direct image URLs and the JSON file have the same server-side password protection as the page. Collections start empty, ready for your actual words and pictures.
 
 ## Run locally
 
-Install dependencies with `pnpm install`, then run `pnpm dev` (or `node serve.mjs`) and open http://127.0.0.1:4173/. Run `pnpm test` for the authentication checks. The local server uses the same authentication code as Vercel.
+Install dependencies with `pnpm install`, then run `pnpm dev` (or `node serve.mjs`) and open http://127.0.0.1:4173/. Run `pnpm test` for authentication, publishing, retry, concurrency, queue persistence, and Windows photo preparation checks. The local server uses the same authentication code as Vercel. Start the terminal directly with `pnpm studio` or `publisher/Start Asechka Studio.cmd`.
 
 ## The little password door
 
