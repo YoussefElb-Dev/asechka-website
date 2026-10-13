@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T02:39:01.125Z",
+  "updatedAt": "2026-10-13T02:39:10.092Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -25,6 +25,11 @@
     {
       "id": "eea84b52-7fca-40b0-9982-1eb56f29fc03",
       "text": "If the whole world turned against you, I’d stand between you and every storm. If darkness ever found its way to your heart, I’d become your light. And if forever were a promise, I’d spend every lifetime proving that you’ll always have a safe place in my arms and a permanent home in my heart.",
+      "date": "2026-10-12"
+    },
+    {
+      "id": "b97a454c-40b0-453e-9242-559e8a46a09d",
+      "text": "If beauty could stop time, the world would stand still every time you smiled. And if love could be measured, even eternity wouldn’t be long enough to show you how much you mean to me.",
       "date": "2026-10-12"
     }
   ],
