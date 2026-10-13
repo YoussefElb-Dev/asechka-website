@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T01:54:57.239Z",
+  "updatedAt": "2026-10-13T01:58:02.158Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -8,5 +8,12 @@
       "date": "2026-10-12"
     }
   ],
-  "photos": []
+  "photos": [
+    {
+      "id": "9a085af2-e61c-4673-8186-9007ae966211",
+      "src": "assets/photos/2026/10/9a085af2-e61c-4673-8186-9007ae966211.jpg",
+      "caption": "Look at this cutie js like you",
+      "date": "2026-10-12"
+    }
+  ]
 }
