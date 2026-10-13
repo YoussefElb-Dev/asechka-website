@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T02:39:10.092Z",
+  "updatedAt": "2026-10-13T02:39:22.040Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -30,6 +30,11 @@
     {
       "id": "b97a454c-40b0-453e-9242-559e8a46a09d",
       "text": "If beauty could stop time, the world would stand still every time you smiled. And if love could be measured, even eternity wouldn’t be long enough to show you how much you mean to me.",
+      "date": "2026-10-12"
+    },
+    {
+      "id": "42c6c74a-e160-4947-8769-373deb683b01",
+      "text": "Somewhere along the way, a piece of my heart became yours, and I hope you keep it forever, because nowhere else could it ever feel more at home.",
       "date": "2026-10-12"
     }
   ],
