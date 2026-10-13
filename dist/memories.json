@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T02:39:22.040Z",
+  "updatedAt": "2026-10-13T02:40:59.461Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -35,6 +35,11 @@
     {
       "id": "42c6c74a-e160-4947-8769-373deb683b01",
       "text": "Somewhere along the way, a piece of my heart became yours, and I hope you keep it forever, because nowhere else could it ever feel more at home.",
+      "date": "2026-10-12"
+    },
+    {
+      "id": "4b0eab1e-d43f-487a-adff-57e3ad5201e5",
+      "text": "You’re the air that fills my lungs, the water that keeps me alive, and the food that gives me strength. You’re not just a part of my life, you’re what makes it worth living.",
       "date": "2026-10-12"
     }
   ],
