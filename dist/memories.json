@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T02:38:49.615Z",
+  "updatedAt": "2026-10-13T02:39:01.125Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -20,6 +20,11 @@
     {
       "id": "57367682-8d4f-40e5-8c67-70407c6a9280",
       "text": "If every beautiful thing in this world were a word, and every sunset, flower, and star were a verse, the universe would still run out of poetry trying to describe you.",
+      "date": "2026-10-12"
+    },
+    {
+      "id": "eea84b52-7fca-40b0-9982-1eb56f29fc03",
+      "text": "If the whole world turned against you, I’d stand between you and every storm. If darkness ever found its way to your heart, I’d become your light. And if forever were a promise, I’d spend every lifetime proving that you’ll always have a safe place in my arms and a permanent home in my heart.",
       "date": "2026-10-12"
     }
   ],
