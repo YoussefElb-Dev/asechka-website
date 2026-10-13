@@ -79,7 +79,17 @@
 
     <section class="memories-section wrap" id="quotes" aria-labelledby="quotes-title">
       <div class="section-intro"><p class="eyebrow">WORDS I WANT US TO KEEP</p><h2 id="quotes-title">All those things <span class="handwritten">I tell you.</span></h2><p>The random quotes, the sweet ones, and the ones we shouldn't forget.</p></div>
-      <ol class="quote-list" id="quote-list"></ol>
+      <div class="quote-carousel" id="quote-carousel" hidden>
+        <p class="sr-only" id="quote-help">Quotes drift slowly from right to left. Hover or focus here to pause. Swipe, or use the left and right arrow keys, to browse.</p>
+        <div class="quote-viewport" id="quote-viewport" tabindex="0" role="region" aria-label="Our saved quotes" aria-describedby="quote-help">
+          <ol class="quote-list" id="quote-list"></ol>
+        </div>
+        <div class="quote-controls" id="quote-controls" aria-label="Browse quotes">
+          <button type="button" id="previous-quote" aria-label="Previous quotes"><span aria-hidden="true">←</span></button>
+          <button type="button" id="pause-quotes" aria-pressed="false">Pause</button>
+          <button type="button" id="next-quote" aria-label="Next quotes"><span aria-hidden="true">→</span></button>
+        </div>
+      </div>
       <div class="quote-empty" id="quote-empty"><span class="empty-quote-mark" aria-hidden="true">“</span><p class="handwritten">A little place for all those things I say to you.</p><p>Our first quote goes right here.</p></div>
       <p class="collection-count" id="quote-count" hidden></p>
     </section>

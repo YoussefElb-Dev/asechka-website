@@ -1,3 +1,6 @@
+import { createQuoteCarousel } from './quote-carousel.js';
+
+const quoteCarousel = createQuoteCarousel();
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 function formatDate(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return '';
@@ -22,7 +25,7 @@ const quoteList = document.getElementById('quote-list');
 const quoteFragment = document.createDocumentFragment();
 savedQuotes.slice().reverse().forEach((quote, index) => {
   const item = document.createElement('li');
-  item.className = 'quote-item';
+  item.className = index % 2 ? 'quote-item quote-lavender' : 'quote-item';
   const number = document.createElement('span');
   number.className = 'quote-index';
   number.setAttribute('aria-hidden', 'true');
@@ -45,6 +48,7 @@ savedQuotes.slice().reverse().forEach((quote, index) => {
   quoteFragment.append(item);
 });
 quoteList.replaceChildren(quoteFragment);
+quoteCarousel.refresh();
 document.getElementById('quote-empty').hidden = savedQuotes.length > 0;
 const quoteCount = document.getElementById('quote-count');
 quoteCount.hidden = savedQuotes.length === 0;
