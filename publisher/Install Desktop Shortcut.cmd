@@ -1,7 +1,14 @@
 @echo off
 setlocal
-cd /d "%~dp0.."
-if exist "%LOCALAPPDATA%\AsechkaStudio\runtime.cmd" call "%LOCALAPPDATA%\AsechkaStudio\runtime.cmd"
-node "%~dp0install-shortcut.mjs"
+set "ASECHKA_PUBLISHER_DIRECTORY=%~dp0"
+call "%ASECHKA_PUBLISHER_DIRECTORY%resolve-runtime.cmd"
+if errorlevel 1 goto stopped
+cd /d "%ASECHKA_PUBLISHER_DIRECTORY%.."
+"%ASECHKA_NODE%" "%ASECHKA_PUBLISHER_DIRECTORY%install-shortcut.mjs"
+set "ASECHKA_EXIT_CODE=%ERRORLEVEL%"
 pause
-endlocal
+endlocal & exit /b %ASECHKA_EXIT_CODE%
+
+:stopped
+pause
+endlocal & exit /b 1

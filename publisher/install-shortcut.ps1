@@ -3,11 +3,17 @@ $ErrorActionPreference = 'Stop'
 $project = Split-Path -Parent $StudioDirectory
 $state = Join-Path $env:LOCALAPPDATA 'AsechkaStudio'
 New-Item -ItemType Directory -Force -Path $state | Out-Null
-$nodePath = (Get-Command node.exe -ErrorAction Stop).Source
-$gitPath = (Get-Command git.exe -ErrorAction Stop).Source
+$nodePath = $env:ASECHKA_NODE
+if (-not $nodePath -or -not (Test-Path -LiteralPath $nodePath -PathType Leaf)) {
+    $nodePath = (Get-Command node.exe -ErrorAction Stop).Source
+}
+$gitPath = $env:ASECHKA_GIT
+if (-not $gitPath -or -not (Test-Path -LiteralPath $gitPath -PathType Leaf)) {
+    $gitPath = (Get-Command git.exe -ErrorAction Stop).Source
+}
 $runtime = @(
     '@echo off',
-    ('set "PATH=' + (Split-Path -Parent $nodePath) + ';' + (Split-Path -Parent $gitPath) + ';%PATH%"'),
+    ('set "ASECHKA_NODE=' + $nodePath + '"'),
     ('set "ASECHKA_GIT=' + $gitPath + '"')
 ) -join "`r`n"
 [System.IO.File]::WriteAllText((Join-Path $state 'runtime.cmd'), $runtime + "`r`n", [System.Text.Encoding]::Default)
