@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T02:41:46.239Z",
+  "updatedAt": "2026-10-13T02:47:08.961Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -61,6 +61,12 @@
       "id": "025f4869-6edd-4bc6-bb1f-22ca0c6f2fca",
       "text": "I love you not only for what you are, but for what I am when I am with you.",
       "date": "2026-10-12"
+    },
+    {
+      "id": "51ace2c5-4de3-40c4-8ba4-39d557867166",
+      "text": "I don’t care what our past holds or how many storms we’ve been through, because our past doesn’t define us. All I know is that my destiny is with you, and every tomorrow is one I want to spend by your side.",
+      "date": "2026-10-12",
+      "note": "Look back at this and remember our promise moy meer"
     }
   ],
   "photos": [
