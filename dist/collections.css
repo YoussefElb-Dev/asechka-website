@@ -8,7 +8,7 @@
 .collection-intro>.eyebrow{justify-content:center}
 .collection-intro>p:last-child{font-size:13px;line-height:1.7;color:var(--muted);max-width:470px;margin-inline:auto}
 .collection-status{text-align:center;color:var(--muted);font-size:13px;padding:20px}
-.collection-page .quote-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:20px;width:100%;margin-top:32px}
+.collection-page .quote-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;align-items:stretch;gap:20px;width:100%;margin-top:32px}
 .collection-page .quote-item{width:100%;min-width:0;max-width:none;height:auto}
 .collection-page .photo-grid{margin-top:25px}
 .collection-page .quote-empty{margin-top:26px}
