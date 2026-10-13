@@ -4,16 +4,17 @@ The original powder-blue and lavender website for Asnat: a letter, a mysterious 
 
 Live site: https://asechka-website.vercel.app
 
-## Asechka Studio: add memories from your desktop
+## Asechka Studio: a desktop window for your memories
 
-Double-click **Asechka Studio** on your Windows desktop.
+Double-click **Asechka Studio** on your Windows desktop. It opens a blue and lavender window with buttons and forms; you do not need to type terminal commands.
 
-1. **Add a quote**: write the quote, keep today's date or change it, and optionally add a note. For multiple lines, enter `/multi` and finish with a line containing only `.`.
-2. **Add pictures**: choose one or several photos in the file picker and add captions. All selected photos publish together in one update. The picker supports JPG, PNG, BMP and TIFF; export HEIC photos as JPG first.
-3. **Publish pending memories**: retry anything saved while offline.
-4. **Status / saved drafts**: see pending entries and the last successful GitHub save.
-5. **Connect GitHub**: one-time connection instructions, or reconnect after revoking the key.
-6. **Open the website**.
+1. **A quote**: write your quote in the large text box, keep today's date or change it, and optionally add a note. Click **Save & publish quote**. Multiple lines work normally.
+2. **Pictures**: click **Choose pictures**, choose up to 20 JPG, PNG, WebP or BMP photos, add individual captions, and click **Save & publish pictures**. Export HEIC photos as JPG first. Small copies are made automatically; originals are untouched.
+3. **Publish pending**: retry memories saved while offline. The sidebar shows how many are waiting.
+4. **All the little things**: browse your saved quotes and photo previews below the forms. **Refresh from GitHub** retrieves the latest album if you also edited it elsewhere.
+5. **Open our website**: view the live site.
+
+Your existing GitHub connection and drafts are reused. An unfinished quote also stays in this browser's local draft until you save it. If the old terminal is still open, the window asks you to close it before editing; it becomes ready automatically. The original terminal remains available with `publisher/Start Asechka Studio.cmd` or `pnpm studio:terminal`.
 
 Each addition saves locally first, then pushes to the private GitHub repository. Vercel automatically deploys the commit. An open website checks for new memories every **15 seconds** while visible and also checks when you return to the tab. Updates appear after Vercel finishes deploying; this is automatic but not instantaneous. A photo you're currently viewing stays steady until you close it.
 
@@ -27,7 +28,7 @@ The website source and the Studio source are saved in the private repository. **
 
 Studio creates a separate SSH deploy key for this repository. Open option 5, add its **public** key in the repository's **Settings → Deploy keys**, and select **Allow write access**. The private key stays on this computer with access limited to your Windows account. This is persistent repository access; revoke it on that same settings page if you no longer want automatic publishing. GitHub host identity is checked against its published Ed25519 host key. Studio uses GitHub's supported SSH port 443.
 
-The desktop shortcut uses the existing Node.js and Git installations. If you move the project or uninstall those runtimes, recreate the shortcut with `publisher/Install Desktop Shortcut.cmd` using their new paths (Node.js and Git must be installed). The installer does not change PowerShell's execution policy. No background service, browser extension, cloud database, paid storage or paid publishing tool is required.
+The desktop shortcut uses the existing Node.js and Git installations and opens the interface in an Edge or Chrome app window. If neither browser is installed, it opens in the default browser. The local interface binds only to `127.0.0.1`, uses a random session and checks request origins; it is not hosted on Vercel. The local helper shuts down a few minutes after its windows close, and reopening the shortcut starts it again. If you move the project or uninstall those runtimes, recreate the shortcut with `publisher/Install Desktop Shortcut.cmd` using their new paths. The installer does not change PowerShell's execution policy. No installed background service, browser extension, cloud database, paid storage or paid publishing tool is required.
 
 ### Free-plan limits
 
@@ -37,7 +38,7 @@ References: [GitHub repository limits](https://docs.github.com/en/repositories/c
 
 ## Edit one content file manually
 
-The shared content file is now **`dist/memories.json`**. It replaces `dist/memories.js` and is used by both the terminal and the website. You can still edit just this one file on GitHub. Keep the old entries and append new ones; newest entries appear first.
+The shared content file is **`dist/memories.json`**. It replaces `dist/memories.js` and is used by the Studio window, the terminal, and the website. You can still edit just this one file on GitHub. Keep the old entries and append new ones; newest entries appear first.
 
 ```json
 {
@@ -58,7 +59,7 @@ Quotes display literally, so HTML does not execute. Click photos to see them ful
 
 ## Run locally
 
-Install dependencies with `pnpm install`, then run `pnpm dev` (or `node serve.mjs`) and open http://127.0.0.1:4173/. Run `pnpm test` for authentication, publishing, retry, concurrency, queue persistence, and Windows photo preparation checks. The local server uses the same authentication code as Vercel. Start the terminal directly with `pnpm studio` or `publisher/Start Asechka Studio.cmd`.
+Install dependencies with `pnpm install`, then run `pnpm dev` (or `node serve.mjs`) and open http://127.0.0.1:4173/. Run `pnpm test` for authentication, GUI access, publishing, retry, concurrency, queue persistence, launcher, and Windows photo preparation checks. The local server uses the same authentication code as Vercel. Start the Studio window with `pnpm studio` and the original terminal with `pnpm studio:terminal` or `publisher/Start Asechka Studio.cmd`.
 
 ## The little password door
 

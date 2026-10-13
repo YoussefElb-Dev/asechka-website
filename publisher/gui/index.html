@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Asechka Studio</title>
+  <link rel="stylesheet" href="/gui.css">
+  <script src="/gui.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Asechka Studio home"><span class="brand-mark" aria-hidden="true">a♡</span><span>Asechka Studio<small>our little universe, behind the scenes</small></span></a>
+      <a class="button quiet" href="https://asechka-website.vercel.app" target="_blank" rel="noopener noreferrer">Open our website <span aria-hidden="true">↗</span></a>
+    </header>
+    <main>
+      <section class="intro">
+        <div><p class="eyebrow">FOR ASECHKA, WITH LOVE</p><h1>The little things<br>worth keeping.</h1><p class="intro-copy">A thought you told her. A picture of the two of you.<br>Add it here, and let your little universe grow.</p></div>
+        <figure class="cat-card"><img src="/cat.jpg" alt="Two real cats curled up together"><figcaption>some things just belong together ♡</figcaption></figure>
+      </section>
+      <div class="status-strip"><span id="connection"><span class="dot"></span> Saved locally first · private GitHub</span><span id="totals">Loading your memories…</span></div>
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <div id="blocked" class="notice amber" hidden>Close the old Asechka Studio terminal to start editing here. This window will be ready automatically.</div>
+      <section class="workspace" aria-label="Add a memory">
+        <div class="editor">
+          <div class="tabs" role="tablist" aria-label="Memory type"><button id="quote-tab" class="tab active" role="tab" aria-selected="true" aria-controls="quote-panel">✎ &nbsp; A quote</button><button id="photo-tab" class="tab" role="tab" aria-selected="false" aria-controls="photo-panel" tabindex="-1">▧ &nbsp; Pictures</button></div>
+          <div id="quote-panel" class="panel" role="tabpanel" aria-labelledby="quote-tab">
+            <h2>Something you said.</h2><p class="muted">Your exact words, saved for her to come back to.</p>
+            <form id="quote-form">
+              <label for="quote-text">Your quote</label><textarea id="quote-text" maxlength="10000" rows="5" placeholder="Write something you want her to remember…" required></textarea>
+              <div class="form-row"><div><label for="quote-date">Date</label><input id="quote-date" type="date" required></div><div class="grow"><label for="quote-note">Little note <span>(optional)</span></label><input id="quote-note" maxlength="1000" placeholder="after our call, on the way home…"></div></div>
+              <div class="form-footer"><span class="muted small">You can write as many lines as you like.</span><button class="button primary" id="save-quote" type="submit">Save & publish quote <span aria-hidden="true">↗</span></button></div>
+            </form>
+          </div>
+          <div id="photo-panel" class="panel" role="tabpanel" aria-labelledby="photo-tab" hidden>
+            <h2>A moment together.</h2><p class="muted">Choose your pictures, add a caption, keep the memory.</p>
+            <input id="photo-files" class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp,image/bmp" multiple>
+            <button id="choose-photos" type="button" class="dropzone"><span class="upload-symbol" aria-hidden="true">＋</span><strong>Choose pictures</strong><span>JPG, PNG, WebP or BMP · up to 20 at once</span></button>
+            <p id="photo-help" class="muted small">Small copies are made automatically. Your originals stay as they are.<br>For iPhone HEIC pictures, export them as JPG first.</p>
+            <div id="selected-photos" class="selected-photos"></div>
+            <div class="form-footer"><div><label for="photo-date">Date for these pictures</label><input id="photo-date" type="date" required></div><button id="save-photos" class="button primary" type="button" disabled>Save & publish pictures <span aria-hidden="true">↗</span></button></div>
+          </div>
+        </div>
+        <aside class="save-card"><span class="save-mark" aria-hidden="true">♡</span><h2>Safe, then shared.</h2><p>Every memory is saved on your computer before it goes to your website.</p><div class="pending-number" id="pending-count">0</div><p class="pending-label">waiting to publish</p><button id="publish-pending" class="button secondary" disabled>Publish pending</button><p id="last-saved" class="muted small">Ready when you are.</p><div class="save-divider"></div><p class="muted small">After publishing, Vercel updates the website. An open page checks for new memories every 15 seconds.</p></aside>
+      </section>
+      <section class="memories" aria-label="Saved memories"><div class="section-heading"><div><p class="eyebrow">A GROWING COLLECTION</p><h2>All the little things.</h2></div><button id="refresh" class="button quiet">↻ &nbsp; Refresh from GitHub</button></div><div class="memory-columns"><div><h3>Your words <span id="quote-count">0</span></h3><div id="quote-list" class="quote-list"></div></div><div><h3>Your pictures <span id="photo-count">0</span></h3><div id="photo-list" class="photo-list"></div></div></div></section>
+    </main>
+    <footer>Only on this computer. Made for your little universe. <span>Асечка ♡</span></footer>
+  </div>
+</body>
+</html>
