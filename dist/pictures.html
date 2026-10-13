@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf2ff">
+  <meta name="description" content="Our favorite days, our silly faces, and every little moment we want to keep. Just for Asechka.">
+  <title>All our pictures · Asechka ♡</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="memories.css">
+  <link rel="stylesheet" href="collections.css">
+  <script type="module" src="memory-gallery.js"></script>
+</head>
+<body class="collection-page">
+  <a class="skip-link" href="#main">Skip to our pictures</a>
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
+  <header class="site-header collection-header wrap">
+    <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
+    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html" aria-current="page">Pictures</a></nav>
+  </header>
+  <main id="main" class="collection-main wrap">
+    <a class="collection-back" href="/#photos"><span aria-hidden="true">←</span> Back to our little universe</a>
+    <section aria-labelledby="photos-title">
+      <div class="collection-intro"><p class="eyebrow">EVERY LITTLE MOMENT, KEPT HERE</p><h1 class="collection-title" id="photos-title">A little collection <span class="handwritten">of us.</span></h1><p>Our favorite days. Our silly faces. Even the blurry pictures. Every moment we want to keep.</p></div>
+      <p class="collection-status" id="collection-status" role="status">Gathering our favorite moments…</p>
+      <div class="photo-grid" id="photo-grid"></div>
+      <div class="photo-empty" id="photo-empty" hidden><div class="empty-polaroid" aria-hidden="true"><span class="tape"></span><div><svg viewBox="0 0 80 64" fill="none"><rect x="9" y="16" width="62" height="40" rx="5"/><path d="m25 16 5-9h20l5 9"/><circle cx="40" cy="36" r="12"/><path d="M58 24h5"/></svg></div><span class="handwritten">you + me, soon ♡</span></div><div class="empty-photo-copy"><p class="handwritten">Leaving some room<br>for our favorite days.</p><p>We haven’t filled this page yet.<br>I’m looking forward to it.</p></div></div>
+      <p class="collection-count" id="photo-count" hidden></p>
+    </section>
+  </main>
+  <footer class="site-footer collection-footer wrap"><div><a class="brand footer-brand" href="/">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><div class="footer-controls"><a class="collection-back" href="/#photos">Back to our little universe ↗</a><form method="post" action="/api/logout"><button class="lock-site" type="submit">Lock our little door ↗</button></form></div></footer>
+  <dialog id="photo-dialog" class="photo-dialog" aria-labelledby="photo-dialog-title">
+    <h2 id="photo-dialog-title" class="sr-only">Pictures of us</h2><button class="dialog-close" id="close-photo" aria-label="Close photo">×</button>
+    <div class="lightbox-image-wrap"><img id="lightbox-image" alt=""><p id="lightbox-error" hidden>This photo couldn’t load.</p></div>
+    <div class="lightbox-bottom"><button id="previous-photo" class="photo-arrow" aria-label="Previous photo">←</button><div class="lightbox-caption" aria-live="polite"><p id="lightbox-caption" class="handwritten"></p><p id="lightbox-date"></p><p id="lightbox-position"></p></div><button id="next-photo" class="photo-arrow" aria-label="Next photo">→</button></div>
+  </dialog>
+  <noscript><p class="noscript-notice">Enable JavaScript to see all our saved pictures.</p></noscript>
+</body>
+</html>

@@ -1,6 +1,8 @@
 import { createQuoteCarousel } from './quote-carousel.js';
 
-const quoteCarousel = createQuoteCarousel();
+const quoteList = document.getElementById('quote-list');
+const quoteCarousel = document.getElementById('quote-carousel') ? createQuoteCarousel() : null;
+const collectionStatus = document.getElementById('collection-status');
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 function formatDate(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return '';
@@ -18,10 +20,10 @@ function addDate(parent, value) {
 }
 
 function renderQuotes(quotes) {
+if (!quoteList) return;
 const savedQuotes = (Array.isArray(quotes) ? quotes : [])
   .map(quote => typeof quote === 'string' ? { text: quote } : quote)
   .filter(quote => quote && typeof quote.text === 'string' && quote.text.trim());
-const quoteList = document.getElementById('quote-list');
 const quoteFragment = document.createDocumentFragment();
 savedQuotes.slice().reverse().forEach((quote, index) => {
   const item = document.createElement('li');
@@ -48,7 +50,7 @@ savedQuotes.slice().reverse().forEach((quote, index) => {
   quoteFragment.append(item);
 });
 quoteList.replaceChildren(quoteFragment);
-quoteCarousel.refresh();
+quoteCarousel?.refresh();
 document.getElementById('quote-empty').hidden = savedQuotes.length > 0;
 const quoteCount = document.getElementById('quote-count');
 quoteCount.hidden = savedQuotes.length === 0;
@@ -84,16 +86,17 @@ function showPhoto(index) {
   document.getElementById('lightbox-position').textContent = `${currentPhoto + 1} / ${savedPhotos.length}`;
   previousButton.hidden = nextButton.hidden = savedPhotos.length < 2;
 }
-lightboxImage.addEventListener('error', () => {
+lightboxImage?.addEventListener('error', () => {
   lightboxImage.hidden = true;
   lightboxError.hidden = false;
 });
-lightboxImage.addEventListener('load', () => {
+lightboxImage?.addEventListener('load', () => {
   lightboxImage.hidden = false;
   lightboxError.hidden = true;
 });
 
 function renderPhotos(photos) {
+if (!photoGrid) return;
 const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
 savedPhotos = (Array.isArray(photos) ? photos : [])
   .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
@@ -103,7 +106,9 @@ savedPhotos = (Array.isArray(photos) ? photos : [])
     catch { return false; }
   }).reverse();
 const photoFragment = document.createDocumentFragment();
-savedPhotos.forEach((photo, index) => {
+const previewLimit = Number(photoGrid.dataset.previewLimit) || savedPhotos.length;
+const visiblePhotos = savedPhotos.slice(0, previewLimit);
+visiblePhotos.forEach((photo, index) => {
   const button = document.createElement('button');
   button.className = 'photo-print';
   button.type = 'button';
@@ -143,24 +148,26 @@ if (focusedSrc) [...photoGrid.children].find(button => button.dataset.photoSrc =
 document.getElementById('photo-empty').hidden = savedPhotos.length > 0;
 const photoCount = document.getElementById('photo-count');
 photoCount.hidden = savedPhotos.length === 0;
-photoCount.textContent = `${savedPhotos.length} ${savedPhotos.length === 1 ? 'moment' : 'moments'} I want to keep.`;
+photoCount.textContent = visiblePhotos.length < savedPhotos.length
+  ? `${visiblePhotos.length} of ${savedPhotos.length} moments. There’s more in our collection.`
+  : `${savedPhotos.length} ${savedPhotos.length === 1 ? 'moment' : 'moments'} I want to keep.`;
 }
 
-document.getElementById('close-photo').addEventListener('click', () => photoDialog.close());
-previousButton.addEventListener('click', () => showPhoto(currentPhoto - 1));
-nextButton.addEventListener('click', () => showPhoto(currentPhoto + 1));
-photoDialog.addEventListener('keydown', event => {
+document.getElementById('close-photo')?.addEventListener('click', () => photoDialog.close());
+previousButton?.addEventListener('click', () => showPhoto(currentPhoto - 1));
+nextButton?.addEventListener('click', () => showPhoto(currentPhoto + 1));
+photoDialog?.addEventListener('keydown', event => {
   if (savedPhotos.length < 2) return;
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
     event.preventDefault();
     showPhoto(currentPhoto + (event.key === 'ArrowRight' ? 1 : -1));
   }
 });
-photoDialog.addEventListener('click', event => {
+photoDialog?.addEventListener('click', event => {
   const bounds = photoDialog.getBoundingClientRect();
   if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) photoDialog.close();
 });
-photoDialog.addEventListener('close', () => {
+photoDialog?.addEventListener('close', () => {
   document.body.classList.remove('dialog-open');
   lightboxImage.removeAttribute('src');
   photoOpener?.focus({ preventScroll: true });
@@ -169,7 +176,7 @@ photoDialog.addEventListener('close', () => {
 
 function renderContent(content) {
   // Keep the image and keyboard focus steady while someone is browsing a photo.
-  if (photoDialog.open) { waitingContent = content; return; }
+  if (photoDialog?.open) { waitingContent = content; return; }
   renderQuotes(content.quotes);
   renderPhotos(content.photos);
 }
@@ -184,12 +191,16 @@ async function checkForMemories() {
       window.location.replace('/login');
       return;
     }
-    if (!response.ok) return;
+    if (!response.ok) throw new Error('Collection unavailable');
     const content = await response.json();
-    if (content.version !== 1 || !Array.isArray(content.quotes) || !Array.isArray(content.photos)) return;
+    if (content.version !== 1 || !Array.isArray(content.quotes) || !Array.isArray(content.photos)) throw new Error('Collection unavailable');
     const serialized = JSON.stringify(content);
     if (serialized !== lastContent) { renderContent(content); lastContent = serialized; }
-  } catch { /* Keep the last loaded memories when the connection briefly drops. */ }
+    if (collectionStatus) collectionStatus.hidden = true;
+  } catch {
+    // Keep loaded memories visible during a brief connection problem.
+    if (collectionStatus && !lastContent) collectionStatus.textContent = 'Our little collection couldn’t load just yet. We’ll try again in a moment.';
+  }
   finally { checking = false; }
 }
 checkForMemories();

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf2ff">
+  <meta name="description" content="All the little things I tell you, kept in one place. Just for Asechka.">
+  <title>All our quotes · Asechka ♡</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="memories.css">
+  <link rel="stylesheet" href="collections.css">
+  <script type="module" src="memory-gallery.js"></script>
+</head>
+<body class="collection-page">
+  <a class="skip-link" href="#main">Skip to our quotes</a>
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
+  <header class="site-header collection-header wrap">
+    <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
+    <nav aria-label="Our collections"><a href="/quotes.html" aria-current="page">Quotes</a><a href="/pictures.html">Pictures</a></nav>
+  </header>
+  <main id="main" class="collection-main wrap">
+    <a class="collection-back" href="/#quotes"><span aria-hidden="true">←</span> Back to our little universe</a>
+    <section aria-labelledby="quotes-title">
+      <div class="collection-intro"><p class="eyebrow">EVERY LITTLE WORD, KEPT HERE</p><h1 class="collection-title" id="quotes-title">All those things <span class="handwritten">I tell you.</span></h1><p>The random quotes, the sweet ones, and the ones we shouldn't forget. All in one little place.</p></div>
+      <p class="collection-status" id="collection-status" role="status">Gathering our little words…</p>
+      <ol class="quote-list" id="quote-list"></ol>
+      <div class="quote-empty" id="quote-empty" hidden><span class="empty-quote-mark" aria-hidden="true">“</span><p class="handwritten">A little place for all those things I say to you.</p><p>Our first quote goes right here.</p></div>
+      <p class="collection-count" id="quote-count" hidden></p>
+    </section>
+  </main>
+  <footer class="site-footer collection-footer wrap"><div><a class="brand footer-brand" href="/">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><div class="footer-controls"><a class="collection-back" href="/#quotes">Back to our little universe ↗</a><form method="post" action="/api/logout"><button class="lock-site" type="submit">Lock our little door ↗</button></form></div></footer>
+  <noscript><p class="noscript-notice">Enable JavaScript to see all our saved quotes.</p></noscript>
+</body>
+</html>

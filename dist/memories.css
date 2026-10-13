@@ -25,4 +25,7 @@ body.dialog-open{overflow:hidden}.sr-only{position:absolute;width:1px;height:1px
 .quote-controls button:hover{background:#e8e6f5;color:var(--purple)}
 .quote-controls button:focus-visible{outline:2px solid #a49bc9;outline-offset:3px}
 .quote-controls button:disabled{opacity:.5;cursor:default}
+.collection-link-wrap{display:flex;justify-content:center;margin-top:26px}
+.collection-link{gap:16px;font-size:12px;padding:12px 19px;min-height:44px}
+.collection-link>span{font-size:17px}
 @media(max-width:600px){.quote-carousel{margin-top:26px}}
