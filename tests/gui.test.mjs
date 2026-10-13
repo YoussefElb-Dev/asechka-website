@@ -92,6 +92,7 @@ test('an offline GUI save survives failure and overlapping clicks cannot overwri
   unblock();
   const saved = await (await first).json();
   assert.equal(saved.saved, true); assert.equal(saved.published, false);
+  assert.equal(JSON.parse(await readFile(join(directory, 'gui-error.json'), 'utf8')).message, 'Network is unreachable');
   const view = await (await get('/api/status')).json();
   assert.equal(view.pending, 1); assert.equal(view.quotes[0].text, 'Keep this offline quote');
   assert.equal((await new Publisher({ directory }).readQueue()).pending.length, 1);

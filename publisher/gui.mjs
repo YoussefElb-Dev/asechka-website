@@ -35,6 +35,9 @@ export async function createStudioApp({ studio = new Publisher({ git: process.en
   let origin;
   let stopping;
   studio.onProgress = text => { progress = text; };
+  async function recordError(error) {
+    await atomicJson(join(studio.directory, 'gui-error.json'), { at: new Date().toISOString(), message: error.message, detail: error.stderr || '' }).catch(() => {});
+  }
   async function getLock() {
     if (release) return true;
     if (!lockAttempt) lockAttempt = (async () => {
@@ -74,6 +77,7 @@ export async function createStudioApp({ studio = new Publisher({ git: process.en
       progress = result.count ? 'Saved to GitHub. The website is updating.' : 'Everything is already saved.';
       return { published: true, count: result.count, message: progress };
     } catch (error) {
+      await recordError(error);
       progress = errorMessage(error);
       return { published: false, message: progress };
     }
@@ -189,7 +193,7 @@ export async function createStudioApp({ studio = new Publisher({ git: process.en
         if (url.pathname === '/api/refresh') {
           const result = await exclusive(async () => {
             try { await studio.synchronize(); progress = 'Your saved album is up to date.'; return { refreshed: true, message: progress }; }
-            catch (error) { progress = errorMessage(error); return { refreshed: false, message: progress }; }
+            catch (error) { await recordError(error); progress = errorMessage(error); return { refreshed: false, message: progress }; }
           });
           return send(200, result);
         }
