@@ -32,7 +32,7 @@ test('readiness verifies the key with a text-free provider check, caches briefly
 test('provider gets Egyptian context and structured results; repeated messages use short-lived memory cache',async()=>{
  const cookie=await session();let calls=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async(url,options)=>{
   if(url.includes('/models?'))return catalog();
-  calls++;assert.match(url,/models\/gemini-3\.5-flash-lite:generateContent$/);assert.equal(new URL(url).hostname,'generativelanguage.googleapis.com');assert.equal(options.headers['x-goog-api-key'],'test-private-key');assert.ok(!url.includes('test-private-key'));
+  calls++;assert.match(url,/models\/gemini-3\.8-flash:generateContent$/);assert.equal(new URL(url).hostname,'generativelanguage.googleapis.com');assert.equal(options.headers['x-goog-api-key'],'test-private-key');assert.ok(!url.includes('test-private-key'));
   const body=JSON.parse(options.body);assert.match(body.systemInstruction.parts[0].text,/colloquial Egyptian Arabic/);assert.equal(JSON.parse(body.contents[0].parts[0].text).sourceText,input().text);assert.equal(body.generationConfig.responseMimeType,'application/json');return Response.json(providerResult([...input().targets].reverse()));
  }});
  const result=await api(request(cookie,input()));assert.equal(result.status,200);const data=await result.json();assert.deepEqual(data.translations.map(item=>item.language),input().targets);assert.equal(data.translations[0].text,'وحشتيني');assert.ok(!JSON.stringify(data).includes('test-private-key'));
@@ -55,9 +55,9 @@ test('provider failures, incomplete results, and quota limits have safe messages
 
 test('a free model service failure falls back once without changing the source or extending the time budget',async()=>{
  const cookie=await session();let attempts=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async(url,options)=>{
-  if(url.includes('/models?'))return Response.json({models:['gemini-2.5-flash','gemini-3.5-flash-lite'].map(name=>({name:'models/'+name,supportedGenerationMethods:['generateContent']}))});
+  if(url.includes('/models?'))return Response.json({models:['gemini-3.8-flash','gemini-3.5-flash-lite'].map(name=>({name:'models/'+name,supportedGenerationMethods:['generateContent']}))});
   attempts++;assert.equal(JSON.parse(JSON.parse(options.body).contents[0].parts[0].text).sourceText,input().text);
-  if(attempts===1){assert.match(url,/gemini-2\.5-flash:generateContent$/);return Response.json({error:{status:'UNAVAILABLE',message:'Provider details'}},{status:503});}
+  if(attempts===1){assert.match(url,/gemini-3\.8-flash:generateContent$/);return Response.json({error:{status:'UNAVAILABLE',message:'Provider details'}},{status:503});}
   assert.match(url,/gemini-3\.5-flash-lite:generateContent$/);return Response.json(providerResult(input().targets));
  }});
  const response=await api(request(cookie,input()));assert.equal(response.status,200);assert.equal((await response.json()).model,'gemini-3.5-flash-lite');assert.equal(attempts,2);
