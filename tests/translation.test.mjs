@@ -33,15 +33,15 @@ test('provider gets Egyptian context and structured results; repeated messages u
  const cookie=await session();let calls=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async(url,options)=>{
   if(url.includes('/models?'))return catalog();
   calls++;assert.match(url,/models\/gemini-3\.6-flash:generateContent$/);assert.equal(new URL(url).hostname,'generativelanguage.googleapis.com');assert.equal(options.headers['x-goog-api-key'],'test-private-key');assert.ok(!url.includes('test-private-key'));
-  const body=JSON.parse(options.body);assert.match(body.systemInstruction.parts[0].text,/colloquial Egyptian Arabic/);assert.equal(JSON.parse(body.contents[0].parts[0].text).sourceText,input().text);assert.equal(body.generationConfig.responseMimeType,'application/json');return Response.json(providerResult([...input().targets].reverse()));
+  const body=JSON.parse(options.body);const content=JSON.parse(body.contents[0].parts[0].text);if(calls===1)assert.equal(content.draft,undefined);else{assert.equal(content.draft.length,5);assert.match(body.systemInstruction.parts[0].text,/independent bilingual editor/);}assert.match(body.systemInstruction.parts[0].text,/colloquial Egyptian Arabic/);assert.equal(JSON.parse(body.contents[0].parts[0].text).sourceText,input().text);assert.equal(body.generationConfig.responseMimeType,'application/json');return Response.json(providerResult([...input().targets].reverse()));
  }});
  const result=await api(request(cookie,input()));assert.equal(result.status,200);const data=await result.json();assert.deepEqual(data.translations.map(item=>item.language),input().targets);assert.equal(data.translations[0].text,'وحشتيني');assert.ok(!JSON.stringify(data).includes('test-private-key'));
- assert.equal((await api(request(cookie,input()))).status,200);assert.equal(calls,1);
+ assert.equal((await api(request(cookie,input()))).status,200);assert.equal(calls,2);
 });
 test('an older free Flash model can be selected only when it exists in the provider catalog',async()=>{
  const cookie=await session();const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async(url,options)=>{
   if(url.includes('/models?'))return Response.json({models:[{name:'models/gemini-2.5-flash',supportedGenerationMethods:['generateContent']}]});
-  assert.match(url,/models\/gemini-2\.5-flash:generateContent$/);assert.deepEqual(JSON.parse(options.body).generationConfig.thinkingConfig,{thinkingBudget:0});return Response.json(providerResult(input().targets));
+  assert.match(url,/models\/gemini-2\.5-flash:generateContent$/);const body=JSON.parse(options.body);assert.deepEqual(body.generationConfig.thinkingConfig,{thinkingBudget:JSON.parse(body.contents[0].parts[0].text).draft?1024:0});return Response.json(providerResult(input().targets));
  }});
  assert.equal((await api(request(cookie,input()))).status,200);
 });
@@ -60,7 +60,14 @@ test('a free model service failure falls back once without changing the source o
   if(attempts===1){assert.match(url,/gemini-3\.6-flash:generateContent$/);return Response.json({error:{status:'UNAVAILABLE',message:'Provider details'}},{status:503});}
   assert.match(url,/gemini-3\.5-flash-lite:generateContent$/);return Response.json(providerResult(input().targets));
  }});
- const response=await api(request(cookie,input()));assert.equal(response.status,200);assert.equal((await response.json()).model,'gemini-3.5-flash-lite');assert.equal(attempts,2);
+ const response=await api(request(cookie,input()));assert.equal(response.status,200);assert.equal((await response.json()).model,'gemini-3.5-flash-lite');assert.equal(attempts,3);
  let calls=0;const denied=createTranslationAPI({key:()=> 'test-private-key',fetcher:async url=>{if(url.includes('/models?'))return Response.json({models:['gemini-2.5-flash','gemini-3.5-flash-lite'].map(name=>({name:'models/'+name,supportedGenerationMethods:['generateContent']}))});calls++;return new Response('Private credential details',{status:401});}});
  assert.equal((await denied(request(cookie,input()))).status,503);assert.equal(calls,1);
+});
+
+test('failed or malformed proofreading never exposes the unreviewed draft',async()=>{
+ const cookie=await session();for(const badReview of [new Response('Private details',{status:429}),Response.json({candidates:[{finishReason:'MAX_TOKENS'}]}),Response.json(providerResult(['he']))]){
+  let calls=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async url=>{if(url.includes('/models?'))return catalog();calls++;return calls===1?Response.json(providerResult(input().targets)):badReview;}});
+  const response=await api(request(cookie,input()));assert.ok([429,503].includes(response.status));const body=await response.json();assert.equal(body.translations,undefined);assert.ok(body.error);assert.equal(calls,2);
+ }
 });
