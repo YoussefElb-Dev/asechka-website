@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-14T01:30:24.869Z",
+  "updatedAt": "2026-10-14T19:52:32.928Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -97,6 +97,12 @@
       "id": "19db02b0-45b1-4a7b-824b-85959b328803",
       "src": "assets/photos/2026/10/19db02b0-45b1-4a7b-824b-85959b328803.jpg",
       "caption": "First ever plushieeee (I adore it)",
+      "date": "2026-10-13"
+    },
+    {
+      "id": "e17b9d16-42bf-421a-a87b-080f2342b939",
+      "src": "assets/photos/2026/10/e17b9d16-42bf-421a-a87b-080f2342b939.jpg",
+      "caption": "Is this considered a professional photo sesh",
       "date": "2026-10-13"
     }
   ]
