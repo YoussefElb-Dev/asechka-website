@@ -99,8 +99,12 @@ export async function authorize(request) {
     return response(gatePage('login'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
   }
   if (!auth) return response(gatePage('login', 'Our little door isn’t ready yet. Try again soon.'), 503, { 'Content-Type': 'text/html; charset=utf-8' });
-  if (!signedIn) return redirect('/login');
+  if (!signedIn) return path === '/api/music' || path === '/api/music-search' ? response(JSON.stringify({ error: 'Unlock our little door again to see our music.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
   if (path === '/welcome') return response(gatePage('welcome'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
+  if (path === '/api/music' && request.method === 'POST') {
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-music') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please choose our songs from the music page.' }), 403, { 'Content-Type': 'application/json' });
+    return null;
+  }
   if (request.method !== 'GET' && request.method !== 'HEAD') return response('Method not allowed', 405, { Allow: 'GET, HEAD' });
   return null;
 }

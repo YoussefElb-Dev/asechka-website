@@ -4,6 +4,16 @@ The original powder-blue and lavender website for Asnat: a letter, a mysterious 
 
 Live site: https://asechka-website.vercel.app
 
+## Our shared top ten songs
+
+Open **Music** on the website. Search by song, artist, or album, choose a recording, and pick a spot from 1 to 10. Either person who has unlocked the website can add or replace a song, leave a personal note, or remove a song after confirming. Each card shows its real catalog artwork, title, artist, album, duration, and listening links. The list starts empty so you can choose it together.
+
+The free [iTunes Search API](https://performance-partners.apple.com/search-api) supplies metadata; no music-service login or paid API is required for search. Full playback follows the linked music service's availability and subscription rules. Search is submitted explicitly, cached for five minutes, and limited per running server instance. Album art is linked to its catalog page with Apple's unmodified official iTunes Store badge, sourced from the [iTunes identity guidelines](https://marketing.services.apple/itunes-identity-guidelines). No audio is downloaded or stored.
+
+Shared choices are saved to **dist/music.json** in this private GitHub repository. Set **MUSIC_GITHUB_TOKEN** as a secret in the Vercel project's Production environment, then redeploy. Use a fine-grained GitHub token restricted to **YoussefElb-Dev/asechka-website**, with **Contents: read and write**; no account-wide or workflow permissions are needed. This token grants repository content access, while the application's API is restricted to this one music file. Never place the token in browser code, a committed file, or a chat message. Revoke or renew it in GitHub if necessary. Missing configuration keeps saving disabled and leaves catalog search available.
+
+The existing signed login is required for both music APIs. Writes require the site's own origin and a protected JSON request. The server looks up the chosen track itself; it does not trust client-supplied artwork or external URLs. Saves read the current GitHub file, retry simultaneous edits to different spots, and reject a stale edit of the same spot. Repeating a received save does not duplicate the song. Quotes and photos stay in their separate existing file and are preserved. Open music pages check for changes every 20 seconds and when you return; a successful save is visible immediately on that screen, without waiting for a new deployment. The existing GitHub and Vercel free-plan limits still apply.
+
 ## Asechka Studio: a desktop window for your memories
 
 Double-click **Asechka Studio** on your Windows desktop. It opens a blue and lavender window with buttons and forms; you do not need to type terminal commands.

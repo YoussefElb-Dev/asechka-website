@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf2ff">
+  <meta name="description" content="Ten little places for the songs that feel like us. Choose our shared soundtrack together, just for Asechka.">
+  <title>Our little soundtrack · Asechka ♡</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="memories.css">
+  <link rel="stylesheet" href="collections.css">
+  <link rel="stylesheet" href="music.css">
+  <script type="module" src="music.js"></script>
+</head>
+<body class="collection-page music-page">
+  <a class="skip-link" href="#main">Skip to our music</a>
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
+  <header class="site-header collection-header wrap">
+    <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
+    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html" aria-current="page">Music</a></nav>
+  </header>
+  <main id="main" class="collection-main music-main wrap">
+    <a class="collection-back" href="/"><span aria-hidden="true">←</span> Back to our little universe</a>
+    <section class="soundtrack-intro" aria-labelledby="music-title">
+      <div class="soundtrack-copy">
+        <p class="eyebrow">A LITTLE SOUNDTRACK, CHOSEN BY US</p>
+        <h1 id="music-title">Some songs just<br>feel like <span class="handwritten">you + me.</span></h1>
+        <p>A song for the drive home. A chorus we keep singing.<br>Ten little places for the music we want to keep.</p>
+        <a class="text-link" href="#song-search">Let’s find our first song <span aria-hidden="true">↘</span></a>
+        <p class="soundtrack-dedication handwritten">two hearts. one little soundtrack. ♡</p>
+      </div>
+      <div class="record-scene" aria-hidden="true">
+        <span class="record-sparkle record-sparkle-one">✦</span><span class="record-sparkle record-sparkle-two">✧</span>
+        <div class="hero-record"><span class="record-center"><span>asechka.</span><b>you + me</b><i></i></span></div>
+        <div class="record-sleeve"><span class="sleeve-label">OUR LITTLE SOUNDTRACK</span><span class="sleeve-orbit"></span><span class="sleeve-heart">♡</span><span class="sleeve-caption handwritten">a place for our songs</span><span class="sleeve-bottom">SIDE A · ALL THE LITTLE FEELINGS</span></div>
+        <span class="record-scene-note handwritten">the ones we’ll play again &amp; again</span>
+      </div>
+    </section>
+
+    <div class="music-notice" role="status" aria-live="polite" aria-atomic="true">
+      <span id="music-status">Gathering our little soundtrack…</span>
+      <button class="quiet-button" type="button" id="retry-music" hidden>Try again</button>
+      <a id="reopen-login" href="/login" hidden>Reopen our little door ↗</a>
+    </div>
+
+    <section class="song-search-panel" id="song-search" aria-labelledby="search-title">
+      <div class="search-heading"><div><p class="eyebrow">FIND A SONG, KEEP A FEELING</p><h2 id="search-title">What should we <span class="handwritten">keep?</span></h2></div><p>Either of us can choose a song.<br>Search, pick a place, leave a little note.</p></div>
+      <form id="music-search-form" role="search">
+        <label for="music-query">Song, artist, or album</label>
+        <div class="search-input-row"><input id="music-query" name="q" type="search" placeholder="That song you were telling me about…" minlength="2" maxlength="120" required autocomplete="off" enterkeyhint="search" aria-describedby="search-help"><button class="button button-primary" id="search-button" type="submit">Find a song <span aria-hidden="true">↗</span></button></div>
+        <p id="search-help">Search the iTunes catalog. Choose the recording that feels right.</p>
+      </form>
+      <p class="search-status" id="search-status" role="status" aria-live="polite" aria-atomic="true">Your next favorite memory can start with a song.</p>
+      <ul class="search-results" id="search-results" aria-label="Songs found in the iTunes catalog"></ul>
+    </section>
+
+    <section class="shared-soundtrack" aria-labelledby="top-ten-title">
+      <div class="soundtrack-heading"><div><p class="eyebrow">TEN PLACES. ALL OURS.</p><h2 id="top-ten-title">Our shared <span class="handwritten">top ten.</span></h2></div><span class="soundtrack-count" id="music-count">0 / 10 songs</span></div>
+      <p class="soundtrack-help" id="soundtrack-help">Choose a place from 1 to 10. Both of us can add a song, change it, or leave a little note.</p>
+      <ol class="ranked-tracks" id="ranked-tracks" aria-describedby="soundtrack-help" aria-busy="true"></ol>
+      <p class="soundtrack-endnote handwritten">Leaving a little room for the songs we haven’t found yet. ♡</p>
+    </section>
+    <p class="catalog-credit">Song details and album artwork provided courtesy of the iTunes catalog. Open a song in Apple Music to listen, or follow its iTunes badge. Availability varies by region.</p>
+  </main>
+  <footer class="site-footer collection-footer wrap"><div><a class="brand footer-brand" href="/">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><div class="footer-controls"><a class="collection-back" href="/">Back to our little universe ↗</a><form method="post" action="/api/logout"><button class="lock-site" type="submit">Lock our little door ↗</button></form></div></footer>
+
+  <dialog class="music-dialog" id="song-dialog" aria-labelledby="song-dialog-title" aria-describedby="song-dialog-description">
+    <button class="dialog-close" type="button" id="close-song-dialog" aria-label="Close song choices">×</button>
+    <div class="music-dialog-paper">
+      <p class="eyebrow" id="song-dialog-eyebrow">A SONG FOR OUR LITTLE SOUNDTRACK</p>
+      <h2 id="song-dialog-title">Give it a little place.</h2>
+      <p class="dialog-description" id="song-dialog-description">Choose where this song belongs and, if you like, why it reminds you of us.</p>
+      <div class="dialog-track" id="dialog-track"></div>
+      <form id="song-save-form">
+        <label for="song-rank">A place in our top ten</label>
+        <select id="song-rank" name="rank" required aria-describedby="slot-description"></select>
+        <p class="slot-description" id="slot-description"></p>
+        <label for="song-note">A little note <span>(optional)</span></label>
+        <textarea id="song-note" name="note" rows="3" maxlength="500" placeholder="Why this one feels like us…" aria-describedby="note-help"></textarea>
+        <p class="field-help" id="note-help">Up to 500 characters. Your note is shared with the song.</p>
+        <div class="dialog-actions"><button class="button button-outline" type="button" id="cancel-save">Cancel</button><button class="button button-primary" type="submit" id="save-song">Save song</button></div>
+      </form>
+      <div id="song-remove-confirmation" hidden>
+        <p class="remove-description" id="remove-description"></p>
+        <div class="dialog-actions"><button class="button button-outline" type="button" id="cancel-remove" autofocus>Keep this song</button><button class="button button-primary" type="button" id="remove-song">Remove song</button></div>
+      </div>
+      <p class="dialog-status" id="dialog-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <button class="quiet-button" type="button" id="refresh-dialog" hidden>Refresh this place</button>
+      <a class="dialog-login" id="dialog-login" href="/login" hidden>Reopen our little door ↗</a>
+    </div>
+  </dialog>
+  <noscript><p class="noscript-notice">Enable JavaScript to search for songs and choose our shared top ten.</p></noscript>
+</body>
+</html>
