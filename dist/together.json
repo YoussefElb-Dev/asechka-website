@@ -1,5 +1,21 @@
 {
   "version": 1,
-  "bucketList": [],
-  "hearts": { "me": null, "asechka": null }
+  "bucketList": [
+    {
+      "id": "9fcfc8d7-26b4-4d00-8133-41ea196744a5",
+      "title": "Temporary connection test",
+      "note": "Temporary verification; removed after checking.",
+      "place": "",
+      "completed": true,
+      "createdAt": "2026-10-14T05:14:06.838Z",
+      "completedAt": "2026-10-14T05:14:06.838Z",
+      "revision": "ba3262c5-8eae-4e4b-bd06-ce6e42035dee",
+      "photoId": "ba3262c5-8eae-4e4b-bd06-ce6e42035dee"
+    }
+  ],
+  "hearts": {
+    "me": null,
+    "asechka": null
+  },
+  "updatedAt": "2026-10-14T05:14:06.838Z"
 }
