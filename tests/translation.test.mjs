@@ -24,6 +24,10 @@ test('a missing connection has honest readiness and never sends source text',asy
  const cookie=await session();const api=createTranslationAPI({key:()=>null,fetcher:()=>assert.fail('No provider without a key')});
  assert.equal((await (await api(request(cookie))).json()).ready,false);assert.equal((await api(request(cookie,input()))).status,503);
 });
+test('readiness verifies the key with a text-free provider check, caches briefly, and never claims rejected keys work',async()=>{
+ const cookie=await session();let calls=0,time=0;const api=createTranslationAPI({key:()=> 'test-private-key',now:()=>time,fetcher:async(url,options)=>{calls++;assert.equal(options.body,undefined);assert.match(url,/\/models\?/);return new Response('',{status:401});}});
+ const first=await (await api(request(cookie))).json();assert.equal(first.ready,false);assert.ok(first.message);await api(request(cookie));assert.equal(calls,1);time=15001;await api(request(cookie));assert.equal(calls,2);
+});
 test('provider gets Egyptian context and structured results; repeated messages use short-lived memory cache',async()=>{
  const cookie=await session();let calls=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async(url,options)=>{
   calls++;assert.equal(new URL(url).hostname,'generativelanguage.googleapis.com');assert.equal(options.headers['x-goog-api-key'],'test-private-key');assert.ok(!url.includes('test-private-key'));
