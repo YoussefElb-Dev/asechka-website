@@ -92,3 +92,13 @@ The requested shared features reuse the existing repo-scoped `MUSIC_GITHUB_TOKEN
 Choose a side under “I’m here as” to send a thinking-of-you heart. That choice stays in this browser; the latest timestamp for each sender is shared. Hearts are visible on the website, without push notifications. Rapid taps are throttled for five seconds. The common password grants access to both sides; this is a personal shared space rather than separate authenticated identities.
 
 The memory of the day draws from the actual quotes, pictures, and favorite songs, using the date in America/New_York. Both screens see the same pick, independently of the order in which records are loaded. The source content is read from GitHub and never edited by the daily-memory feature. Tests cover day boundaries, real album metadata, private uploads, stale edits, atomic commits, and concurrent saves.
+
+## Our love translation
+
+Open `/translation.html` or “Our words”. Choose any combination of Egyptian Arabic, Russian, Hebrew, French, and Spanish. Arabic is always colloquial Egyptian, with an explicit dialect instruction. The source can be detected or selected, and tone, speaker, and recipient settings guide idioms, register, and grammatical gender. Results have native scripts, correct reading direction, copy buttons, pronunciation guides for Arabic/Russian/Hebrew, and English back-translations to help check meaning. AI translation may still need human correction for ambiguity.
+
+The password-protected `/api/translation` route calls Gemini 3.8 Flash with a structured response schema. Set `GEMINI_API_KEY` as a sensitive Production environment variable in Vercel and deploy again to activate it. Use a dedicated Gemini-only key from an unbilled, free-tier Google AI Studio project. Never put the key in website files, local publishing settings, or GitHub. Missing keys show an honest connection message and disable translation; provider failures preserve the original input.
+
+Only submitted text and the translation settings are sent to Google. This feature does not write messages to GitHub, logs, or browser storage. A small in-memory cache expires after five minutes, and each function instance limits uncached requests to six per minute. This is not a distributed quota limiter. Google's free tier has its own shared project quotas and may use submitted content to improve products; that notice is shown beside the form. No billing account is required or enabled by this setup.
+
+References: [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing), [API key security](https://ai.google.dev/gemini-api/docs/api-key), [Gemini REST generation](https://ai.google.dev/api/generate-content).
