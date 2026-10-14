@@ -4,7 +4,7 @@ import {randomBytes} from 'node:crypto';
 import {authorize} from '../server/auth.js';
 import {checkedTranslation,translationInstruction,createTranslationAPI,languages} from '../server/translation-api.js';
 const input=()=>({text:'I miss you.',source:'en',targets:['ar-EG','ru','he','fr','es'],tone:'natural',speaker:'male',recipient:'female'});
-const catalog=()=>Response.json({models:[{name:'models/gemini-3.8-flash',supportedGenerationMethods:['generateContent']}]});
+const catalog=()=>Response.json({models:[{name:'models/gemini-3.8-flash',supportedGenerationMethods:['generateContent']},{name:'models/gemini-3.5-flash-lite',supportedGenerationMethods:['generateContent']}]});
 const providerResult=(targets)=>({candidates:[{finishReason:'STOP',content:{parts:[{text:JSON.stringify({translations:targets.map(language=>({language,text:language==='ar-EG'?'وحشتيني':'A translated phrase',pronunciation:language==='ar-EG'?'wahashtini':'',backTranslation:'I miss you.',note:''}))})}]}}]});
 async function session(){process.env.SITE_PASSWORD='2505';process.env.SESSION_SECRET=randomBytes(48).toString('hex');const result=await authorize(new Request('https://asechka.test/api/session',{method:'POST',headers:{Accept:'application/json',Origin:'https://asechka.test','Content-Type':'application/x-www-form-urlencoded'},body:'password=2505'}));return result.headers.get('set-cookie').split(';')[0];}
 const request=(cookie,body,extra={})=>new Request('https://asechka.test/api/translation',{method:body?'POST':'GET',headers:{Accept:'application/json',Cookie:cookie,...(body?{Origin:'https://asechka.test','Content-Type':'application/json','X-Asechka-Translation':'1'}:{}),...extra},...(body?{body:JSON.stringify(body)}:{})});
@@ -32,7 +32,7 @@ test('readiness verifies the key with a text-free provider check, caches briefly
 test('provider gets Egyptian context and structured results; repeated messages use short-lived memory cache',async()=>{
  const cookie=await session();let calls=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async(url,options)=>{
   if(url.includes('/models?'))return catalog();
-  calls++;assert.equal(new URL(url).hostname,'generativelanguage.googleapis.com');assert.equal(options.headers['x-goog-api-key'],'test-private-key');assert.ok(!url.includes('test-private-key'));
+  calls++;assert.match(url,/models\/gemini-3\.5-flash-lite:generateContent$/);assert.equal(new URL(url).hostname,'generativelanguage.googleapis.com');assert.equal(options.headers['x-goog-api-key'],'test-private-key');assert.ok(!url.includes('test-private-key'));
   const body=JSON.parse(options.body);assert.match(body.systemInstruction.parts[0].text,/colloquial Egyptian Arabic/);assert.equal(JSON.parse(body.contents[0].parts[0].text).sourceText,input().text);assert.equal(body.generationConfig.responseMimeType,'application/json');return Response.json(providerResult([...input().targets].reverse()));
  }});
  const result=await api(request(cookie,input()));assert.equal(result.status,200);const data=await result.json();assert.deepEqual(data.translations.map(item=>item.language),input().targets);assert.equal(data.translations[0].text,'وحشتيني');assert.ok(!JSON.stringify(data).includes('test-private-key'));
