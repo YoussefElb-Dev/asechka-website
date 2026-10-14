@@ -1,18 +1,5 @@
 {
   "version": 1,
-  "tracks": [
-    {
-      "trackId": 1542842761,
-      "title": "Blinding Lights (Remix)",
-      "artist": "The Weeknd & ROSALÍA",
-      "album": "Blinding Lights (Remix) - Single",
-      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/e7/3f/61e73f94-018d-5f50-50ec-8521952bc72e/20UM1IM11629.rgb.jpg/600x600bb.jpg",
-      "trackUrl": "https://music.apple.com/us/album/blinding-lights-remix/1542842760?i=1542842761&uo=4",
-      "durationMs": 216123,
-      "rank": 10,
-      "note": "Temporary connection test 1791952075339",
-      "id": "f9e614c8-6855-483a-8123-df543ac7ac9c"
-    }
-  ],
-  "updatedAt": "2026-10-14T04:27:55.206Z"
+  "tracks": [],
+  "updatedAt": "2026-10-14T04:27:56.171Z"
 }
