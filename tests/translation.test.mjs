@@ -52,3 +52,15 @@ test('provider failures, incomplete results, and quota limits have safe messages
  const quota=createTranslationAPI({key:()=> 'test-private-key',fetcher:async url=>url.includes('/models?')?catalog():new Response('private',{status:429})});const result=await quota(request(cookie,input()));assert.equal(result.status,429);assert.equal(result.headers.get('retry-after'),'60');
  const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async url=>url.includes('/models?')?catalog():Response.json(providerResult(input().targets))});for(let i=0;i<6;i++)assert.equal((await api(request(cookie,{...input(),text:`Different message ${i}`}))).status,200);assert.equal((await api(request(cookie,{...input(),text:'Seventh message'}))).status,429);
 });
+
+test('a free model service failure falls back once without changing the source or extending the time budget',async()=>{
+ const cookie=await session();let attempts=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async(url,options)=>{
+  if(url.includes('/models?'))return Response.json({models:['gemini-2.5-flash','gemini-3.5-flash-lite'].map(name=>({name:'models/'+name,supportedGenerationMethods:['generateContent']}))});
+  attempts++;assert.equal(JSON.parse(JSON.parse(options.body).contents[0].parts[0].text).sourceText,input().text);
+  if(attempts===1){assert.match(url,/gemini-2\.5-flash:generateContent$/);return Response.json({error:{status:'UNAVAILABLE',message:'Provider details'}},{status:503});}
+  assert.match(url,/gemini-3\.5-flash-lite:generateContent$/);return Response.json(providerResult(input().targets));
+ }});
+ const response=await api(request(cookie,input()));assert.equal(response.status,200);assert.equal((await response.json()).model,'gemini-3.5-flash-lite');assert.equal(attempts,2);
+ let calls=0;const denied=createTranslationAPI({key:()=> 'test-private-key',fetcher:async url=>{if(url.includes('/models?'))return Response.json({models:['gemini-2.5-flash','gemini-3.5-flash-lite'].map(name=>({name:'models/'+name,supportedGenerationMethods:['generateContent']}))});calls++;return new Response('Private credential details',{status:401});}});
+ assert.equal((await denied(request(cookie,input()))).status,503);assert.equal(calls,1);
+});
