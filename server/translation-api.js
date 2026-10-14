@@ -23,7 +23,7 @@ export function createTranslationAPI({key=()=>process.env.GEMINI_API_KEY,fetcher
   }
   return async request=>{
     const denied=await authorize(request);if(denied)return denied;
-    if(request.method==='GET')return json({...await checkConnection(),languages});
+    if(request.method==='GET')return json({...await checkConnection(),languages,release:process.env.VERCEL_GIT_COMMIT_SHA || 'local'});
     if(request.method!=='POST')return json({error:'Method not allowed.'},405);
     try{
       if(Number(request.headers.get('content-length') || 0)>12000)throw new TranslationError('That message is a little too long.',413);
