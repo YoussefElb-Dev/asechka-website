@@ -82,3 +82,13 @@ The gate adds no-store headers to prevent shared caching of private content. Fai
 The countdown ends **Friday, October 16, 2026 at 3:00 PM America/New_York (UTC−04:00)**. Edit `dist/countdown.js` and the visible dates in `dist/index.html` together if the date changes. At zero it invites Asechka to find you in person without revealing the surprise.
 
 The letter is in `dist/index.html`, the hints in `dist/app.js`, and the styling in `dist/styles.css`. Real cat photographs are `dist/assets/cats-cuddle.jpg` and `dist/assets/cats-cozy.jpg`; photographer credits and source links are in `PHOTO-CREDITS.md`. Fonts use Google Fonts with system fallbacks. No database is needed.
+
+## Our little days
+
+Open `/together.html`, or use the new home-page cards. Both visitors can add, edit, complete, and remove bucket-list wishes. Completing a wish opens an editor with an optional photo; reopening it preserves the photo. Images are resized in the browser, converted to JPEG without the original file metadata, and capped at 320 KB. A wish and its photo are committed together, preserving concurrent changes to the rest of the repo. Removed or replaced photos leave the current checkout; Git history retains earlier versions.
+
+The requested shared features reuse the existing repo-scoped `MUSIC_GITHUB_TOKEN` in Vercel. Only fixed paths `dist/together.json` and `dist/assets/bucket/<UUID>.jpg` are written by this feature. Password-authenticated API routes serve images directly from the private repo, so a saved picture is available immediately without waiting for a deployment. The site checks for shared updates every 20 seconds while visible. No browser gets the GitHub key. Without the server connection, the page is read-only.
+
+Choose a side under “I’m here as” to send a thinking-of-you heart. That choice stays in this browser; the latest timestamp for each sender is shared. Hearts are visible on the website, without push notifications. Rapid taps are throttled for five seconds. The common password grants access to both sides; this is a personal shared space rather than separate authenticated identities.
+
+The memory of the day draws from the actual quotes, pictures, and favorite songs, using the date in America/New_York. Both screens see the same pick, independently of the order in which records are loaded. The source content is read from GitHub and never edited by the daily-memory feature. Tests cover day boundaries, real album metadata, private uploads, stale edits, atomic commits, and concurrent saves.

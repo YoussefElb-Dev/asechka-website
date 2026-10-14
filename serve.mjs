@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { authorize, privateHeaders } from './server/auth.js';
 import { handleMusic } from './server/music-api.js';
+import { handleTogether } from './server/together-api.js';
 import { readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 const directory = resolve('dist');
@@ -15,7 +16,8 @@ createServer(async (req, res) => {
       ...(['GET', 'HEAD'].includes(req.method) ? {} : { body: Readable.toWeb(req), duplex: 'half' }),
     });
     const isMusic = ['/api/music', '/api/music-search'].includes(new URL(request.url).pathname);
-    const gate = isMusic ? await handleMusic(request) : await authorize(request);
+    const isTogether = ['/api/together','/api/together-photo','/api/daily-memory'].includes(new URL(request.url).pathname);
+    const gate = isMusic ? await handleMusic(request) : isTogether ? await handleTogether(request) : await authorize(request);
     if (gate) {
       res.writeHead(gate.status, Object.fromEntries(gate.headers));
       res.end(req.method === 'HEAD' ? undefined : Buffer.from(await gate.arrayBuffer()));

@@ -12,8 +12,10 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="memories.css">
+  <link rel="stylesheet" href="together.css">
   <script type="module" src="app.js"></script>
   <script type="module" src="memory-gallery.js"></script>
+  <script type="module" src="shared-moments.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the love letter</a>
@@ -27,7 +29,7 @@
 
   <header class="site-header wrap">
     <a class="brand" href="#" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
-    <nav aria-label="Main navigation"><a href="#little-things">The little things</a><a href="#quotes">Quotes</a><a href="#photos">Pictures</a><a class="nav-music" href="/music.html" style="display:flex;align-items:center;min-height:44px;padding-inline:10px">Music</a><a href="#letter">A little letter</a><a class="nav-secret" href="#surprise">A little mystery <svg><use href="#sparkle"/></svg></a></nav>
+    <nav aria-label="Main navigation"><a class="nav-little" href="#little-things">The little things</a><a href="#quotes">Quotes</a><a href="#photos">Pictures</a><a class="nav-music" href="/music.html" style="display:flex;align-items:center;min-height:44px;padding-inline:10px">Music</a><a class="nav-days" href="/together.html">Our days</a><a class="nav-letter" href="#letter">A little letter</a><a class="nav-secret" href="#surprise">A little mystery <svg><use href="#sparkle"/></svg></a></nav>
   </header>
 
   <main id="main">
@@ -66,6 +68,16 @@
     </section>
 
     <div class="between-sections" aria-hidden="true"><span></span><svg><use href="#sparkle"/></svg><span></span></div>
+
+    <section class="shared-days home-shared-days wrap" id="our-days" aria-labelledby="our-days-title">
+      <div class="section-intro"><p class="eyebrow">A LITTLE MORE OF US, EVERY DAY</p><h2 id="our-days-title">For our today, <span class="handwritten">and all our tomorrows.</span></h2><p>Something to remember. A little heart to leave. So many days still ahead.</p></div>
+      <div class="shared-notice" role="status" aria-live="polite"><span data-shared-status>Gathering our little memories…</span><button type="button" class="quiet-link" data-retry-shared hidden>Try again</button><a href="/login" data-shared-login hidden>Reopen our little door ↗</a></div>
+      <div class="daily-grid">
+        <article class="daily-card" aria-labelledby="daily-title"><div class="daily-card-heading"><span class="eyebrow">A LITTLE MEMORY, JUST FOR TODAY</span><span class="memory-date" data-memory-day></span></div><h3 id="daily-title">Something worth <span class="handwritten">remembering.</span></h3><div class="daily-content" data-daily-memory aria-busy="true"><p class="soft-loading">Finding a little memory for today…</p></div><p class="daily-footnote">One of our quotes, pictures, or songs. A new little memory each day.</p></article>
+        <article class="thinking-card" aria-labelledby="thinking-title"><p class="eyebrow">A SMALL WAY TO SAY SOMETHING BIG</p><h3 id="thinking-title">You crossed <span class="handwritten">my mind.</span></h3><label class="side-label" for="heart-side">I’m here as</label><select id="heart-side" data-heart-side><option value="">Choose your side…</option><option value="me">Me · sending to Asechka</option><option value="asechka">Asechka · sending to him</option></select><button class="thinking-heart" type="button" data-send-heart disabled aria-label="Send a thinking-of-you heart"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27S3 19.3 3 10.8C3 3.5 12 2.5 16 8c4-5.5 13-4.5 13 2.8C29 19.3 16 27 16 27Z"/></svg><span class="heart-orbit" aria-hidden="true"></span></button><p class="heart-invitation" data-heart-invitation>Choose your side, then leave a little heart.</p><div class="heart-message" data-heart-message role="status" aria-live="polite"></div><p class="own-heart" data-own-heart></p><p class="heart-send-status" data-heart-status role="status" aria-live="polite"></p></article>
+      </div>
+      <div class="bucket-preview"><div><p class="eyebrow">OUR SHARED BUCKET LIST</p><h3>There’s so much left to do with you.</h3><p class="bucket-preview-summary" data-bucket-summary>Our first little wish is waiting to be written.</p><ul class="preview-wishes" data-preview-wishes></ul></div><a class="button button-outline" href="/together.html">Make a little plan <span aria-hidden="true">↗</span></a></div>
+    </section>
 
     <section class="little-things wrap" id="little-things" aria-labelledby="little-things-title">
       <div class="section-intro"><p class="eyebrow">THE LITTLE THINGS, THE BIG FEELINGS</p><h2 id="little-things-title">You make my world a little <span class="handwritten">softer.</span></h2><p>Some feelings are too big for one sentence. So here are a few little ones.</p></div>
