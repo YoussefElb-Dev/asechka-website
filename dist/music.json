@@ -1,5 +1,18 @@
 {
   "version": 1,
-  "tracks": [],
-  "updatedAt": "2026-10-14T04:27:56.171Z"
+  "tracks": [
+    {
+      "trackId": 1837997607,
+      "title": "Whatever You Like",
+      "artist": "Dove Cameron",
+      "album": "Whatever You Like - Single",
+      "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/e1/f5/40/e1f540d5-af54-b3dd-a3b1-04e2b495401b/196873582450.jpg/600x600bb.jpg",
+      "trackUrl": "https://music.apple.com/us/album/whatever-you-like/1837997597?i=1837997607&uo=4",
+      "durationMs": 175848,
+      "rank": 1,
+      "note": "It makes my heart jump everytime",
+      "id": "3cdf5e0f-67c3-4d02-803e-a270f8b75277"
+    }
+  ],
+  "updatedAt": "2026-10-14T04:32:17.813Z"
 }
