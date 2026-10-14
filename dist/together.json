@@ -2,8 +2,11 @@
   "version": 1,
   "bucketList": [],
   "hearts": {
-    "me": null,
+    "me": {
+      "id": "e2c07fc0-84c8-4351-bbd2-091393a1386b",
+      "sentAt": "2026-10-14T05:43:44.319Z"
+    },
     "asechka": null
   },
-  "updatedAt": "2026-10-14T05:14:10.867Z"
+  "updatedAt": "2026-10-14T05:43:44.319Z"
 }
