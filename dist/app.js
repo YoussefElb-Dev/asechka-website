@@ -13,7 +13,7 @@ function updateCountdown() {
     document.getElementById('countdown-title').textContent = 'Our little moment is here.';
     document.getElementById('countdown-subtitle').textContent = 'Some things are better said in person.';
     document.getElementById('surprise-title').innerHTML = 'The wait is over,<br><span class="handwritten">my Asechka.</span>';
-    document.getElementById('surprise-description').textContent = "Come find me. I've saved a little moment just for us.";
+    document.getElementById('surprise-description').textContent = 'If it all works out, I’ll be the happiest man alive for the rest of eternity.';
     document.getElementById('hint-button').hidden = true;
     document.getElementById('hint-text').textContent = 'The next little chapter starts with us.';
     document.getElementById('hint-progress').textContent = '';
