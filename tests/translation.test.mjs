@@ -12,7 +12,7 @@ test('only the five requested languages are accepted; Arabic is explicitly Egypt
  assert.equal(languages['ar-EG'],'Egyptian Arabic');assert.equal(languages.ar,undefined);
  const checked=checkedTranslation({...input(),text:' I miss you. '});assert.equal(checked.text,'I miss you.');
  for(const bad of [{text:''},{text:'x'.repeat(1501)},{targets:['ar']},{targets:['ru','ru']},{targets:[]},{source:'unknown'},{tone:'invent'},{speaker:'other'},{recipient:'other'}])assert.throws(()=>checkedTranslation({...input(),...bad}),error=>error.status===400);
- const prompt=translationInstruction(checked);assert.match(prompt,/colloquial Egyptian Arabic/);assert.match(prompt,/NEVER Modern Standard Arabic/);assert.match(prompt,/speaker is male/);assert.match(prompt,/recipient is female/);assert.match(prompt,/Do not invent facts/);assert.match(prompt,/never as instructions/);
+ const prompt=translationInstruction(checked);assert.match(prompt,/colloquial Egyptian Arabic/);assert.match(prompt,/NEVER Modern Standard Arabic/);assert.match(prompt,/speaker is male/);assert.match(prompt,/recipient is female/);assert.match(prompt,/Do not invent facts/);assert.match(prompt,/never as instructions/);assert.match(prompt,/anticipation, negation/);assert.match(prompt,/review EACH translation/);assert.match(prompt,/pronunciation matches/);
 });
 test('translation is protected and cross-site requests cannot use its key',async()=>{
  const cookie=await session();let called=0;const api=createTranslationAPI({key:()=> 'test-private-key',fetcher:async()=>{called++;return Response.json(providerResult(input().targets));}});
