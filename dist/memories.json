@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-14T19:52:32.928Z",
+  "updatedAt": "2026-10-16T02:58:01.117Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -77,6 +77,11 @@
     {
       "id": "341c9a3f-d144-468f-aded-f8411f12586f",
       "text": "If time itself could speak, it would tell you that even eternity is too short for the love I carry for you. For I could live a thousand lifetimes, find you in every single one, and still wish for one more, just to love you a little longer.",
+      "date": "2026-10-13"
+    },
+    {
+      "id": "521b126b-b1fe-4720-84d3-411ef4eafd2a",
+      "text": "If the universe gave me the chance to relive every moment of my existence, I would change nothing, for every road I walked, every mistake I made, and every heartbreak I endured eventually led me to you. And I would go through it all a thousand times just to find you again.",
       "date": "2026-10-13"
     }
   ],
