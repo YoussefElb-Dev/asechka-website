@@ -102,3 +102,12 @@ The password-protected `/api/translation` route verifies its key against Google'
 Only submitted text and the translation settings are sent to Google. This feature does not write messages to GitHub, logs, or browser storage. A small in-memory cache expires after five minutes, and each function instance limits uncached requests to six per minute. This is not a distributed quota limiter. Google's free tier has its own shared project quotas and may use submitted content to improve products; that notice is shown beside the form. No billing account is required or enabled by this setup.
 
 References: [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing), [API key security](https://ai.google.dev/gemini-api/docs/api-key), [Gemini REST generation](https://ai.google.dev/api/generate-content).
+
+
+## Native Android shared collection
+
+The native Android app reads `/api/memories`, and its quote/photo forms save into the same `dist/memories.json` and `dist/assets/photos/YYYY/MM/UUID.jpg` collection used by Studio and the website. The existing `MUSIC_GITHUB_TOKEN` with repository Contents read/write also supplies this connection; it stays on the server. Signed login, same-origin JSON, and `X-Asechka-Memories: 1` protect writes. The API accepts a dated quote (up to 10,000 characters plus an optional 1,000-character note), or a prepared JPEG of at most 320,000 bytes and a caption. The app strips metadata and prepares the copy before saving.
+
+Stable operation IDs prevent duplicates after retries. Each save creates one atomic Git commit for the data and any photo, retaining the current repository tree and retrying simultaneous additions. Existing entries are preserved. The website reads the live API and serves gallery photos through its authenticated photo endpoint, so a new phone upload is available before the next static deployment finishes. Studio continues to fetch and merge the shared collection before publishing.
+
+The phone encrypts pending additions and original downloaded images in private storage. Quotes and photos saved without internet appear locally and synchronize when connectivity and a valid sign-in return. The collection currently has a 900 KB JSON metadata limit; a full collection is reported without replacing existing content or dropping the phone's queued addition.

@@ -44,7 +44,7 @@ test('daily memories use a shared Eastern day, ignore unsafe media, and are stab
   assert.equal(dailyMemory({},{}).memory,null);
 });
 test('a daily song retains its real album artwork, listening link, and personal note',async()=>{
-  const saved=JSON.parse(await readFile(new URL('../dist/music.json',import.meta.url),'utf8')).tracks[0];
+  const saved={trackId:123456,title:'Our song',artist:'Our artist',album:'Our album',artworkUrl:'https://is1-ssl.mzstatic.com/image/thumb/Music/test/600x600bb.jpg',trackUrl:'https://music.apple.com/us/album/test/123?i=123456',durationMs:180000};
   const song={...saved,id:randomUUID(),note:'This one feels like us.'};
   const {memory}=dailyMemory({quotes:[],photos:[]},{tracks:[song]});
   assert.equal(memory.kind,'song');assert.equal(memory.artwork,song.artworkUrl);assert.equal(memory.url,song.trackUrl);assert.equal(memory.note,song.note);

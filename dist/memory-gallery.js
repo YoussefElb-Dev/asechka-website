@@ -100,7 +100,7 @@ if (!photoGrid) return;
 const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
 savedPhotos = (Array.isArray(photos) ? photos : [])
   .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
-  .map(photo => ({ ...photo, src: photo.src.trim() }))
+  .map(photo => ({ ...photo, src: /^[a-f0-9-]{36}$/i.test(photo.id || '') && /^assets\/photos\//.test(photo.src) ? `/api/together-photo?kind=memory&id=${encodeURIComponent(photo.id)}` : photo.src.trim() }))
   .filter(photo => {
     try { return ['http:', 'https:'].includes(new URL(photo.src, document.baseURI).protocol); }
     catch { return false; }
@@ -186,7 +186,7 @@ async function checkForMemories() {
   if (checking || document.hidden) return;
   checking = true;
   try {
-    const response = await fetch('./memories.json', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(10000) });
+    const response = await fetch('/api/memories', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(10000) });
     if (response.redirected && new URL(response.url).pathname === '/login') {
       window.location.replace('/login');
       return;
