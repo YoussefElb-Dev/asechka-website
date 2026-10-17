@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-17T17:53:22.250Z",
+  "updatedAt": "2026-10-17T17:53:44.784Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -156,6 +156,12 @@
       "id": "f8bd5c6b-388b-40fe-87c7-0bbfbc3e6248",
       "src": "assets/photos/2026/10/f8bd5c6b-388b-40fe-87c7-0bbfbc3e6248.jpg",
       "caption": "look at MY GF",
+      "date": "2026-10-17"
+    },
+    {
+      "id": "9f1d47be-4e82-4a7c-b36e-3747729b47c5",
+      "src": "assets/photos/2026/10/9f1d47be-4e82-4a7c-b36e-3747729b47c5.jpg",
+      "caption": "Right after WE busted our ahhh",
       "date": "2026-10-17"
     }
   ]
