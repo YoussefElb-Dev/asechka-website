@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-16T02:58:01.117Z",
+  "updatedAt": "2026-10-17T17:51:23.527Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -109,6 +109,48 @@
       "src": "assets/photos/2026/10/e17b9d16-42bf-421a-a87b-080f2342b939.jpg",
       "caption": "Is this considered a professional photo sesh",
       "date": "2026-10-13"
+    },
+    {
+      "id": "b13d93e1-f6ec-461b-99d7-bc3f8fc0ffbd",
+      "src": "assets/photos/2026/10/b13d93e1-f6ec-461b-99d7-bc3f8fc0ffbd.jpg",
+      "caption": "",
+      "date": "2026-10-17"
+    },
+    {
+      "id": "8f1a3eb5-950c-486d-a9ef-c3b104881bd5",
+      "src": "assets/photos/2026/10/8f1a3eb5-950c-486d-a9ef-c3b104881bd5.jpg",
+      "caption": "",
+      "date": "2026-10-17"
+    },
+    {
+      "id": "63675850-bece-463e-b004-5967b738099e",
+      "src": "assets/photos/2026/10/63675850-bece-463e-b004-5967b738099e.jpg",
+      "caption": "",
+      "date": "2026-10-17"
+    },
+    {
+      "id": "51122d40-4ee7-4700-9642-fcd3d212acc0",
+      "src": "assets/photos/2026/10/51122d40-4ee7-4700-9642-fcd3d212acc0.jpg",
+      "caption": "",
+      "date": "2026-10-17"
+    },
+    {
+      "id": "133d4111-79d5-4db5-bbb5-18aac0998f14",
+      "src": "assets/photos/2026/10/133d4111-79d5-4db5-bbb5-18aac0998f14.jpg",
+      "caption": "",
+      "date": "2026-10-17"
+    },
+    {
+      "id": "2cf1667d-d03f-4970-8837-8d464f8d244f",
+      "src": "assets/photos/2026/10/2cf1667d-d03f-4970-8837-8d464f8d244f.jpg",
+      "caption": "",
+      "date": "2026-10-17"
+    },
+    {
+      "id": "bbe78df8-1332-411e-a6da-d99baf41fcbe",
+      "src": "assets/photos/2026/10/bbe78df8-1332-411e-a6da-d99baf41fcbe.jpg",
+      "caption": "",
+      "date": "2026-10-17"
     }
   ]
 }
