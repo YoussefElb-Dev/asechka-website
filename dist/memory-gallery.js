@@ -187,7 +187,7 @@ async function checkForMemories() {
   checking = true;
   try {
     const response = await fetch('/api/memories', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(10000) });
-    if (response.redirected && new URL(response.url).pathname === '/login') {
+    if (response.status === 401 || response.redirected && new URL(response.url).pathname === '/login') {
       window.location.replace('/login');
       return;
     }
