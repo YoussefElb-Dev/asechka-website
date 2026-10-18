@@ -38,7 +38,7 @@ async function preparePhoto(file) {
 }
 
 export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
-  let writable = false, loaded = false, busy = false, kind, editing, opener, photoData;
+  let writable = false, loaded = false, busy = false, kind, editing, opener, photoData, removalOnly = false;
   let lastPayload = '', operationId;
   const toolbars = [];
   const dialog = make('dialog', 'memory-editor');
@@ -49,6 +49,7 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
     <p class="eyebrow">A LITTLE SOMETHING TO KEEP</p>
     <h2 id="memory-editor-title" class="handwritten"></h2>
     <p class="memory-editor-intro">For our collection. For both of us.</p>
+    <div class="memory-remove-preview" hidden><img alt="" hidden><p dir="auto"></p></div>
     <form>
       <fieldset>
         <div data-fields="quote">
@@ -92,6 +93,7 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
   const file = form.elements.file;
   const confirmation = dialog.querySelector('.memory-delete-confirm');
   const mainButtons = dialog.querySelector('.memory-main-buttons');
+  const removalPreview = dialog.querySelector('.memory-remove-preview');
 
   function message(text, error = false) {
     status.hidden = !text; status.textContent = text;
@@ -106,11 +108,17 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
     confirmation.hidden = !value; mainButtons.hidden = value; remove.hidden = !editing || value;
     (value ? dialog.querySelector('.memory-keep') : save).focus();
   }
-  function open(nextKind, item, source) {
+  function open(nextKind, item, source, mode = 'edit') {
     if (!writable) return;
     kind = nextKind; editing = item ? { ...item } : null; opener = source;
+    removalOnly = mode === 'remove';
     photoData = undefined; lastPayload = ''; operationId = undefined;
     form.reset(); message(''); preview.hidden = true; preview.removeAttribute('src');
+    fields.hidden = removalOnly;
+    removalPreview.hidden = !removalOnly;
+    const removalImage = removalPreview.querySelector('img');
+    removalImage.hidden = true; removalImage.removeAttribute('src');
+    removalPreview.querySelector('p').textContent = '';
     dialog.querySelector('[data-fields="quote"]').hidden = kind !== 'Quote';
     dialog.querySelector('[data-fields="photo"]').hidden = kind !== 'Photo';
     form.elements.text.required = kind === 'Quote';
@@ -121,12 +129,19 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
     const today = new Date();
     form.elements.date.value = /^\d{4}-\d{2}-\d{2}$/.test(item?.date || '') ? item.date : new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     dialog.querySelector('#memory-editor-title').textContent = editing ? (kind === 'Quote' ? 'A little change to our words.' : 'A little change to our moment.') : (kind === 'Quote' ? 'Something I want to tell you.' : 'Another moment with you.');
+    dialog.querySelector('.memory-editor-intro').textContent = removalOnly ? 'A little pause before we let this one go.' : 'For our collection. For both of us.';
+    if (removalOnly) {
+      dialog.querySelector('#memory-editor-title').textContent = kind === 'Quote' ? 'Remove this quote?' : 'Remove this picture?';
+      removalPreview.querySelector('p').textContent = kind === 'Quote' ? item.text : item.caption || 'A moment with you';
+      if (kind === 'Photo') { removalImage.src = memoryPhotoURL(item); removalImage.alt = item.alt || item.caption || 'The picture selected for removal'; removalImage.hidden = false; }
+    }
     dialog.querySelector('.memory-file-caption').textContent = editing ? 'Keep this picture, or choose a replacement' : 'Pick a moment from your camera roll';
-    if (kind === 'Photo' && editing) { preview.src = memoryPhotoURL(item); preview.hidden = false; }
+    if (kind === 'Photo' && editing && !removalOnly) { preview.src = memoryPhotoURL(item); preview.hidden = false; }
     confirmation.hidden = true; mainButtons.hidden = false; remove.hidden = !editing;
     save.textContent = editing ? 'Save our changes ♡' : 'Save to our collection ♡';
     dialog.showModal(); document.body.classList.add('dialog-open');
-    (kind === 'Quote' ? form.elements.text : editing ? form.elements.caption : file).focus();
+    if (removalOnly) confirmRemove(true);
+    else (kind === 'Quote' ? form.elements.text : editing ? form.elements.caption : file).focus();
   }
 
   for (const [list, type] of [[quoteList, 'Quote'], [photoGrid, 'Photo']]) {
@@ -137,12 +152,18 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
     button.addEventListener('click', () => open(type, null, button));
     const note = make('p', 'memory-toolbar-note', 'Connecting our collection…');
     note.setAttribute('role', 'status');
-    toolbar.append(button, note);
+    toolbar.append(button);
+    if (!document.body.classList.contains('collection-page')) {
+      const manage = make('a', 'memory-manage', type === 'Quote' ? 'Edit / remove quotes ↗' : 'Edit / remove pictures ↗');
+      manage.href = type === 'Quote' ? '/quotes.html' : '/pictures.html';
+      toolbar.append(manage);
+    }
+    toolbar.append(note);
     const section = list.closest('section');
     const intro = section.querySelector('.collection-intro');
     if (intro) intro.after(toolbar);
     else (section.querySelector('.quote-carousel') || list).before(toolbar);
-    toolbars.push({ button, note });
+    toolbars.push({ button, note, type });
   }
 
   file.addEventListener('change', async () => {
@@ -187,15 +208,18 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
   }
   form.addEventListener('submit', event => { event.preventDefault(); submit(`${editing ? 'update' : 'add'}${kind}`); });
   remove.addEventListener('click', () => confirmRemove(true));
-  dialog.querySelector('.memory-keep').addEventListener('click', () => confirmRemove(false));
+  dialog.querySelector('.memory-keep').addEventListener('click', () => { if (removalOnly) dialog.close(); else confirmRemove(false); });
   dialog.querySelector('.memory-confirm-remove').addEventListener('click', () => submit(`remove${kind}`));
   for (const button of [close, dialog.querySelector('.memory-cancel')]) button.addEventListener('click', () => { if (!busy) dialog.close(); });
   dialog.addEventListener('cancel', event => { if (busy) event.preventDefault(); });
   dialog.addEventListener('close', () => {
     document.body.classList.remove('dialog-open');
-    const replacement = editing ? [...document.querySelectorAll('[data-memory-edit]')].find(button => button.dataset.memoryEdit === editing.editKey) : null;
-    (replacement || (opener?.isConnected ? opener : toolbars[0]?.button))?.focus({ preventScroll: true });
+    const attribute = removalOnly ? 'data-memory-remove' : 'data-memory-edit';
+    const replacement = editing ? [...document.querySelectorAll(`[${attribute}]`)].find(button => button.getAttribute(attribute) === editing.editKey) : null;
+    (replacement || (opener?.isConnected ? opener : toolbars.find(toolbar => toolbar.type === kind)?.button))?.focus({ preventScroll: true });
     preview.removeAttribute('src'); photoData = undefined;
+    removalPreview.querySelector('img').removeAttribute('src');
+    removalPreview.querySelector('p').textContent = '';
   });
   return {
     update(content) {
@@ -212,7 +236,11 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
       button.type = 'button'; button.dataset.memoryEdit = item.editKey;
       button.setAttribute('aria-label', type === 'Quote' ? `Edit quote: ${item.text.slice(0, 70)}` : `Edit picture: ${item.caption || 'A moment with you'}`);
       button.addEventListener('click', () => open(type, item, button));
-      actions.append(button); return actions;
+      const removeButton = make('button', 'memory-card-remove', 'Remove');
+      removeButton.type = 'button'; removeButton.dataset.memoryRemove = item.editKey;
+      removeButton.setAttribute('aria-label', type === 'Quote' ? `Remove quote: ${item.text.slice(0, 70)}` : `Remove picture: ${item.caption || 'A moment with you'}`);
+      removeButton.addEventListener('click', () => open(type, item, removeButton, 'remove'));
+      actions.append(button, removeButton); return actions;
     },
   };
 }

@@ -4,9 +4,13 @@
 .memory-add:hover{background:#e5e2f3}
 .memory-add:disabled{opacity:.55}
 .memory-toolbar-note{font-size:11px;color:var(--muted);margin:0;max-width:310px}
-.memory-card-actions{display:flex;justify-content:flex-end;margin-top:15px}
+.memory-manage{display:inline-flex;align-items:center;min-height:44px;font-size:11px;color:#65548b;text-decoration:underline;text-underline-offset:4px}
+.memory-manage:hover{color:#48386b}
+.memory-card-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:15px}
 .memory-edit{background:#ffffff60;border:1px solid #cfd8ec;border-radius:9px;min-height:44px;padding:8px 17px;color:#5d6289;font-size:12px}
 .memory-edit:hover{background:#fff}
+.memory-card-remove{background:transparent;border:1px solid #d4cce6;border-radius:9px;min-height:44px;padding:8px 14px;color:#7b6493;font-size:12px}
+.memory-card-remove:hover{background:#e9e3f3}
 .collection-page .quote-item{display:flex;flex-direction:column}
 .collection-page .quote-item .memory-card-actions{margin-top:auto;padding-top:16px}
 .photo-entry{min-width:0;display:flex;flex-direction:column}
@@ -40,6 +44,9 @@
 .memory-remove{display:block;border:0;border-bottom:1px solid #c9c1df;background:none;color:#7d6a96;min-height:44px;padding:10px 0 5px;font-size:11px;margin-top:15px}
 .memory-delete-confirm{border:1px solid #d6cde6;background:#efebf7;padding:16px;border-radius:10px;margin-top:20px;font-size:12px;color:#66537d}
 .memory-delete-confirm p{margin:0}
+.memory-remove-preview{background:#eaf0fb;border:1px solid #d9e1f1;border-radius:12px;padding:18px;margin:20px 0}
+.memory-remove-preview>p{font-family:'Caveat',cursive;font-size:25px;line-height:1.35;color:#596789;white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow-y:auto;margin:0}
+.memory-remove-preview>img{display:block;max-width:100%;width:100%;height:190px;object-fit:contain;border-radius:7px;margin-bottom:12px}
 .memory-delete-confirm .memory-editor-buttons{margin-top:14px}
 .memory-confirm-remove{background:#706095;color:white;border-color:#706095}
 @media(max-width:600px){.memory-toolbar{justify-content:center;text-align:center;gap:8px}.memory-toolbar-note{flex-basis:100%;max-width:none}.memory-editor{padding:25px 20px}.memory-editor h2{font-size:32px}.memory-editor .eyebrow{font-size:8px;letter-spacing:1.4px}.memory-editor-buttons .memory-save{flex:1}.memory-card-actions{margin-top:10px}}

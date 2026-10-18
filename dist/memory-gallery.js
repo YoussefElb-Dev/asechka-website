@@ -185,10 +185,12 @@ function renderContent(content) {
   // Keep the image and keyboard focus steady while someone is browsing a photo.
   if (photoDialog?.open) { waitingContent = content; return; }
   const focusedEdit = document.activeElement?.dataset.memoryEdit;
+  const focusedRemove = document.activeElement?.dataset.memoryRemove;
   editor.update(content);
   renderQuotes(content.quotes);
   renderPhotos(content.photos);
   if (focusedEdit) [...document.querySelectorAll('[data-memory-edit]')].find(button => button.dataset.memoryEdit === focusedEdit)?.focus({ preventScroll: true });
+  if (focusedRemove) [...document.querySelectorAll('[data-memory-remove]')].find(button => button.dataset.memoryRemove === focusedRemove)?.focus({ preventScroll: true });
 }
 let lastContent = '';
 let checking = false;
