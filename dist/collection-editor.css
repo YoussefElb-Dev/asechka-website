@@ -1,0 +1,45 @@
+.memory-toolbar{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px 17px;margin:25px 0 18px}
+.collection-page .memory-toolbar{justify-content:center;margin:0 0 26px}
+.memory-add{background:#eeebf8;border-color:#d9d3ec;color:#5e508b;min-height:44px}
+.memory-add:hover{background:#e5e2f3}
+.memory-add:disabled{opacity:.55}
+.memory-toolbar-note{font-size:11px;color:var(--muted);margin:0;max-width:310px}
+.memory-card-actions{display:flex;justify-content:flex-end;margin-top:15px}
+.memory-edit{background:#ffffff60;border:1px solid #cfd8ec;border-radius:9px;min-height:44px;padding:8px 17px;color:#5d6289;font-size:12px}
+.memory-edit:hover{background:#fff}
+.collection-page .quote-item{display:flex;flex-direction:column}
+.collection-page .quote-item .memory-card-actions{margin-top:auto;padding-top:16px}
+.photo-entry{min-width:0;display:flex;flex-direction:column}
+.photo-entry:nth-child(3n+2) .photo-print{transform:rotate(2deg)}
+.photo-entry:nth-child(3n) .photo-print{transform:rotate(-.7deg)}
+.photo-entry .photo-print:hover{transform:rotate(0) translateY(-4px)}
+.photo-entry .memory-card-actions{justify-content:center}
+.memory-editor{padding:32px;width:min(560px,calc(100% - 24px));max-height:90dvh;overflow-y:auto;overscroll-behavior:contain}
+.memory-editor .eyebrow{margin:8px 44px 8px 0;font-size:9px;letter-spacing:1.8px}
+.memory-editor h2{font-size:36px;line-height:1.1;font-weight:500;letter-spacing:0;color:var(--purple);margin:0 25px 10px 0}
+.memory-editor-intro{font-size:12px;color:var(--muted);margin:0 0 24px}
+.memory-editor-close{position:absolute;top:12px;right:12px;width:44px;height:44px;background:#eeebf8;border:0;border-radius:50%;color:#65548c;font-size:27px;line-height:1}
+.memory-editor fieldset{padding:0;margin:0;border:0;min-width:0}
+.memory-editor label{display:block;font-size:12px;font-weight:600;margin:18px 0 8px}
+.memory-editor label span{font-weight:400;color:var(--muted)}
+.memory-editor input:not([type=file]),.memory-editor textarea{display:block;width:100%;min-width:0;border:1px solid #d2d9ea;border-radius:10px;padding:12px;background:#fff;color:var(--ink);font:400 16px/1.5 'DM Sans',sans-serif}
+.memory-editor textarea{resize:vertical;min-height:78px}
+.memory-editor textarea[name=text]{min-height:150px}
+.memory-editor input:focus-visible,.memory-editor textarea:focus-visible{outline:2px solid #a497cc;outline-offset:3px}
+.memory-editor :disabled{opacity:.65;cursor:wait}
+.memory-file-box{background:#edf2fb;border:1px dashed #b9c9e2;border-radius:12px;padding:16px;min-width:0}
+.memory-file-caption{display:block;font-family:'Caveat',cursive;color:#6e789b;font-size:24px;line-height:1.2;margin-bottom:12px}
+.memory-editor input[type=file]{display:block;width:100%;min-width:0;font-size:12px;color:var(--muted)}
+.memory-editor input::file-selector-button{border:1px solid #c8cee4;border-radius:8px;background:#fff;color:#5b5484;padding:10px 12px;min-height:44px;margin-right:10px;font:inherit;cursor:pointer}
+.memory-field-help{font-size:10px;color:var(--muted);margin:8px 0 16px}
+.memory-photo-preview{display:block;width:100%;height:190px;object-fit:contain;background:#e9edf6;border:1px solid #dbe2ef;border-radius:10px;margin:16px 0}
+.memory-editor-status{padding:12px 14px;border:1px solid #d7deec;background:#eaf0fa;color:#536485;font-size:12px;line-height:1.6;border-radius:10px;margin:20px 0 0;overflow-wrap:anywhere}
+.memory-editor-status.is-error{background:#efebf8;border-color:#cfc3e2;color:#695384}
+.memory-editor-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:22px}
+.memory-cancel,.memory-keep,.memory-confirm-remove{border:1px solid #d2d8e9;border-radius:9px;background:transparent;color:#605780;min-height:44px;padding:10px 16px;font-size:12px}
+.memory-remove{display:block;border:0;border-bottom:1px solid #c9c1df;background:none;color:#7d6a96;min-height:44px;padding:10px 0 5px;font-size:11px;margin-top:15px}
+.memory-delete-confirm{border:1px solid #d6cde6;background:#efebf7;padding:16px;border-radius:10px;margin-top:20px;font-size:12px;color:#66537d}
+.memory-delete-confirm p{margin:0}
+.memory-delete-confirm .memory-editor-buttons{margin-top:14px}
+.memory-confirm-remove{background:#706095;color:white;border-color:#706095}
+@media(max-width:600px){.memory-toolbar{justify-content:center;text-align:center;gap:8px}.memory-toolbar-note{flex-basis:100%;max-width:none}.memory-editor{padding:25px 20px}.memory-editor h2{font-size:32px}.memory-editor .eyebrow{font-size:8px;letter-spacing:1.4px}.memory-editor-buttons .memory-save{flex:1}.memory-card-actions{margin-top:10px}}

@@ -136,7 +136,7 @@ export class GitHubTogetherStore{
       if(!(await this.read()).bucketList.some(item=>item.photoId===id)) throw new TogetherError('This picture couldn’t be found.',404);
       path=`dist/assets/bucket/${id}.jpg`;
     }else{
-      const photo=(await this.jsonFile('dist/memories.json')).photos?.find(photo=>photo.id===id && photoPath.test(photo.src));
+      const photo=(await this.jsonFile('dist/memories.json',{fresh:true})).photos?.find(photo=>photo.id===id && photoPath.test(photo.src));
       if(!photo)throw new TogetherError('This picture couldn’t be found.',404);
       path=`dist/${photo.src}`;
     }

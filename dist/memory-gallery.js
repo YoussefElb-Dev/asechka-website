@@ -1,4 +1,5 @@
 import { createQuoteCarousel } from './quote-carousel.js';
+import { createMemoryEditor, memoryPhotoURL } from './collection-editor.js';
 
 const quoteList = document.getElementById('quote-list');
 const quoteCarousel = document.getElementById('quote-carousel') ? createQuoteCarousel() : null;
@@ -47,6 +48,8 @@ savedQuotes.slice().reverse().forEach((quote, index) => {
   }
   if (meta.childElementCount) block.append(meta);
   item.append(number, block);
+  const actions = editor.cardActions('Quote', quote);
+  if (actions) item.append(actions);
   quoteFragment.append(item);
 });
 quoteList.replaceChildren(quoteFragment);
@@ -100,7 +103,7 @@ if (!photoGrid) return;
 const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
 savedPhotos = (Array.isArray(photos) ? photos : [])
   .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
-  .map(photo => ({ ...photo, src: /^[a-f0-9-]{36}$/i.test(photo.id || '') && /^assets\/photos\//.test(photo.src) ? `/api/together-photo?kind=memory&id=${encodeURIComponent(photo.id)}` : photo.src.trim() }))
+  .map(photo => ({ ...photo, src: memoryPhotoURL(photo).trim() }))
   .filter(photo => {
     try { return ['http:', 'https:'].includes(new URL(photo.src, document.baseURI).protocol); }
     catch { return false; }
@@ -141,10 +144,14 @@ visiblePhotos.forEach((photo, index) => {
     photoDialog.showModal();
     document.body.classList.add('dialog-open');
   });
-  photoFragment.append(button);
+  const actions = editor.cardActions('Photo', photo);
+  if (actions) {
+    const entry = document.createElement('div'); entry.className = 'photo-entry';
+    entry.append(button, actions); photoFragment.append(entry);
+  } else photoFragment.append(button);
 });
 photoGrid.replaceChildren(photoFragment);
-if (focusedSrc) [...photoGrid.children].find(button => button.dataset.photoSrc === focusedSrc)?.focus({ preventScroll: true });
+if (focusedSrc) [...photoGrid.querySelectorAll('[data-photo-src]')].find(button => button.dataset.photoSrc === focusedSrc)?.focus({ preventScroll: true });
 document.getElementById('photo-empty').hidden = savedPhotos.length > 0;
 const photoCount = document.getElementById('photo-count');
 photoCount.hidden = savedPhotos.length === 0;
@@ -177,14 +184,23 @@ photoDialog?.addEventListener('close', () => {
 function renderContent(content) {
   // Keep the image and keyboard focus steady while someone is browsing a photo.
   if (photoDialog?.open) { waitingContent = content; return; }
+  const focusedEdit = document.activeElement?.dataset.memoryEdit;
+  editor.update(content);
   renderQuotes(content.quotes);
   renderPhotos(content.photos);
+  if (focusedEdit) [...document.querySelectorAll('[data-memory-edit]')].find(button => button.dataset.memoryEdit === focusedEdit)?.focus({ preventScroll: true });
 }
 let lastContent = '';
 let checking = false;
+let localRevision = 0;
+const editor = createMemoryEditor({ quoteList, photoGrid, onSaved(content) {
+  localRevision++;
+  renderContent(content); lastContent = JSON.stringify(content);
+} });
 async function checkForMemories() {
   if (checking || document.hidden) return;
   checking = true;
+  const startedAtRevision = localRevision;
   try {
     const response = await fetch('/api/memories', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(10000) });
     if (response.status === 401 || response.redirected && new URL(response.url).pathname === '/login') {
@@ -193,6 +209,7 @@ async function checkForMemories() {
     }
     if (!response.ok) throw new Error('Collection unavailable');
     const content = await response.json();
+    if (startedAtRevision !== localRevision) return;
     if (content.version !== 1 || !Array.isArray(content.quotes) || !Array.isArray(content.photos)) throw new Error('Collection unavailable');
     const serialized = JSON.stringify(content);
     if (serialized !== lastContent) { renderContent(content); lastContent = serialized; }

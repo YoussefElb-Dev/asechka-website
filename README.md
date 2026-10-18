@@ -4,6 +4,16 @@ The original powder-blue and lavender website for Asnat: a letter, a mysterious 
 
 Live site: https://asechka-website.vercel.app
 
+## Keep quotes and pictures from the website
+
+After unlocking the site, use **Add a quote** or **Add a picture** on the home page or in the full Quotes and Pictures collections. Quotes support multiple lines, a date, and an optional note. Pictures support a caption and a date; choose a JPG, PNG, or WebP up to 25 MB and the browser prepares a smaller JPEG without EXIF metadata before uploading.
+
+In either full collection, choose **Edit** below a memory to change its words, note, caption, or date. A picture can also be replaced. **Remove this memory** asks for confirmation before changing the shared collection. Both people use the existing password and save to the same private GitHub collection as the Android app and Studio; no new account or paid service is needed. Existing free-plan quotas and repository storage limits still apply.
+
+Saving updates the current page immediately, including new pictures, without waiting for a deployment. Other open pages check every 15 seconds and when you return to them. The server retains unrelated files, saves metadata and image changes in one commit, retries simultaneous changes, and rejects stale edits to the same memory. Repeating a save after a lost response keeps one copy. A failed save leaves the form open with its draft; keep that window open while retrying. Closing the editor or reloading discards an unsaved website draft.
+
+The protected `/api/memories` endpoint retains `addQuote` and `addPhoto` for existing clients and also accepts `updateQuote`, `updatePhoto`, `removeQuote`, and `removePhoto`. Read responses provide an `editKey` and `editVersion` for each item; changes to existing items require that key and expected version plus a stable operation UUID. These response-only editing fields are not written into the collection. The existing server-only `MUSIC_GITHUB_TOKEN` supplies repository access. Photo downloads remain behind the signed login.
+
 ## Our shared top ten songs
 
 Open **Music** on the website. Search by song, artist, or album, choose a recording, and pick a spot from 1 to 10. Either person who has unlocked the website can add or replace a song, leave a personal note, or remove a song after confirming. Each card shows its real catalog artwork, title, artist, album, duration, and listening links. The list starts empty so you can choose it together.

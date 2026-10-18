@@ -102,7 +102,7 @@ export async function authorize(request) {
   if (!signedIn) return ['/api/memories','/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
   if (path === '/welcome') return response(gatePage('welcome'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
   if (path === '/api/memories' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-memories') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save memories from our app.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-memories') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save memories from our website or app.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/music' && request.method === 'POST') {
