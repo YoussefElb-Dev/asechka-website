@@ -36,10 +36,19 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
+  AsechkaUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: Asechka
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   Asechka:
     build:
       targets:
         Asechka: all
     test:
-      targets: [AsechkaTests]
+      targets: [AsechkaTests, AsechkaUITests]

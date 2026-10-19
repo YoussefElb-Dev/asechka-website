@@ -55,7 +55,8 @@ struct RootView:View {
     private let tabs=[("house","Home"),("photo.on.rectangle","Photos"),("quote.bubble","Quotes"),("music.note","Music"),("sparkles","Our days"),("character.bubble","Words")]
     var body:some View {
         Group {
-            if universe.actor.isEmpty {IdentityView()}
+            if universe.storageUnavailable {VStack(spacing:20){Image(systemName:"lock.shield").font(.largeTitle);Text("Your saved space is temporarily unavailable.").font(.title2);Text("Restart the app to try again.").foregroundColor(Palette.muted)}.multilineTextAlignment(.center).padding(32)}
+            else if universe.actor.isEmpty {IdentityView()}
             else if !universe.unlocked {DoorView()}
             else {shell}
         }

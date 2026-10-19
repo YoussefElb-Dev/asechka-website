@@ -76,12 +76,26 @@ jobs:
       - name: Build project
         working-directory: mobile/ios
         run: xcodegen generate
-      - name: Test offline posts and encrypted storage
+      - name: Test native screens, offline posts, and encrypted storage
         working-directory: mobile/ios
         run: |
           DEVICE=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(v["udid"] for values in d["devices"].values() for v in values if "iPhone" in v["name"]))')
-          xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -derivedDataPath build-test CODE_SIGNING_ALLOWED=NO test 2>&1 | tee test.log
+          echo "IOS_SIMULATOR=$DEVICE" >> "$GITHUB_ENV"
+          xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -derivedDataPath build-test -resultBundlePath NativeChecks.xcresult CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test 2>&1 | tee test.log
         shell: bash --noprofile --norc -e -o pipefail {0}
+      - name: Capture native iPhone preview
+        working-directory: mobile/ios
+        run: |
+          mkdir -p preview
+          xcrun simctl launch "$IOS_SIMULATOR" app.asechka.ios --preview-fixture
+          sleep 3
+          xcrun simctl io "$IOS_SIMULATOR" screenshot preview/iPhone-home.png
+          xcrun xcresulttool export attachments --path NativeChecks.xcresult --output-path preview/screens
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Native-iPhone-previews
+          path: mobile/ios/preview
+          retention-days: 30
       - name: Build the iPhone app
         working-directory: mobile/ios
         run: xcodebuild -project Asechka.xcodeproj -scheme Asechka -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log
@@ -110,4 +124,5 @@ jobs:
           path: |
             mobile/ios/*.log
             mobile/ios/build-test/Logs/Test/*.xcresult
+            mobile/ios/NativeChecks.xcresult
           retention-days: 7

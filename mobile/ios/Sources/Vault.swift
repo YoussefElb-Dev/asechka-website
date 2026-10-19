@@ -7,6 +7,9 @@ final class Vault: @unchecked Sendable {
     private let directory: URL
     private let key: SymmetricKey
     private let lock=NSLock()
+    private var unavailableError:Error?
+    private init(unavailable error:Error){directory=FileManager.default.temporaryDirectory;key=SymmetricKey(size:.bits256);unavailableError=error}
+    static func unavailable(_ error:Error)->Vault{Vault(unavailable:error)}
     init(directory: URL? = nil, key: SymmetricKey? = nil) throws {
         self.directory=directory ?? FileManager.default.urls(for:.applicationSupportDirectory,in:.userDomainMask)[0].appendingPathComponent("LittleUs",isDirectory:true)
         try FileManager.default.createDirectory(at:self.directory,withIntermediateDirectories:true)
@@ -27,11 +30,13 @@ final class Vault: @unchecked Sendable {
     }
     private func url(_ name:String)->URL {directory.appendingPathComponent(SHA256.hash(data:Data(name.utf8)).map{String(format:"%02x",$0)}.joined())}
     func read(_ name:String)->Data? {
+        guard unavailableError==nil else{return nil}
         lock.lock();defer{lock.unlock()}
         guard let bytes=try? Data(contentsOf:url(name)),let sealed=try? AES.GCM.SealedBox(combined:bytes) else{return nil}
         return try? AES.GCM.open(sealed,using:key,authenticating:Data(name.utf8))
     }
     func write(_ name:String,_ data:Data) throws {
+        if let unavailableError{throw unavailableError}
         lock.lock();defer{lock.unlock()}
         let sealed=try AES.GCM.seal(data,using:key,authenticating:Data(name.utf8))
         guard let bytes=sealed.combined else{throw CocoaError(.fileWriteUnknown)}
@@ -39,5 +44,5 @@ final class Vault: @unchecked Sendable {
     }
     func value<T:Decodable>(_ name:String,as:T.Type)->T? {read(name).flatMap{try? JSONDecoder().decode(T.self,from:$0)}}
     func save<T:Encodable>(_ name:String,_ value:T)throws {try write(name,JSONEncoder().encode(value))}
-    func remove(_ name:String){lock.lock();defer{lock.unlock()};try? FileManager.default.removeItem(at:url(name))}
+    func remove(_ name:String){guard unavailableError==nil else{return};lock.lock();defer{lock.unlock()};try? FileManager.default.removeItem(at:url(name))}
 }

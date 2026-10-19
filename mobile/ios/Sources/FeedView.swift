@@ -146,15 +146,20 @@ struct PhotoViewer:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.dismiss) private var dismiss
     var post:Post
+    @State private var selected:String?
     @State private var scale:CGFloat=1
     @State private var lastScale:CGFloat=1
     @State private var offset=CGSize.zero
     @State private var savedOffset=CGSize.zero
+    private var current:Post{universe.memories.posts.first{$0.key==(selected ?? post.key)} ?? post}
     var body:some View {
         ZStack{Color.black.ignoresSafeArea()
-            if post.isPhoto {CachedPhoto(source:post.imageURL,living:false).scaledToFit().scaleEffect(scale).offset(offset).gesture(MagnificationGesture().onChanged{scale=min(5,max(1,lastScale*$0))}.onEnded{_ in lastScale=scale;if scale==1{offset = .zero;savedOffset = .zero}}).simultaneousGesture(DragGesture().onChanged{if scale>1{offset=CGSize(width:savedOffset.width+$0.translation.width,height:savedOffset.height+$0.translation.height)}}.onEnded{_ in savedOffset=offset}).onTapGesture(count:2){withAnimation{scale=scale>1 ? 1:2.5;lastScale=scale;offset = .zero;savedOffset = .zero}}}
-            else {ScrollView{Text(post.text ?? "").font(.custom("Manrope-Regular",size:26)).lineSpacing(10).padding(32).foregroundColor(.white)}}
-            VStack{HStack{Spacer();Button{dismiss()}label:{Image(systemName:"xmark").font(.title3).padding(15).background(.ultraThinMaterial,in:Circle())}.padding()};Spacer();Text(post.content).font(.caption).foregroundColor(.white).padding(20)}
+            if current.isPhoto {CachedPhoto(source:current.imageURL,living:false).scaledToFit().scaleEffect(scale).offset(offset).gesture(MagnificationGesture().onChanged{scale=min(5,max(1,lastScale*$0))}.onEnded{_ in lastScale=scale;if scale==1{offset = .zero;savedOffset = .zero}}).simultaneousGesture(DragGesture().onChanged{if scale>1{offset=CGSize(width:savedOffset.width+$0.translation.width,height:savedOffset.height+$0.translation.height)}}.onEnded{value in if scale==1 && abs(value.translation.width)>55{move(value.translation.width<0 ? 1:-1)}else{savedOffset=offset}}).onTapGesture(count:2){withAnimation{scale=scale>1 ? 1:2.5;lastScale=scale;offset = .zero;savedOffset = .zero}}}
+            else {ScrollView{Text(current.text ?? "").font(.custom("Manrope-Regular",size:26)).lineSpacing(10).padding(32).foregroundColor(.white)}}
+            VStack{HStack{Spacer();Button{dismiss()}label:{Image(systemName:"xmark").font(.title3).padding(15).background(.ultraThinMaterial,in:Circle())}.accessibilityLabel("Close photo").padding()};Spacer();Text(current.content).font(.caption).foregroundColor(.white).padding(20)
+                if current.isPhoto {HStack{Button{move(-1)}label:{Image(systemName:"chevron.left").frame(width:60,height:48)}.accessibilityLabel("Previous photo");Spacer();Button{move(1)}label:{Image(systemName:"chevron.right").frame(width:60,height:48)}.accessibilityLabel("Next photo")}.foregroundColor(.white).padding(.horizontal,20)}
+            }
         }
     }
+    private func move(_ delta:Int){let photos=universe.memories.photos;guard let index=photos.firstIndex(where:{$0.id==current.id}),!photos.isEmpty else{return};Touch.tap();scale=1;lastScale=1;offset = .zero;savedOffset = .zero;withAnimation(.easeInOut(duration:0.25)){selected=photos[(index+delta+photos.count)%photos.count].key}}
 }

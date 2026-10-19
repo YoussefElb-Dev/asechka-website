@@ -27,6 +27,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     @Published var bookmarks:Set<String>=[]
     @Published var hearts:[String:String]=[:]
     @Published var dailyText=""
+    private(set) var storageUnavailable=false
     let vault:Vault
     private let session:URLSession
     private let monitor=NWPathMonitor()
@@ -40,11 +41,22 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     var partner:String {actor=="asnat" ? "Youssef" : "Asnat"}
     init() {
         // A storage failure is shown to the user rather than silently falling back to plaintext.
-        do{vault=try Vault()}catch{fatalError("Encrypted storage could not open: \(error.localizedDescription)")}
+        #if DEBUG
+        let preview=ProcessInfo.processInfo.arguments.contains("--preview-fixture")
+        #else
+        let preview=false
+        #endif
+        do{vault=try preview ? Vault(directory:FileManager.default.temporaryDirectory.appendingPathComponent("Preview-"+UUID().uuidString),key:SymmetricKey(size:.bits256)):Vault()}
+        catch{vault=Vault.unavailable(error);storageUnavailable=true}
         let config=URLSessionConfiguration.ephemeral
         config.httpShouldSetCookies=false;config.httpCookieStorage=nil;config.urlCache=nil
         config.timeoutIntervalForRequest=60;config.timeoutIntervalForResource=75
         session=URLSession(configuration:config,delegate:NoRedirect(),delegateQueue:nil)
+        guard !storageUnavailable else{return}
+        if preview {
+            actor="asnat";unlocked=true;online=false;memories=bundledMemories()
+            try? vault.save("snapshot:/api/memories",memories);status();return
+        }
         cookie=vault.value("session",as:String.self) ?? ""
         locked=vault.value("locked",as:Bool.self) ?? false
         unlocked = !locked && vault.read("snapshot:/api/memories") != nil
@@ -194,7 +206,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         }
         if change.path=="/api/music",let rank=b["rank"] as? Int {
             songs.removeAll{$0.rank==rank}
-            if b["action"] as? String=="save",let id=b["trackId"] as? Int,var song=vault.value("song:\(id)",as:Song.self) {song.rank=rank;song.revision=change.id;song.note=b["note"] as? String;songs.append(song)}
+            if b["action"] as? String=="save",let id=b["trackId"] as? Int,var song=vault.value("song:\(id)",as:Song.self) {song.rank=rank;song.savedId=change.id;song.revision=change.id;song.note=b["note"] as? String;songs.append(song)}
             songs.sort{($0.rank ?? 0)<($1.rank ?? 0)}
         }
     }

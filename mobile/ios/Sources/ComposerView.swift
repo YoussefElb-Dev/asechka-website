@@ -35,7 +35,7 @@ struct ComposerView:View {
                 }.disabled(preparing)
             } else {Text(draft.text.isEmpty ? "Your words, kept close. ♡":"“\(draft.text)”").font(.custom("Manrope-Regular",size:24)).lineSpacing(7).lineLimit(8).multilineTextAlignment(.center).padding(28).frame(maxWidth:.infinity,minHeight:210).background(Palette.gradient,in:RoundedRectangle(cornerRadius:22))}
             VStack(alignment:.leading,spacing:8){Text(photo ? "CAPTION":"YOUR WORDS").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
-                TextEditor(text:$draft.text).frame(minHeight:120).scrollContentBackground(.hidden).padding(8).background(.white,in:RoundedRectangle(cornerRadius:16))
+                TextEditor(text:$draft.text).frame(minHeight:120).scrollContentBackground(.hidden).padding(8).background(.white,in:RoundedRectangle(cornerRadius:16)).accessibilityLabel(photo ? "Post caption":"Quote text")
                 Text("\(draft.text.count) / \(photo ? 1000:10000)").font(.caption).foregroundColor(Palette.muted)
             }
             if !photo {TextField("A little note · optional",text:$draft.note,axis:.vertical).lineLimit(2...5).padding(16).background(.white,in:RoundedRectangle(cornerRadius:16))}
@@ -99,7 +99,7 @@ struct CommentsView:View {
                     if comment.author==universe.actor{Button("Remove comment",role:.destructive){do{try universe.enqueue("/api/memories",["action":"removeComment","kind":post.kind,"id":post.id,"actor":universe.actor,"commentId":comment.id])}catch{universe.error=error.localizedDescription}}}
                 }}
             }.padding(20)}.onChange(of:rows.count){_ in if let last=rows.last{withAnimation{proxy.scrollTo(last.id,anchor:.bottom)}}}}
-            HStack(alignment:.bottom,spacing:12){Avatar(actor:universe.actor,size:34);TextField("Leave a little love…",text:$text,axis:.vertical).lineLimit(1...5).padding(12).background(.white,in:RoundedRectangle(cornerRadius:18));Button(action:send){Image(systemName:"arrow.up").font(.system(size:18,weight:.semibold)).frame(width:44,height:44).foregroundColor(.white).background(Palette.purple,in:Circle())}.disabled(text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || text.count>1000)}.padding(16)
+            HStack(alignment:.bottom,spacing:12){Avatar(actor:universe.actor,size:34);TextField("Leave a little love…",text:$text,axis:.vertical).lineLimit(1...5).padding(12).background(.white,in:RoundedRectangle(cornerRadius:18));Button(action:send){Image(systemName:"arrow.up").font(.system(size:18,weight:.semibold)).frame(width:44,height:44).foregroundColor(.white).background(Palette.purple,in:Circle())}.accessibilityLabel("Send comment").disabled(text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || text.count>1000)}.padding(16)
         }.background(Palette.background).navigationTitle("A little conversation").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}
             .presentationDetents([.large]).onAppear{text=universe.vault.value(key,as:String.self) ?? ""}
             .onDisappear{try? universe.vault.save(key,text)}
