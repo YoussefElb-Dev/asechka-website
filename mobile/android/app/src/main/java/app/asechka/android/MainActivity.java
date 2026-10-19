@@ -739,158 +739,393 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     String[] symbols = {"＋", "♡", "✦", "♫", "☆"};
     for (int i = 0; i < titles.length; i++) {
       final int action = i;
-      LinearLayout story = u.column(); story.setGravity(Gravity.CENTER);
+      LinearLayout story = u.column();
+      story.setGravity(Gravity.CENTER);
       TextView circle = u.text(symbols[i], 27, Ui.PURPLE);
       circle.setGravity(Gravity.CENTER);
-      circle.setBackground(new android.graphics.drawable.GradientDrawable(
-          android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
-          new int[]{Ui.PALE, Ui.BLUE}));
-      ((android.graphics.drawable.GradientDrawable)circle.getBackground()).setCornerRadius(u.dp(100));
-      ((android.graphics.drawable.GradientDrawable)circle.getBackground()).setStroke(u.dp(2), 0xffd1c5ec);
+      circle.setBackground(
+          new android.graphics.drawable.GradientDrawable(
+              android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
+              new int[] {Ui.PALE, Ui.BLUE}));
+      ((android.graphics.drawable.GradientDrawable) circle.getBackground())
+          .setCornerRadius(u.dp(100));
+      ((android.graphics.drawable.GradientDrawable) circle.getBackground())
+          .setStroke(u.dp(2), 0xffd1c5ec);
       story.addView(circle, new LinearLayout.LayoutParams(u.dp(62), u.dp(62)));
-      TextView label = u.text(titles[i], 11, Ui.INK); label.setGravity(Gravity.CENTER);
-      u.add(story, label, 7); story.setContentDescription(titles[i]);
-      story.setOnClickListener(v -> {
-        if (action == 0) choosePost();
-        if (action == 1) ourCorner();
-        if (action == 2) select(3);
-        if (action == 3) select(2);
-        if (action == 4) { savedPosts = !savedPosts; if(feed!=null){stage.removeView(feed);feed=null;} render(false); }
-      });
+      TextView label = u.text(titles[i], 11, Ui.INK);
+      label.setGravity(Gravity.CENTER);
+      u.add(story, label, 7);
+      story.setContentDescription(titles[i]);
+      story.setOnClickListener(
+          v -> {
+            if (action == 0) choosePost();
+            if (action == 1) ourCorner();
+            if (action == 2) select(3);
+            if (action == 3) select(2);
+            if (action == 4) {
+              savedPosts = !savedPosts;
+              if (feed != null) {
+                stage.removeView(feed);
+                feed = null;
+              }
+              render(false);
+            }
+          });
       row.addView(story, new LinearLayout.LayoutParams(u.dp(72), -2));
     }
-    stories.addView(row); header.addView(stories);
-    LinearLayout intro = u.column(); intro.setPadding(u.dp(22), u.dp(7), u.dp(22), u.dp(16));
-    intro.addView(u.title(savedPosts ? "Kept close." : screen == 1 ? "Our camera roll." : screen == 5 ? "Words to keep." : "Our little us.", 27));
-    u.add(intro, u.text(savedPosts ? "Your saved photos and words, in one place." : "A little life together, one moment at a time.", 13, Ui.MUTED), 4);
-    LinearLayout compose = u.row(12); compose.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
+    stories.addView(row);
+    header.addView(stories);
+    LinearLayout intro = u.column();
+    intro.setPadding(u.dp(22), u.dp(7), u.dp(22), u.dp(16));
+    intro.addView(
+        u.title(
+            savedPosts
+                ? "Kept close."
+                : screen == 1
+                    ? "Our camera roll."
+                    : screen == 5 ? "Words to keep." : "Our little us.",
+            27));
+    u.add(
+        intro,
+        u.text(
+            savedPosts
+                ? "Your saved photos and words, in one place."
+                : "A little life together, one moment at a time.",
+            13,
+            Ui.MUTED),
+        4);
+    LinearLayout compose = u.row(12);
+    compose.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
     compose.setBackground(u.shape(Color.WHITE, 22));
-    compose.addView(SocialFeed.avatar(this, actor(), 38), new LinearLayout.LayoutParams(u.dp(38), u.dp(38)));
-    compose.addView(u.text("Something to share, " + person() + "?", 14, Ui.MUTED), new LinearLayout.LayoutParams(0, -2, 1));
-    compose.addView(new SocialFeed.Icon(this, "plus"), new LinearLayout.LayoutParams(u.dp(34), u.dp(34)));
-    compose.setOnClickListener(v -> choosePost()); u.add(intro, compose, 17);
+    compose.addView(
+        SocialFeed.avatar(this, actor(), 38), new LinearLayout.LayoutParams(u.dp(38), u.dp(38)));
+    compose.addView(
+        u.text("Something to share, " + person() + "?", 14, Ui.MUTED),
+        new LinearLayout.LayoutParams(0, -2, 1));
+    compose.addView(
+        new SocialFeed.Icon(this, "plus"), new LinearLayout.LayoutParams(u.dp(34), u.dp(34)));
+    compose.setOnClickListener(v -> choosePost());
+    u.add(intro, compose, 17);
     header.addView(intro);
     if (screen == 5 && !savedPosts) {
-      LinearLayout carousel = u.column(); carousel.setPadding(u.dp(18), 0, u.dp(18), u.dp(14));
-      quoteCarousel(carousel); header.addView(carousel);
+      LinearLayout carousel = u.column();
+      carousel.setPadding(u.dp(18), 0, u.dp(18), u.dp(14));
+      quoteCarousel(carousel);
+      header.addView(carousel);
     }
-    Motion.install(header); return header;
+    Motion.install(header);
+    return header;
   }
 
   private void choosePost() {
-    new AlertDialog.Builder(this).setTitle("Share a little something")
-        .setItems(new String[]{"Photo · a moment from our day", "Quote · words from the heart"},
-            (d, which) -> createPost(which == 0)).setNegativeButton("Close", null).show();
+    new AlertDialog.Builder(this)
+        .setTitle("Share a little something")
+        .setItems(
+            new String[] {"Photo · a moment from our day", "Quote · words from the heart"},
+            (d, which) -> createPost(which == 0))
+        .setNegativeButton("Close", null)
+        .show();
   }
 
   private void ourCorner() {
     LinearLayout previous = content;
-    content = u.column(); content.setPadding(u.dp(22), u.dp(16), u.dp(22), u.dp(24));
-    home(); LinearLayout body = content; content = previous;
-    Dialog dialog = new Dialog(this); dialog.setContentView(u.scroll(body));
-    track(dialog); dialog.show();
+    content = u.column();
+    content.setPadding(u.dp(22), u.dp(16), u.dp(22), u.dp(24));
+    home();
+    LinearLayout body = content;
+    content = previous;
+    Dialog dialog = new Dialog(this);
+    dialog.setContentView(u.scroll(body));
+    track(dialog);
+    dialog.show();
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     body.setBackgroundColor(Ui.BG);
     dialog.getWindow().setLayout(-1, -1);
   }
 
-  public String actor() { return person().equals("Asnat") ? "asnat" : "youssef"; }
-  public Images feedImages() { return images; }
-  public void refreshFeed() { refresh(true); }
-  public void createPost(boolean photo) { memoryEditor = new MemoryEditor(photo); memoryEditor.show(); }
-  public boolean saved(SocialFeed.Post post) {
-    return prefs().getStringSet("saved-posts:" + actor(), Collections.emptySet()).contains(post.key());
+  public String actor() {
+    return person().equals("Asnat") ? "asnat" : "youssef";
   }
+
+  public Images feedImages() {
+    return images;
+  }
+
+  public void refreshFeed() {
+    refresh(true);
+  }
+
+  public void createPost(boolean photo) {
+    memoryEditor = new MemoryEditor(photo);
+    memoryEditor.show();
+  }
+
+  public boolean saved(SocialFeed.Post post) {
+    return prefs()
+        .getStringSet("saved-posts:" + actor(), Collections.emptySet())
+        .contains(post.key());
+  }
+
   public void savePost(SocialFeed.Post post) {
-    Set<String> keys = new HashSet<>(prefs().getStringSet("saved-posts:" + actor(), Collections.emptySet()));
+    Set<String> keys =
+        new HashSet<>(prefs().getStringSet("saved-posts:" + actor(), Collections.emptySet()));
     if (!keys.remove(post.key())) keys.add(post.key());
     prefs().edit().putStringSet("saved-posts:" + actor(), keys).apply();
-    if (feed != null) { feed.savedOnly(savedPosts); feed.submit(memories, true); }
+    if (feed != null) {
+      feed.savedOnly(savedPosts);
+      feed.submit(memories, true);
+    }
   }
+
   public void react(SocialFeed.Post post, boolean liked, View anchor) {
-    queueSocial(object("action", "setLike", "kind", post.kind, "id", post.id,
-        "actor", actor(), "liked", liked, "operationId", UUID.randomUUID().toString()), null);
+    queueSocial(
+        object(
+            "action",
+            "setLike",
+            "kind",
+            post.kind,
+            "id",
+            post.id,
+            "actor",
+            actor(),
+            "liked",
+            liked,
+            "operationId",
+            UUID.randomUUID().toString()),
+        null);
   }
+
   public void explore(SocialFeed.Post post) {
     if (post.kind.equals("photo")) photoViewer(array(memories, "photos"), post.index);
-    else new AlertDialog.Builder(this).setTitle(post.name() + " · " + post.value.optString("date"))
-        .setMessage(post.value.optString("text") + (post.value.optString("note").isEmpty() ? "" : "\n\n" + post.value.optString("note")))
-        .setPositiveButton("Close", null).setNeutralButton("Comments", (d,w) -> comments(post)).show();
+    else
+      new AlertDialog.Builder(this)
+          .setTitle(post.name() + " · " + post.value.optString("date"))
+          .setMessage(
+              post.value.optString("text")
+                  + (post.value.optString("note").isEmpty()
+                      ? ""
+                      : "\n\n" + post.value.optString("note")))
+          .setPositiveButton("Close", null)
+          .setNeutralButton("Comments", (d, w) -> comments(post))
+          .show();
   }
+
   private SocialFeed.Post currentPost(SocialFeed.Post post) {
     JSONArray values = array(memories, post.kind.equals("photo") ? "photos" : "quotes");
-    for (int i=0;i<values.length();i++) { JSONObject item=values.optJSONObject(i);
-      if (item!=null && post.id.equals(item.optString("id", item.optString("editKey")))) return new SocialFeed.Post(item,post.kind,i);
+    for (int i = 0; i < values.length(); i++) {
+      JSONObject item = values.optJSONObject(i);
+      if (item != null && post.id.equals(item.optString("id", item.optString("editKey"))))
+        return new SocialFeed.Post(item, post.kind, i);
     }
     return post;
   }
+
   private void queueSocial(JSONObject body, Runnable done) {
-    final int token=epoch;
-    socialWrites.execute(() -> {
-      try {api.store.enqueue("/api/memories",body);JSONObject value=api.cached("/memories.json",true);
-        main.post(() -> {if(token!=epoch || isDestroyed())return;memories=value;
-          if(feed!=null)feed.submit(memories,true);updateConnection("");if(done!=null)done.run();refresh(false);});
-      }catch(Exception error){main.post(() -> toast(message(error)));}
-    });
-  }
-  public void more(SocialFeed.Post original, View anchor) {
-    SocialFeed.Post post=currentPost(original);
-    PopupMenu popup=new PopupMenu(this,anchor);
-    popup.getMenu().add("Edit post").setOnMenuItemClickListener(item -> {
-      memoryEditor=new MemoryEditor(post.kind.equals("photo"),post.value); memoryEditor.show(); return true;
-    });
-    popup.getMenu().add(saved(post)?"Remove from saved":"Save post").setOnMenuItemClickListener(item -> { savePost(post); return true; });
-    popup.getMenu().add("Delete post").setOnMenuItemClickListener(item -> {
-      new AlertDialog.Builder(this).setTitle("Delete this post?").setMessage("This removes it from our shared collection on both phones and the website.")
-          .setNegativeButton("Keep it",null).setPositiveButton("Delete",(d,w) -> queueSocial(object(
-              "action",post.kind.equals("photo")?"removePhoto":"removeQuote","id",post.id,
-              "expectedVersion",post.value.optString("editVersion"),"operationId",UUID.randomUUID().toString()),null)).show(); return true;
-    }); popup.show();
-  }
-  public void comments(SocialFeed.Post original) {
-    final String draftKey="comment-draft:"+actor()+":"+original.key();
-    LinearLayout body=u.column(); body.setPadding(u.dp(20),u.dp(12),u.dp(20),u.dp(16)); body.setBackgroundColor(Ui.BG);
-    TextView title=u.title("A little conversation",23); u.add(body,title,8);
-    u.add(body,u.text("On "+original.name()+"’s "+original.kind,12,Ui.MUTED),6);
-    LinearLayout list=u.column(); ScrollView messages=u.scroll(list); body.addView(messages,new LinearLayout.LayoutParams(-1,0,1));
-    LinearLayout entry=u.row(10); EditText input=u.input("Leave a little love…","",1000,true);
-    JSONObject draft=api.store.read(draftKey); if(draft!=null)input.setText(draft.optString("text"));
-    entry.addView(input,new LinearLayout.LayoutParams(0,-2,1)); Button send=u.button("Send",true,null);
-    entry.addView(send,new LinearLayout.LayoutParams(u.dp(76),u.dp(48))); body.addView(entry);
-    Button close=u.button("Done",false,null); u.add(body,close,8);
-    Dialog dialog=new Dialog(this); dialog.setContentView(body); track(dialog); dialog.show();
-    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-    dialog.getWindow().setLayout(-1, (int)(getResources().getDisplayMetrics().heightPixels*.82f));
-    dialog.getWindow().setGravity(Gravity.BOTTOM); dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-    Runnable[] update={null}; update[0]=() -> {
-      list.removeAllViews(); JSONArray rows=currentPost(original).comments();
-      if(rows.length()==0)u.add(list,u.text("Be the first to leave a little love. ♡",15,Ui.MUTED),26);
-      for(int i=0;i<rows.length();i++) { JSONObject comment=rows.optJSONObject(i); if(comment==null)continue;
-        LinearLayout bubble=u.card(list,Color.WHITE);
-        u.add(bubble,u.text(SocialFeed.nameOf(comment.optString("author")),13,Ui.PURPLE),0);
-        u.add(bubble,u.text(comment.optString("text"),15,Ui.INK),6);
-        String stamp=comment.optString("createdAt"); u.add(bubble,u.text(stamp.length()>10?stamp.substring(0,10):"Just now",11,Ui.MUTED),6);
-        if(comment.optString("author").equals(actor())) bubble.setOnLongClickListener(v -> {
-          new AlertDialog.Builder(this).setTitle("Remove your comment?").setNegativeButton("Keep",null)
-              .setPositiveButton("Remove",(d,w) -> queueSocial(object("action","removeComment","kind",original.kind,
-                  "id",original.id,"actor",actor(),"commentId",comment.optString("id"),"operationId",UUID.randomUUID().toString()),update[0])).show(); return true;
+    final int token = epoch;
+    socialWrites.execute(
+        () -> {
+          try {
+            api.store.enqueue("/api/memories", body);
+            JSONObject value = api.cached("/memories.json", true);
+            main.post(
+                () -> {
+                  if (token != epoch || isDestroyed()) return;
+                  memories = value;
+                  if (feed != null) feed.submit(memories, true);
+                  updateConnection("");
+                  if (done != null) done.run();
+                  refresh(false);
+                });
+          } catch (Exception error) {
+            main.post(() -> toast(message(error)));
+          }
         });
-      } Motion.install(list);
-    };
-    update[0].run(); activeConversationRefresh=update[0]; send.setOnClickListener(v -> {
-      String text=input.getText().toString().trim(); if(text.isEmpty())return;
-      send.setEnabled(false);
-      JSONObject bodyValue=object("action","addComment","kind",original.kind,"id",original.id,"actor",actor(),"text",text,"operationId",UUID.randomUUID().toString());
-      request(() -> { api.store.enqueue("/api/memories",bodyValue); api.store.write(draftKey,object("text","")); return api.cached("/memories.json",true); },
-          value -> { memories=value; input.setText(""); send.setEnabled(true); update[0].run(); messages.post(() -> messages.fullScroll(View.FOCUS_DOWN));
-            if(feed!=null)feed.submit(memories,true); updateConnection(""); refresh(false); Motion.haptic(send,true); },
-          error -> {send.setEnabled(true);toast(message(error));});
-    });
+  }
+
+  public void more(SocialFeed.Post original, View anchor) {
+    SocialFeed.Post post = currentPost(original);
+    PopupMenu popup = new PopupMenu(this, anchor);
+    popup
+        .getMenu()
+        .add("Edit post")
+        .setOnMenuItemClickListener(
+            item -> {
+              memoryEditor = new MemoryEditor(post.kind.equals("photo"), post.value);
+              memoryEditor.show();
+              return true;
+            });
+    popup
+        .getMenu()
+        .add(saved(post) ? "Remove from saved" : "Save post")
+        .setOnMenuItemClickListener(
+            item -> {
+              savePost(post);
+              return true;
+            });
+    popup
+        .getMenu()
+        .add("Delete post")
+        .setOnMenuItemClickListener(
+            item -> {
+              new AlertDialog.Builder(this)
+                  .setTitle("Delete this post?")
+                  .setMessage(
+                      "This removes it from our shared collection on both phones and the website.")
+                  .setNegativeButton("Keep it", null)
+                  .setPositiveButton(
+                      "Delete",
+                      (d, w) ->
+                          queueSocial(
+                              object(
+                                  "action",
+                                  post.kind.equals("photo") ? "removePhoto" : "removeQuote",
+                                  "id",
+                                  post.id,
+                                  "expectedVersion",
+                                  post.value.optString("editVersion"),
+                                  "operationId",
+                                  UUID.randomUUID().toString()),
+                              null))
+                  .show();
+              return true;
+            });
+    popup.show();
+  }
+
+  public void comments(SocialFeed.Post original) {
+    final String draftKey = "comment-draft:" + actor() + ":" + original.key();
+    LinearLayout body = u.column();
+    body.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(16));
+    body.setBackgroundColor(Ui.BG);
+    TextView title = u.title("A little conversation", 23);
+    u.add(body, title, 8);
+    u.add(body, u.text("On " + original.name() + "’s " + original.kind, 12, Ui.MUTED), 6);
+    LinearLayout list = u.column();
+    ScrollView messages = u.scroll(list);
+    body.addView(messages, new LinearLayout.LayoutParams(-1, 0, 1));
+    LinearLayout entry = u.row(10);
+    EditText input = u.input("Leave a little love…", "", 1000, true);
+    JSONObject draft = api.store.read(draftKey);
+    if (draft != null) input.setText(draft.optString("text"));
+    entry.addView(input, new LinearLayout.LayoutParams(0, -2, 1));
+    Button send = u.button("Send", true, null);
+    entry.addView(send, new LinearLayout.LayoutParams(u.dp(76), u.dp(48)));
+    body.addView(entry);
+    Button close = u.button("Done", false, null);
+    u.add(body, close, 8);
+    Dialog dialog = new Dialog(this);
+    dialog.setContentView(body);
+    track(dialog);
+    dialog.show();
+    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    dialog
+        .getWindow()
+        .setLayout(-1, (int) (getResources().getDisplayMetrics().heightPixels * .82f));
+    dialog.getWindow().setGravity(Gravity.BOTTOM);
+    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    Runnable[] update = {null};
+    update[0] =
+        () -> {
+          list.removeAllViews();
+          JSONArray rows = currentPost(original).comments();
+          if (rows.length() == 0)
+            u.add(list, u.text("Be the first to leave a little love. ♡", 15, Ui.MUTED), 26);
+          for (int i = 0; i < rows.length(); i++) {
+            JSONObject comment = rows.optJSONObject(i);
+            if (comment == null) continue;
+            LinearLayout bubble = u.card(list, Color.WHITE);
+            u.add(bubble, u.text(SocialFeed.nameOf(comment.optString("author")), 13, Ui.PURPLE), 0);
+            u.add(bubble, u.text(comment.optString("text"), 15, Ui.INK), 6);
+            String stamp = comment.optString("createdAt");
+            u.add(
+                bubble,
+                u.text(stamp.length() > 10 ? stamp.substring(0, 10) : "Just now", 11, Ui.MUTED),
+                6);
+            if (comment.optString("author").equals(actor()))
+              bubble.setOnLongClickListener(
+                  v -> {
+                    new AlertDialog.Builder(this)
+                        .setTitle("Remove your comment?")
+                        .setNegativeButton("Keep", null)
+                        .setPositiveButton(
+                            "Remove",
+                            (d, w) ->
+                                queueSocial(
+                                    object(
+                                        "action",
+                                        "removeComment",
+                                        "kind",
+                                        original.kind,
+                                        "id",
+                                        original.id,
+                                        "actor",
+                                        actor(),
+                                        "commentId",
+                                        comment.optString("id"),
+                                        "operationId",
+                                        UUID.randomUUID().toString()),
+                                    update[0]))
+                        .show();
+                    return true;
+                  });
+          }
+          Motion.install(list);
+        };
+    update[0].run();
+    activeConversationRefresh = update[0];
+    send.setOnClickListener(
+        v -> {
+          String text = input.getText().toString().trim();
+          if (text.isEmpty()) return;
+          send.setEnabled(false);
+          JSONObject bodyValue =
+              object(
+                  "action",
+                  "addComment",
+                  "kind",
+                  original.kind,
+                  "id",
+                  original.id,
+                  "actor",
+                  actor(),
+                  "text",
+                  text,
+                  "operationId",
+                  UUID.randomUUID().toString());
+          request(
+              () -> {
+                api.store.enqueue("/api/memories", bodyValue);
+                api.store.write(draftKey, object("text", ""));
+                return api.cached("/memories.json", true);
+              },
+              value -> {
+                memories = value;
+                input.setText("");
+                send.setEnabled(true);
+                update[0].run();
+                messages.post(() -> messages.fullScroll(View.FOCUS_DOWN));
+                if (feed != null) feed.submit(memories, true);
+                updateConnection("");
+                refresh(false);
+                Motion.haptic(send, true);
+              },
+              error -> {
+                send.setEnabled(true);
+                toast(message(error));
+              });
+        });
     close.setOnClickListener(v -> dialog.dismiss());
-    dialog.setOnDismissListener(d -> {
-      try{api.store.write(draftKey,object("text",input.getText().toString()));}catch(Exception ignored){}
-      if(activeDialog==dialog)activeDialog=null; activeConversationRefresh=null; render(true);
-    }); Motion.install(body);
+    dialog.setOnDismissListener(
+        d -> {
+          try {
+            api.store.write(draftKey, object("text", input.getText().toString()));
+          } catch (Exception ignored) {
+          }
+          if (activeDialog == dialog) activeDialog = null;
+          activeConversationRefresh = null;
+          if (root != null) render(true);
+        });
+    Motion.install(body);
   }
 
   private void heading(String eyebrow, String title, String description) {
@@ -1592,7 +1827,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       u.add(c, u.text(memory.optString("note"), 14, Ui.MUTED), 10);
   }
 
-  private String photoSource(JSONObject item) { return ApiClient.photoURL(item); }
+  private String photoSource(JSONObject item) {
+    return ApiClient.photoURL(item);
+  }
 
   private void memories() {
     boolean photos = screen == 1;
@@ -2351,98 +2588,281 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     boolean photoBusy, committed;
     final Runnable saveDraft = () -> persistDraft();
 
-    MemoryEditor(boolean photo) { this(photo, null); }
+    MemoryEditor(boolean photo) {
+      this(photo, null);
+    }
+
     MemoryEditor(boolean photo, JSONObject original) {
-      this.photo=photo; this.original=original;
-      draftKey="post-draft:"+actor()+":"+(original==null?(photo?"photo":"quote"):original.optString("id",original.optString("editKey")));
-      JSONObject draft=api.store.read(draftKey);
-      if(draft==null) draft=original==null?new JSONObject():original;
-      selectedPhoto=draft.has("photo")?draft.optString("photo"):null;
-      LinearLayout shell=u.column(); shell.setBackgroundColor(Ui.BG);
-      LinearLayout toolbar=u.row(10); toolbar.setPadding(u.dp(16),u.dp(10),u.dp(16),u.dp(10));
-      Button close=u.button("×",false,null); close.setTextSize(24); close.setContentDescription("Close post composer");
-      toolbar.addView(close,new LinearLayout.LayoutParams(u.dp(48),u.dp(48)));
-      toolbar.addView(u.title(original==null?"New post":"Edit post",20),new LinearLayout.LayoutParams(0,-2,1));
-      share=u.button(original==null?"Share":"Save",true,()->save());
-      toolbar.addView(share,new LinearLayout.LayoutParams(u.dp(84),u.dp(48))); shell.addView(toolbar);
-      LinearLayout body=u.column(); body.setPadding(u.dp(20),u.dp(8),u.dp(20),u.dp(28));
-      LinearLayout byline=u.row(12); byline.addView(SocialFeed.avatar(MainActivity.this,actor(),44),new LinearLayout.LayoutParams(u.dp(44),u.dp(44)));
-      LinearLayout who=u.column(); who.addView(u.title(person(),16)); who.addView(u.text("Our little universe · just us two",12,Ui.MUTED)); byline.addView(who);
-      u.add(body,byline,8);
-      preview=u.image(body,"Post photo preview",280); preview.setScaleType(ImageView.ScaleType.FIT_CENTER);
-      preview.setBackground(u.shape(Ui.BLUE,24)); preview.setVisibility(photo?View.VISIBLE:View.GONE);
-      quotePreview=u.quote("Your words, kept close. ♡",25); quotePreview.setGravity(Gravity.CENTER); quotePreview.setMinHeight(u.dp(210));
-      quotePreview.setPadding(u.dp(25),u.dp(28),u.dp(25),u.dp(28)); quotePreview.setMaxLines(8);
-      quotePreview.setBackground(new android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TL_BR,new int[]{Ui.PALE,Ui.BLUE}));
-      quotePreview.setVisibility(photo?View.GONE:View.VISIBLE); u.add(body,quotePreview,18);
-      if(photo)u.add(body,u.button(original==null?"Choose a photo":"Choose a different photo",false,()->pick()),12);
-      text=u.input(photo?"Write a caption…":"Write something from the heart…",draft.optString(photo?"caption":"text"),photo?1000:10000,true);
-      text.setMinHeight(u.dp(photo?110:150)); u.add(body,text,16);
-      note=u.input("A little note · optional",draft.optString("note"),1000,true); if(!photo)u.add(body,note,12);
-      when=u.input("Date",draft.optString("date",Dates.today()),10,false); when.setFocusable(false);
-      when.setOnClickListener(v->{ Calendar c=Calendar.getInstance();
-        try{String[] bits=when.getText().toString().split("-");c.set(Integer.parseInt(bits[0]),Integer.parseInt(bits[1])-1,Integer.parseInt(bits[2]));}catch(Exception ignored){}
-        new DatePickerDialog(MainActivity.this,(view,y,m,d)->{when.setText(String.format(Locale.US,"%04d-%02d-%02d",y,m+1,d));persistDraft();},c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH)).show();
-      }); u.add(body,when,12);
-      status=u.text("Saved on your phone first. Shared with both of us when connected.",12,Ui.MUTED); u.add(body,status,16);
+      this.photo = photo;
+      this.original = original;
+      draftKey =
+          "post-draft:"
+              + actor()
+              + ":"
+              + (original == null
+                  ? (photo ? "photo" : "quote")
+                  : original.optString("id", original.optString("editKey")));
+      JSONObject draft = api.store.read(draftKey);
+      if (draft == null) draft = original == null ? new JSONObject() : original;
+      selectedPhoto = draft.has("photo") ? draft.optString("photo") : null;
+      LinearLayout shell = u.column();
+      shell.setBackgroundColor(Ui.BG);
+      LinearLayout toolbar = u.row(10);
+      toolbar.setPadding(u.dp(16), u.dp(10), u.dp(16), u.dp(10));
+      Button close = u.button("×", false, null);
+      close.setTextSize(24);
+      close.setContentDescription("Close post composer");
+      toolbar.addView(close, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
+      toolbar.addView(
+          u.title(original == null ? "New post" : "Edit post", 20),
+          new LinearLayout.LayoutParams(0, -2, 1));
+      share = u.button(original == null ? "Share" : "Save", true, () -> save());
+      toolbar.addView(share, new LinearLayout.LayoutParams(u.dp(84), u.dp(48)));
+      shell.addView(toolbar);
+      LinearLayout body = u.column();
+      body.setPadding(u.dp(20), u.dp(8), u.dp(20), u.dp(28));
+      LinearLayout byline = u.row(12);
+      byline.addView(
+          SocialFeed.avatar(MainActivity.this, actor(), 44),
+          new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
+      LinearLayout who = u.column();
+      who.addView(u.title(person(), 16));
+      who.addView(u.text("Our little universe · just us two", 12, Ui.MUTED));
+      byline.addView(who);
+      u.add(body, byline, 8);
+      preview = u.image(body, "Post photo preview", 280);
+      preview.setScaleType(ImageView.ScaleType.FIT_CENTER);
+      preview.setBackground(u.shape(Ui.BLUE, 24));
+      preview.setVisibility(photo ? View.VISIBLE : View.GONE);
+      quotePreview = u.quote("Your words, kept close. ♡", 25);
+      quotePreview.setGravity(Gravity.CENTER);
+      quotePreview.setMinHeight(u.dp(210));
+      quotePreview.setPadding(u.dp(25), u.dp(28), u.dp(25), u.dp(28));
+      quotePreview.setMaxLines(8);
+      quotePreview.setBackground(
+          new android.graphics.drawable.GradientDrawable(
+              android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
+              new int[] {Ui.PALE, Ui.BLUE}));
+      quotePreview.setVisibility(photo ? View.GONE : View.VISIBLE);
+      u.add(body, quotePreview, 18);
+      if (photo)
+        u.add(
+            body,
+            u.button(
+                original == null ? "Choose a photo" : "Choose a different photo",
+                false,
+                () -> pick()),
+            12);
+      text =
+          u.input(
+              photo ? "Write a caption…" : "Write something from the heart…",
+              draft.optString(photo ? "caption" : "text"),
+              photo ? 1000 : 10000,
+              true);
+      text.setMinHeight(u.dp(photo ? 110 : 150));
+      u.add(body, text, 16);
+      note = u.input("A little note · optional", draft.optString("note"), 1000, true);
+      if (!photo) u.add(body, note, 12);
+      when = u.input("Date", draft.optString("date", Dates.today()), 10, false);
+      when.setFocusable(false);
+      when.setOnClickListener(
+          v -> {
+            Calendar c = Calendar.getInstance();
+            try {
+              String[] bits = when.getText().toString().split("-");
+              c.set(
+                  Integer.parseInt(bits[0]),
+                  Integer.parseInt(bits[1]) - 1,
+                  Integer.parseInt(bits[2]));
+            } catch (Exception ignored) {
+            }
+            new DatePickerDialog(
+                    MainActivity.this,
+                    (view, y, m, d) -> {
+                      when.setText(String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d));
+                      persistDraft();
+                    },
+                    c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH),
+                    c.get(Calendar.DAY_OF_MONTH))
+                .show();
+          });
+      u.add(body, when, 12);
+      status =
+          u.text("Saved on your phone first. Shared with both of us when connected.", 12, Ui.MUTED);
+      u.add(body, status, 16);
       status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-      ScrollView scroller=u.scroll(body); shell.addView(scroller,new LinearLayout.LayoutParams(-1,0,1));
-      dialog=new Dialog(MainActivity.this); dialog.setContentView(shell); close.setOnClickListener(v->dialog.dismiss());
-      android.text.TextWatcher watcher=new android.text.TextWatcher(){
-        public void beforeTextChanged(CharSequence s,int a,int c,int f){}
-        public void onTextChanged(CharSequence s,int a,int b,int c){quotePreview.setText("“"+text.getText().toString()+"”");main.removeCallbacks(saveDraft);main.postDelayed(saveDraft,700);}
-        public void afterTextChanged(android.text.Editable e){}
-      }; text.addTextChangedListener(watcher); note.addTextChangedListener(watcher);
-      quotePreview.setText(text.length()==0?"Your words, kept close. ♡":"“"+text.getText()+"”");
-      if(selectedPhoto!=null)prepared(selectedPhoto);
-      else if(photo&&original!=null)images.load(photoSource(original),preview);
-      else if(photo)images.load("assets/cats-cozy.jpg",preview);
+      ScrollView scroller = u.scroll(body);
+      shell.addView(scroller, new LinearLayout.LayoutParams(-1, 0, 1));
+      dialog = new Dialog(MainActivity.this);
+      dialog.setContentView(shell);
+      close.setOnClickListener(v -> dialog.dismiss());
+      android.text.TextWatcher watcher =
+          new android.text.TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int a, int c, int f) {}
+
+            public void onTextChanged(CharSequence s, int a, int b, int c) {
+              quotePreview.setText("“" + text.getText().toString() + "”");
+              main.removeCallbacks(saveDraft);
+              main.postDelayed(saveDraft, 700);
+            }
+
+            public void afterTextChanged(android.text.Editable e) {}
+          };
+      text.addTextChangedListener(watcher);
+      note.addTextChangedListener(watcher);
+      quotePreview.setText(
+          text.length() == 0 ? "Your words, kept close. ♡" : "“" + text.getText() + "”");
+      if (selectedPhoto != null) prepared(selectedPhoto);
+      else if (photo && original != null) images.load(photoSource(original), preview);
+      else if (photo) images.load("assets/cats-cozy.jpg", preview);
     }
-    void pick(){
-      if(photoBusy||mutating)return;
-      try{startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("image/*"),121);}
-      catch(ActivityNotFoundException e){status.setText("A photo picker isn’t available on this phone.");}
+
+    void pick() {
+      if (photoBusy || mutating) return;
+      try {
+        startActivityForResult(
+            new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("image/*"),
+            121);
+      } catch (ActivityNotFoundException e) {
+        status.setText("A photo picker isn’t available on this phone.");
+      }
     }
-    void show(){
-      track(dialog); dialog.show(); dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-      dialog.getWindow().setLayout(-1,-1); dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-      dialog.getWindow().getDecorView().setOnApplyWindowInsetsListener((view,insets)->{
-        int top=insets.getSystemWindowInsetTop(),bottom=insets.getSystemWindowInsetBottom();
-        view.setPadding(insets.getSystemWindowInsetLeft(),top,insets.getSystemWindowInsetRight(),bottom);return insets;
-      });
-      dialog.setOnDismissListener(d->{main.removeCallbacks(saveDraft);if(!committed)persistDraft();
-        if(activeDialog==dialog)activeDialog=null;if(memoryEditor==this)memoryEditor=null;render(true);});
+
+    void show() {
+      track(dialog);
+      dialog.show();
+      dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+      dialog.getWindow().setLayout(-1, -1);
+      dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+      dialog
+          .getWindow()
+          .getDecorView()
+          .setOnApplyWindowInsetsListener(
+              (view, insets) -> {
+                int top = insets.getSystemWindowInsetTop(),
+                    bottom = insets.getSystemWindowInsetBottom();
+                view.setPadding(
+                    insets.getSystemWindowInsetLeft(),
+                    top,
+                    insets.getSystemWindowInsetRight(),
+                    bottom);
+                return insets;
+              });
+      dialog.setOnDismissListener(
+          d -> {
+            main.removeCallbacks(saveDraft);
+            if (!committed) persistDraft();
+            if (activeDialog == dialog) activeDialog = null;
+            if (memoryEditor == this) memoryEditor = null;
+            if (root != null) render(true);
+          });
     }
-    void persistDraft(){
-      if(committed)return;
-      try{ JSONObject draft=object(photo?"caption":"text",text.getText().toString(),"note",note.getText().toString(),"date",when.getText().toString());
-        if(selectedPhoto!=null)draft.put("photo",selectedPhoto);api.store.write(draftKey,draft);
-      }catch(Exception e){status.setText("Couldn’t save this draft yet. "+message(e));}
+
+    void persistDraft() {
+      if (committed) return;
+      try {
+        JSONObject draft =
+            object(
+                photo ? "caption" : "text",
+                text.getText().toString(),
+                "note",
+                note.getText().toString(),
+                "date",
+                when.getText().toString());
+        if (selectedPhoto != null) draft.put("photo", selectedPhoto);
+        api.store.write(draftKey, draft);
+      } catch (Exception e) {
+        status.setText("Couldn’t save this draft yet. " + message(e));
+      }
     }
-    void prepared(String encoded){
-      selectedPhoto=encoded;photoBusy=false;
-      byte[] bytes=android.util.Base64.decode(encoded.substring(23),android.util.Base64.NO_WRAP);
-      preview.setImageBitmap(BitmapFactory.decodeByteArray(bytes,0,bytes.length));preview.setVisibility(View.VISIBLE);
-      Motion.enter(preview,1);share.setEnabled(true);status.setText("Your picture is ready ♡");persistDraft();
+
+    void prepared(String encoded) {
+      selectedPhoto = encoded;
+      photoBusy = false;
+      byte[] bytes = android.util.Base64.decode(encoded.substring(23), android.util.Base64.NO_WRAP);
+      preview.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+      preview.setVisibility(View.VISIBLE);
+      Motion.enter(preview, 1);
+      share.setEnabled(true);
+      status.setText("Your picture is ready ♡");
+      persistDraft();
     }
-    void save(){
-      if(mutating||photoBusy)return;
-      String value=text.getText().toString().trim(),day=when.getText().toString();
-      try{Dates.day(day);}catch(Exception e){when.setError("Choose a valid date.");return;}
-      if(!photo&&value.isEmpty()){text.setError("Write a little something first.");return;}
-      if(photo&&selectedPhoto==null&&original==null){status.setText("Choose a picture first.");return;}
-      JSONObject body=object("action",(original==null?"add":"update")+(photo?"Photo":"Quote"),"date",day,
-          photo?"caption":"text",value,"note",note.getText().toString(),"author",actor());
-      try{
-        if(photo&&selectedPhoto!=null)body.put("photo",selectedPhoto);
-        if(original!=null){body.put("id",original.optString("id",original.optString("editKey")));body.put("expectedVersion",original.optString("editVersion"));}
-        String next=body.toString();if(!next.equals(fingerprint)){operation=UUID.randomUUID().toString();fingerprint=next;}body.put("operationId",operation);
-      }catch(JSONException e){return;}
-      mutating=true;hideKeyboard();share.setEnabled(false);dialog.setCancelable(false);status.setText("Keeping this little moment…");
-      request(()->{api.store.enqueue("/api/memories",body);api.store.write(draftKey,new JSONObject());return api.cached("/memories.json",true);},
-          saved->{memories=saved;mutating=false;committed=true;dialog.dismiss();render(original!=null);updateConnection("");Motion.haptic(root,true);
-            toast("Saved on your phone · sharing with both of us ♡");refresh(false);},
-          error->{mutating=false;dialog.setCancelable(true);share.setEnabled(true);status.setText(message(error));});
+
+    void save() {
+      if (mutating || photoBusy) return;
+      String value = text.getText().toString().trim(), day = when.getText().toString();
+      try {
+        Dates.day(day);
+      } catch (Exception e) {
+        when.setError("Choose a valid date.");
+        return;
+      }
+      if (!photo && value.isEmpty()) {
+        text.setError("Write a little something first.");
+        return;
+      }
+      if (photo && selectedPhoto == null && original == null) {
+        status.setText("Choose a picture first.");
+        return;
+      }
+      JSONObject body =
+          object(
+              "action",
+              (original == null ? "add" : "update") + (photo ? "Photo" : "Quote"),
+              "date",
+              day,
+              photo ? "caption" : "text",
+              value,
+              "note",
+              note.getText().toString(),
+              "author",
+              actor());
+      try {
+        if (photo && selectedPhoto != null) body.put("photo", selectedPhoto);
+        if (original != null) {
+          body.put("id", original.optString("id", original.optString("editKey")));
+          body.put("expectedVersion", original.optString("editVersion"));
+        }
+        String next = body.toString();
+        if (!next.equals(fingerprint)) {
+          operation = UUID.randomUUID().toString();
+          fingerprint = next;
+        }
+        body.put("operationId", operation);
+      } catch (JSONException e) {
+        return;
+      }
+      mutating = true;
+      hideKeyboard();
+      share.setEnabled(false);
+      dialog.setCancelable(false);
+      status.setText("Keeping this little moment…");
+      request(
+          () -> {
+            api.store.enqueue("/api/memories", body);
+            api.store.write(draftKey, new JSONObject());
+            return api.cached("/memories.json", true);
+          },
+          saved -> {
+            memories = saved;
+            mutating = false;
+            committed = true;
+            dialog.dismiss();
+            render(original != null);
+            updateConnection("");
+            Motion.haptic(root, true);
+            toast("Saved on your phone · sharing with both of us ♡");
+            refresh(false);
+          },
+          error -> {
+            mutating = false;
+            dialog.setCancelable(true);
+            share.setEnabled(true);
+            status.setText(message(error));
+          });
     }
   }
 

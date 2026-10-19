@@ -14,7 +14,9 @@ final class Motion {
   private static final Set<View> revealed = Collections.newSetFromMap(new WeakHashMap<>());
   static final android.view.animation.Interpolator EASE = new PathInterpolator(.2f, 0f, 0f, 1f);
 
-  static void customTouch(View view) { bound.add(view); }
+  static void customTouch(View view) {
+    bound.add(view);
+  }
 
   static boolean enabled(Context c) {
     return Compat.animatorsEnabled(c)

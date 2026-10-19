@@ -21,6 +21,7 @@ let music={version:1,tracks:[]};
 let together={version:1,bucketList:[],hearts:{me:null,asechka:null}};
 const memories={version:1,quotes:[{id:id(),text:'Every ordinary day feels a little brighter with you.',date:'2026-10-17',note:'A little thought, kept for us.'}],photos:[]};
 const galleryId=id();memories.photos.push({id:galleryId,src:`assets/photos/2026/10/${galleryId}.jpg`,caption:'A little fixture photo',date:'2026-10-17',alt:'Two cozy cats'});
+const originalQuote=structuredClone(memories.quotes[0]),originalPhoto=structuredClone(memories.photos[0]);
 const song={trackId:123456,title:'Our favorite song',artist:'Our favorite artist',album:'A little soundtrack',artworkUrl:'',trackUrl:'https://music.apple.com/us/album/our-song/123?i=123456',durationMs:181000};
 const musicAPI=createMusicAPI({catalog:{search:async()=>[song],track:async()=>song},store:{writable:true,read:async()=>({data:music}),change:async(change,track)=>{music=changeMusic(music,checkedChange(change),track).data;return music;}}});
 const togetherAPI=createTogetherAPI({favorites:{writable:true,read:async()=>together,memory:async()=>dailyMemory(memories,music),photo:async(kind,photoId)=>({bytes:kind==='memory'&&!photos.has(photoId)?await readFile(new URL('../app/src/main/assets/default/cats-cozy.jpg',import.meta.url)):photos.get(photoId),type:'image/jpeg'}),change:async input=>{const checked=checkedTogetherChange(input);together=changeTogether(together,checked).data;if(checked.photo)photos.set(checked.operationId,checked.photo);return together;}}});
@@ -31,7 +32,7 @@ createServer(async(req,res)=>{
     const request=new Request(new URL(req.url,'http://127.0.0.1:4777'),{method:req.method,headers:req.headers,...(['GET','HEAD'].includes(req.method)?{}:{body:Readable.toWeb(req),duplex:'half'})});
     const path=new URL(request.url).pathname;
     let response;
-    if(path==='/__reset'){music={version:1,tracks:[]};together={version:1,bucketList:[],hearts:{me:null,asechka:null}};memories.quotes=memories.quotes.slice(0,1);memories.photos=memories.photos.filter(photo=>photo.id===galleryId);photos.clear();response=json({ok:true});}
+    if(path==='/__reset'){music={version:1,tracks:[]};together={version:1,bucketList:[],hearts:{me:null,asechka:null}};memories.quotes=[structuredClone(originalQuote)];memories.photos=[structuredClone(originalPhoto)];photos.clear();response=json({ok:true});}
     else if(path==='/__add-memory'){memories.quotes.push({id:id(),text:'A new little thought from the website.',date:'2026-10-17',note:''});response=json({ok:true});}
     else if(path==='/api/memories')response=await memoriesAPI(request);
     else if(path.startsWith('/api/music'))response=await musicAPI(request);

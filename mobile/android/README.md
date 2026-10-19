@@ -1,4 +1,4 @@
-# Asechka for Android — 1.3.1
+# Asechka for Android — 2.0.0
 
 A native Android app for [our live website](https://asechka-website.vercel.app). All screens use Android views, text inputs, dialogs, image rendering, navigation, and the system photo picker. The application contains no WebView, bundled website, browser shell, JavaScript bridge, or website credentials.
 
@@ -10,15 +10,15 @@ Transfer **Asechka.apk** to an Android phone running **Android 6.0 or later**, o
 
 This is one universal APK: Android 6.0 (API 23) and newer, with no ARM/x86 split packages, CPU-specific native libraries, or Google Play services requirement. The target SDK stays at Android 16. Android 5 and earlier are outside the supported range; an APK cannot support every Android release or guarantee every manufacturer's installer.
 
-Version 1.3.1 adds explicit v1, v2, and v3 signatures using the original release certificate, plus Android 6–8 fallbacks for photo decoding and EXIF orientation, static bundled fonts, animation settings, navigation labels, network callbacks, background scheduling, dates, and password verification. Existing encrypted storage and pending changes remain compatible with previous versions. Newer Android retains its modern image decoder and variable fonts.
+Earlier compatibility work added explicit v1, v2, and v3 signatures using the original release certificate, plus Android 6–8 fallbacks for photo decoding and EXIF orientation, static bundled fonts, animation settings, navigation labels, network callbacks, background scheduling, dates, and password verification. Existing encrypted storage and pending changes remain compatible with previous versions. Newer Android retains its modern image decoder and variable fonts.
 
-Download or transfer **Asechka-v1.3.1.apk** as a complete file, retaining the `.apk` extension. If a messenger changes the file, send it as a document or download it directly. The complete release is **6,532,650 bytes**; compare its SHA-256 with the supplied file if a transfer is suspect. Install over the existing app to retain app-private saved data. A parsing error can also mean an incomplete/corrupted transfer or an unsupported OS; Samsung Galaxy alone does not identify the Android version.
+Download or transfer **Asechka-v2.0.0.apk** as a complete file, retaining the `.apk` extension. Send it as a document or download from a browser into Downloads, then open it in Files. Compare its SHA-256 with the supplied file if a transfer is suspect. Install over the existing app to retain app-private saved data. A parsing error can also mean an incomplete/corrupted transfer or an unsupported OS; Samsung Galaxy alone does not identify the Android version.
 
 ## Connected features
 
 | Native section | Features and live data |
 | --- | --- |
-| Home | Original letter, countdown, hints while the countdown is active, feeling cards, little-love interaction, quote carousel with pause, daily memory, original artwork, and shortcuts |
+| Home | Recycled social feed combining photos and quotes; likes, comments, bookmarks, sharing, double-tap hearts, and native creation/editing. Our corner keeps the original letter, countdown, feelings, daily memory, birthdays, and artwork. |
 | Photos | Shared gallery, add a photo with caption/date, encrypted offline uploads, gently moving images, and a full-screen viewer with previous/next and pinch zoom |
 | Quotes | Shared quotes, add a quote with note/date, swipeable automatic slideshow, pause/resume, gentle quote movement, and the dated collection |
 | Music | Existing catalog search; ten shared slots; add, replace, edit notes, remove with confirmation; artwork, album, duration, Apple Music and Spotify links |
@@ -41,13 +41,13 @@ Repeated metadata reads reuse a bounded memory cache; image requests are coalesc
 
 On first launch, choose **Asnat** or **Youssef**. The choice is remembered and can be changed in the app menu. Hearts use the correct sender automatically. Translations automatically use a female speaker and male recipient for Asnat, and a male speaker and female recipient for Youssef. Drafts and the last translation are kept per profile; shared website content stays shared.
 
-**Asnat: August 5. Youssef: January 25.** Both recurring birthdays appear on Home and Our days, including days remaining and a birthday-day message. They work offline and roll forward each year. No birth years or ages are assumed.
+**Asnat: August 5. Youssef: January 25.** Both recurring birthdays appear in Our corner and Our days, including days remaining and a birthday-day message. They work offline and roll forward each year. No birth years or ages are assumed.
 
 ## Offline behavior
 
 The original cat artwork, default photos, all 13 current gallery photos, icons, and licensed fonts ship inside the APK. Shared images show an explicit loading/retry state; the gallery and viewer use the protected shared photo endpoint. Online sync saves the current quotes, gallery, shared wishes, song metadata, artwork, daily memory, and referenced photos. The status line reports unfinished photo downloads. Open the app online until those finish before relying on new pictures offline.
 
-New quotes and gallery photos, music/wish edits, completion photos, deletions, and hearts are saved durably before sending. Offline changes remain in an ordered outbox across app restarts and are retried on reconnect. Repeated requests use the existing backend’s revision checks and idempotency rules. A conflict stays saved for review in **Saved changes**; the user can keep the website version or explicitly apply their change. The app does not silently overwrite a newer edit.
+New posts, post edits, likes, comments, gallery photos, music/wish edits, completion photos, deletions, and hearts are saved durably before sending. Offline changes remain in an ordered outbox across app restarts and are retried on reconnect. Repeated requests use the existing backend’s revision checks and idempotency rules. A conflict stays saved for review in **Saved changes**; the user can keep the website version or explicitly apply their change. The app does not silently overwrite a newer edit.
 
 New catalog searches, new translations, and external music playback need internet. Previously searched catalog results and saved translations work offline. The APK does not include licensed music recordings. Changes made by the other person are checked within the foreground one-minute refresh cycle; the existing server does not provide push events.
 
@@ -90,9 +90,13 @@ adb install -r build\tests\native-tests.apk
 adb shell am instrument -w app.asechka.android.tests/app.asechka.android.NativeTests
 ```
 
-The compatibility mode (`-e compatOnly true`) checks real production HTTPS without changing personal data, dates, native screens, EXIF rotation, bounded uploads, secure login, offline password verification, encrypted cache recreation, and queued writes. Separate upgrade checks seed encrypted state under the original 1.3.0 APK and verify it after installing 1.3.1.
+The compatibility mode (`-e compatOnly true`) checks real production HTTPS without changing personal data, dates, native screens, EXIF rotation, bounded uploads, secure login, offline password verification, encrypted cache recreation, and queued writes. Separate upgrade checks seed encrypted state under the original 1.3.0 APK and verify it after installing the current release.
 
 The instrumentation checks image bitmap rendering, six navigation destinations, quote autoplay/pause, reduced motion, native quote/photo form publishing, offline addition persistence and retry idempotency, first-launch profiles, automatic roles, birthday rollover, small/large-text/landscape layouts, real disconnected-radio access, cold activity restoration, one-minute automatic content updates, ordered offline writes, and native controls and navigation, invalid and valid login, encrypted session persistence, live reads and writes against the isolated server, stale-write rejection, JPEG resizing and photo upload, music search, shared hearts, translation, clipboard, photo zoom, failure recovery, and sign-out. QA screenshots use fictional fixture content. Release signature and manifest checks are recorded with the delivered APK.
 
 
 The production collection backend was deployed in repository commit `ec972f2`, with gallery session handling completed in `883b91f`. The exact server/website changes are included in `tools/connected-backend.patch`; `tools/backend` contains the server modules used by the isolated QA fixture. These files contain no production credentials. The existing 16 quotes and 13 photos were retained when deploying the connection.
+
+## Android and iPhone automation
+
+The private repository includes both native applications under mobile/ and a GitHub Actions workflow that generates the signed Android APK and an unsigned iPhone IPA for signing with a sideloading tool. See mobile/README.md in the repository for build downloads and iOS installation details.

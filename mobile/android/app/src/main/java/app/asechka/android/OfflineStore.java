@@ -80,9 +80,13 @@ final class OfflineStore {
         while ((count = input.read(buffer)) != -1) encrypted.write(buffer, 0, count);
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, key(), new GCMParameterSpec(128, iv));
-        byte[] plain = cipher.doFinal(encrypted.toByteArray());
+        byte[] plain = crypt(cipher, encrypted.toByteArray());
         if (!name.startsWith("image:")) HOT.put(hotKey, plain);
         return plain;
+      } catch (GeneralSecurityException error) {
+        android.util.Log.w(
+            "AsechkaCache", "Encrypted cache read failed: " + error.getClass().getSimpleName());
+        return null;
       } catch (Exception ignored) {
         return null;
       }
@@ -96,9 +100,12 @@ final class OfflineStore {
       try {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, key());
-        byte[] encrypted = cipher.doFinal(data);
+        byte[] iv = cipher.getIV().clone();
+        byte[] encrypted = crypt(cipher, data);
+        if (encrypted.length != data.length + 16)
+          throw new IOException("Incomplete encrypted save");
         output = file.startWrite();
-        output.write(cipher.getIV());
+        output.write(iv);
         output.write(encrypted);
         file.finishWrite(output);
         if (!name.startsWith("image:")) HOT.put(namespace + "\n" + name, data.clone());
@@ -108,6 +115,19 @@ final class OfflineStore {
             "Your phone couldn’t save this. Check its available storage and try again.", error);
       }
     }
+  }
+
+  private static byte[] crypt(Cipher cipher, byte[] data) throws Exception {
+    // Older Keystore implementations can lose output when doFinal receives a large buffer.
+    // Collect every update result and release decrypted bytes only after authentication succeeds.
+    ByteArrayOutputStream output = new ByteArrayOutputStream(data.length + 32);
+    for (int offset = 0; offset < data.length; offset += 16384) {
+      byte[] part = cipher.update(data, offset, Math.min(16384, data.length - offset));
+      if (part != null) output.write(part);
+    }
+    byte[] last = cipher.doFinal();
+    if (last != null) output.write(last);
+    return output.toByteArray();
   }
 
   JSONObject read(String name) {
@@ -324,8 +344,10 @@ final class OfflineStore {
       }
       if (body.has("photo")) {
         byte[] image = Base64.decode(body.getString("photo").substring(23), Base64.NO_WRAP);
-        if (path.equals("/api/memories")) bytes("image:/" + MemoryProjection.photoPath(body), image);
-        else bytes("image:/api/together-photo?kind=bucket&id=" + body.getString("operationId"), image);
+        if (path.equals("/api/memories"))
+          bytes("image:/" + MemoryProjection.photoPath(body), image);
+        else
+          bytes("image:/api/together-photo?kind=bucket&id=" + body.getString("operationId"), image);
       }
       items.put(entry);
       queue(items);
@@ -359,10 +381,13 @@ final class OfflineStore {
       String id = body.optString("id", body.optString("operationId"));
       for (String collection : new String[] {"photos", "quotes"}) {
         JSONArray entries = data.optJSONArray(collection);
-        if (entries != null) for (int i = 0; i < entries.length(); i++) {
-          JSONObject item = entries.optJSONObject(i);
-          if (item != null && (id.equals(item.optString("id")) || id.equals(item.optString("editKey")))) return item;
-        }
+        if (entries != null)
+          for (int i = 0; i < entries.length(); i++) {
+            JSONObject item = entries.optJSONObject(i);
+            if (item != null
+                && (id.equals(item.optString("id")) || id.equals(item.optString("editKey"))))
+              return item;
+          }
       }
       return null;
     }

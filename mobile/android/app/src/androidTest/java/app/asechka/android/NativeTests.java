@@ -37,7 +37,8 @@ public final class NativeTests extends Instrumentation {
     try {
       if (!upgrade.isEmpty()) {
         upgradeTest(upgrade.equals("seed"));
-        result.putString("stream", "PASS: " + assertions + " upgrade assertions (" + upgrade + ").\n");
+        result.putString(
+            "stream", "PASS: " + assertions + " upgrade assertions (" + upgrade + ").\n");
       } else if (convert) {
         File dir = new File(getTargetContext().getExternalFilesDir(null), "qa");
         for (File file : dir.listFiles()) {
@@ -80,6 +81,10 @@ public final class NativeTests extends Instrumentation {
                 + ".\n");
       finish(Activity.RESULT_OK, result);
     } catch (Throwable e) {
+      try {
+        screenshot("failure");
+      } catch (Exception ignored) {
+      }
       StringWriter text = new StringWriter();
       e.printStackTrace(new PrintWriter(text));
       result.putString("stream", "FAIL: " + text);
@@ -96,24 +101,58 @@ public final class NativeTests extends Instrumentation {
     // A separate namespace cannot send these fixture changes to the personal website.
     OfflineStore store = new OfflineStore(getTargetContext(), "https://upgrade-fixture.invalid");
     if (seed) {
-      store.snapshot("/memories.json", obj("version", 1, "writable", true,
-          "quotes", new JSONArray(), "photos", new JSONArray()));
+      store.snapshot(
+          "/memories.json",
+          obj(
+              "version",
+              1,
+              "writable",
+              true,
+              "quotes",
+              new JSONArray(),
+              "photos",
+              new JSONArray()));
       store.rememberCode("upgrade-fixture-code");
       store.write("word-draft:Asnat", obj("text", "A draft kept across an APK update"));
-      store.enqueue("/api/memories", obj("action", "addQuote", "operationId",
-          "33333333-3333-4333-8333-333333333333", "date", "2026-10-17",
-          "text", "A quote kept across an APK update", "note", ""));
+      store.enqueue(
+          "/api/memories",
+          obj(
+              "action",
+              "addQuote",
+              "operationId",
+              "33333333-3333-4333-8333-333333333333",
+              "date",
+              "2026-10-17",
+              "text",
+              "A quote kept across an APK update",
+              "note",
+              ""));
       check(!store.read("access").has("kdf"), "Seed uses original untagged password verifier");
     } else {
-      check(store.unlockWithCode("upgrade-fixture-code"), "Original password verifier still unlocks");
-      check(store.read("word-draft:Asnat").getString("text")
-          .equals("A draft kept across an APK update"), "Encrypted draft retained");
+      check(
+          store.unlockWithCode("upgrade-fixture-code"), "Original password verifier still unlocks");
+      check(
+          store
+              .read("word-draft:Asnat")
+              .getString("text")
+              .equals("A draft kept across an APK update"),
+          "Encrypted draft retained");
       check(store.queue().length() == 1, "Pending addition retained");
-      check(store.projected("/api/memories").getJSONArray("quotes").getJSONObject(0)
-          .getString("text").equals("A quote kept across an APK update"),
+      check(
+          store
+              .projected("/api/memories")
+              .getJSONArray("quotes")
+              .getJSONObject(0)
+              .getString("text")
+              .equals("A quote kept across an APK update"),
           "Original collection cache and queued quote readable after update");
-      check(getTargetContext().getPackageManager().getPackageInfo(
-          getTargetContext().getPackageName(), 0).versionCode == 5, "Updated package version");
+      check(
+          getTargetContext()
+                  .getPackageManager()
+                  .getPackageInfo(getTargetContext().getPackageName(), 0)
+                  .versionCode
+              == 6,
+          "Updated package version");
     }
   }
 
@@ -156,7 +195,7 @@ public final class NativeTests extends Instrumentation {
       call("select", new Class[] {int.class}, screen);
       check(((ViewGroup) get("bottom")).getChildCount() == 6, "Native screen renders: " + screen);
     }
-    call("select", new Class[] {int.class}, 0);
+    call("select", new Class[] {int.class}, 3);
     check(
         text("Asnat · August 5") != null && text("Youssef · January 25") != null,
         "Birthday cards render on this Android version");
@@ -415,7 +454,7 @@ public final class NativeTests extends Instrumentation {
         "Cookie encrypted at rest");
     screenshot("02-home");
     call("select", new Class[] {int.class}, 5);
-    check(text("A thousand little\nways to say it.") != null, "Memories native screen");
+    check(text("Words to keep.") != null, "Memories native screen");
     check(
         text("“Every ordinary day feels a little brighter with you.”") != null,
         "Live quotes shown");
@@ -883,7 +922,7 @@ public final class NativeTests extends Instrumentation {
       call("showShell", new Class[] {});
       call("select", new Class[] {int.class}, 5);
       check(
-          text("“A new little thought from the website.”") != null,
+          ((SocialFeed) get("feed")).items().size() == 2,
           "Native cold activity restores saved website content with radios off");
       screenshot("09-airplane-restart");
     } finally {
@@ -899,12 +938,15 @@ public final class NativeTests extends Instrumentation {
           ViewGroup root = (ViewGroup) uncheckedGet("root");
           View bar = root.getChildAt(0), nav = (View) uncheckedGet("bottom");
           int[] top = new int[2], bottom = new int[2];
+          int[] origin = new int[2];
+          root.getLocationInWindow(origin);
           bar.getLocationInWindow(top);
           nav.getLocationInWindow(bottom);
           valid[0] =
-              top[1] >= root.getPaddingTop()
+              top[1] >= origin[1] + root.getPaddingTop()
                   && bar.getHeight() > 0
-                  && bottom[1] + nav.getHeight() <= root.getHeight() - root.getPaddingBottom() + 1
+                  && bottom[1] + nav.getHeight()
+                      <= origin[1] + root.getHeight() - root.getPaddingBottom() + 1
                   && bottom[1] > top[1] + bar.getHeight();
         });
     check(valid[0], label + " header and navigation remain inside screen insets");
@@ -1041,82 +1083,201 @@ public final class NativeTests extends Instrumentation {
   }
 
   private void socialTests() throws Exception {
-    prepareMotionFixture(); check(api.prefetchMedia()==0,"Fixture photos saved before going offline"); offline(api,true);
-    getTargetContext().getSharedPreferences("preferences",0).edit().remove("saved-posts:asnat").commit();
+    prepareMotionFixture();
+    byte[] photoBytes = new byte[200000];
+    new Random(23).nextBytes(photoBytes);
+    api.store.bytes("image:qa-roundtrip", photoBytes);
+    check(
+        Arrays.equals(photoBytes, api.store.bytes("image:qa-roundtrip")),
+        "Encrypted photo bytes survive a cold disk read");
+    api.store.remove("image:qa-roundtrip");
+    check(api.prefetchMedia() == 0, "Fixture photos saved before going offline");
+    offline(api, true);
+    getTargetContext()
+        .getSharedPreferences("preferences", 0)
+        .edit()
+        .remove("saved-posts:asnat")
+        .commit();
     chrome("Social home");
-    for(int screen:new int[]{0,1,5,2,3,4}) {
-      call("select",new Class[]{int.class},screen);
-      check(((ViewGroup)get("bottom")).getChildCount()==6,"All six native tabs remain: "+screen);
+    for (int screen : new int[] {0, 1, 5, 2, 3, 4}) {
+      call("select", new Class[] {int.class}, screen);
+      check(
+          ((ViewGroup) get("bottom")).getChildCount() == 6,
+          "All six native tabs remain: " + screen);
     }
-    call("select",new Class[]{int.class},0);
-    SocialFeed feed=(SocialFeed)get("feed");
-    check(feed.items().size()==3,"Home combines photos and quotes");
-    check(feed.getParent() instanceof FrameLayout,"Feed scrolls natively outside the old ScrollView");
+    call("select", new Class[] {int.class}, 0);
+    SocialFeed feed = (SocialFeed) get("feed");
+    check(feed.items().size() == 3, "Home combines photos and quotes");
+    check(
+        feed.getParent() instanceof FrameLayout,
+        "Feed scrolls natively outside the old ScrollView");
     screenshot("20-social-home");
-    SocialFeed.Post quote=null,photo=null;
-    for(SocialFeed.Post post:feed.items()){if(post.kind.equals("quote"))quote=post;else photo=post;}
-    final SocialFeed.Post q=quote,p=photo;
-    ui(()->activity.react(q,true,feed));await(()->api.store.pending()==1,"Offline like durable");
-    check(api.cached("/memories.json",true).toString().contains("\"asnat\":true"),"Like projected locally");
-    ui(()->activity.react(q,false,feed));await(()->api.store.pending()==2,"Offline unlike durable and ordered");
-    ui(()->activity.savePost(p));check(activity.saved(p),"Bookmark saved per profile");
-    call("select",new Class[]{int.class},1);await(()->hasBitmap(decor()),"Gallery photo decoded");
+    SocialFeed.Post quote = null, photo = null;
+    for (SocialFeed.Post post : feed.items()) {
+      if (post.kind.equals("quote")) quote = post;
+      else photo = post;
+    }
+    final SocialFeed.Post q = quote, p = photo;
+    String cachedSource =
+        ApiClient.photoURL(
+            api.store.base("/memories.json").getJSONArray("photos").getJSONObject(0));
+    check(
+        p.source().equals(cachedSource),
+        "Feed and cached photo references match: " + p.source() + " / " + cachedSource);
+    check(
+        api.store.bytes("image:/" + p.value.optString("src")) != null,
+        "Original photo bytes saved by prefetch");
+    check(
+        p.id.equals(android.net.Uri.parse(p.source()).getQueryParameter("id")),
+        "Photo URL identifier decoded on old Android");
+    check(
+        api.image(p.source()).length > 0,
+        "Current photo is available from encrypted offline storage");
+    ui(() -> activity.react(q, true, feed));
+    await(() -> api.store.pending() == 1, "Offline like durable");
+    check(
+        api.cached("/memories.json", true).toString().contains("\"asnat\":true"),
+        "Like projected locally");
+    ui(() -> activity.react(q, false, feed));
+    await(() -> api.store.pending() == 2, "Offline unlike durable and ordered");
+    ui(() -> activity.savePost(p));
+    check(activity.saved(p), "Bookmark saved per profile");
+    call("select", new Class[] {int.class}, 1);
+    ui(() -> ((SocialFeed) uncheckedGet("feed")).setSelection(1));
+    await(() -> hasBitmap(decor()), "Gallery photo decoded");
     screenshot("21-social-photo");
-    ui(()->activity.comments(q));Dialog comments=(Dialog)get("activeDialog");
-    ui(()->views(comments.getWindow().getDecorView(),EditText.class).get(0).setText("A little offline love ♡ שלום"));
-    clickIn(comments,"Send");await(()->api.store.pending()==3,"Comment queued without waiting for network");
-    check(api.cached("/memories.json",true).toString().contains("A little offline love"),"Unicode comment visible in projected collection");
-    screenshot("22-comments");ui(()->comments.dismiss());
-    ui(()->activity.createPost(false));Dialog editor=(Dialog)get("activeDialog");
-    ui(()->views(editor.getWindow().getDecorView(),EditText.class).get(0).setText("A new native social quote ♡"));
-    screenshot("23-composer");clickIn(editor,"Share");await(()->get("activeDialog")==null,"Quote composer closes after durable local save");
-    await(()->api.store.pending()==4,"New quote durable offline");
-    JSONObject local=api.cached("/memories.json",true);
-    check(local.getJSONArray("quotes").length()==3,"Quote added to shared feed locally");
-    JSONObject newest=local.getJSONArray("quotes").getJSONObject(2);
-    check(newest.getString("author").equals("asnat"),"Post author follows selected identity");
-    check(newest.optString("editVersion").startsWith("local:"),"New post can be edited before it syncs");
-    ApiClient restart=new ApiClient(getTargetContext(),"http://127.0.0.1:4777");offline(restart,true);
-    check(restart.store.pending()==4,"Social changes survive a cold API restart");
-    offline(restart,false);restart.syncPending();
-    check(restart.store.pending()==0,"Reconnect syncs likes, unlike, comment, and post");
-    JSONObject server=restart.get("/memories.json");
-    JSONObject serverQuote=null;
-    for(int i=0;i<server.getJSONArray("quotes").length();i++){JSONObject item=server.getJSONArray("quotes").getJSONObject(i);if(item.getString("id").equals(q.id))serverQuote=item;}
-    check(serverQuote!=null&&!serverQuote.getJSONObject("social").getJSONObject("likes").getBoolean("asnat"),"Final unlike wins after ordered sync");
-    check(serverQuote.getJSONObject("social").getJSONArray("comments").length()==1,"Comment synchronized exactly once");
-    String op=UUID.randomUUID().toString();
-    JSONObject like=obj("action","setLike","kind","quote","id",q.id,"actor","youssef","liked",true,"operationId",op);
-    restart.post("/api/memories",like);restart.post("/api/memories",like);
-    check(restart.get("/memories.json").toString().contains("\"youssef\":true"),"Other profile sees shared like");
-    offline(api,false);api.get("/memories.json");call("restoreSaved",new Class[]{});call("render",new Class[]{boolean.class},false);
-    ui(()->activity.createPost(true));Dialog photoEditor=(Dialog)get("activeDialog");
-    File source=new File(getTargetContext().getCacheDir(),"social-photo.png");
-    Bitmap sample=Bitmap.createBitmap(1000,750,Bitmap.Config.ARGB_8888);sample.eraseColor(0xffb5ceee);
-    try(FileOutputStream out=new FileOutputStream(source)){sample.compress(Bitmap.CompressFormat.PNG,100,out);}sample.recycle();
-    call("onActivityResult",new Class[]{int.class,int.class,Intent.class},121,Activity.RESULT_OK,new Intent().setData(Uri.fromFile(source)));
-    await(()->!((boolean)inner(get("memoryEditor"),"photoBusy")),"Native photo picker prepares JPEG");
-    ui(()->views(photoEditor.getWindow().getDecorView(),EditText.class).get(0).setText("Our social photo"));
-    clickIn(photoEditor,"Share");await(()->get("activeDialog")==null,"Photo saved by native composer");
-    api.syncPending();JSONObject photos=api.get("/memories.json");
-    check(photos.getJSONArray("photos").length()==2,"Photo shared through the website API");
-    JSONObject uploaded=photos.getJSONArray("photos").getJSONObject(1);
-    check(api.image(ApiClient.photoURL(uploaded)).length>20,"Versioned photo URL serves uploaded image");
-    call("restoreSaved",new Class[]{});call("render",new Class[]{boolean.class},false);
-    call("select",new Class[]{int.class},5);check(get("quoteText")!=null,"Quote carousel retained above quote posts");
+    ui(() -> activity.comments(q));
+    Dialog comments = (Dialog) get("activeDialog");
+    ui(
+        () ->
+            views(comments.getWindow().getDecorView(), EditText.class)
+                .get(0)
+                .setText("A little offline love ♡ שלום"));
+    clickIn(comments, "Send");
+    await(() -> api.store.pending() == 3, "Comment queued without waiting for network");
+    check(
+        api.cached("/memories.json", true).toString().contains("A little offline love"),
+        "Unicode comment visible in projected collection");
+    screenshot("22-comments");
+    ui(() -> comments.dismiss());
+    ui(() -> activity.createPost(false));
+    Dialog editor = (Dialog) get("activeDialog");
+    ui(
+        () ->
+            views(editor.getWindow().getDecorView(), EditText.class)
+                .get(0)
+                .setText("A new native social quote ♡"));
+    screenshot("23-composer");
+    clickIn(editor, "Share");
+    await(() -> get("activeDialog") == null, "Quote composer closes after durable local save");
+    await(() -> api.store.pending() == 4, "New quote durable offline");
+    JSONObject local = api.cached("/memories.json", true);
+    check(local.getJSONArray("quotes").length() == 3, "Quote added to shared feed locally");
+    JSONObject newest = local.getJSONArray("quotes").getJSONObject(2);
+    check(newest.getString("author").equals("asnat"), "Post author follows selected identity");
+    check(
+        newest.optString("editVersion").startsWith("local:"),
+        "New post can be edited before it syncs");
+    ApiClient restart = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(restart, true);
+    check(restart.store.pending() == 4, "Social changes survive a cold API restart");
+    offline(restart, false);
+    restart.syncPending();
+    check(restart.store.pending() == 0, "Reconnect syncs likes, unlike, comment, and post");
+    JSONObject server = restart.get("/memories.json");
+    JSONObject serverQuote = null;
+    for (int i = 0; i < server.getJSONArray("quotes").length(); i++) {
+      JSONObject item = server.getJSONArray("quotes").getJSONObject(i);
+      if (item.getString("id").equals(q.id)) serverQuote = item;
+    }
+    check(
+        serverQuote != null
+            && !serverQuote.getJSONObject("social").getJSONObject("likes").getBoolean("asnat"),
+        "Final unlike wins after ordered sync");
+    check(
+        serverQuote.getJSONObject("social").getJSONArray("comments").length() == 1,
+        "Comment synchronized exactly once");
+    String op = UUID.randomUUID().toString();
+    JSONObject like =
+        obj(
+            "action",
+            "setLike",
+            "kind",
+            "quote",
+            "id",
+            q.id,
+            "actor",
+            "youssef",
+            "liked",
+            true,
+            "operationId",
+            op);
+    restart.post("/api/memories", like);
+    restart.post("/api/memories", like);
+    check(
+        restart.get("/memories.json").toString().contains("\"youssef\":true"),
+        "Other profile sees shared like");
+    offline(api, false);
+    api.get("/memories.json");
+    call("restoreSaved", new Class[] {});
+    call("render", new Class[] {boolean.class}, false);
+    ui(() -> activity.createPost(true));
+    Dialog photoEditor = (Dialog) get("activeDialog");
+    File source = new File(getTargetContext().getCacheDir(), "social-photo.png");
+    Bitmap sample = Bitmap.createBitmap(1000, 750, Bitmap.Config.ARGB_8888);
+    sample.eraseColor(0xffb5ceee);
+    try (FileOutputStream out = new FileOutputStream(source)) {
+      sample.compress(Bitmap.CompressFormat.PNG, 100, out);
+    }
+    sample.recycle();
+    call(
+        "onActivityResult",
+        new Class[] {int.class, int.class, Intent.class},
+        121,
+        Activity.RESULT_OK,
+        new Intent().setData(Uri.fromFile(source)));
+    await(
+        () -> !((boolean) inner(get("memoryEditor"), "photoBusy")),
+        "Native photo picker prepares JPEG");
+    ui(
+        () ->
+            views(photoEditor.getWindow().getDecorView(), EditText.class)
+                .get(0)
+                .setText("Our social photo"));
+    clickIn(photoEditor, "Share");
+    await(() -> get("activeDialog") == null, "Photo saved by native composer");
+    api.syncPending();
+    JSONObject photos = api.get("/memories.json");
+    check(photos.getJSONArray("photos").length() == 2, "Photo shared through the website API");
+    JSONObject uploaded = photos.getJSONArray("photos").getJSONObject(1);
+    check(
+        api.image(ApiClient.photoURL(uploaded)).length > 20,
+        "Versioned photo URL serves uploaded image");
+    call("restoreSaved", new Class[] {});
+    call("render", new Class[] {boolean.class}, false);
+    call("select", new Class[] {int.class}, 5);
+    check(get("quoteText") != null, "Quote carousel retained above quote posts");
     screenshot("24-social-quotes");
-    call("select",new Class[]{int.class},2);call("select",new Class[]{int.class},3);call("select",new Class[]{int.class},4);
+    call("select", new Class[] {int.class}, 2);
+    call("select", new Class[] {int.class}, 3);
+    call("select", new Class[] {int.class}, 4);
     chrome("Personal tools");
   }
 
-  private Object inner(Object object,String name) throws Exception {
-    Field field=object.getClass().getDeclaredField(name);field.setAccessible(true);return field.get(object);
+  private Object inner(Object object, String name) throws Exception {
+    Field field = object.getClass().getDeclaredField(name);
+    field.setAccessible(true);
+    return field.get(object);
   }
 
-  private void clickIn(Dialog dialog,String label) {
-    for(TextView view:views(dialog.getWindow().getDecorView(),TextView.class))
-      if(view.getText().toString().equals(label)){ui(view::performClick);return;}
-    throw new AssertionError("Missing dialog control: "+label);
+  private void clickIn(Dialog dialog, String label) {
+    for (TextView view : views(dialog.getWindow().getDecorView(), TextView.class))
+      if (view.getText().toString().equals(label)) {
+        if (Looper.myLooper() == Looper.getMainLooper()) view.performClick();
+        else ui(view::performClick);
+        return;
+      }
+    throw new AssertionError("Missing dialog control: " + label);
   }
 
   private void motionAndPublishingTests() throws Exception {
@@ -1126,11 +1287,12 @@ public final class NativeTests extends Instrumentation {
     check(((ViewGroup) get("bottom")).getChildCount() == 6, "Six native navigation tabs");
     for (String label : new String[] {"Home", "Photos", "Quotes", "Music", "Our days", "Words"})
       check(text(label) != null, "Navigation label " + label);
-    await(() -> hasBitmap(decor()), "Bundled hero renders a real bitmap");
+    check(
+        ((SocialFeed) get("feed")).items().size() > 0, "Native social home restores shared posts");
     call("select", new Class[] {int.class}, 1);
     await(() -> hasBitmap(decor()), "Private gallery photo renders a real bitmap");
-    check(text("＋  Add a photo") != null, "Photo upload entry point");
-    View touchTarget = text("＋  Add a photo");
+    check(text("Something to share, Asnat?") != null, "Native post composer entry point");
+    View touchTarget = (View) text("Something to share, Asnat?").getParent();
     ui(
         () ->
             touchTarget.dispatchTouchEvent(
@@ -1201,24 +1363,23 @@ public final class NativeTests extends Instrumentation {
         .putBoolean("motion-paused", false)
         .commit();
     screenshot("15-quotes");
-    click("＋  Add a quote");
+    ui(() -> activity.createPost(false));
     Dialog editor = (Dialog) get("activeDialog");
     ui(
         () -> {
           ArrayList<EditText> fields = views(editor.getWindow().getDecorView(), EditText.class);
           fields.get(0).setText("A quote added inside the native app ♡");
           fields.get(1).setText("Shared with our website");
-          ((AlertDialog) editor).getButton(-1).performClick();
+          clickIn(editor, "Share");
         });
     await(
-        () ->
-            get("activeDialog") == null && text("“A quote added inside the native app ♡”") != null,
+        () -> get("activeDialog") == null && ((SocialFeed) get("feed")).items().size() == 3,
         "Native quote form publishes shared content");
     check(
         api.get("/memories.json").getJSONArray("quotes").length() == 3,
         "App quote visible through the shared website API");
     call("select", new Class[] {int.class}, 1);
-    click("＋  Add a photo");
+    ui(() -> activity.createPost(true));
     Dialog photoEditor = (Dialog) get("activeDialog");
     File source = new File(getTargetContext().getCacheDir(), "upload-test.png");
     Bitmap sample = Bitmap.createBitmap(1200, 900, Bitmap.Config.ARGB_8888);
@@ -1235,14 +1396,14 @@ public final class NativeTests extends Instrumentation {
         Activity.RESULT_OK,
         selection);
     await(
-        () -> hasBitmap(photoEditor.getWindow().getDecorView()),
+        () -> !((boolean) inner(get("memoryEditor"), "photoBusy")),
         "Native picker creates an upload preview");
     ui(
         () -> {
           views(photoEditor.getWindow().getDecorView(), EditText.class)
               .get(0)
               .setText("Our photo from the app");
-          ((AlertDialog) photoEditor).getButton(-1).performClick();
+          clickIn(photoEditor, "Share");
         });
     await(
         () -> get("activeDialog") == null && text("Our photo from the app") != null,

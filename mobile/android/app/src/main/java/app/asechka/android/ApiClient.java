@@ -280,8 +280,7 @@ public final class ApiClient {
     if (album != null && album.optJSONArray("photos") != null)
       for (int i = 0; i < album.optJSONArray("photos").length(); i++) {
         JSONObject photo = album.optJSONArray("photos").optJSONObject(i);
-        if (photo != null && !photo.optString("id").isEmpty())
-          urls.add(photoURL(photo));
+        if (photo != null && !photo.optString("id").isEmpty()) urls.add(photoURL(photo));
       }
     collectImages(store.base("/api/music"), urls);
     collectImages(store.base("/api/daily-memory"), urls);
@@ -347,13 +346,16 @@ public final class ApiClient {
       String id = android.net.Uri.parse(name).getQueryParameter("id");
       JSONObject savedMemories = store.projected("/memories.json");
       JSONArray photos = savedMemories == null ? null : savedMemories.optJSONArray("photos");
-      if (photos != null) for (int i = 0; i < photos.length(); i++) {
-        JSONObject photo = photos.optJSONObject(i);
-        if (photo != null && photo.optString("id").equals(id)) {
-          bundled = "/" + photo.optString("src"); cacheName = bundled;
-          original = !photo.has("revision"); break;
+      if (photos != null)
+        for (int i = 0; i < photos.length(); i++) {
+          JSONObject photo = photos.optJSONObject(i);
+          if (photo != null && photo.optString("id").equals(id)) {
+            bundled = "/" + photo.optString("src");
+            cacheName = bundled;
+            original = !photo.has("revision");
+            break;
+          }
         }
-      }
     }
     if (bundled.startsWith("/assets/") && !bundled.contains("..")) {
       try {
@@ -377,7 +379,10 @@ public final class ApiClient {
   static String photoURL(JSONObject photo) {
     String id = photo.optString("id");
     return photo.optString("src").startsWith("assets/photos/") && !id.isEmpty()
-        ? "/api/together-photo?kind=memory&id=" + id + "&v=" + photo.optString("revision", photo.optString("contentHash", id))
+        ? "/api/together-photo?kind=memory&id="
+            + id
+            + "&v="
+            + photo.optString("revision", photo.optString("contentHash", id))
         : photo.optString("src");
   }
 
