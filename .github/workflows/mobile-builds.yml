@@ -89,11 +89,14 @@ jobs:
         working-directory: mobile/ios
         run: |
           mkdir -p preview
+          xcrun xcresulttool export attachments --path NativeChecks.xcresult --output-path preview/screens
+          xcrun simctl boot "$IOS_SIMULATOR" || true
+          xcrun simctl bootstatus "$IOS_SIMULATOR" -b
+          xcrun simctl install "$IOS_SIMULATOR" build-test/Build/Products/Debug-iphonesimulator/Asechka.app
           xcrun simctl terminate "$IOS_SIMULATOR" app.asechka.ios || true
           xcrun simctl launch "$IOS_SIMULATOR" app.asechka.ios --preview-fixture
           sleep 3
           xcrun simctl io "$IOS_SIMULATOR" screenshot preview/iPhone-home.png
-          xcrun xcresulttool export attachments --path NativeChecks.xcresult --output-path preview/screens
       - uses: actions/upload-artifact@v4
         if: always()
         with:
