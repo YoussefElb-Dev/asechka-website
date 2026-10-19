@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { GitHubTogetherStore, TogetherError, checkedPhoto } from './together-store.js';
 import { UUID, photoPath } from './daily-memory.js';
+import { socialActions, checkedSocialChange, changeSocial, contentFingerprint } from './memory-social.js';
 const SHA = /^[a-f0-9]{40}$/;
 const VERSION = /^[a-f0-9]{64}$/;
 const fingerprint = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -14,14 +15,19 @@ export function editableMemories(value) {
   const data = checkedMemories(value);
   for (const kind of ['quotes', 'photos']) data[kind] = data[kind].map((item, index) => ({
     ...(typeof item === 'string' ? { text: item } : item),
-    editKey: editKey(item, index, kind), editVersion: fingerprint(item),
+    editKey: editKey(item, index, kind), editVersion: contentFingerprint(item),
   }));
   return data;
 }
 const fail = message => { throw new TogetherError(message, 400); };
 export function checkedMemoryChange(input) {
+  if (input && socialActions.has(input.action)) return checkedSocialChange(input);
   if (!input || !['addQuote', 'addPhoto', 'updateQuote', 'updatePhoto', 'removeQuote', 'removePhoto'].includes(input.action) || !UUID.test(input.operationId || '')) fail('Choose a quote or picture to keep.');
   const change = { action: input.action, operationId: input.operationId };
+  if (input.author !== undefined) {
+    if (!['asnat', 'youssef'].includes(input.author)) fail('Choose who is sharing this post.');
+    change.author = input.author;
+  }
   if (!input.action.startsWith('add')) {
     if (!UUID.test(input.id || '') || !VERSION.test(input.expectedVersion || '')) fail('Open this memory again before changing it.');
     Object.assign(change, { id: input.id, expectedVersion: input.expectedVersion });
@@ -52,7 +58,11 @@ export function checkedMemories(value) {
   return structuredClone(value);
 }
 export function appendMemory(base, change, now = new Date()) {
-  const data = checkedMemories(base), photo = change.action.endsWith('Photo');
+  const data = checkedMemories(base);
+  if (socialActions.has(change.action)) {
+    const result = changeSocial(data, change, editKey, now); checkSize(result.data); return result;
+  }
+  const photo = change.action.endsWith('Photo');
   const collection = photo ? data.photos : data.quotes;
   if (!change.action.startsWith('add')) {
     const index = collection.findIndex((item, i) => editKey(item, i, photo ? 'photos' : 'quotes') === change.id);
@@ -65,7 +75,7 @@ export function appendMemory(base, change, now = new Date()) {
       if (previous.date !== change.date || (photo ? previous.caption !== change.caption || change.photo && previous.contentHash !== change.contentHash : previous.text !== change.text || (previous.note || '') !== change.note)) conflict();
       return { data, changed: false };
     }
-    if (fingerprint(previous) !== change.expectedVersion) conflict();
+    if (contentFingerprint(previous) !== change.expectedVersion) conflict();
     let item;
     if (change.action.startsWith('remove')) collection.splice(index, 1);
     else {
@@ -91,7 +101,7 @@ export function appendMemory(base, change, now = new Date()) {
     throw new TogetherError('This saved memory changed. Review it before trying again.', 409);
   if (existing) return { data, changed: false };
   if (data.quotes.length + data.photos.length >= 5000) throw new TogetherError('Our collection is full. Please make some room before adding more.', 409);
-  const item = { id: change.operationId, date: change.date };
+  const item = { id: change.operationId, date: change.date, createdAt: now.toISOString(), ...(change.author ? { author: change.author } : {}) };
   if (photo) Object.assign(item, { src: photoFilename(change), caption: change.caption, alt: change.caption || 'A picture of us', contentHash: change.contentHash });
   else Object.assign(item, { text: change.text, ...(change.note ? { note: change.note } : {}) });
   collection.push(item); data.updatedAt = now.toISOString();
@@ -123,7 +133,7 @@ export class GitHubMemoriesStore extends GitHubTogetherStore {
       if (update.removedPhoto) entries.push({ path: `dist/${update.removedPhoto}`, mode: '100644', type: 'blob', sha: null });
       const tree = await this.github('/git/trees', 'POST', { base_tree: parent.tree.sha, tree: entries });
       if (!SHA.test(tree.sha)) throw new TogetherError('Our memory could not be saved.');
-      const commit = await this.github('/git/commits', 'POST', { message: `${change.action.startsWith('remove') ? 'Remove' : change.action.startsWith('update') ? 'Update' : 'Keep'} a shared ${change.action.endsWith('Photo') ? 'photo' : 'quote'}`, tree: tree.sha, parents: [sha] });
+      const commit = await this.github('/git/commits', 'POST', { message: socialActions.has(change.action) ? 'Update a shared post conversation' : `${change.action.startsWith('remove') ? 'Remove' : change.action.startsWith('update') ? 'Update' : 'Keep'} a shared ${change.action.endsWith('Photo') ? 'photo' : 'quote'}`, tree: tree.sha, parents: [sha] });
       if (!SHA.test(commit.sha)) throw new TogetherError('Our memory could not be saved.');
       try {
         await this.github('/git/refs/heads/main', 'PATCH', { sha: commit.sha, force: false });

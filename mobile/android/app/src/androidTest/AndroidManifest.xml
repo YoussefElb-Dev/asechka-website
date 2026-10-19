@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="app.asechka.android.tests">
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="36" />
+    <application android:label="Asechka native tests" />
+    <instrumentation android:name="app.asechka.android.NativeTests" android:targetPackage="app.asechka.android" />
+</manifest>

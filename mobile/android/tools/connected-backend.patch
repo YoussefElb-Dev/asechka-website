@@ -1,0 +1,275 @@
+diff --git a/README.md b/README.md
+index 2d31f89..4792b0c 100644
+--- a/README.md
++++ b/README.md
+@@ -102,3 +102,12 @@ The password-protected `/api/translation` route verifies its key against Google'
+ Only submitted text and the translation settings are sent to Google. This feature does not write messages to GitHub, logs, or browser storage. A small in-memory cache expires after five minutes, and each function instance limits uncached requests to six per minute. This is not a distributed quota limiter. Google's free tier has its own shared project quotas and may use submitted content to improve products; that notice is shown beside the form. No billing account is required or enabled by this setup.
+ 
+ References: [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing), [API key security](https://ai.google.dev/gemini-api/docs/api-key), [Gemini REST generation](https://ai.google.dev/api/generate-content).
++
++
++## Native Android shared collection
++
++The native Android app reads `/api/memories`, and its quote/photo forms save into the same `dist/memories.json` and `dist/assets/photos/YYYY/MM/UUID.jpg` collection used by Studio and the website. The existing `MUSIC_GITHUB_TOKEN` with repository Contents read/write also supplies this connection; it stays on the server. Signed login, same-origin JSON, and `X-Asechka-Memories: 1` protect writes. The API accepts a dated quote (up to 10,000 characters plus an optional 1,000-character note), or a prepared JPEG of at most 320,000 bytes and a caption. The app strips metadata and prepares the copy before saving.
++
++Stable operation IDs prevent duplicates after retries. Each save creates one atomic Git commit for the data and any photo, retaining the current repository tree and retrying simultaneous additions. Existing entries are preserved. The website reads the live API and serves gallery photos through its authenticated photo endpoint, so a new phone upload is available before the next static deployment finishes. Studio continues to fetch and merge the shared collection before publishing.
++
++The phone encrypts pending additions and original downloaded images in private storage. Quotes and photos saved without internet appear locally and synchronize when connectivity and a valid sign-in return. The collection currently has a 900 KB JSON metadata limit; a full collection is reported without replacing existing content or dropping the phone's queued addition.
+diff --git a/api/memories.js b/api/memories.js
+new file mode 100644
+index 0000000..4509eef
+--- /dev/null
++++ b/api/memories.js
+@@ -0,0 +1,2 @@
++import { handleMemories } from '../server/memories-api.js';
++export default { fetch: handleMemories };
+diff --git a/dist/memory-gallery.js b/dist/memory-gallery.js
+index 7d7cf1c..79e5e29 100644
+--- a/dist/memory-gallery.js
++++ b/dist/memory-gallery.js
+@@ -100,7 +100,7 @@ if (!photoGrid) return;
+ const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
+ savedPhotos = (Array.isArray(photos) ? photos : [])
+   .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
+-  .map(photo => ({ ...photo, src: photo.src.trim() }))
++  .map(photo => ({ ...photo, src: /^[a-f0-9-]{36}$/i.test(photo.id || '') && /^assets\/photos\//.test(photo.src) ? `/api/together-photo?kind=memory&id=${encodeURIComponent(photo.id)}` : photo.src.trim() }))
+   .filter(photo => {
+     try { return ['http:', 'https:'].includes(new URL(photo.src, document.baseURI).protocol); }
+     catch { return false; }
+@@ -186,8 +186,8 @@ async function checkForMemories() {
+   if (checking || document.hidden) return;
+   checking = true;
+   try {
+-    const response = await fetch('./memories.json', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(10000) });
+-    if (response.redirected && new URL(response.url).pathname === '/login') {
++    const response = await fetch('/api/memories', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(10000) });
++    if (response.status === 401 || response.redirected && new URL(response.url).pathname === '/login') {
+       window.location.replace('/login');
+       return;
+     }
+diff --git a/serve.mjs b/serve.mjs
+index 27c8d99..5513a87 100644
+--- a/serve.mjs
++++ b/serve.mjs
+@@ -1,6 +1,7 @@
+ import { createServer } from 'node:http';
+ import { Readable } from 'node:stream';
+ import { authorize, privateHeaders } from './server/auth.js';
++import { handleMemories } from './server/memories-api.js';
+ import { handleMusic } from './server/music-api.js';
+ import { handleTogether } from './server/together-api.js';
+ import { handleTranslation } from './server/translation-api.js';
+@@ -19,7 +20,7 @@ createServer(async (req, res) => {
+     const isMusic = ['/api/music', '/api/music-search'].includes(new URL(request.url).pathname);
+     const isTogether = ['/api/together','/api/together-photo','/api/daily-memory'].includes(new URL(request.url).pathname);
+     const isTranslation = new URL(request.url).pathname === '/api/translation';
+-    const gate = isMusic ? await handleMusic(request) : isTogether ? await handleTogether(request) : isTranslation ? await handleTranslation(request) : await authorize(request);
++    const gate = new URL(request.url).pathname === '/api/memories' ? await handleMemories(request) : isMusic ? await handleMusic(request) : isTogether ? await handleTogether(request) : isTranslation ? await handleTranslation(request) : await authorize(request);
+     if (gate) {
+       res.writeHead(gate.status, Object.fromEntries(gate.headers));
+       res.end(req.method === 'HEAD' ? undefined : Buffer.from(await gate.arrayBuffer()));
+diff --git a/server/auth.js b/server/auth.js
+index 0934409..26081fc 100644
+--- a/server/auth.js
++++ b/server/auth.js
+@@ -99,8 +99,12 @@ export async function authorize(request) {
+     return response(gatePage('login'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
+   }
+   if (!auth) return response(gatePage('login', 'Our little door isn’t ready yet. Try again soon.'), 503, { 'Content-Type': 'text/html; charset=utf-8' });
+-  if (!signedIn) return ['/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
++  if (!signedIn) return ['/api/memories','/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
+   if (path === '/welcome') return response(gatePage('welcome'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
++  if (path === '/api/memories' && request.method === 'POST') {
++    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-memories') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save memories from our app.' }), 403, { 'Content-Type': 'application/json' });
++    return null;
++  }
+   if (path === '/api/music' && request.method === 'POST') {
+     if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-music') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please choose our songs from the music page.' }), 403, { 'Content-Type': 'application/json' });
+     return null;
+diff --git a/server/memories-api.js b/server/memories-api.js
+new file mode 100644
+index 0000000..41a5e08
+--- /dev/null
++++ b/server/memories-api.js
+@@ -0,0 +1,23 @@
++import { authorize, privateHeaders } from './auth.js';
++import { TogetherError } from './together-store.js';
++import { GitHubMemoriesStore } from './memories-store.js';
++const store = new GitHubMemoriesStore();
++const json = (value, status = 200) => new Response(JSON.stringify(value), { status, headers: { ...privateHeaders, 'Content-Type': 'application/json; charset=utf-8' } });
++export function createMemoriesAPI({ collection = store } = {}) {
++  return async request => {
++    const denied = await authorize(request); if (denied) return denied;
++    try {
++      if (new URL(request.url).pathname !== '/api/memories') return json({ error: 'Not found.' }, 404);
++      if (request.method === 'GET') return json({ ...await collection.read(), writable: collection.writable });
++      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
++      if (Number(request.headers.get('content-length') || 0) > 440000) return json({ error: 'Choose a smaller picture.' }, 413);
++      const raw = await request.text();
++      if (Buffer.byteLength(raw, 'utf8') > 440000) return json({ error: 'Choose a smaller picture.' }, 413);
++      let input; try { input = JSON.parse(raw); } catch { return json({ error: 'Please try saving this memory again.' }, 400); }
++      return json({ ...await collection.change(input), writable: true });
++    } catch (error) {
++      return json({ error: error instanceof TogetherError ? error.message : 'Our shared collection needs a moment. Please try again.' }, error instanceof TogetherError ? error.status : 503);
++    }
++  };
++}
++export const handleMemories = createMemoriesAPI();
+diff --git a/server/memories-store.js b/server/memories-store.js
+new file mode 100644
+index 0000000..dda6f42
+--- /dev/null
++++ b/server/memories-store.js
+@@ -0,0 +1,80 @@
++import { createHash } from 'node:crypto';
++import { GitHubTogetherStore, TogetherError, checkedPhoto } from './together-store.js';
++import { UUID, photoPath } from './daily-memory.js';
++const SHA = /^[a-f0-9]{40}$/;
++const fail = message => { throw new TogetherError(message, 400); };
++export function checkedMemoryChange(input) {
++  if (!input || !['addQuote', 'addPhoto'].includes(input.action) || !UUID.test(input.operationId || '')) fail('Choose a quote or picture to keep.');
++  if (typeof input.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)
++      || !Number.isFinite(Date.parse(input.date)) || new Date(input.date).toISOString().slice(0, 10) !== input.date) fail('Choose a valid date for this memory.');
++  const text = (value, max, required = false) => {
++    if (typeof value !== 'string' || value.length > max || (required && !value.trim())) fail('This memory is blank or a little too long.');
++    return value.trim();
++  };
++  const change = { action: input.action, operationId: input.operationId, date: input.date };
++  if (input.action === 'addQuote') {
++    change.text = text(input.text, 10000, true); change.note = text(input.note ?? '', 1000);
++  } else {
++    change.caption = text(input.caption ?? '', 1000); change.photo = checkedPhoto(input.photo);
++    if (!change.photo) fail('Choose the picture you want to keep.');
++    change.contentHash = createHash('sha256').update(change.photo).digest('hex');
++  }
++  return change;
++}
++export function checkedMemories(value) {
++  if (!value || value.version !== 1 || !Array.isArray(value.quotes) || !Array.isArray(value.photos)
++      || value.quotes.some(q => typeof q !== 'string' && (!q || typeof q.text !== 'string'))
++      || value.photos.some(p => !p || typeof p.src !== 'string' || !photoPath.test(p.src)))
++    throw new TogetherError('Our saved collection could not be read. Nothing has been changed.');
++  return structuredClone(value);
++}
++export function appendMemory(base, change, now = new Date()) {
++  const data = checkedMemories(base), photo = change.action === 'addPhoto';
++  const collection = photo ? data.photos : data.quotes;
++  const other = (photo ? data.quotes : data.photos).some(item => item?.id === change.operationId);
++  const existing = collection.find(item => item?.id === change.operationId);
++  if (other || existing && (existing.date !== change.date
++      || (photo ? existing.caption !== change.caption || existing.contentHash !== change.contentHash
++          : existing.text !== change.text || (existing.note || '') !== change.note)))
++    throw new TogetherError('This saved memory changed. Review it before trying again.', 409);
++  if (existing) return { data, changed: false };
++  if (data.quotes.length + data.photos.length >= 5000) throw new TogetherError('Our collection is full. Please make some room before adding more.', 409);
++  const item = { id: change.operationId, date: change.date };
++  if (photo) Object.assign(item, { src: `assets/photos/${change.date.slice(0,4)}/${change.date.slice(5,7)}/${change.operationId}.jpg`, caption: change.caption, alt: change.caption || 'A picture of us', contentHash: change.contentHash });
++  else Object.assign(item, { text: change.text, ...(change.note ? { note: change.note } : {}) });
++  collection.push(item); data.updatedAt = now.toISOString();
++  if (Buffer.byteLength(JSON.stringify(data), 'utf8') > 900000) throw new TogetherError('Our collection needs more storage before adding this memory. Your addition stays on your phone.', 409);
++  return { data, changed: true, item };
++}
++export class GitHubMemoriesStore extends GitHubTogetherStore {
++  async read(options) { return checkedMemories(await this.jsonFile('dist/memories.json', options)); }
++  async change(input) {
++    if (!this.writable) throw new TogetherError('Shared saving needs its connection restored. Your memory stays on this phone.');
++    const change = checkedMemoryChange(input); let photoBlob;
++    for (let attempt = 0; attempt < 3; attempt++) {
++      const ref = await this.github('/git/ref/heads/main'), sha = ref.object?.sha;
++      if (!SHA.test(sha)) throw new TogetherError('Our shared connection needs a moment.');
++      const update = appendMemory(await this.read({ ref: sha, fresh: true }), change, new Date(this.now()));
++      if (!update.changed) return update.data;
++      const parent = await this.github(`/git/commits/${sha}`);
++      if (!SHA.test(parent.tree?.sha)) throw new TogetherError('Our shared connection needs a moment.');
++      const entries = [{ path: 'dist/memories.json', mode: '100644', type: 'blob', content: JSON.stringify(update.data, null, 2) + '\n' }];
++      if (change.photo) {
++        photoBlob ||= await this.github('/git/blobs', 'POST', { encoding: 'base64', content: change.photo.toString('base64') });
++        if (!SHA.test(photoBlob.sha)) throw new TogetherError('Your picture could not be saved.');
++        entries.push({ path: `dist/${update.item.src}`, mode: '100644', type: 'blob', sha: photoBlob.sha });
++      }
++      const tree = await this.github('/git/trees', 'POST', { base_tree: parent.tree.sha, tree: entries });
++      if (!SHA.test(tree.sha)) throw new TogetherError('Our memory could not be saved.');
++      const commit = await this.github('/git/commits', 'POST', { message: change.photo ? 'Keep a shared photo from our app' : 'Keep a shared quote from our app', tree: tree.sha, parents: [sha] });
++      if (!SHA.test(commit.sha)) throw new TogetherError('Our memory could not be saved.');
++      try {
++        await this.github('/git/refs/heads/main', 'PATCH', { sha: commit.sha, force: false });
++        this.cache.clear(); return update.data;
++      } catch (error) {
++        this.cache.clear();
++        if (!(error instanceof TogetherError) || error.status !== 409 || attempt === 2) throw error;
++      }
++    }
++  }
++}
+diff --git a/tests/memories.test.mjs b/tests/memories.test.mjs
+new file mode 100644
+index 0000000..8b6f136
+--- /dev/null
++++ b/tests/memories.test.mjs
+@@ -0,0 +1,53 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { randomUUID, randomBytes } from 'node:crypto';
++import { readFile } from 'node:fs/promises';
++import { checkedMemoryChange, appendMemory, GitHubMemoriesStore } from '../server/memories-store.js';
++import { createMemoriesAPI } from '../server/memories-api.js';
++import { authorize } from '../server/auth.js';
++const empty = () => ({version:1,quotes:[],photos:[]});
++const quote = (extra={}) => ({action:'addQuote',operationId:randomUUID(),text:'Every day with you ♡',note:'Us',date:'2026-10-17',...extra});
++const change = (base,input) => appendMemory(base,checkedMemoryChange(input));
++test('quote additions preserve every existing entry, dates, Unicode, and notes; retries are idempotent',()=>{
++ const old={id:randomUUID(),src:`assets/photos/2026/10/${randomUUID()}.jpg`,caption:'Our picture'};
++ const base={version:1,quotes:['An older quote'],photos:[old]};const input=quote();const first=change(base,input);
++ assert.equal(first.data.quotes[1].text,input.text);assert.equal(first.data.quotes[1].note,'Us');assert.deepEqual(first.data.photos,[old]);assert.equal(base.quotes.length,1);
++ assert.equal(change(first.data,input).changed,false);assert.throws(()=>change(first.data,{...input,text:'Changed'}),e=>e.status===409);
++});
++test('photos keep a safe UUID path and content fingerprint; malformed dates, payloads and URLs are rejected',async()=>{
++ const photo='data:image/jpeg;base64,'+(await readFile(new URL('../dist/assets/cats-cuddle.jpg',import.meta.url))).toString('base64');
++ const input=quote({action:'addPhoto',photo,caption:'The two of us'});const first=change(empty(),input);
++ assert.match(first.item.src,/^assets\/photos\/2026\/10\/[a-f0-9-]+\.jpg$/);assert.equal(first.item.caption,input.caption);assert.equal(change(first.data,input).changed,false);
++ for(const extra of [{date:'2026-02-30'},{date:'wrong'},{operationId:'../secret'},{text:''},{text:'a'.repeat(10001)},{note:42}])assert.throws(()=>checkedMemoryChange(quote(extra)),e=>e.status===400);
++ for(const bad of ['https://evil.example/secret','data:image/svg+xml;base64,PHN2Zz4=','data:image/jpeg;base64,'+'A'.repeat(440000)])assert.throws(()=>checkedMemoryChange({...input,photo:bad}),e=>e.status===400);
++});
++function mockGit(){let data=empty(),head='1'.repeat(40),tree='2'.repeat(40),pending,conflict=true;const calls=[];return{calls,get data(){return data;},fetcher:async(url,options)=>{
++ const path=new URL(url).pathname.split('/asechka-website')[1];const body=options.body?JSON.parse(options.body):null;calls.push({path,body,method:options.method});let value;
++ if(path==='/git/ref/heads/main')value={object:{sha:head}};
++ else if(path==='/contents/dist/memories.json')value={type:'file',encoding:'base64',sha:'3'.repeat(40),size:100,content:Buffer.from(JSON.stringify(data)).toString('base64')};
++ else if(path.startsWith('/git/commits/')&&options.method==='GET')value={tree:{sha:tree}};
++ else if(path==='/git/blobs')value={sha:'4'.repeat(40)};
++ else if(path==='/git/trees'){assert.equal(body.base_tree,tree);pending=JSON.parse(body.tree.find(e=>e.path==='dist/memories.json').content);value={sha:'5'.repeat(40)};}
++ else if(path==='/git/commits'){assert.deepEqual(body.parents,[head]);value={sha:'6'.repeat(40)};}
++ else if(path==='/git/refs/heads/main'){assert.equal(body.force,false);if(conflict){conflict=false;data=change(data,quote({text:'From the other person'})).data;head='7'.repeat(40);tree='8'.repeat(40);return Response.json({},{status:422});}data=pending;head=body.sha;value={object:{sha:head}};}
++ else throw Error(path);return Response.json(value);
++}};}
++test('atomic photo publication retains unrelated files and simultaneous additions and never force pushes',async()=>{
++ const mock=mockGit(),store=new GitHubMemoriesStore({token:()=> 'test-token',fetcher:mock.fetcher});
++ const input=quote({action:'addPhoto',caption:'Us',photo:'data:image/jpeg;base64,'+(await readFile(new URL('../dist/assets/cats-cuddle.jpg',import.meta.url))).toString('base64')});
++ const saved=await store.change(input);assert.equal(saved.photos.length,1);assert.equal(saved.quotes[0].text,'From the other person');
++ const trees=mock.calls.filter(c=>c.path==='/git/trees');assert.equal(trees.length,2);assert.deepEqual(trees[1].body.tree.map(e=>e.path),['dist/memories.json',`dist/${saved.photos[0].src}`]);
++ assert.equal(mock.calls.filter(c=>c.path==='/git/blobs').length,1);assert.deepEqual(await store.change(input),saved);
++});
++test('shared collection requires login and protected same-origin writes, bounds payloads, and hides credentials',async()=>{
++ process.env.SITE_PASSWORD='test-only-code';process.env.SESSION_SECRET=randomBytes(48).toString('hex');const origin='https://asechka.example';let data=empty();
++ const handler=createMemoriesAPI({collection:{writable:true,read:async()=>data,change:async input=>(data=change(data,input).data)}});
++ assert.equal((await handler(new Request(origin+'/api/memories'))).status,401);
++ const login=await authorize(new Request(origin+'/api/session',{method:'POST',headers:{origin,accept:'application/json'},body:new URLSearchParams({password:'test-only-code'})}));const cookie=login.headers.get('set-cookie').split(';')[0];
++ const headers={cookie,origin,'content-type':'application/json','x-asechka-memories':'1'};
++ for(const bad of [{...headers,origin:'https://evil.example'},{cookie,origin,'content-type':'application/json'}])assert.equal((await handler(new Request(origin+'/api/memories',{method:'POST',headers:bad,body:JSON.stringify(quote())}))).status,403);
++ const result=await handler(new Request(origin+'/api/memories',{method:'POST',headers,body:JSON.stringify(quote())}));assert.equal(result.status,200);assert.match(result.headers.get('cache-control'),/no-store/);
++ assert.equal((await (await handler(new Request(origin+'/api/memories',{headers:{cookie}}))).json()).quotes.length,1);
++ assert.equal((await handler(new Request(origin+'/api/memories',{method:'POST',headers,body:'a'.repeat(440001)}))).status,413);
++ const bad=new GitHubMemoriesStore({token:()=> 'private-token',fetcher:async()=>Response.json({error:'private-token'},{status:403})});await assert.rejects(bad.read(),e=>!e.message.includes('private-token'));
++});
+diff --git a/tests/together.test.mjs b/tests/together.test.mjs
+index 03fb236..6bcdefe 100644
+--- a/tests/together.test.mjs
++++ b/tests/together.test.mjs
+@@ -44,7 +44,7 @@ test('daily memories use a shared Eastern day, ignore unsafe media, and are stab
+   assert.equal(dailyMemory({},{}).memory,null);
+ });
+ test('a daily song retains its real album artwork, listening link, and personal note',async()=>{
+-  const saved=JSON.parse(await readFile(new URL('../dist/music.json',import.meta.url),'utf8')).tracks[0];
++  const saved={trackId:123456,title:'Our song',artist:'Our artist',album:'Our album',artworkUrl:'https://is1-ssl.mzstatic.com/image/thumb/Music/test/600x600bb.jpg',trackUrl:'https://music.apple.com/us/album/test/123?i=123456',durationMs:180000};
+   const song={...saved,id:randomUUID(),note:'This one feels like us.'};
+   const {memory}=dailyMemory({quotes:[],photos:[]},{tracks:[song]});
+   assert.equal(memory.kind,'song');assert.equal(memory.artwork,song.artworkUrl);assert.equal(memory.url,song.trackUrl);assert.equal(memory.note,song.note);

@@ -1,0 +1,45 @@
+name: Asechka
+options:
+  bundleIdPrefix: app.asechka
+  deploymentTarget:
+    iOS: '16.0'
+settings:
+  base:
+    SWIFT_VERSION: '5.0'
+    MARKETING_VERSION: '2.0.0'
+    CURRENT_PROJECT_VERSION: '6'
+    TARGETED_DEVICE_FAMILY: '1,2'
+    CODE_SIGNING_ALLOWED: NO
+targets:
+  Asechka:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    resources:
+      - path: Resources/default
+        type: folder
+      - path: Resources/Fonts
+      - path: Resources/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.asechka.ios
+        INFOPLIST_FILE: Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+        SUPPORTS_MACCATALYST: NO
+  AsechkaTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: Asechka
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Asechka:
+    build:
+      targets:
+        Asechka: all
+    test:
+      targets: [AsechkaTests]

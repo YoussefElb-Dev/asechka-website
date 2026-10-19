@@ -1,0 +1,1241 @@
+package app.asechka.android;
+
+import android.app.*;
+import android.content.*;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.*;
+import android.view.*;
+import android.widget.*;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+import org.json.*;
+
+/** Runs against the isolated Node fixture over adb reverse; never writes production data. */
+public final class NativeTests extends Instrumentation {
+  private MainActivity activity;
+  private ApiClient api;
+  private int assertions;
+  private boolean convert, motionOnly, compatOnly;
+  private String upgrade;
+
+  @Override
+  public void onCreate(Bundle args) {
+    super.onCreate(args);
+    convert = "true".equals(args.getString("convert"));
+    motionOnly = "true".equals(args.getString("motionOnly"));
+    compatOnly = "true".equals(args.getString("compatOnly"));
+    upgrade = args.getString("upgrade", "");
+    start();
+  }
+
+  @Override
+  public void onStart() {
+    Bundle result = new Bundle();
+    try {
+      if (!upgrade.isEmpty()) {
+        upgradeTest(upgrade.equals("seed"));
+        result.putString("stream", "PASS: " + assertions + " upgrade assertions (" + upgrade + ").\n");
+      } else if (convert) {
+        File dir = new File(getTargetContext().getExternalFilesDir(null), "qa");
+        for (File file : dir.listFiles()) {
+          if (!file.getName().endsWith(".png")) continue;
+          Bitmap full = android.graphics.BitmapFactory.decodeFile(file.getPath());
+          Bitmap small =
+              Bitmap.createScaledBitmap(
+                  full, 540, Math.round(full.getHeight() * 540f / full.getWidth()), true);
+          try (FileOutputStream out =
+              new FileOutputStream(new File(dir, file.getName().replace(".png", ".jpg")))) {
+            small.compress(Bitmap.CompressFormat.JPEG, 82, out);
+          }
+          small.recycle();
+          full.recycle();
+        }
+        result.putString("stream", "QA previews ready\n");
+      } else {
+        if (compatOnly) {
+          compatibilityTests();
+        } else if (motionOnly) {
+          prepareMotionFixture();
+          motionAndPublishingTests();
+        } else tests();
+        result.putString(
+            "stream",
+            "PASS: "
+                + assertions
+                + " assertions. Native login, navigation, shared CRUD, conflicts, JPEG upload,"
+                + " music, hearts, translation, copy, zoom, and logout.\n");
+      }
+      if (compatOnly)
+        result.putString(
+            "stream",
+            "PASS: "
+                + assertions
+                + " compatibility assertions on Android API "
+                + Build.VERSION.SDK_INT
+                + ".\n");
+      finish(Activity.RESULT_OK, result);
+    } catch (Throwable e) {
+      StringWriter text = new StringWriter();
+      e.printStackTrace(new PrintWriter(text));
+      result.putString("stream", "FAIL: " + text);
+      finish(Activity.RESULT_CANCELED, result);
+    }
+  }
+
+  private void check(boolean condition, String message) {
+    assertions++;
+    if (!condition) throw new AssertionError(message);
+  }
+
+  private void upgradeTest(boolean seed) throws Exception {
+    // A separate namespace cannot send these fixture changes to the personal website.
+    OfflineStore store = new OfflineStore(getTargetContext(), "https://upgrade-fixture.invalid");
+    if (seed) {
+      store.snapshot("/memories.json", obj("version", 1, "writable", true,
+          "quotes", new JSONArray(), "photos", new JSONArray()));
+      store.rememberCode("upgrade-fixture-code");
+      store.write("word-draft:Asnat", obj("text", "A draft kept across an APK update"));
+      store.enqueue("/api/memories", obj("action", "addQuote", "operationId",
+          "33333333-3333-4333-8333-333333333333", "date", "2026-10-17",
+          "text", "A quote kept across an APK update", "note", ""));
+      check(!store.read("access").has("kdf"), "Seed uses original untagged password verifier");
+    } else {
+      check(store.unlockWithCode("upgrade-fixture-code"), "Original password verifier still unlocks");
+      check(store.read("word-draft:Asnat").getString("text")
+          .equals("A draft kept across an APK update"), "Encrypted draft retained");
+      check(store.queue().length() == 1, "Pending addition retained");
+      check(store.projected("/api/memories").getJSONArray("quotes").getJSONObject(0)
+          .getString("text").equals("A quote kept across an APK update"),
+          "Original collection cache and queued quote readable after update");
+      check(getTargetContext().getPackageManager().getPackageInfo(
+          getTargetContext().getPackageName(), 0).versionCode == 5, "Updated package version");
+    }
+  }
+
+  private void compatibilityTests() throws Exception {
+    check(Dates.day("2024-03-01") - Dates.day("2024-02-28") == 2, "Leap-year dates");
+    boolean invalid = false;
+    try {
+      Dates.day("2026-02-30");
+    } catch (IllegalArgumentException expected) {
+      invalid = true;
+    }
+    check(invalid, "Invalid calendar dates rejected");
+    check(
+        Dates.timestamp(Dates.instant("2026-10-17T12:34:56.123456Z"))
+            .equals("2026-10-17T12:34:56.123Z"),
+        "Timestamp precision preserved");
+    check(
+        Dates.instant("2026-10-17T14:34:56+02:00") == Dates.instant("2026-10-17T12:34:56Z"),
+        "Timestamp offsets respected");
+    check(
+        Dates.nextBirthday(1, 25, Dates.day("2026-01-26")) == Dates.day("2027-01-25"),
+        "Birthday rolls forward on old Android");
+    check(
+        Dates.nextBirthday(8, 5, Dates.day("2026-08-05")) == Dates.day("2026-08-05"),
+        "Birthday today remains today");
+    check(Compat.wrap(-1, 3) == 2, "Photo and quote backward navigation wraps");
+    java.net.HttpURLConnection live =
+        (java.net.HttpURLConnection)
+            new java.net.URL(ApiClient.SITE + "/api/memories").openConnection();
+    live.setConnectTimeout(15000);
+    live.setReadTimeout(15000);
+    try {
+      check(live.getResponseCode() == 401, "Production HTTPS validates on this Android version");
+    } finally {
+      live.disconnect();
+    }
+    prepareMotionFixture();
+    check(api.canOpen() && api.signedIn(), "Secure login succeeds");
+    for (int screen : new int[] {0, 1, 5, 2, 3, 4}) {
+      call("select", new Class[] {int.class}, screen);
+      check(((ViewGroup) get("bottom")).getChildCount() == 6, "Native screen renders: " + screen);
+    }
+    call("select", new Class[] {int.class}, 0);
+    check(
+        text("Asnat · August 5") != null && text("Youssef · January 25") != null,
+        "Birthday cards render on this Android version");
+    screenshot("compat-" + Build.VERSION.SDK_INT);
+    File file = new File(getTargetContext().getCacheDir(), "compat-rotated.jpg");
+    Bitmap original = Bitmap.createBitmap(1200, 900, Bitmap.Config.ARGB_8888);
+    original.eraseColor(0xffbbcfee);
+    try (FileOutputStream out = new FileOutputStream(file)) {
+      original.compress(Bitmap.CompressFormat.JPEG, 90, out);
+    }
+    original.recycle();
+    android.media.ExifInterface exif = new android.media.ExifInterface(file.getPath());
+    exif.setAttribute(android.media.ExifInterface.TAG_ORIENTATION, "6");
+    exif.saveAttributes();
+    Bitmap oriented = Photos.decode(getTargetContext(), Uri.fromFile(file));
+    check(
+        oriented.getWidth() == 900 && oriented.getHeight() == 1200,
+        "Phone photo EXIF orientation respected");
+    oriented.recycle();
+    Method compress = MainActivity.class.getDeclaredMethod("compressPhoto", Uri.class);
+    compress.setAccessible(true);
+    String encoded = (String) compress.invoke(activity, Uri.fromFile(file));
+    check(
+        encoded.startsWith("data:image/jpeg;base64,")
+            && android.util.Base64.decode(encoded.substring(23), 0).length <= 310000,
+        "Native upload creates bounded JPEG");
+    String operation = UUID.randomUUID().toString();
+    offline(api, true);
+    check(
+        api.post(
+                "/api/memories",
+                obj(
+                    "action",
+                    "addQuote",
+                    "operationId",
+                    operation,
+                    "date",
+                    "2026-10-17",
+                    "text",
+                    "Compatibility fixture",
+                    "note",
+                    ""))
+            .optBoolean("_pending"),
+        "Offline addition persists before sending");
+    ApiClient cold = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(cold, true);
+    check(
+        cold.signedIn() && cold.get("/memories.json").getJSONArray("quotes").length() == 3,
+        "Encrypted session and offline collection survive a new client");
+    cold.store.lock();
+    check(!cold.store.unlockWithCode("wrong-code"), "Offline lock rejects incorrect code");
+    check(
+        cold.store.unlockWithCode("native-test-code"), "Offline login uses supported password KDF");
+    offline(api, false);
+    api.syncPending();
+    check(api.store.queue().length() == 0, "Saved addition synchronizes after reconnect");
+    check(
+        api.get("/memories.json").getJSONArray("quotes").length() == 3,
+        "Shared backend contains the saved addition exactly once");
+    ui(() -> activity.finish());
+  }
+
+  private void ui(Runnable action) {
+    runOnMainSync(action);
+    waitForIdleSync();
+  }
+
+  private Object get(String name) throws Exception {
+    Field field = MainActivity.class.getDeclaredField(name);
+    field.setAccessible(true);
+    return field.get(activity);
+  }
+
+  private void set(String name, Object value) throws Exception {
+    Field field = MainActivity.class.getDeclaredField(name);
+    field.setAccessible(true);
+    field.set(activity, value);
+  }
+
+  private void call(String name, Class<?>[] types, Object... args) throws Exception {
+    Method method = MainActivity.class.getDeclaredMethod(name, types);
+    method.setAccessible(true);
+    final Throwable[] error = {null};
+    ui(
+        () -> {
+          try {
+            method.invoke(activity, args);
+          } catch (Throwable e) {
+            error[0] = e;
+          }
+        });
+    if (error[0] != null) throw new RuntimeException(error[0]);
+  }
+
+  private <T extends View> ArrayList<T> views(View root, Class<T> type) {
+    ArrayList<T> result = new ArrayList<>();
+    if (type.isInstance(root)) result.add(type.cast(root));
+    if (root instanceof ViewGroup)
+      for (int i = 0; i < ((ViewGroup) root).getChildCount(); i++)
+        result.addAll(views(((ViewGroup) root).getChildAt(i), type));
+    return result;
+  }
+
+  private boolean hasText(View root, String value) {
+    for (TextView view : views(root, TextView.class))
+      if (view.getText().toString().equals(value)) return true;
+    return false;
+  }
+
+  private boolean hasBitmap(View root) {
+    for (ImageView image : views(root, ImageView.class))
+      if (image.getVisibility() == View.VISIBLE
+          && image.getDrawable() instanceof android.graphics.drawable.BitmapDrawable) return true;
+    return false;
+  }
+
+  private boolean hasPeriodicJob(android.app.job.JobScheduler scheduler) {
+    for (android.app.job.JobInfo job : scheduler.getAllPendingJobs())
+      if (job.isPeriodic() && job.getIntervalMillis() == 900000) return true;
+    return false;
+  }
+
+  private View decor() {
+    return activity.getWindow().getDecorView();
+  }
+
+  private TextView text(String text) {
+    for (TextView v : views(decor(), TextView.class))
+      if (v.getText().toString().equals(text)) return v;
+    return null;
+  }
+
+  private void click(String text) {
+    TextView target = text(text);
+    check(target != null, "Missing native control: " + text);
+    ui(target::performClick);
+  }
+
+  private void await(java.util.concurrent.Callable<Boolean> condition, String message)
+      throws Exception {
+    long until = System.currentTimeMillis() + 20000;
+    while (System.currentTimeMillis() < until) {
+      final boolean[] success = {false};
+      ui(
+          () -> {
+            try {
+              success[0] = condition.call();
+            } catch (Exception ignored) {
+            }
+          });
+      if (success[0]) return;
+      Thread.sleep(120);
+    }
+    throw new AssertionError(message);
+  }
+
+  private void screenshot(String name) throws Exception {
+    waitForIdleSync();
+    Thread.sleep(700);
+    ui(
+        () -> {
+          android.graphics.Rect rect = new android.graphics.Rect();
+          decor().getWindowVisibleDisplayFrame(rect);
+          Object nativeRoot = uncheckedGet("root");
+          if (nativeRoot instanceof ViewGroup) {
+            ViewGroup r = (ViewGroup) nativeRoot;
+            View bar = r.getChildAt(0);
+            int[] xy = new int[2];
+            bar.getLocationOnScreen(xy);
+            android.util.Log.i(
+                "AsechkaQA",
+                name
+                    + " root="
+                    + r.getHeight()
+                    + " bar="
+                    + bar.getHeight()
+                    + " y="
+                    + xy[1]
+                    + " padding="
+                    + r.getPaddingTop()
+                    + " visible="
+                    + rect
+                    + " scrollY="
+                    + decor().getScrollY());
+          }
+        });
+    Bitmap bitmap = getUiAutomation().takeScreenshot();
+    check(bitmap != null, "Screenshot " + name);
+    File dir = new File(getTargetContext().getExternalFilesDir(null), "qa");
+    dir.mkdirs();
+    try (FileOutputStream out = new FileOutputStream(new File(dir, name + ".png"))) {
+      bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+    }
+    bitmap.recycle();
+  }
+
+  private JSONObject obj(Object... pairs) throws Exception {
+    JSONObject o = new JSONObject();
+    for (int i = 0; i < pairs.length; i += 2)
+      o.put((String) pairs[i], pairs[i + 1] == null ? JSONObject.NULL : pairs[i + 1]);
+    return o;
+  }
+
+  private void tests() throws Exception {
+    ((java.net.HttpURLConnection)
+            new java.net.URL("http://127.0.0.1:4777/__reset").openConnection())
+        .getInputStream()
+        .close();
+    ApiClient initial = new ApiClient(getTargetContext());
+    initial.clearSession();
+    initial.store.lock();
+    getTargetContext().getSharedPreferences("preferences", 0).edit().remove("person").commit();
+    Intent intent =
+        new Intent(getTargetContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    activity = (MainActivity) startActivitySync(intent);
+    await(
+        () -> text("Two people.\nOne little home.") != null,
+        "Profile chooser missing on first start");
+    screenshot("00-profiles");
+    call("chooseProfile", new Class[] {String.class}, "asnat");
+    check(
+        getTargetContext()
+            .getSharedPreferences("preferences", 0)
+            .getString("person", "")
+            .equals("asnat"),
+        "Chosen profile remembered");
+    await(() -> text("Open our little door  →") != null, "Native login didn’t appear");
+    check(views(decor(), EditText.class).size() == 1, "Native password field");
+    check(views(decor(), android.webkit.WebView.class).isEmpty(), "No WebView on login");
+    screenshot("01-login");
+    api = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    api.clearSession();
+    api.store.lock();
+    api.store.remove("outbox");
+    set("api", api);
+    set("images", new Images(api));
+    ui(() -> views(decor(), EditText.class).get(0).setText("wrong-code"));
+    click("Open our little door  →");
+    await(
+        () -> text("Not quite, love. Try our little code again.") != null,
+        "Wrong code feedback missing");
+    ui(() -> views(decor(), EditText.class).get(0).setText("native-test-code"));
+    click("Open our little door  →");
+    await(
+        () -> get("memories") != null && get("together") != null,
+        "Native sign-in or shared sync failed");
+    check(api.signedIn(), "Session captured");
+    check(
+        new ApiClient(getTargetContext(), "http://127.0.0.1:4777").signedIn(),
+        "Encrypted session survives restart");
+    check(
+        !getTargetContext()
+            .getSharedPreferences("private-session", 0)
+            .getString("session", "")
+            .contains("asechka_session"),
+        "Cookie encrypted at rest");
+    screenshot("02-home");
+    call("select", new Class[] {int.class}, 5);
+    check(text("A thousand little\nways to say it.") != null, "Memories native screen");
+    check(
+        text("“Every ordinary day feels a little brighter with you.”") != null,
+        "Live quotes shown");
+    screenshot("03-memories");
+    // Use production validators to confirm native JSON contracts, stale-edit handling, and
+    // independent ranks.
+    api.get("/api/music-search?q=our");
+    JSONObject music =
+        api.post(
+            "/api/music",
+            obj(
+                "action",
+                "save",
+                "rank",
+                1,
+                "expectedId",
+                null,
+                "trackId",
+                123456,
+                "note",
+                "This one feels like us."));
+    check(music.getJSONArray("tracks").length() == 1, "Shared song saved");
+    String songId = music.getJSONArray("tracks").getJSONObject(0).getString("id");
+    try {
+      api.post(
+          "/api/music",
+          obj("action", "remove", "rank", 1, "expectedId", UUID.randomUUID().toString()));
+      throw new AssertionError("Stale music write accepted");
+    } catch (ApiClient.ApiError e) {
+      check(e.status == 409, "Music stale edit rejected");
+      api.store.discardEntity(api.store.queue().getJSONObject(0));
+    }
+    set("music", music);
+    call("select", new Class[] {int.class}, 2);
+    check(text("Our favorite song") != null, "Music metadata shown");
+    screenshot("04-music");
+    click("＋  Find a song");
+    await(() -> get("activeDialog") != null, "Music search dialog missing");
+    AlertDialog search = (AlertDialog) get("activeDialog");
+    ui(
+        () ->
+            views(search.getWindow().getDecorView(), EditText.class)
+                .get(0)
+                .setText("our favorite"));
+    for (Button b : views(search.getWindow().getDecorView(), Button.class))
+      if (b.getText().toString().equals("Search the music catalog")) ui(b::performClick);
+    await(
+        () -> hasText(search.getWindow().getDecorView(), "Our favorite song"),
+        "Music search result missing");
+    ui(search::dismiss);
+    String planId = UUID.randomUUID().toString(), operation = UUID.randomUUID().toString();
+    JSONObject shared =
+        api.post(
+            "/api/together",
+            obj(
+                "action",
+                "saveItem",
+                "id",
+                planId,
+                "expectedRevision",
+                null,
+                "operationId",
+                operation,
+                "title",
+                "Watch the stars together",
+                "place",
+                "Anywhere with you",
+                "note",
+                "Bring a little blanket.",
+                "completed",
+                false));
+    check(shared.getJSONArray("bucketList").length() == 1, "Wish shared");
+    File photo = new File(getTargetContext().getCacheDir(), "upload-test.png");
+    Bitmap source = Bitmap.createBitmap(2500, 1800, Bitmap.Config.ARGB_8888);
+    source.eraseColor(0xffbbcfee);
+    try (FileOutputStream out = new FileOutputStream(photo)) {
+      source.compress(Bitmap.CompressFormat.PNG, 100, out);
+    }
+    source.recycle();
+    Method compress = MainActivity.class.getDeclaredMethod("compressPhoto", Uri.class);
+    compress.setAccessible(true);
+    String encoded = (String) compress.invoke(activity, Uri.fromFile(photo));
+    check(encoded.startsWith("data:image/jpeg;base64,"), "Native photo becomes JPEG");
+    check(encoded.length() < 420000, "Upload obeys backend size bound");
+    String revision = shared.getJSONArray("bucketList").getJSONObject(0).getString("revision");
+    String completeOperation = UUID.randomUUID().toString();
+    shared =
+        api.post(
+            "/api/together",
+            obj(
+                "action",
+                "saveItem",
+                "id",
+                planId,
+                "expectedRevision",
+                revision,
+                "operationId",
+                completeOperation,
+                "title",
+                "Watch the stars together",
+                "place",
+                "Anywhere with you",
+                "note",
+                "Bring a little blanket.",
+                "completed",
+                true,
+                "photo",
+                encoded));
+    JSONObject item = shared.getJSONArray("bucketList").getJSONObject(0);
+    check(
+        item.getBoolean("completed") && !item.isNull("photoId"),
+        "Completed wish and photo saved atomically");
+    check(
+        api.image("/api/together-photo?kind=bucket&id=" + item.getString("photoId")).length > 20,
+        "Private photo served with session");
+    JSONObject repeated =
+        api.post(
+            "/api/together",
+            obj(
+                "action",
+                "saveItem",
+                "id",
+                planId,
+                "expectedRevision",
+                revision,
+                "operationId",
+                completeOperation,
+                "title",
+                "Watch the stars together",
+                "place",
+                "Anywhere with you",
+                "note",
+                "Bring a little blanket.",
+                "completed",
+                true,
+                "photo",
+                encoded));
+    check(repeated.getJSONArray("bucketList").length() == 1, "Retry does not duplicate memory");
+    try {
+      api.post(
+          "/api/together",
+          obj(
+              "action",
+              "toggleItem",
+              "id",
+              planId,
+              "expectedRevision",
+              revision,
+              "operationId",
+              UUID.randomUUID().toString(),
+              "completed",
+              false));
+      throw new AssertionError("Stale wish write accepted");
+    } catch (ApiClient.ApiError e) {
+      check(e.status == 409, "Wish stale edit rejected");
+      api.store.discardEntity(api.store.queue().getJSONObject(0));
+    }
+    shared =
+        api.post(
+            "/api/together",
+            obj(
+                "action",
+                "sendHeart",
+                "from",
+                "asechka",
+                "operationId",
+                UUID.randomUUID().toString()));
+    check(
+        shared.getJSONObject("hearts").getJSONObject("asechka").has("sentAt"),
+        "Shared heart saved");
+    set("together", shared);
+    call("select", new Class[] {int.class}, 3);
+    check(text("Watch the stars together") != null, "Native wish shown");
+    screenshot("05-our-days");
+    call("editPlan", new Class[] {JSONObject.class, boolean.class}, item, false);
+    await(() -> get("planEditor") != null, "Native wish editor missing");
+    check(
+        views(((Dialog) get("activeDialog")).getWindow().getDecorView(), EditText.class).size()
+            == 3,
+        "Native title, place, note inputs");
+    ui(() -> ((Dialog) uncheckedGet("activeDialog")).dismiss());
+    call("select", new Class[] {int.class}, 4);
+    await(() -> (boolean) get("translatorReady"), "Translation readiness failed");
+    ui(() -> views(decor(), EditText.class).get(0).setText("I love you."));
+    click("Translate our words  →");
+    await(() -> get("translations") != null, "Native translation failed");
+    check(
+        ((JSONObject) get("translations")).getJSONArray("translations").length() == 5,
+        "Five target languages");
+    check(text("أنا") == null, "Translation is rendered as text, not HTML");
+    screenshot("06-words");
+    TextView copy = text("Copy translation  ↗");
+    check(copy != null, "Native copy control");
+    ui(copy::performClick);
+    check(
+        ((android.content.ClipboardManager)
+                getTargetContext().getSystemService(Context.CLIPBOARD_SERVICE))
+            .hasPrimaryClip(),
+        "Translation copied natively");
+    ui(() -> views(decor(), EditText.class).get(0).setText("simulate failure"));
+    click("Translate our words  →");
+    await(() -> text("Our test translator needs a moment.") != null, "Failure feedback missing");
+    check(
+        views(decor(), EditText.class).get(0).getText().toString().equals("simulate failure"),
+        "Draft retained after failure");
+    call(
+        "photoViewer",
+        new Class[] {JSONArray.class, int.class},
+        new JSONArray()
+            .put(
+                obj(
+                    "src",
+                    "/api/together-photo?kind=bucket&id=" + item.getString("photoId"),
+                    "caption",
+                    "Our little day")),
+        0);
+    Dialog viewer = (Dialog) get("activeDialog");
+    check(
+        views(viewer.getWindow().getDecorView(), Ui.ZoomImage.class).size() == 1,
+        "Native zoomable image viewer");
+    ui(viewer::dismiss);
+    JSONObject removed =
+        api.post(
+            "/api/together",
+            obj(
+                "action",
+                "removeItem",
+                "id",
+                planId,
+                "expectedRevision",
+                completeOperation,
+                "operationId",
+                UUID.randomUUID().toString()));
+    check(removed.getJSONArray("bucketList").length() == 0, "Wish removed");
+    check(
+        api.post("/api/music", obj("action", "remove", "rank", 1, "expectedId", songId))
+                .getJSONArray("tracks")
+                .length()
+            == 0,
+        "Song removed");
+    check(
+        views(decor(), android.webkit.WebView.class).isEmpty(),
+        "No WebView in application screens");
+    offlineTests();
+    layoutTests();
+    profileTests();
+    motionAndPublishingTests();
+    call("signOut", new Class[] {});
+    check(!api.signedIn(), "Sign out clears session");
+    check(text("Open our little door  →") != null, "Sign out returns to native door");
+  }
+
+  private void offline(ApiClient client, boolean offline) throws Exception {
+    Field field = ApiClient.class.getDeclaredField("onlineOverride");
+    field.setAccessible(true);
+    field.set(client, !offline);
+  }
+
+  private void offlineTests() throws Exception {
+    check(MainActivity.REFRESH_INTERVAL == 60000, "Foreground refresh interval is one minute");
+    check(
+        api.image("/assets/our-little-universe.png").length > 1000000,
+        "Original artwork bundled in APK");
+    check(api.prefetchMedia() == 0, "All fixture media saved");
+    ApiClient restarted = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(restarted, true);
+    check(
+        restarted.get("/memories.json").getJSONArray("quotes").length() > 0,
+        "Quotes survive cold API restart offline");
+    check(
+        restarted.image(
+                    restarted
+                        .get("/memories.json")
+                        .getJSONArray("photos")
+                        .getJSONObject(0)
+                        .getString("src"))
+                .length
+            > 1000,
+        "Unopened gallery photo was prefetched and is readable offline");
+    check(
+        restarted.image("/assets/cats-cozy.jpg").length > 1000,
+        "Bundled photos available with no internet");
+    check(restarted.store.read("last-translation") != null, "Translation result durable");
+    check(
+        restarted.store.read("translation-history").getJSONArray("items").length() > 0,
+        "Translation history durable");
+    JSONObject translation =
+        obj(
+            "text",
+            "I love you.",
+            "source",
+            "auto",
+            "targets",
+            new JSONArray(Arrays.asList("ar-EG", "ru", "he", "fr", "es")),
+            "tone",
+            "natural",
+            "speaker",
+            "female",
+            "recipient",
+            "male");
+    check(
+        restarted.post("/api/translation", translation).getJSONArray("translations").length() == 5,
+        "Identical translation reuses offline result");
+    String wish = UUID.randomUUID().toString(), op = UUID.randomUUID().toString();
+    JSONObject queued =
+        restarted.post(
+            "/api/together",
+            obj(
+                "action",
+                "saveItem",
+                "id",
+                wish,
+                "expectedRevision",
+                null,
+                "operationId",
+                op,
+                "title",
+                "An offline wish",
+                "place",
+                "Under the stars",
+                "note",
+                "Saved without internet",
+                "completed",
+                false));
+    check(queued.optBoolean("_pending"), "Offline edits marked pending");
+    restarted.post(
+        "/api/together",
+        obj(
+            "action",
+            "toggleItem",
+            "id",
+            wish,
+            "expectedRevision",
+            op,
+            "operationId",
+            UUID.randomUUID().toString(),
+            "completed",
+            true));
+    JSONObject song =
+        restarted.post(
+            "/api/music",
+            obj(
+                "action",
+                "save",
+                "rank",
+                2,
+                "expectedId",
+                null,
+                "trackId",
+                123456,
+                "note",
+                "Offline first note"));
+    String localId = song.getJSONArray("tracks").getJSONObject(0).getString("id");
+    restarted.post(
+        "/api/music",
+        obj(
+            "action",
+            "save",
+            "rank",
+            2,
+            "expectedId",
+            localId,
+            "trackId",
+            123456,
+            "note",
+            "Offline revised note"));
+    check(restarted.store.pending() == 4, "All four offline edits persisted in order");
+    ApiClient again = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(again, true);
+    check(again.store.pending() == 4, "Outbox survives restart");
+    check(
+        again
+            .get("/api/together")
+            .getJSONArray("bucketList")
+            .getJSONObject(0)
+            .optBoolean("completed"),
+        "Dependent offline wish edit visible");
+    offline(again, false);
+    again.syncPending();
+    check(again.store.pending() == 0, "Reconnect flushes dependent wish and music edits");
+    check(
+        again
+            .get("/api/music")
+            .getJSONArray("tracks")
+            .getJSONObject(0)
+            .getString("note")
+            .equals("Offline revised note"),
+        "Local song IDs mapped to server IDs");
+    check(
+        again.get("/api/together").getJSONArray("bucketList").length() == 1,
+        "Reconnect creates wish exactly once");
+    again.syncPending();
+    check(
+        again.get("/api/together").getJSONArray("bucketList").length() == 1,
+        "Repeat sync creates no duplicate");
+    offline(again, true);
+    again.clearSession();
+    again.store.lock();
+    check(!again.canOpen(), "Explicit lock closes offline access");
+    try {
+      again.login("wrong-code");
+      throw new AssertionError("Wrong offline code accepted");
+    } catch (ApiClient.ApiError expected) {
+      check(!again.canOpen(), "Wrong code cannot unlock saved content");
+    }
+    again.login("native-test-code");
+    check(again.canOpen(), "Correct code unlocks cached content offline");
+    call("persistWords", new Class[] {});
+    check(
+        api.store.read("word-draft:Asnat").getString("text").equals("simulate failure"),
+        "Draft survives on disk");
+    offline(api, true);
+    call("restoreSaved", new Class[] {});
+    call("showShell", new Class[] {});
+    call("select", new Class[] {int.class}, 5);
+    check(
+        text("“Every ordinary day feels a little brighter with you.”") != null,
+        "Native memories render from disk offline");
+    screenshot("07-offline");
+    offline(api, false);
+    api.login("native-test-code");
+    ((java.net.HttpURLConnection)
+            new java.net.URL("http://127.0.0.1:4777/__add-memory").openConnection())
+        .getInputStream()
+        .close();
+    long until = System.currentTimeMillis() + 70000;
+    boolean updated = false;
+    while (System.currentTimeMillis() < until) {
+      final boolean[] found = {false};
+      ui(
+          () -> {
+            JSONObject current = (JSONObject) uncheckedGet("memories");
+            found[0] = current != null && current.optJSONArray("quotes").length() == 2;
+          });
+      if (found[0]) {
+        updated = true;
+        break;
+      }
+      Thread.sleep(500);
+    }
+    check(updated, "Website addition appears automatically within a minute without manual refresh");
+    screenshot("08-auto-update");
+    android.app.job.JobScheduler scheduler =
+        (android.app.job.JobScheduler)
+            getTargetContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    check(hasPeriodicJob(scheduler), "Persistent Android background sync scheduled");
+    getUiAutomation().executeShellCommand("svc wifi disable").close();
+    getUiAutomation().executeShellCommand("svc data disable").close();
+    try {
+      Thread.sleep(1500);
+      ApiClient airplane = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+      check(!airplane.connected(), "Real emulator network disconnected");
+      check(
+          airplane.get("/memories.json").getJSONArray("quotes").length() == 2,
+          "Latest content readable with real radios disabled");
+      ui(activity::finish);
+      activity =
+          (MainActivity)
+              startActivitySync(
+                  new Intent(getTargetContext(), MainActivity.class)
+                      .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+      set("api", airplane);
+      set("images", new Images(airplane));
+      call("restoreSaved", new Class[] {});
+      call("showShell", new Class[] {});
+      call("select", new Class[] {int.class}, 5);
+      check(
+          text("“A new little thought from the website.”") != null,
+          "Native cold activity restores saved website content with radios off");
+      screenshot("09-airplane-restart");
+    } finally {
+      getUiAutomation().executeShellCommand("svc wifi enable").close();
+      getUiAutomation().executeShellCommand("svc data enable").close();
+    }
+  }
+
+  private void chrome(String label) throws Exception {
+    final boolean[] valid = {false};
+    ui(
+        () -> {
+          ViewGroup root = (ViewGroup) uncheckedGet("root");
+          View bar = root.getChildAt(0), nav = (View) uncheckedGet("bottom");
+          int[] top = new int[2], bottom = new int[2];
+          bar.getLocationInWindow(top);
+          nav.getLocationInWindow(bottom);
+          valid[0] =
+              top[1] >= root.getPaddingTop()
+                  && bar.getHeight() > 0
+                  && bottom[1] + nav.getHeight() <= root.getHeight() - root.getPaddingBottom() + 1
+                  && bottom[1] > top[1] + bar.getHeight();
+        });
+    check(valid[0], label + " header and navigation remain inside screen insets");
+  }
+
+  private void resizeDevice(String size) throws Exception {
+    ActivityMonitor monitor = addMonitor(MainActivity.class.getName(), null, false);
+    try {
+      getUiAutomation().executeShellCommand("wm size " + size).close();
+      Thread.sleep(1200);
+      Activity replacement = monitor.getLastActivity();
+      if (replacement != null) activity = (MainActivity) replacement;
+      if (activity.isDestroyed())
+        activity =
+            (MainActivity)
+                startActivitySync(
+                    new Intent(getTargetContext(), MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+      if (get("root") == null) {
+        ApiClient restored = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+        set("api", restored);
+        set("images", new Images(restored));
+        call("restoreSaved", new Class[] {});
+        call("showShell", new Class[] {});
+      }
+    } finally {
+      removeMonitor(monitor);
+    }
+  }
+
+  private void layoutTests() throws Exception {
+    android.content.res.Configuration original =
+        new android.content.res.Configuration(activity.getResources().getConfiguration());
+    try {
+      resizeDevice("840x1470");
+      call("select", new Class[] {int.class}, 0);
+      chrome("Small phone home");
+      screenshot("10-small-home");
+      ui(
+          () -> {
+            android.content.res.Configuration large =
+                new android.content.res.Configuration(activity.getResources().getConfiguration());
+            large.fontScale = 1.4f;
+            activity
+                .getResources()
+                .updateConfiguration(large, activity.getResources().getDisplayMetrics());
+          });
+      call("showShell", new Class[] {});
+      call("select", new Class[] {int.class}, 4);
+      chrome("Small phone large text");
+      screenshot("11-large-text");
+      ui(
+          () ->
+              activity
+                  .getResources()
+                  .updateConfiguration(original, activity.getResources().getDisplayMetrics()));
+      resizeDevice("1470x840");
+      call("showShell", new Class[] {});
+      call("select", new Class[] {int.class}, 3);
+      chrome("Landscape");
+      screenshot("12-landscape");
+    } finally {
+      ui(
+          () ->
+              activity
+                  .getResources()
+                  .updateConfiguration(original, activity.getResources().getDisplayMetrics()));
+      resizeDevice("reset");
+    }
+  }
+
+  private void profileTests() throws Exception {
+    call("chooseProfile", new Class[] {String.class}, "youssef");
+    call("select", new Class[] {int.class}, 3);
+    check(
+        text("Asnat · August 5") != null && text("Youssef · January 25") != null,
+        "Both birthdays remembered and shown offline");
+    check(text("♡  Send a heart to Asnat") != null, "Youssef heart recipient automatic");
+    check(
+        (int) get("speakerChoice") == 0 && (int) get("recipientChoice") == 0,
+        "Youssef translation uses male speaker and female recipient");
+    call("select", new Class[] {int.class}, 4);
+    check(
+        views(decor(), Spinner.class).size() == 2,
+        "Identity removes manual speaker and recipient controls");
+    ui(() -> views(decor(), EditText.class).get(0).setText("Youssef’s own draft"));
+    call("persistWords", new Class[] {});
+    call("chooseProfile", new Class[] {String.class}, "asnat");
+    call("select", new Class[] {int.class}, 3);
+    check(text("♡  Send a heart to Youssef") != null, "Asnat heart recipient automatic");
+    check(
+        (int) get("speakerChoice") == 1 && (int) get("recipientChoice") == 1,
+        "Asnat translation uses female speaker and male recipient");
+    check(get("wordDraft").equals("simulate failure"), "Profiles keep separate saved drafts");
+    java.lang.reflect.Method birthday =
+        MainActivity.class.getDeclaredMethod("nextBirthday", int.class, int.class, long.class);
+    birthday.setAccessible(true);
+    check(
+        birthday.invoke(activity, 1, 25, Dates.day("2026-01-26")).equals(Dates.day("2027-01-25")),
+        "Birthday rolls over to next year");
+    check(
+        birthday.invoke(activity, 8, 5, Dates.day("2026-08-05")).equals(Dates.day("2026-08-05")),
+        "Birthday today remains today");
+    screenshot("13-asnat-profile");
+  }
+
+  private void prepareMotionFixture() throws Exception {
+    for (String path : new String[] {"/__reset", "/__add-memory"})
+      ((java.net.HttpURLConnection)
+              new java.net.URL("http://127.0.0.1:4777" + path).openConnection())
+          .getInputStream()
+          .close();
+    api = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    api.store.remove("outbox");
+    api.login("native-test-code");
+    for (String path :
+        new String[] {"/memories.json", "/api/music", "/api/together", "/api/daily-memory"})
+      api.get(path);
+    getTargetContext()
+        .getSharedPreferences("preferences", 0)
+        .edit()
+        .putString("person", "asnat")
+        .putBoolean("motion-paused", false)
+        .commit();
+    activity =
+        (MainActivity)
+            startActivitySync(
+                new Intent(getTargetContext(), MainActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    set("api", api);
+    set("images", new Images(api));
+    call("restoreSaved", new Class[] {});
+    call("showShell", new Class[] {});
+  }
+
+  private void motionAndPublishingTests() throws Exception {
+    offline(api, false);
+    api.login("native-test-code");
+    call("select", new Class[] {int.class}, 0);
+    check(((ViewGroup) get("bottom")).getChildCount() == 6, "Six native navigation tabs");
+    for (String label : new String[] {"Home", "Photos", "Quotes", "Music", "Our days", "Words"})
+      check(text(label) != null, "Navigation label " + label);
+    await(() -> hasBitmap(decor()), "Bundled hero renders a real bitmap");
+    call("select", new Class[] {int.class}, 1);
+    await(() -> hasBitmap(decor()), "Private gallery photo renders a real bitmap");
+    check(text("＋  Add a photo") != null, "Photo upload entry point");
+    View touchTarget = text("＋  Add a photo");
+    ui(
+        () ->
+            touchTarget.dispatchTouchEvent(
+                MotionEvent.obtain(
+                    android.os.SystemClock.uptimeMillis(),
+                    android.os.SystemClock.uptimeMillis(),
+                    MotionEvent.ACTION_DOWN,
+                    20,
+                    20,
+                    0)));
+    Thread.sleep(160);
+    check(touchTarget.getScaleX() < .99f, "Native touch press visibly animates");
+    ui(
+        () ->
+            touchTarget.dispatchTouchEvent(
+                MotionEvent.obtain(
+                    android.os.SystemClock.uptimeMillis(),
+                    android.os.SystemClock.uptimeMillis(),
+                    MotionEvent.ACTION_CANCEL,
+                    20,
+                    20,
+                    0)));
+    Thread.sleep(380);
+    check(Math.abs(touchTarget.getScaleX() - 1) < .01f, "Touch release returns smoothly to rest");
+    screenshot("14-photos");
+    call("select", new Class[] {int.class}, 5);
+    getTargetContext()
+        .getSharedPreferences("preferences", 0)
+        .edit()
+        .putBoolean("motion-paused", false)
+        .commit();
+    call("nextQuote", new Class[] {int.class}, 0);
+    int initialIndex = (int) get("quoteIndex");
+    Thread.sleep(8900);
+    check(
+        (int) get("quoteIndex") != initialIndex,
+        "Quotes automatically slide after eight seconds: motion="
+            + Motion.enabled(activity)
+            + ", started="
+            + get("started")
+            + ", paused="
+            + get("quotePaused")
+            + ", dialog="
+            + get("activeDialog")
+            + ", visible="
+            + ((View) get("quoteText")).getGlobalVisibleRect(new android.graphics.Rect())
+            + ", count="
+            + ((JSONObject) get("memories")).getJSONArray("quotes").length());
+    click("Pause");
+    int pausedIndex = (int) get("quoteIndex");
+    Thread.sleep(8500);
+    check((int) get("quoteIndex") == pausedIndex, "Pause stops quote autoplay");
+    click("Resume");
+    View quoteView = (View) get("quoteText");
+    getTargetContext()
+        .getSharedPreferences("preferences", 0)
+        .edit()
+        .putBoolean("motion-paused", true)
+        .commit();
+    call("nextQuote", new Class[] {int.class}, 1);
+    check(
+        quoteView.getAlpha() == 1 && quoteView.getTranslationX() == 0,
+        "Reduced motion removes quote transitions");
+    check(!Motion.enabled(activity), "System/app motion preferences are respected");
+    getTargetContext()
+        .getSharedPreferences("preferences", 0)
+        .edit()
+        .putBoolean("motion-paused", false)
+        .commit();
+    screenshot("15-quotes");
+    click("＋  Add a quote");
+    Dialog editor = (Dialog) get("activeDialog");
+    ui(
+        () -> {
+          ArrayList<EditText> fields = views(editor.getWindow().getDecorView(), EditText.class);
+          fields.get(0).setText("A quote added inside the native app ♡");
+          fields.get(1).setText("Shared with our website");
+          ((AlertDialog) editor).getButton(-1).performClick();
+        });
+    await(
+        () ->
+            get("activeDialog") == null && text("“A quote added inside the native app ♡”") != null,
+        "Native quote form publishes shared content");
+    check(
+        api.get("/memories.json").getJSONArray("quotes").length() == 3,
+        "App quote visible through the shared website API");
+    call("select", new Class[] {int.class}, 1);
+    click("＋  Add a photo");
+    Dialog photoEditor = (Dialog) get("activeDialog");
+    File source = new File(getTargetContext().getCacheDir(), "upload-test.png");
+    Bitmap sample = Bitmap.createBitmap(1200, 900, Bitmap.Config.ARGB_8888);
+    sample.eraseColor(0xffbbcfee);
+    try (FileOutputStream out = new FileOutputStream(source)) {
+      sample.compress(Bitmap.CompressFormat.PNG, 100, out);
+    }
+    sample.recycle();
+    Intent selection = new Intent().setData(Uri.fromFile(source));
+    call(
+        "onActivityResult",
+        new Class[] {int.class, int.class, Intent.class},
+        121,
+        Activity.RESULT_OK,
+        selection);
+    await(
+        () -> hasBitmap(photoEditor.getWindow().getDecorView()),
+        "Native picker creates an upload preview");
+    ui(
+        () -> {
+          views(photoEditor.getWindow().getDecorView(), EditText.class)
+              .get(0)
+              .setText("Our photo from the app");
+          ((AlertDialog) photoEditor).getButton(-1).performClick();
+        });
+    await(
+        () -> get("activeDialog") == null && text("Our photo from the app") != null,
+        "Native photo form publishes caption and photo");
+    JSONObject saved = api.get("/memories.json");
+    check(
+        saved.getJSONArray("photos").length() == 2, "App photo visible through shared collection");
+    String photoId = saved.getJSONArray("photos").getJSONObject(1).getString("id");
+    check(
+        api.image("/api/together-photo?kind=memory&id=" + photoId).length > 20,
+        "New shared photo immediately accessible");
+    offline(api, true);
+    String quoteId = UUID.randomUUID().toString();
+    JSONObject quote =
+        obj(
+            "action",
+            "addQuote",
+            "operationId",
+            quoteId,
+            "date",
+            "2026-10-17",
+            "text",
+            "Kept while offline",
+            "note",
+            "");
+    check(
+        api.post("/api/memories", quote).optBoolean("_pending"),
+        "Offline quote is queued and immediately visible");
+    Method compress = MainActivity.class.getDeclaredMethod("compressPhoto", Uri.class);
+    compress.setAccessible(true);
+    String encoded = (String) compress.invoke(activity, Uri.fromFile(source));
+    String pendingPhoto = UUID.randomUUID().toString();
+    JSONObject photo =
+        obj(
+            "action",
+            "addPhoto",
+            "operationId",
+            pendingPhoto,
+            "date",
+            "2026-10-17",
+            "caption",
+            "Our offline photo",
+            "photo",
+            encoded);
+    check(
+        api.post("/api/memories", photo).getJSONArray("photos").length() == 3,
+        "Offline photo appears immediately in the saved album");
+    ApiClient restarted = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(restarted, true);
+    check(restarted.store.pending() == 2, "Quote and photo queue survives a new client");
+    check(
+        restarted.image("/api/together-photo?kind=memory&id=" + pendingPhoto).length > 20,
+        "Queued photo readable offline after restart");
+    offline(restarted, false);
+    restarted.syncPending();
+    check(restarted.store.pending() == 0, "Both offline additions synchronize on reconnection");
+    check(
+        restarted.get("/memories.json").getJSONArray("quotes").length() == 4,
+        "Offline quote shared once");
+    restarted.post("/api/memories", quote);
+    restarted.post("/api/memories", photo);
+    check(
+        restarted.get("/memories.json").getJSONArray("photos").length() == 3,
+        "Retried photo does not duplicate");
+    offline(api, false);
+    set("memories", api.get("/memories.json"));
+    call("render", new Class[] {boolean.class}, false);
+    screenshot("16-published-photos");
+  }
+
+  private Object uncheckedGet(String key) {
+    try {
+      return get(key);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+}

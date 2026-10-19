@@ -1,0 +1,111 @@
+name: Native Android and iPhone apps
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, codex/little-us]
+    paths: ['mobile/**', '.github/workflows/mobile-builds.yml', 'server/**', 'tests/**']
+permissions:
+  contents: read
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend:
+    name: Shared collection tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm test
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Restore the existing Android signing identity
+        env:
+          SIGNING_JSON: ${{ secrets.ANDROID_SIGNING }}
+        run: |
+          python3 - <<'PY'
+          import os,json,base64,pathlib
+          if not os.environ['SIGNING_JSON']:
+              raise SystemExit('Add the ANDROID_SIGNING repository secret before building APK updates.')
+          signing=json.loads(os.environ['SIGNING_JSON'])
+          target=pathlib.Path(os.environ['RUNNER_TEMP'])/'asechka-release.jks'
+          target.write_bytes(base64.b64decode(signing['keystore']))
+          with open(os.environ['GITHUB_ENV'],'a') as env:
+              env.write(f"ASECHKA_KEYSTORE_PATH={target}\nASECHKA_KEYSTORE_PASSWORD={signing['password']}\n")
+          PY
+      - name: Build an APK with Android 6 and newer compatibility
+        working-directory: mobile/android
+        run: chmod +x gradlew && ./gradlew --no-daemon assembleRelease
+      - name: Package Android download
+        run: |
+          mkdir -p output
+          cp mobile/android/app/build/outputs/apk/release/app-release.apk output/Asechka-Android.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose output/Asechka-Android.apk
+          cd output && sha256sum Asechka-Android.apk > Asechka-Android.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Asechka-Android-APK
+          path: output/*
+          retention-days: 30
+      - name: Remove temporary signing material
+        if: always()
+        run: rm -f "$RUNNER_TEMP/asechka-release.jks"
+  iphone:
+    name: iPhone IPA for sideloading
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate the native Xcode project
+        working-directory: mobile/ios
+        run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+      - name: Build project
+        working-directory: mobile/ios
+        run: xcodegen generate
+      - name: Test offline posts and encrypted storage
+        working-directory: mobile/ios
+        run: |
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(v["udid"] for values in d["devices"].values() for v in values if "iPhone" in v["name"]))')
+          xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -derivedDataPath build-test CODE_SIGNING_ALLOWED=NO test | tee test.log
+        shell: bash --noprofile --norc -e -o pipefail {0}
+      - name: Build the iPhone app
+        working-directory: mobile/ios
+        run: xcodebuild -project Asechka.xcodeproj -scheme Asechka -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tee build.log
+        shell: bash --noprofile --norc -e -o pipefail {0}
+      - name: Package IPA for signing by a sideloading tool
+        working-directory: mobile/ios
+        run: |
+          mkdir -p package/Payload
+          cp -R build/Build/Products/Release-iphoneos/Asechka.app package/Payload/
+          cd package
+          zip -qry Asechka-iPhone.ipa Payload
+          shasum -a 256 Asechka-iPhone.ipa > Asechka-iPhone.ipa.sha256
+          printf '%s\n' 'Native iOS 16+ app. Sign this IPA with your sideloading tool and Apple ID before installation. This is not an App Store or enterprise-signed IPA.' > INSTALL.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Asechka-iPhone-IPA
+          path: |
+            mobile/ios/package/*.ipa
+            mobile/ios/package/*.sha256
+            mobile/ios/package/INSTALL.txt
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: iPhone-build-diagnostics
+          path: |
+            mobile/ios/*.log
+            mobile/ios/build-test/Logs/Test/*.xcresult
+          retention-days: 7
