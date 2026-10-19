@@ -56,7 +56,7 @@ struct Post: Codable, Identifiable, Equatable {
             self.init(id: UUID().uuidString.lowercased(), text: string); return
         }
         let c=try decoder.container(keyedBy: CodingKeys.self)
-        id=try c.decodeIfPresent(String.self,forKey:.id) ?? c.decodeIfPresent(String.self,forKey:.editKey) ?? UUID().uuidString.lowercased()
+        self.init(id:try c.decodeIfPresent(String.self,forKey:.id) ?? c.decodeIfPresent(String.self,forKey:.editKey) ?? UUID().uuidString.lowercased())
         editKey=try c.decodeIfPresent(String.self,forKey:.editKey); editVersion=try c.decodeIfPresent(String.self,forKey:.editVersion)
         date=try c.decodeIfPresent(String.self,forKey:.date) ?? ""
         text=try c.decodeIfPresent(String.self,forKey:.text); caption=try c.decodeIfPresent(String.self,forKey:.caption)

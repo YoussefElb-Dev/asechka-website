@@ -239,10 +239,11 @@ public final class ApiClient {
       if (!syncing.add(base)) return;
     }
     try {
-      JSONArray items = store.queue();
-      for (int i = 0; i < items.length(); i++) {
+      while (true) {
+        JSONArray items = store.queue();
+        if (items.length() == 0) break;
         if (!store.unlocked() || !signedIn() || Thread.currentThread().isInterrupted()) break;
-        JSONObject entry = items.getJSONObject(i);
+        JSONObject entry = items.getJSONObject(0);
         if (!entry.optString("status").equals("pending")) break;
         String path = entry.getString("path");
         try {
@@ -416,7 +417,7 @@ public final class ApiClient {
     connection.setUseCaches(false);
     connection.setRequestProperty("Accept", "application/json");
     connection.setRequestProperty("Cache-Control", "no-store");
-    connection.setRequestProperty("User-Agent", "Asechka-Android/1.3.1");
+    connection.setRequestProperty("User-Agent", "Asechka-Android/2.0.0");
     connection.setRequestProperty("Origin", base);
     final String sentCookie;
     final String sentSession = prefs.getString("session", "");

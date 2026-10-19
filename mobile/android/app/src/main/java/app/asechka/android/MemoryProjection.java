@@ -49,7 +49,7 @@ final class MemoryProjection {
         item = OfflineStore.json("id", id, "createdAt", Dates.timestamp(createdAt)); list.put(item);
       }
       item.put("date", body.optString("date")); item.put("pending", true);
-      if (body.has("author")) item.put("author", body.getString("author"));
+      if (action.startsWith("add") && body.has("author")) item.put("author", body.getString("author"));
       if (collection.equals("photos")) {
         item.put("caption", body.optString("caption"));
         item.put("alt", body.optString("caption", "A picture of us"));
@@ -57,7 +57,7 @@ final class MemoryProjection {
       } else {
         item.put("text", body.optString("text")); item.put("note", body.optString("note"));
       }
-      if (action.startsWith("update")) {
+      if (action.startsWith("update") || action.startsWith("add")) {
         item.put("revision", body.getString("operationId"));
         item.put("editVersion", "local:" + body.getString("operationId"));
       }

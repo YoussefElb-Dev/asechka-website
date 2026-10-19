@@ -11,7 +11,7 @@
 <key>UILaunchScreen</key><dict><key>UIColorName</key><string>LaunchBackground</string></dict>
 <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
 <key>UISupportedInterfaceOrientations~ipad</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationPortraitUpsideDown</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
-<key>UIAppFonts</key><array><string>DM-Sans-Regular.ttf</string><string>DM-Sans-Semibold.ttf</string><string>Manrope-Bold.ttf</string><string>Caveat-Medium.ttf</string></array>
+<key>UIAppFonts</key><array><string>DM-Sans-Regular.ttf</string><string>DM-Sans-Semibold.ttf</string><string>Manrope-Bold.ttf</string><string>Manrope-Regular.ttf</string><string>Caveat-Medium.ttf</string></array>
 <key>NSPhotoLibraryUsageDescription</key><string>Choose a photo to share in our private little universe.</string>
 <key>ITSAppUsesNonExemptEncryption</key><false/>
 <key>UIUserInterfaceStyle</key><string>Light</string>

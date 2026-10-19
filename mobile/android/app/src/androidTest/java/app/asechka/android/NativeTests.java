@@ -17,7 +17,7 @@ public final class NativeTests extends Instrumentation {
   private MainActivity activity;
   private ApiClient api;
   private int assertions;
-  private boolean convert, motionOnly, compatOnly;
+  private boolean convert, motionOnly, compatOnly, socialOnly;
   private String upgrade;
 
   @Override
@@ -26,6 +26,7 @@ public final class NativeTests extends Instrumentation {
     convert = "true".equals(args.getString("convert"));
     motionOnly = "true".equals(args.getString("motionOnly"));
     compatOnly = "true".equals(args.getString("compatOnly"));
+    socialOnly = "true".equals(args.getString("socialOnly"));
     upgrade = args.getString("upgrade", "");
     start();
   }
@@ -54,7 +55,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (compatOnly) {
+        if (socialOnly) {
+          socialTests();
+        } else if (compatOnly) {
           compatibilityTests();
         } else if (motionOnly) {
           prepareMotionFixture();
@@ -1035,6 +1038,85 @@ public final class NativeTests extends Instrumentation {
     set("images", new Images(api));
     call("restoreSaved", new Class[] {});
     call("showShell", new Class[] {});
+  }
+
+  private void socialTests() throws Exception {
+    prepareMotionFixture(); check(api.prefetchMedia()==0,"Fixture photos saved before going offline"); offline(api,true);
+    getTargetContext().getSharedPreferences("preferences",0).edit().remove("saved-posts:asnat").commit();
+    chrome("Social home");
+    for(int screen:new int[]{0,1,5,2,3,4}) {
+      call("select",new Class[]{int.class},screen);
+      check(((ViewGroup)get("bottom")).getChildCount()==6,"All six native tabs remain: "+screen);
+    }
+    call("select",new Class[]{int.class},0);
+    SocialFeed feed=(SocialFeed)get("feed");
+    check(feed.items().size()==3,"Home combines photos and quotes");
+    check(feed.getParent() instanceof FrameLayout,"Feed scrolls natively outside the old ScrollView");
+    screenshot("20-social-home");
+    SocialFeed.Post quote=null,photo=null;
+    for(SocialFeed.Post post:feed.items()){if(post.kind.equals("quote"))quote=post;else photo=post;}
+    final SocialFeed.Post q=quote,p=photo;
+    ui(()->activity.react(q,true,feed));await(()->api.store.pending()==1,"Offline like durable");
+    check(api.cached("/memories.json",true).toString().contains("\"asnat\":true"),"Like projected locally");
+    ui(()->activity.react(q,false,feed));await(()->api.store.pending()==2,"Offline unlike durable and ordered");
+    ui(()->activity.savePost(p));check(activity.saved(p),"Bookmark saved per profile");
+    call("select",new Class[]{int.class},1);await(()->hasBitmap(decor()),"Gallery photo decoded");
+    screenshot("21-social-photo");
+    ui(()->activity.comments(q));Dialog comments=(Dialog)get("activeDialog");
+    ui(()->views(comments.getWindow().getDecorView(),EditText.class).get(0).setText("A little offline love ♡ שלום"));
+    clickIn(comments,"Send");await(()->api.store.pending()==3,"Comment queued without waiting for network");
+    check(api.cached("/memories.json",true).toString().contains("A little offline love"),"Unicode comment visible in projected collection");
+    screenshot("22-comments");ui(()->comments.dismiss());
+    ui(()->activity.createPost(false));Dialog editor=(Dialog)get("activeDialog");
+    ui(()->views(editor.getWindow().getDecorView(),EditText.class).get(0).setText("A new native social quote ♡"));
+    screenshot("23-composer");clickIn(editor,"Share");await(()->get("activeDialog")==null,"Quote composer closes after durable local save");
+    await(()->api.store.pending()==4,"New quote durable offline");
+    JSONObject local=api.cached("/memories.json",true);
+    check(local.getJSONArray("quotes").length()==3,"Quote added to shared feed locally");
+    JSONObject newest=local.getJSONArray("quotes").getJSONObject(2);
+    check(newest.getString("author").equals("asnat"),"Post author follows selected identity");
+    check(newest.optString("editVersion").startsWith("local:"),"New post can be edited before it syncs");
+    ApiClient restart=new ApiClient(getTargetContext(),"http://127.0.0.1:4777");offline(restart,true);
+    check(restart.store.pending()==4,"Social changes survive a cold API restart");
+    offline(restart,false);restart.syncPending();
+    check(restart.store.pending()==0,"Reconnect syncs likes, unlike, comment, and post");
+    JSONObject server=restart.get("/memories.json");
+    JSONObject serverQuote=null;
+    for(int i=0;i<server.getJSONArray("quotes").length();i++){JSONObject item=server.getJSONArray("quotes").getJSONObject(i);if(item.getString("id").equals(q.id))serverQuote=item;}
+    check(serverQuote!=null&&!serverQuote.getJSONObject("social").getJSONObject("likes").getBoolean("asnat"),"Final unlike wins after ordered sync");
+    check(serverQuote.getJSONObject("social").getJSONArray("comments").length()==1,"Comment synchronized exactly once");
+    String op=UUID.randomUUID().toString();
+    JSONObject like=obj("action","setLike","kind","quote","id",q.id,"actor","youssef","liked",true,"operationId",op);
+    restart.post("/api/memories",like);restart.post("/api/memories",like);
+    check(restart.get("/memories.json").toString().contains("\"youssef\":true"),"Other profile sees shared like");
+    offline(api,false);api.get("/memories.json");call("restoreSaved",new Class[]{});call("render",new Class[]{boolean.class},false);
+    ui(()->activity.createPost(true));Dialog photoEditor=(Dialog)get("activeDialog");
+    File source=new File(getTargetContext().getCacheDir(),"social-photo.png");
+    Bitmap sample=Bitmap.createBitmap(1000,750,Bitmap.Config.ARGB_8888);sample.eraseColor(0xffb5ceee);
+    try(FileOutputStream out=new FileOutputStream(source)){sample.compress(Bitmap.CompressFormat.PNG,100,out);}sample.recycle();
+    call("onActivityResult",new Class[]{int.class,int.class,Intent.class},121,Activity.RESULT_OK,new Intent().setData(Uri.fromFile(source)));
+    await(()->!((boolean)inner(get("memoryEditor"),"photoBusy")),"Native photo picker prepares JPEG");
+    ui(()->views(photoEditor.getWindow().getDecorView(),EditText.class).get(0).setText("Our social photo"));
+    clickIn(photoEditor,"Share");await(()->get("activeDialog")==null,"Photo saved by native composer");
+    api.syncPending();JSONObject photos=api.get("/memories.json");
+    check(photos.getJSONArray("photos").length()==2,"Photo shared through the website API");
+    JSONObject uploaded=photos.getJSONArray("photos").getJSONObject(1);
+    check(api.image(ApiClient.photoURL(uploaded)).length>20,"Versioned photo URL serves uploaded image");
+    call("restoreSaved",new Class[]{});call("render",new Class[]{boolean.class},false);
+    call("select",new Class[]{int.class},5);check(get("quoteText")!=null,"Quote carousel retained above quote posts");
+    screenshot("24-social-quotes");
+    call("select",new Class[]{int.class},2);call("select",new Class[]{int.class},3);call("select",new Class[]{int.class},4);
+    chrome("Personal tools");
+  }
+
+  private Object inner(Object object,String name) throws Exception {
+    Field field=object.getClass().getDeclaredField(name);field.setAccessible(true);return field.get(object);
+  }
+
+  private void clickIn(Dialog dialog,String label) {
+    for(TextView view:views(dialog.getWindow().getDecorView(),TextView.class))
+      if(view.getText().toString().equals(label)){ui(view::performClick);return;}
+    throw new AssertionError("Missing dialog control: "+label);
   }
 
   private void motionAndPublishingTests() throws Exception {

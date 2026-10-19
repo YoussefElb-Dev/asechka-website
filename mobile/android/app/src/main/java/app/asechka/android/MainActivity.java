@@ -32,6 +32,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private ScrollView scroll;
   private FrameLayout stage;
   private SocialFeed feed;
+  private Runnable activeConversationRefresh;
+  private final ExecutorService socialWrites = Executors.newSingleThreadExecutor();
   private boolean savedPosts;
   private TextView notice;
   private Dialog activeDialog;
@@ -160,6 +162,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     epoch++;
     main.removeCallbacksAndMessages(null);
     work.shutdownNow();
+    socialWrites.shutdown();
     images.close();
     if (activeDialog != null) activeDialog.dismiss();
     super.onDestroy();
@@ -451,6 +454,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     TextView brand = u.title("asechka.", 23);
     toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(54), 1));
     brand.setGravity(Gravity.CENTER_VERTICAL);
+    SocialFeed.Icon create = new SocialFeed.Icon(this, "plus");
+    create.setContentDescription("Create a post");
+    create.setOnClickListener(v -> choosePost());
+    toolbar.addView(create, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
     Button refresh = u.button("↻", false, null);
     refresh.setOnClickListener(
         v -> {
@@ -748,7 +755,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         if (action == 1) ourCorner();
         if (action == 2) select(3);
         if (action == 3) select(2);
-        if (action == 4) { savedPosts = !savedPosts; render(false); }
+        if (action == 4) { savedPosts = !savedPosts; if(feed!=null){stage.removeView(feed);feed=null;} render(false); }
       });
       row.addView(story, new LinearLayout.LayoutParams(u.dp(72), -2));
     }
@@ -818,9 +825,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     return post;
   }
   private void queueSocial(JSONObject body, Runnable done) {
-    request(() -> { api.store.enqueue("/api/memories", body); return api.cached("/memories.json", true); },
-        value -> { memories=value; if (feed!=null) feed.submit(memories,true); updateConnection("");
-          if (done!=null) done.run(); refresh(false); }, error -> toast(message(error)));
+    final int token=epoch;
+    socialWrites.execute(() -> {
+      try {api.store.enqueue("/api/memories",body);JSONObject value=api.cached("/memories.json",true);
+        main.post(() -> {if(token!=epoch || isDestroyed())return;memories=value;
+          if(feed!=null)feed.submit(memories,true);updateConnection("");if(done!=null)done.run();refresh(false);});
+      }catch(Exception error){main.post(() -> toast(message(error)));}
+    });
   }
   public void more(SocialFeed.Post original, View anchor) {
     SocialFeed.Post post=currentPost(original);
@@ -866,7 +877,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         });
       } Motion.install(list);
     };
-    update[0].run(); send.setOnClickListener(v -> {
+    update[0].run(); activeConversationRefresh=update[0]; send.setOnClickListener(v -> {
       String text=input.getText().toString().trim(); if(text.isEmpty())return;
       send.setEnabled(false);
       JSONObject bodyValue=object("action","addComment","kind",original.kind,"id",original.id,"actor",actor(),"text",text,"operationId",UUID.randomUUID().toString());
@@ -878,7 +889,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     close.setOnClickListener(v -> dialog.dismiss());
     dialog.setOnDismissListener(d -> {
       try{api.store.write(draftKey,object("text",input.getText().toString()));}catch(Exception ignored){}
-      if(activeDialog==dialog)activeDialog=null; render(true);
+      if(activeDialog==dialog)activeDialog=null; activeConversationRefresh=null; render(true);
     }); Motion.install(body);
   }
 
@@ -969,6 +980,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           if (result.has("/api/music")) music = result.optJSONObject("/api/music");
           if (result.has("/api/together")) together = result.optJSONObject("/api/together");
           if (result.has("/api/daily-memory")) daily = result.optJSONObject("/api/daily-memory");
+          if (activeConversationRefresh != null) activeConversationRefresh.run();
           updateConnection(result.optString("error", ""));
           String after = visibleData();
           if (root != null && activeDialog == null && screen != 4 && !before.equals(after))
