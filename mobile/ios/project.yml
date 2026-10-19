@@ -14,10 +14,11 @@ targets:
   Asechka:
     type: application
     platform: iOS
-    sources: [Sources]
-    resources:
+    sources:
+      - path: Sources
       - path: Resources/default
         type: folder
+        buildPhase: resources
       - path: Resources/Fonts
       - path: Resources/Assets.xcassets
     settings:
