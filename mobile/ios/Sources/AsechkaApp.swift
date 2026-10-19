@@ -19,7 +19,7 @@ enum Touch {
 struct SoftPress:ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduced
     func makeBody(configuration:Configuration)->some View {
-        configuration.label.scaleEffect(configuration.isPressed && !reduced ? 0.96:1)
+        configuration.label.contentShape(Rectangle()).scaleEffect(configuration.isPressed && !reduced ? 0.96:1)
             .opacity(configuration.isPressed ? 0.8:1)
             .animation(reduced ? nil:.spring(response:0.32,dampingFraction:0.65),value:configuration.isPressed)
     }

@@ -11,7 +11,9 @@ final class NativeJourneyTests:XCTestCase {
         }
         capture("01-iPhone-home")
         app.buttons["Photos"].firstMatch.tap()
-        XCTAssertTrue(app.images["Our shared photo"].firstMatch.waitForExistence(timeout:8))
+        let picture=app.otherElements["Our shared photo"].firstMatch
+        XCTAssertTrue(picture.waitForExistence(timeout:8))
+        XCTAssertTrue(NSPredicate(format:"value == %@","Saved image").evaluate(with:picture))
         capture("02-iPhone-photos")
         app.buttons["Quotes"].firstMatch.tap()
         app.buttons["Create post"].tap()
@@ -22,9 +24,10 @@ final class NativeJourneyTests:XCTestCase {
         app.buttons["Share"].tap()
         XCTAssertTrue(app.buttons["Create post"].waitForExistence(timeout:5))
         app.buttons["Home"].firstMatch.tap()
+        app.scrollViews.firstMatch.swipeUp()
         let like=app.buttons["Like post"].firstMatch
         XCTAssertTrue(like.waitForExistence(timeout:5));like.tap()
-        XCTAssertTrue(app.buttons["Unlike post"].firstMatch.exists)
+        XCTAssertTrue(app.buttons["Unlike post"].firstMatch.waitForExistence(timeout:5))
         app.buttons["Comments"].firstMatch.tap()
         let comment=app.textFields["Leave a little love…"]
         XCTAssertTrue(comment.waitForExistence(timeout:5))

@@ -105,7 +105,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         busy=true;defer{busy=false}
         do {
             var components=URLComponents();components.queryItems=[URLQueryItem(name:"password",value:code)]
-            _=try await request("/api/session",body:Data((components.percentEncodedQuery ?? "").utf8),form:true)
+            _=try await request("/api/session",body:Data((components.percentEncodedQuery ?? "").replacingOccurrences(of:"+",with:"%2B").utf8),form:true)
             let salt=UUID().uuidString
             try vault.save("offline-code",[salt,Self.verifier(code,salt)])
             locked=false;try vault.save("locked",false);unlocked=true;await refresh()
@@ -236,7 +236,10 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     }
     func search(_ query:String)async throws->[Song]{
         var parts=URLComponents();parts.queryItems=[URLQueryItem(name:"q",value:query)]
-        let data=try await request("/api/music-search?"+(parts.percentEncodedQuery ?? ""));let list=try JSONDecoder().decode(SongList.self,from:data)
+        let path="/api/music-search?"+(parts.percentEncodedQuery ?? "").replacingOccurrences(of:"+",with:"%2B")
+        let data:Data
+        if !online,let saved=vault.read("search:"+path){data=saved}else{data=try await request(path);try vault.write("search:"+path,data)}
+        let list=try JSONDecoder().decode(SongList.self,from:data)
         for song in list.tracks{try vault.save("song:\(song.trackId)",song)};return list.tracks
     }
     func translate(_ text:String,source:String,tone:String,targets:[String])async throws {

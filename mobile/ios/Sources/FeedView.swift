@@ -72,7 +72,7 @@ struct CachedPhoto:View {
         };loading=false}
         .onAppear{if !reduced && !paused{withAnimation(.easeInOut(duration:8).repeatForever(autoreverses:true)){drift=true}}}
         .onDisappear{drift=false}
-        .accessibilityLabel("Our shared photo")
+        .accessibilityElement(children:.ignore).accessibilityLabel("Our shared photo").accessibilityValue(bitmap == nil ? "Loading image":"Saved image")
     }
     static func thumbnail(_ data:Data)->UIImage?{
         guard let source=CGImageSourceCreateWithData(data as CFData,nil),let image=CGImageSourceCreateThumbnailAtIndex(source,0,[kCGImageSourceCreateThumbnailFromImageAlways:true,kCGImageSourceThumbnailMaxPixelSize:1600,kCGImageSourceCreateThumbnailWithTransform:true] as CFDictionary)else{return nil};return UIImage(cgImage:image)

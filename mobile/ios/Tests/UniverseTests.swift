@@ -3,6 +3,16 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    func testBundledPhotosDecodeWithoutInternet()throws {
+        let file=try XCTUnwrap(Bundle.main.url(forResource:"memories",withExtension:"json",subdirectory:"default"))
+        let memories=try JSONDecoder().decode(Memories.self,from:Data(contentsOf:file))
+        XCTAssertFalse(memories.photos.isEmpty)
+        for photo in memories.photos {
+            let src=try XCTUnwrap(photo.src)
+            let url=try XCTUnwrap(Bundle.main.url(forResource:String(src.dropFirst(7)),withExtension:nil,subdirectory:"default"),src)
+            XCTAssertNotNil(CachedPhoto.thumbnail(try Data(contentsOf:url)),src)
+        }
+    }
     func pending(_ body:[String:Any])throws->PendingChange {
         PendingChange(id:UUID().uuidString,path:"/api/memories",body:try JSONSerialization.data(withJSONObject:body),createdAt:"2026-10-18T12:00:00Z")
     }

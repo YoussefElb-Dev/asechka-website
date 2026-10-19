@@ -79,7 +79,9 @@ struct SoundtrackView:View {
                         Menu{Button("Edit song note"){editing=SongSelection(song:song)};Button("Remove song",role:.destructive){remove(song)}}label:{Image(systemName:"ellipsis").frame(width:40,height:44)}
                     }
                     if let note=song.note,!note.isEmpty{Text(note).font(.subheadline).foregroundColor(Palette.muted)}
+                    if let album=song.album,!album.isEmpty{Text(album).font(.caption).foregroundColor(Palette.muted)}
                     if let url=song.trackUrl.flatMap(URL.init(string:)){Link(destination:url){Label("Listen on Apple Music",systemImage:"play.fill").font(.subheadline)}}
+                    if let query=(song.title+" "+song.artist).addingPercentEncoding(withAllowedCharacters:.urlPathAllowed),let url=URL(string:"https://open.spotify.com/search/"+query){Link(destination:url){Label("Find on Spotify",systemImage:"music.note").font(.subheadline)}}
                 }.card()}
                 else {Button{search=true}label:{HStack{Text(String(rank)).font(.caption.weight(.bold)).frame(width:22);Image(systemName:"music.note");Text("A little space for our next favorite").font(.subheadline);Spacer();Image(systemName:"plus")}.foregroundColor(Palette.muted).card()}}
             }
