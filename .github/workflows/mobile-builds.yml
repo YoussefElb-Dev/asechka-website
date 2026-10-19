@@ -18,8 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm ci
-      - run: npm test
+      - run: node --test tests/*.test.mjs
   android:
     name: Android APK
     runs-on: ubuntu-latest
@@ -30,6 +29,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - name: Restore the existing Android signing identity
         env:
@@ -78,11 +79,11 @@ jobs:
         working-directory: mobile/ios
         run: |
           DEVICE=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(v["udid"] for values in d["devices"].values() for v in values if "iPhone" in v["name"]))')
-          xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -derivedDataPath build-test CODE_SIGNING_ALLOWED=NO test | tee test.log
+          xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -derivedDataPath build-test CODE_SIGNING_ALLOWED=NO test 2>&1 | tee test.log
         shell: bash --noprofile --norc -e -o pipefail {0}
       - name: Build the iPhone app
         working-directory: mobile/ios
-        run: xcodebuild -project Asechka.xcodeproj -scheme Asechka -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tee build.log
+        run: xcodebuild -project Asechka.xcodeproj -scheme Asechka -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log
         shell: bash --noprofile --norc -e -o pipefail {0}
       - name: Package IPA for signing by a sideloading tool
         working-directory: mobile/ios
