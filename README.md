@@ -89,11 +89,23 @@ Set `SITE_PASSWORD` and a random `SESSION_SECRET` (at least 32 characters) in Ve
 
 The gate adds no-store headers to prevent shared caching of private content. Failed guesses have a delay and a small per-instance throttle; this is a personal shared-code gate, not individual accounts. Older deployments and any separate hosting copy have their own access settings; protecting the current Vercel deployment does not change historical deployments or copies.
 
-The countdown ends **Friday, October 16, 2026 at 3:00 PM America/New_York (UTC−04:00)**. Edit `dist/countdown.js` and the visible dates in `dist/index.html` together if the date changes. At zero it invites Asechka to find you in person without revealing the surprise.
+The original mystery unlocked **Friday, October 16, 2026 at 3:00 PM America/New_York (UTC−04:00)**. Its requested message remains in the home-page surprise section. The top strip now counts time together from the actual moment below.
 
 The letter is in `dist/index.html`, the hints in `dist/app.js`, and the styling in `dist/styles.css`. Real cat photographs are `dist/assets/cats-cuddle.jpg` and `dist/assets/cats-cozy.jpg`; photographer credits and source links are in `PHOTO-CREDITS.md`. Fonts use Google Fonts with system fallbacks. No database is needed.
 
-## Our little days
+## Since us, Open when…, and the little things
+
+Open **Since us** (`/us.html`). The beginning is **Friday, October 16, 2026 at 3:41 PM Eastern**, as supplied by you. The home page has a live time-together counter; Since us also counts down to both monthly and yearly anniversaries. Anniversaries keep the original Eastern clock time through daylight saving changes. Months without the original day use their last day. The counter shows factual milestone messages, or your own monthly/yearly message on the anniversary after its exact time.
+
+Choose **Edit our beginning** to change the date, time, and anniversary messages. Leave either message blank to use a simple milestone message. **Add a letter** and **Add a little thing** open forms for your words. **Edit our words** exposes Edit/Remove beside each letter and a complete editing list of the little things. Removing first shows the selected content and asks you to confirm; **Keep it** cancels. All these controls use the existing signed login and shared connection.
+
+The four initial Open when letters were drafted with your permission and can be rewritten at any time. The 18 initial little things come from your list, with pronouns addressed directly to her and light punctuation/spelling fixes. Tap to reveal one at a time, go back, or reread the ones opened. Opened IDs and the current ID stay in this browser only; no letter contents or read receipts are stored there or sent to the other person.
+
+Content saves into **dist/keepsakes.json** in the existing private repository through **/api/keepsakes**, using the server-only existing `MUSIC_GITHUB_TOKEN`. A successful change appears immediately and other pages refresh every minute or when reopened. Writes require same-origin JSON and `X-Asechka-Keepsakes: 1`, preserve other files and entries, retry concurrent changes, and reject stale edits to the same item. Retrying an identical operation after a lost response does not duplicate it. A failed save retains the form’s draft while it stays open; closing or reloading discards an unsaved website draft. If the shared read connection fails initially, the packaged copy can be read with editing disabled until it reconnects. No new paid service is required; existing hosting and repository limits apply.
+
+The same JSON file can also be edited in code. Keep IDs and revisions intact, valid JSON, and the America/New_York time zone. The user interface is the easiest way to make concurrent edits safely.
+
+## Our shared bucket list and little days
 
 Open `/together.html`, or use the new home-page cards. Both visitors can add, edit, complete, and remove bucket-list wishes. Completing a wish opens an editor with an optional photo; reopening it preserves the photo. Images are resized in the browser, converted to JPEG without the original file metadata, and capped at 320 KB. A wish and its photo are committed together, preserving concurrent changes to the rest of the repo. Removed or replaced photos leave the current checkout; Git history retains earlier versions.
 

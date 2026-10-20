@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#edf2ff"><meta name="description" content="Since that Friday. Our little days, letters for whenever you need them, and all the things I love about you.">
+  <title>Since us · Asechka ♡</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="memories.css"><link rel="stylesheet" href="collections.css"><link rel="stylesheet" href="keepsakes.css">
+  <script type="module" src="keepsakes.js"></script>
+</head>
+<body class="collection-page keepsakes-page">
+  <a class="skip-link" href="#main">Skip to our little beginning</a>
+  <svg class="svg-definitions" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
+  <header class="site-header collection-header wrap">
+    <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
+    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html">Music</a><a href="/us.html" aria-current="page">Since us</a><a href="/together.html">Our days</a><a href="/translation.html">Our words</a></nav>
+  </header>
+  <main id="main" class="collection-main keepsakes-main wrap">
+    <a class="collection-back" href="/">← Back to our little universe</a>
+    <section class="since-hero" aria-labelledby="since-title" data-since-us>
+      <div class="since-copy"><p class="eyebrow" data-beginning-eyebrow>THE FRIDAY THAT BECAME OURS</p><h1 id="since-title"><span data-beginning-title>From that Friday,</span><br><span class="handwritten">to all our tomorrows.</span></h1><p class="since-date">Together since <time data-start-date datetime="2026-10-16T15:41:00-04:00">October 16, 2026 · 3:41 PM Eastern</time></p>
+        <div class="since-digits" role="timer" aria-live="off" data-elapsed-timer aria-label="Time together"><div><strong data-elapsed="days">—</strong><span>days</span></div><b aria-hidden="true">:</b><div><strong data-elapsed="hours">—</strong><span>hours</span></div><b aria-hidden="true">:</b><div><strong data-elapsed="minutes">—</strong><span>mins</span></div><b aria-hidden="true">:</b><div><strong data-elapsed="seconds">—</strong><span>secs</span></div></div>
+        <p class="since-milestone handwritten" data-since-milestone>Our little beginning. ♡</p>
+      </div>
+      <div class="beginning-note" data-beginning-note><span class="tape" aria-hidden="true"></span><span class="note-kicker">A LITTLE YES</span><span class="note-weekday handwritten" data-note-weekday>friday</span><span class="note-day" data-note-day>16</span><span class="note-month" data-note-month>OCTOBER 2026</span><span class="note-time" data-note-time>3:41 PM · EASTERN</span><span class="note-heart handwritten">you + me, officially. ♡</span></div>
+    </section>
+    <div class="anniversary-grid" aria-label="Our next anniversaries">
+      <article class="anniversary-card"><span class="anniversary-mark" aria-hidden="true">☾</span><p class="eyebrow" data-month-label>OUR NEXT MONTH TOGETHER</p><h2 data-month-date>November 16</h2><p class="anniversary-clock" data-month-countdown>Counting the little moments…</p><p class="anniversary-time">At our time. 3:41 PM Eastern.</p></article>
+      <article class="anniversary-card anniversary-lavender"><span class="anniversary-mark" aria-hidden="true">✧</span><p class="eyebrow" data-year-label>OUR FIRST YEAR TOGETHER</p><h2 data-year-date>October 16, 2027</h2><p class="anniversary-clock" data-year-countdown>So many little days ahead.</p><p class="anniversary-time">At our time. 3:41 PM Eastern.</p></article>
+    </div>
+    <nav class="keepsake-jump" aria-label="On this page"><a href="#letters">Open when… ↓</a><a href="#little-things">The little things ↓</a><button type="button" data-edit-since disabled>Edit our beginning</button><button type="button" data-manage-keepsakes aria-pressed="false" disabled>Edit our words</button></nav>
+    <p class="keepsake-status" data-keepsake-status role="status" hidden></p>
+    <section class="open-when-section" id="letters" aria-labelledby="letters-title">
+      <div class="keepsake-section-heading"><div><p class="eyebrow">A FEW WORDS, WAITING FOR THE RIGHT MOMENT</p><h2 id="letters-title">Open <span class="handwritten">when…</span></h2><p>You don’t have to read them all now. Find the one you need.</p></div><button class="keepsake-add" type="button" data-add-keepsake="Letter" disabled>+ Add a letter</button></div>
+      <div class="open-when-grid" data-letter-grid aria-busy="true"></div>
+      <p class="keepsake-empty" data-letter-empty hidden>A little space for the next thing you want to tell her.</p>
+    </section>
+    <section class="personal-things-section" id="little-things" aria-labelledby="personal-things-title">
+      <div class="keepsake-section-heading"><div><p class="eyebrow">IT’S ALWAYS BEEN THE LITTLE THINGS</p><h2 id="personal-things-title">Little things I love <span class="handwritten">about you.</span></h2><p>The details I notice. The ones that stay with me.</p></div><button class="keepsake-add" type="button" data-add-keepsake="Thing" disabled>+ Add a little thing</button></div>
+      <div class="little-detail-card"><span class="detail-star" aria-hidden="true">✧</span><span class="detail-number" data-thing-number>ONE LITTLE THING AT A TIME</span><p class="detail-text" data-thing-text aria-live="polite">There’s a little something I love about you, waiting here.</p><div class="detail-controls"><button class="detail-previous" type="button" data-previous-thing aria-label="Previous little thing" hidden>←</button><button class="button button-primary" type="button" data-next-thing disabled>Open a little thing ♡</button></div><p class="detail-progress" data-thing-progress></p></div>
+      <details class="opened-details"><summary>The little things you’ve opened</summary><ol data-opened-things></ol></details>
+      <div class="keepsake-management" hidden><p class="management-hint">Your words, kept here. Add to them whenever another little thing comes to mind.</p><ol class="manage-things-list" data-manage-things></ol></div>
+    </section>
+    <p class="keepsakes-signoff handwritten">and still, there’s more to love. ♡</p>
+  </main>
+  <footer class="site-footer collection-footer wrap"><div><a class="brand footer-brand" href="/">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><div class="footer-controls"><a class="collection-back" href="/">Back to our little universe ↗</a><form method="post" action="/api/logout"><button class="lock-site" type="submit">Lock our little door ↗</button></form></div></footer>
+  <noscript><p class="noscript-notice">Enable JavaScript to count our days and open our little letters.</p></noscript>
+</body>
+</html>

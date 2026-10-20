@@ -1,17 +1,19 @@
 import { getCountdown } from './countdown.js';
 
-const timer = document.querySelector('[role="timer"]');
+const timer = document.querySelector('[data-surprise-timer]');
 let finished = false;
 function updateCountdown() {
   const parts = getCountdown();
   for (const key of ['days', 'hours', 'minutes', 'seconds']) {
-    document.getElementById(key).textContent = String(parts[key]).padStart(2, '0');
+    if (timer) document.getElementById(key).textContent = String(parts[key]).padStart(2, '0');
   }
-  timer.setAttribute('aria-label', parts.expired ? 'The wait is over. It is time for our little moment.' : `${parts.days} days, ${parts.hours} hours, ${parts.minutes} minutes, and ${parts.seconds} seconds until Friday's surprise.`);
+  timer?.setAttribute('aria-label', parts.expired ? 'The wait is over. It is time for our little moment.' : `${parts.days} days, ${parts.hours} hours, ${parts.minutes} minutes, and ${parts.seconds} seconds until Friday's surprise.`);
   if (parts.expired && !finished) {
     finished = true;
-    document.getElementById('countdown-title').textContent = 'Our little moment is here.';
-    document.getElementById('countdown-subtitle').textContent = 'Some things are better said in person.';
+    if (timer) {
+      document.getElementById('countdown-title').textContent = 'Our little moment is here.';
+      document.getElementById('countdown-subtitle').textContent = 'Some things are better said in person.';
+    }
     document.getElementById('surprise-title').innerHTML = 'The wait is over,<br><span class="handwritten">my Asechka.</span>';
     document.getElementById('surprise-description').textContent = 'If it all works out, I’ll be the happiest man alive for the rest of eternity.';
     document.getElementById('hint-button').hidden = true;
