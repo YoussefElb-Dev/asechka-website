@@ -10,6 +10,7 @@ function element(tag, className, text) {
 }
 let data, writable = false, managing = false, loading = false, generation = 0;
 let opened = [], currentId = null;
+let selectedLetterId = null, pickedRandomly = true;
 const progressKey = 'asechka-little-things-v1';
 try {
   const saved = JSON.parse(localStorage.getItem(progressKey));
@@ -81,9 +82,33 @@ function readLetter(item, opener) {
   const close = element('button', 'keepsake-modal-close', '×'); close.type = 'button'; close.setAttribute('aria-label', 'Close letter');
   close.addEventListener('click', () => dialog.close());
   const title = element('h2', '', `Open when ${item.title}`); title.id = 'reading-letter-title';
-  dialog.append(close, element('p', 'eyebrow', 'A LITTLE LETTER, JUST FOR YOU'), title, element('div', 'letter-body', item.text), element('p', 'keepsake-read-bottom handwritten', 'kept here, whenever you need it. ♡'));
+  const loveSeal = element('div', 'letter-love-seal'); loveSeal.setAttribute('aria-hidden', 'true');
+  for (const heart of ['♡', '♥', '♡']) loveSeal.append(element('span', '', heart));
+  const motion = element('button', 'letter-motion-toggle', 'Pause the hearts'); motion.type = 'button'; motion.setAttribute('aria-pressed', 'false');
+  motion.addEventListener('click', () => {
+    const paused = dialog.classList.toggle('letter-motion-paused');
+    motion.setAttribute('aria-pressed', String(paused)); motion.textContent = paused ? 'Let the hearts float' : 'Pause the hearts';
+  });
+  dialog.append(close, element('p', 'eyebrow', 'A LITTLE LETTER, JUST FOR YOU'), title, element('div', 'letter-body', item.text), loveSeal, element('p', 'keepsake-read-bottom handwritten', 'kept here, whenever you need it. ♡'), motion);
   dialog.addEventListener('click', event => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
   showDialog(dialog, opener);
+  celebrateLetter(dialog);
+}
+function celebrateLetter(dialog) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('motion-paused')) return;
+  const layer = element('div', 'letter-celebration'); layer.setAttribute('aria-hidden', 'true');
+  const colors = ['#819fd7', '#aa91d1', '#c2c9eb', '#8c80bf', '#b0cff0'];
+  for (let index = 0; index < 42; index++) {
+    const heart = index < 14, particle = element('span', heart ? 'letter-floating-heart' : 'letter-confetti', heart ? (index % 3 ? '♡' : '♥') : '');
+    const left = heart ? (index % 2 ? 80 + Math.random() * 18 : 2 + Math.random() * 18) : Math.random() * 100;
+    particle.style.setProperty('--left', `${left}%`); particle.style.setProperty('--drift', `${(Math.random() - .5) * 160}px`);
+    particle.style.setProperty('--life', `${3.2 + Math.random() * 1.7}s`); particle.style.setProperty('--delay', `${Math.random() * .4}s`);
+    particle.style.setProperty('--turn', `${(Math.random() - .5) * 1000}deg`); particle.style.setProperty('--size', `${heart ? 19 + Math.random() * 16 : 5 + Math.random() * 5}px`);
+    particle.style.setProperty('--color', colors[index % colors.length]); layer.append(particle);
+  }
+  dialog.append(layer);
+  const cleanup = setTimeout(() => layer.remove(), 5500);
+  dialog.addEventListener('close', () => { clearTimeout(cleanup); layer.remove(); }, { once: true });
 }
 function actions(kind, item) {
   const wrap = element('div', 'keepsake-item-actions');
@@ -97,14 +122,24 @@ function actions(kind, item) {
 function renderLetters() {
   const grid = $('[data-letter-grid]'); if (!grid) return;
   grid.replaceChildren(); grid.setAttribute('aria-busy', 'false');
-  data.letters.forEach((item, index) => {
+  if (!data.letters.some(item => item.id === selectedLetterId)) {
+    selectedLetterId = data.letters[Math.floor(Math.random() * data.letters.length)]?.id || null; pickedRandomly = true;
+  }
+  const item = data.letters.find(item => item.id === selectedLetterId);
+  $('[data-letter-focus]').hidden = !item;
+  $('[data-letter-picked]').textContent = pickedRandomly ? 'A little letter found its way to you. ♡' : 'A little letter for the moment you chose. ♡';
+  if (item) {
     const card = element('article', 'letter-envelope-wrap'), button = element('button', 'letter-envelope'); button.type = 'button';
     button.setAttribute('aria-label', `Open when ${item.title}`);
-    const seal = element('span', 'envelope-seal', ['♡','☾','✧','✦'][index % 4]); seal.setAttribute('aria-hidden', 'true');
+    const seal = element('span', 'envelope-seal', '♡'); seal.setAttribute('aria-hidden', 'true');
     button.append(seal, element('span', 'envelope-label', 'OPEN WHEN'), element('span', 'envelope-title', item.title), element('span', 'envelope-prompt', 'a little letter for you  ↗'));
     button.addEventListener('click', () => readLetter(item, button)); card.append(button);
     if (managing && writable) card.append(actions('Letter', item)); grid.append(card);
-  });
+  }
+  const otherLetters = data.letters.filter(letter => letter.id !== selectedLetterId);
+  const select = $('[data-other-letters]'), placeholder = element('option', '', 'Choose a different letter…'); placeholder.value = '';
+  select.replaceChildren(placeholder, ...otherLetters.map(letter => { const option = element('option', '', `Open when ${letter.title}`); option.value = letter.id; return option; }));
+  select.value = ''; $('[data-letter-picker]').hidden = !otherLetters.length;
   $('[data-letter-empty]').hidden = data.letters.length > 0;
 }
 function renderThing(animate = false) {
@@ -198,7 +233,9 @@ function edit(kind, original, opener, remove = false) {
     generation++;
     try {
       const saved = await request({ method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Asechka-Keepsakes': '1' }, body: JSON.stringify({ ...payload, operationId }) });
-      generation++; data = saved; writable = saved.writable === true; render(); status(remove ? 'Removed from our little collection.' : 'Your words are saved for both of you. ♡'); dialog.close();
+      generation++; data = saved; writable = saved.writable === true;
+      if (kind === 'Letter' && !remove) { selectedLetterId = id; pickedRandomly = false; }
+      render(); status(remove ? 'Removed from our little collection.' : 'Your words are saved for both of you. ♡'); dialog.close();
     } catch (error) {
       notice.textContent = error.name === 'TimeoutError' || error.name === 'TypeError' ? 'Our connection needs a moment. Your draft is still here; try saving again.' : error.message;
       if (notice.textContent.includes('another tab')) {
@@ -220,6 +257,14 @@ $$('[data-previous-thing]').forEach(button => button.addEventListener('click', (
 $$('[data-add-keepsake]').forEach(button => button.addEventListener('click', () => edit(button.dataset.addKeepsake, null, button)));
 $$('[data-edit-since]').forEach(button => button.addEventListener('click', () => edit('Since', data.since, button)));
 $$('[data-manage-keepsakes]').forEach(button => button.addEventListener('click', () => { managing = !managing; setControls(); renderLetters(); }));
+$('[data-other-letters]')?.addEventListener('change', event => {
+  if (!data?.letters.some(item => item.id === event.target.value)) return;
+  selectedLetterId = event.target.value; pickedRandomly = false; renderLetters();
+});
+$('[data-shuffle-letter]')?.addEventListener('click', () => {
+  const others = data?.letters.filter(item => item.id !== selectedLetterId) || []; if (!others.length) return;
+  selectedLetterId = others[Math.floor(Math.random() * others.length)].id; pickedRandomly = true; renderLetters();
+});
 window.addEventListener('storage', event => {
   if (event.key !== progressKey || !data) return;
   try { const saved = JSON.parse(event.newValue); if (Array.isArray(saved?.opened)) { opened = saved.opened.filter(id => typeof id === 'string'); currentId = saved.currentId; renderThing(); } } catch { /* Ignore incomplete local progress. */ }
