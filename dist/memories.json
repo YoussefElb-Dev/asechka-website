@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-21T03:39:10.226Z",
+  "updatedAt": "2026-10-21T23:22:13.201Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -203,6 +203,16 @@
       "src": "assets/photos/2026/10/9f1d47be-4e82-4a7c-b36e-3747729b47c5.jpg",
       "caption": "Right after WE busted our ahhh",
       "date": "2026-10-17"
+    },
+    {
+      "id": "72e1acc4-95fe-4de9-9bdb-2ec725c8738e",
+      "date": "2026-10-20",
+      "createdAt": "2026-10-21T23:22:13.201Z",
+      "author": "youssef",
+      "src": "assets/photos/2026/10/72e1acc4-95fe-4de9-9bdb-2ec725c8738e.jpg",
+      "caption": "Sonion actually didn’t clip us and your so adorable like always urghhh I love you and I miss you 💕 😘",
+      "alt": "Sonion actually didn’t clip us and your so adorable like always urghhh I love you and I miss you 💕 😘",
+      "contentHash": "3e4c3734a1d4951c09ba5d8c371ad688c5d7c7af86d3174c06e4d4a21b9d5e2d"
     }
   ]
 }
