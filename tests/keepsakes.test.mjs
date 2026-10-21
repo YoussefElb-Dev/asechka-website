@@ -10,10 +10,10 @@ const seed=JSON.parse(await readFile(new URL('../dist/keepsakes.json',import.met
 const draft=(extra={})=>({action:'saveThing',id:randomUUID(),operationId:randomUUID(),expectedRevision:null,text:'How you believe in me.',...extra});
 const apply=(data,input)=>changeKeepsakes(data,checkedKeepsakeChange(input),new Date('2026-10-20T21:00:00Z'));
 
-test('the actual beginning and 18 personal details remain intact, with four editable letters',()=>{
+test('the actual beginning and 18 personal details remain intact, with an expanded editable letter collection',()=>{
   assert.deepEqual(checkedKeepsakes(seed),seed);
   assert.equal(seed.since.startedAt,'2026-10-16T15:41:00-04:00');
-  assert.equal(seed.things.length,18);assert.equal(seed.letters.length,4);
+  assert.equal(seed.things.length,18);assert.ok(seed.letters.length>=12);
   assert.equal(seed.things.at(-1).text,'How you believe in me in all cases and circumstances.');
   assert.ok(seed.things.some(item=>item.text.includes('lil off')));
 });

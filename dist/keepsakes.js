@@ -10,7 +10,6 @@ function element(tag, className, text) {
 }
 let data, writable = false, managing = false, loading = false, generation = 0;
 let opened = [], currentId = null;
-let selectedLetterId = null, pickedRandomly = true;
 const progressKey = 'asechka-little-things-v1';
 try {
   const saved = JSON.parse(localStorage.getItem(progressKey));
@@ -122,13 +121,7 @@ function actions(kind, item) {
 function renderLetters() {
   const grid = $('[data-letter-grid]'); if (!grid) return;
   grid.replaceChildren(); grid.setAttribute('aria-busy', 'false');
-  if (!data.letters.some(item => item.id === selectedLetterId)) {
-    selectedLetterId = data.letters[Math.floor(Math.random() * data.letters.length)]?.id || null; pickedRandomly = true;
-  }
-  const item = data.letters.find(item => item.id === selectedLetterId);
-  $('[data-letter-focus]').hidden = !item;
-  $('[data-letter-picked]').textContent = pickedRandomly ? 'A little letter found its way to you. ♡' : 'A little letter for the moment you chose. ♡';
-  if (item) {
+  for (const item of data.letters) {
     const card = element('article', 'letter-envelope-wrap'), button = element('button', 'letter-envelope'); button.type = 'button';
     button.setAttribute('aria-label', `Open when ${item.title}`);
     const seal = element('span', 'envelope-seal', '♡'); seal.setAttribute('aria-hidden', 'true');
@@ -136,10 +129,6 @@ function renderLetters() {
     button.addEventListener('click', () => readLetter(item, button)); card.append(button);
     if (managing && writable) card.append(actions('Letter', item)); grid.append(card);
   }
-  const otherLetters = data.letters.filter(letter => letter.id !== selectedLetterId);
-  const select = $('[data-other-letters]'), placeholder = element('option', '', 'Choose a different letter…'); placeholder.value = '';
-  select.replaceChildren(placeholder, ...otherLetters.map(letter => { const option = element('option', '', `Open when ${letter.title}`); option.value = letter.id; return option; }));
-  select.value = ''; $('[data-letter-picker]').hidden = !otherLetters.length;
   $('[data-letter-empty]').hidden = data.letters.length > 0;
 }
 function renderThing(animate = false) {
@@ -234,7 +223,6 @@ function edit(kind, original, opener, remove = false) {
     try {
       const saved = await request({ method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Asechka-Keepsakes': '1' }, body: JSON.stringify({ ...payload, operationId }) });
       generation++; data = saved; writable = saved.writable === true;
-      if (kind === 'Letter' && !remove) { selectedLetterId = id; pickedRandomly = false; }
       render(); status(remove ? 'Removed from our little collection.' : 'Your words are saved for both of you. ♡'); dialog.close();
     } catch (error) {
       notice.textContent = error.name === 'TimeoutError' || error.name === 'TypeError' ? 'Our connection needs a moment. Your draft is still here; try saving again.' : error.message;
@@ -257,14 +245,6 @@ $$('[data-previous-thing]').forEach(button => button.addEventListener('click', (
 $$('[data-add-keepsake]').forEach(button => button.addEventListener('click', () => edit(button.dataset.addKeepsake, null, button)));
 $$('[data-edit-since]').forEach(button => button.addEventListener('click', () => edit('Since', data.since, button)));
 $$('[data-manage-keepsakes]').forEach(button => button.addEventListener('click', () => { managing = !managing; setControls(); renderLetters(); }));
-$('[data-other-letters]')?.addEventListener('change', event => {
-  if (!data?.letters.some(item => item.id === event.target.value)) return;
-  selectedLetterId = event.target.value; pickedRandomly = false; renderLetters();
-});
-$('[data-shuffle-letter]')?.addEventListener('click', () => {
-  const others = data?.letters.filter(item => item.id !== selectedLetterId) || []; if (!others.length) return;
-  selectedLetterId = others[Math.floor(Math.random() * others.length)].id; pickedRandomly = true; renderLetters();
-});
 window.addEventListener('storage', event => {
   if (event.key !== progressKey || !data) return;
   try { const saved = JSON.parse(event.newValue); if (Array.isArray(saved?.opened)) { opened = saved.opened.filter(id => typeof id === 'string'); currentId = saved.currentId; renderThing(); } } catch { /* Ignore incomplete local progress. */ }
