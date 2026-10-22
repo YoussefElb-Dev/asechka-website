@@ -1341,6 +1341,17 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private String describeChange(JSONObject row) {
     JSONObject b = row.optJSONObject("body");
+    if (row.optString("path").equals("/api/journal")
+        || row.optString("path").equals("/api/keepsakes"))
+      return b.optString("title")
+          + "\n"
+          + b.optString("text")
+          + "\n"
+          + b.optString("meaning")
+          + "\n"
+          + b.optString("note")
+          + "\n"
+          + b.optString("startedTalkingAt");
     if (row.optString("path").equals("/api/memories"))
       return (b.optString("action").equals("addPhoto")
               ? "Photo · " + b.optString("caption")
@@ -1361,6 +1372,20 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private String describeServer(JSONObject row) {
     String path = row.optString("path");
     JSONObject b = row.optJSONObject("body"), data = api.store.base(path);
+    if (path.equals("/api/journal") || path.equals("/api/keepsakes")) {
+      JSONObject item = BookProjection.find(data, b);
+      return item == null
+          ? "This entry is not shared yet."
+          : item.optString("title")
+              + "\n"
+              + item.optString("text")
+              + "\n"
+              + item.optString("meaning")
+              + "\n"
+              + item.optString("note")
+              + "\n"
+              + item.optString("startedTalkingAt");
+    }
     if (path.equals("/api/memories")) {
       JSONArray entries =
           array(data, b.optString("action").equals("addPhoto") ? "photos" : "quotes");

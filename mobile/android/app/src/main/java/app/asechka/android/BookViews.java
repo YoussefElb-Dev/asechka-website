@@ -402,6 +402,7 @@ final class BookViews {
   }
 
   void remove(String kind, JSONObject item) {
+    if (!writable()) return;
     new AlertDialog.Builder(activity)
         .setTitle("Remove this " + kind.toLowerCase(Locale.US) + "?")
         .setMessage("It will be removed for both of us.")
@@ -458,6 +459,11 @@ final class BookViews {
   }
 
   void edit(String kind, JSONObject item) {
+    if (!writable()) {
+      Toast.makeText(activity, "Connect and refresh to edit our shared pages.", Toast.LENGTH_LONG)
+          .show();
+      return;
+    }
     editor = new Editor(kind, item);
     editor.show();
   }
