@@ -1171,6 +1171,7 @@ public final class NativeTests extends Instrumentation {
           book[0].show(true);
         });
     check(hasText(book[0].content, "September 27, 2026"), "First conversation date shown natively");
+    screenshot("25-native-since-us");
     JSONObject since = api.cached("/api/keepsakes", true).getJSONObject("since");
     check(
         since.getString("startedAt").equals("2026-10-16T19:41:00.000Z"),

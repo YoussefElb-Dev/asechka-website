@@ -140,8 +140,27 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
+      - name: Keep actionable build diagnostics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({...context.repo, run_id: context.runId});
+            const summary = jobs.data.jobs.filter(j => j.name !== 'Keep private build downloads').map(j => ({name:j.name,conclusion:j.conclusion,steps:j.steps.map(s=>({name:s.name,conclusion:s.conclusion}))}));
+            fs.writeFileSync(process.env.RUNNER_TEMP+'/build-jobs.json',JSON.stringify(summary,null,2));
+            for (const job of jobs.data.jobs.filter(j=>j.conclusion==='failure')) {
+              try {
+                const response=await fetch(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/actions/jobs/${job.id}/logs`,{headers:{Authorization:'Bearer '+process.env.BUILD_LOG_TOKEN,Accept:'application/vnd.github+json'},redirect:'manual'});
+                const location=response.headers.get('location');
+                const logs=location ? await (await fetch(location)).text() : await response.text();
+                fs.writeFileSync(process.env.RUNNER_TEMP+`/job-${job.id}.log`,logs.split('\n').slice(-250).join('\n'));
+              } catch (error) { core.warning('Job log not yet available.'); }
+            }
+        env:
+          BUILD_LOG_TOKEN: ${{ github.token }}
       - uses: actions/download-artifact@v4
         continue-on-error: true
         with:
@@ -188,6 +207,8 @@ jobs:
               target.parent.mkdir(exist_ok=True)
               shutil.copy2(source,target)
           status={'source':os.environ['SOURCE_SHA'],'run':os.environ['BUILD_RUN'],'backend':os.environ['BACKEND_RESULT'],'android':os.environ['ANDROID_RESULT'],'iphone':os.environ['IPHONE_RESULT']}
+          if (temp/'build-jobs.json').is_file(): status['jobs']=json.loads((temp/'build-jobs.json').read_text())
+          for source in temp.glob('job-*.log'): shutil.copy2(source,root/source.name)
           status['files']={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in root.iterdir() if p.suffix in ['.apk','.ipa']}
           (root/'status.json').write_text(json.dumps(status,indent=2)+'\n')
           PY
