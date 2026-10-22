@@ -38,7 +38,7 @@ struct CornerView:View {
     @State private var personalBook=false
     private let hints=["No spoilers. Just a few butterflies.","It starts with you.","It has a little something to do with us.","Maybe there’s a question I’ve been saving…"]
     var body:some View {
-        NavigationStack{ScrollView{VStack(alignment:.leading,spacing:20){
+        NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
             Text(universe.actor=="asnat" ? "My favorite\nlittle universe.":"Our favorite\nlittle universe.").font(.custom("Manrope-Bold",size:33))
             Text("Of all the people, in all the places, somehow my heart keeps finding you.").foregroundColor(Palette.muted)
             Button("Since us · letters & little things"){personalBook=true}.primary()
@@ -73,7 +73,7 @@ struct CornerView:View {
 }
 struct LetterView:View {
     @Environment(\.dismiss) private var dismiss
-    var body:some View{NavigationStack{ScrollView{VStack(alignment:.leading,spacing:22){Text("Dear Asechka,").font(.custom("Caveat-Medium",size:38))
+    var body:some View{NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:22){Text("Dear Asechka,").font(.custom("Caveat-Medium",size:38))
         ForEach(["Asnat to the world. Asechka to me.","I wanted to make you something small, but filled with a feeling that isn’t small at all.","I love you. And I love that, in a world this big, I get to know you. Just thinking about you can turn the most ordinary moment into something I want to keep.","This little website is a piece of that feeling. A few stars, two cats, and a whole lot of things I wish I could say perfectly.","There’s one more little thing I’ve been keeping close to my heart. I won’t give it away here. Just save a moment for me on Friday.","Until then, let this be your reminder: you mean so much to me.","With all my love,\nme ♡"],id:\.self){Text($0).lineSpacing(6).textSelection(.enabled)}
     }.padding(28)}.background(Palette.lavender).navigationTitle("A letter, just for you").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Keep it close ♡"){dismiss()}}}}}
 }
@@ -87,7 +87,7 @@ struct WordsView:View {
     @State private var history=false
     static let languages=[("ar-EG","Egyptian Arabic · مصري"),("ru","Russian · Русский"),("he","Hebrew · עברית"),("fr","French · Français"),("es","Spanish · Español")]
     var body:some View {
-        ScrollView{VStack(alignment:.leading,spacing:20){Text("Our words.").font(.custom("Manrope-Bold",size:30));Text("Written by \(universe.name), for \(universe.partner). The language roles are set for you.").foregroundColor(Palette.muted)
+        ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){Text("Our words.").font(.custom("Manrope-Bold",size:30));Text("Written by \(universe.name), for \(universe.partner). The language roles are set for you.").foregroundColor(Palette.muted)
             VStack(alignment:.leading,spacing:15){TextEditor(text:$text).frame(minHeight:145).scrollContentBackground(.hidden);Text("\(text.count) / 1,500").font(.caption).foregroundColor(Palette.muted)
                 Picker("Source",selection:$source){Text("Detect automatically").tag("auto");Text("English").tag("en");ForEach(Self.languages,id:\.0){Text($0.1).tag($0.0)}}
                 Picker("Tone",selection:$tone){Text("Natural & everyday").tag("natural");Text("A little sweeter").tag("sweet");Text("Soft & poetic").tag("poetic")}
@@ -101,7 +101,7 @@ struct WordsView:View {
         .onAppear{text=universe.vault.value("word-draft:"+universe.actor,as:String.self) ?? ""}
         .task(id:text){do{try await Task.sleep(nanoseconds:500_000_000)}catch{return};try? universe.vault.save("word-draft:"+universe.actor,text)}
         .onDisappear{try? universe.vault.save("word-draft:"+universe.actor,text)}
-        .sheet(isPresented:$history){NavigationStack{ScrollView{VStack(spacing:20){ForEach(universe.vault.value("translation-history:"+universe.actor,as:[TranslationRecord].self) ?? []){record in VStack(alignment:.leading,spacing:16){Text(record.text).font(.headline);ForEach(record.results){TranslationCard(translation:$0)}}}}.padding(20)}.background(Palette.background).navigationTitle("Saved translations").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){history=false}}}}}
+        .sheet(isPresented:$history){NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(spacing:20){ForEach(universe.vault.value("translation-history:"+universe.actor,as:[TranslationRecord].self) ?? []){record in VStack(alignment:.leading,spacing:16){Text(record.text).font(.headline);ForEach(record.results){TranslationCard(translation:$0)}}}}.padding(20)}.background(Palette.background).navigationTitle("Saved translations").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){history=false}}}}}
     }
 }
 struct TranslationCard:View {
