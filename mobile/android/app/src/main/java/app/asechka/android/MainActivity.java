@@ -25,6 +25,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private Ui u;
   private ApiClient api;
   private Images images;
+  private BookViews book;
   private final Handler main = new Handler(Looper.getMainLooper());
   private final ExecutorService work = Executors.newFixedThreadPool(4);
   private JSONObject memories, music, together, daily;
@@ -94,6 +95,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     u = new Ui(this);
     api = new ApiClient(this);
     images = new Images(api);
+    book = new BookViews(this, api, images, work, this::compressPhoto);
     if (state != null) {
       screen = state.getInt("screen");
       memoryTab = state.getInt("memoryTab");
@@ -163,6 +165,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     main.removeCallbacksAndMessages(null);
     work.shutdownNow();
     socialWrites.shutdown();
+    if (book != null) book.close();
     images.close();
     if (activeDialog != null) activeDialog.dismiss();
     super.onDestroy();
@@ -1199,7 +1202,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         () -> {
           api.syncPending();
           JSONObject result = new JSONObject();
-          String[] paths = {"/memories.json", "/api/music", "/api/together", "/api/daily-memory"};
+          String[] paths = {
+            "/memories.json",
+            "/api/music",
+            "/api/together",
+            "/api/daily-memory",
+            "/api/keepsakes",
+            "/api/journal"
+          };
           for (String path : paths) {
             try {
               result.put(path, api.get(path));
@@ -1561,6 +1571,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               14,
               Ui.MUTED),
           8);
+    u.add(content, u.button("Since us · letters & little things", true, () -> book.show(true)), 18);
+    u.add(content, u.button("Our little book", false, () -> book.show(false)), 10);
     birthdayCard(content);
     dailyCard(content);
     u.add(content, u.label("THE LITTLE THINGS, THE BIG FEELINGS"), 28);
@@ -2299,6 +2311,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         "FOR ALL THE DAYS STILL AHEAD",
         "You + me,\nsomeday.",
         "The places we’ll go. The little memories we’ll make.");
+    u.add(
+        content,
+        u.button("Our little book · victories, recipes & jokes", true, () -> book.show(false)),
+        18);
+    u.add(
+        content, u.button("Since us · letters & little things", false, () -> book.show(true)), 10);
     heartCard();
     birthdayCard(content);
     LinearLayout top = u.row();
@@ -3033,6 +3051,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   @Override
   protected void onActivityResult(int request, int result, Intent data) {
     super.onActivityResult(request, result, data);
+    if (book != null && book.photoResult(request, result, data)) return;
     if (request == 121
         && result == RESULT_OK
         && data != null

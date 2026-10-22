@@ -1,4 +1,4 @@
-# Asechka native apps — 2.0.0
+# Asechka native apps — 2.1.0
 
 Two native applications share the existing private website services: Android Views (Android 6+) and SwiftUI (iOS 16+, iPhone/iPad). Neither app contains a WebView. Home is a scrolling social feed; Photos and Quotes have their own feeds. Music, Our days, Words, the letter, personal corner, birthdays, and profile choices remain available.
 
@@ -29,3 +29,9 @@ Android: JDK 21, Android SDK 36, `mobile/android/gradlew assembleRelease` with t
 iPhone: macOS with Xcode and XcodeGen. Run `xcodegen generate` in `ios/`; the workflow runs native model/storage tests and a simulator UI walkthrough before building the unsigned arm64 Release application and packaging `Payload/Asechka.app` as an IPA. Debug preview fixtures use isolated encrypted storage and never connect to production.
 
 Shared backend tests run before deployment. Successful app writes, retry behavior, conflict handling, photo preparation, and social interactions are tested against isolated fixtures. Production validation uses reads and preserves personal content. Simulator checks cannot verify physical haptic hardware or every phone manufacturer's installer.
+
+## Our little book and Since us
+
+Version 2.1 adds native Tiny victories, Recipes for two (ingredients, steps, photos, and separate ratings), and a searchable inside-joke dictionary. Since us includes the September 27 first conversation, the original couple beginning, monthly and yearly anniversaries, all Open when letters with a heart celebration, and a collection of little things with one revealed at a time. Open these from Our days or Our corner. Every collection supports adding, editing, and confirmed removal using the same shared website APIs. Drafts, pending changes, and downloaded recipe photos use the existing encrypted offline storage.
+
+The private build workflow also keeps the latest APK, IPA, checksums, build status, and previews on the codex/mobile-delivery branch so an existing SSH checkout can retrieve them without a browser sign-in. It uses a repository-scoped, short-lived GitHub Actions token; signing keys remain in their existing encrypted secret.

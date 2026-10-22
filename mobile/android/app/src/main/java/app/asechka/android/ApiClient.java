@@ -187,7 +187,11 @@ public final class ApiClient {
 
   public JSONObject post(String path, JSONObject body) throws Exception {
     if (!canOpen()) throw new ApiError("Open our little door again.", 401);
-    if (path.equals("/api/music") || path.equals("/api/together") || path.equals("/api/memories")) {
+    if (path.equals("/api/music")
+        || path.equals("/api/together")
+        || path.equals("/api/memories")
+        || path.equals("/api/journal")
+        || path.equals("/api/keepsakes")) {
       JSONObject entry = store.enqueue(path, body);
       syncPending();
       JSONObject remaining = store.entry(entry.getString("id"));
@@ -294,6 +298,14 @@ public final class ApiClient {
             urls.add("/api/together-photo?kind=bucket&id=" + id);
         }
     }
+    JSONObject journal = store.base("/api/journal");
+    JSONArray recipes = journal == null ? null : journal.optJSONArray("recipes");
+    if (recipes != null)
+      for (int i = 0; i < recipes.length(); i++) {
+        JSONObject recipe = recipes.optJSONObject(i);
+        String id = recipe == null ? "" : recipe.optString("photoId", "");
+        if (!id.isEmpty() && !id.equals("null")) urls.add("/api/journal?photo=" + id);
+      }
     int missing = 0;
     for (String url : urls) {
       if (Thread.currentThread().isInterrupted()) break;
@@ -422,7 +434,7 @@ public final class ApiClient {
     connection.setUseCaches(false);
     connection.setRequestProperty("Accept", "application/json");
     connection.setRequestProperty("Cache-Control", "no-store");
-    connection.setRequestProperty("User-Agent", "Asechka-Android/2.0.0");
+    connection.setRequestProperty("User-Agent", "Asechka-Android/2.1.0");
     connection.setRequestProperty("Origin", base);
     final String sentCookie;
     final String sentSession = prefs.getString("session", "");
@@ -430,6 +442,8 @@ public final class ApiClient {
       sentCookie = signedIn() ? cookie : "";
       if (!sentCookie.isEmpty()) connection.setRequestProperty("Cookie", sentCookie);
     }
+    if (path.equals("/api/journal")) connection.setRequestProperty("X-Asechka-Journal", "1");
+    if (path.equals("/api/keepsakes")) connection.setRequestProperty("X-Asechka-Keepsakes", "1");
     if (path.equals("/api/music")) connection.setRequestProperty("X-Asechka-Music", "1");
     if (path.equals("/api/memories")) connection.setRequestProperty("X-Asechka-Memories", "1");
     if (path.equals("/api/together")) connection.setRequestProperty("X-Asechka-Together", "1");

@@ -1,4 +1,4 @@
-# Asechka for Android — 2.0.0
+# Asechka for Android — 2.1.0
 
 A native Android app for [our live website](https://asechka-website.vercel.app). All screens use Android views, text inputs, dialogs, image rendering, navigation, and the system photo picker. The application contains no WebView, bundled website, browser shell, JavaScript bridge, or website credentials.
 
@@ -12,7 +12,7 @@ This is one universal APK: Android 6.0 (API 23) and newer, with no ARM/x86 split
 
 Earlier compatibility work added explicit v1, v2, and v3 signatures using the original release certificate, plus Android 6–8 fallbacks for photo decoding and EXIF orientation, static bundled fonts, animation settings, navigation labels, network callbacks, background scheduling, dates, and password verification. Existing encrypted storage and pending changes remain compatible with previous versions. Newer Android retains its modern image decoder and variable fonts.
 
-Download or transfer **Asechka-v2.0.0.apk** as a complete file, retaining the `.apk` extension. Send it as a document or download from a browser into Downloads, then open it in Files. Compare its SHA-256 with the supplied file if a transfer is suspect. Install over the existing app to retain app-private saved data. A parsing error can also mean an incomplete/corrupted transfer or an unsupported OS; Samsung Galaxy alone does not identify the Android version.
+Download or transfer **Asechka-v2.1.0.apk** as a complete file, retaining the `.apk` extension. Send it as a document or download from a browser into Downloads, then open it in Files. Compare its SHA-256 with the supplied file if a transfer is suspect. Install over the existing app to retain app-private saved data. A parsing error can also mean an incomplete/corrupted transfer or an unsupported OS; Samsung Galaxy alone does not identify the Android version.
 
 ## Connected features
 
@@ -100,3 +100,9 @@ The production collection backend was deployed in repository commit `ec972f2`, w
 ## Android and iPhone automation
 
 The private repository includes both native applications under mobile/ and a GitHub Actions workflow that generates the signed Android APK and an unsigned iPhone IPA for signing with a sideloading tool. See mobile/README.md in the repository for build downloads and iOS installation details.
+
+## Our little book and Since us
+
+Version 2.1 adds native Tiny victories, Recipes for two (ingredients, steps, photos, and separate ratings), and a searchable inside-joke dictionary. Since us includes the September 27 first conversation, the original couple beginning, monthly and yearly anniversaries, all Open when letters with a heart celebration, and a collection of little things with one revealed at a time. Open these from Our days or Our corner. Every collection supports adding, editing, and confirmed removal using the same shared website APIs. Drafts, pending changes, and downloaded recipe photos use the existing encrypted offline storage.
+
+The private build workflow also keeps the latest APK, IPA, checksums, build status, and previews on the codex/mobile-delivery branch so an existing SSH checkout can retrieve them without a browser sign-in. It uses a repository-scoped, short-lived GitHub Actions token; signing keys remain in their existing encrypted secret.

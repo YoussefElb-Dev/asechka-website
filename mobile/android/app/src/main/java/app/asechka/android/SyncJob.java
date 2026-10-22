@@ -43,7 +43,12 @@ public final class SyncJob extends JobService {
               api.syncPending();
               for (String path :
                   new String[] {
-                    "/memories.json", "/api/music", "/api/together", "/api/daily-memory"
+                    "/memories.json",
+                    "/api/music",
+                    "/api/together",
+                    "/api/daily-memory",
+                    "/api/keepsakes",
+                    "/api/journal"
                   }) {
                 if (stopped.get()) return;
                 api.get(path);

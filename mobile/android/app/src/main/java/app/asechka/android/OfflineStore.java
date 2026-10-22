@@ -346,6 +346,8 @@ final class OfflineStore {
         byte[] image = Base64.decode(body.getString("photo").substring(23), Base64.NO_WRAP);
         if (path.equals("/api/memories"))
           bytes("image:/" + MemoryProjection.photoPath(body), image);
+        else if (path.equals("/api/journal"))
+          bytes("image:/api/journal?photo=" + body.getString("operationId"), image);
         else
           bytes("image:/api/together-photo?kind=bucket&id=" + body.getString("operationId"), image);
       }
@@ -377,6 +379,8 @@ final class OfflineStore {
 
   private JSONObject find(JSONObject data, String path, JSONObject body) {
     if (data == null) return null;
+    if (path.equals("/api/journal") || path.equals("/api/keepsakes"))
+      return BookProjection.find(data, body);
     if (path.equals("/api/memories")) {
       String id = body.optString("id", body.optString("operationId"));
       for (String collection : new String[] {"photos", "quotes"}) {
@@ -504,7 +508,9 @@ final class OfflineStore {
           continue;
         JSONObject b = entry.getJSONObject("body");
         String action = b.optString("action");
-        if (path.equals("/memories.json")) {
+        if (path.equals("/api/journal") || path.equals("/api/keepsakes")) {
+          BookProjection.apply(data, b, entry.getLong("createdAt"));
+        } else if (path.equals("/memories.json")) {
           MemoryProjection.apply(data, b, entry.getLong("createdAt"));
         } else if (path.equals("/api/music")) {
           JSONArray list = data.optJSONArray("tracks"), next = new JSONArray();

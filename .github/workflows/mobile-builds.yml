@@ -133,3 +133,66 @@ jobs:
             mobile/ios/build-test/Logs/Test/*.xcresult
             mobile/ios/NativeChecks.xcresult
           retention-days: 7
+  delivery:
+    name: Keep private build downloads
+    needs: [backend, android, iphone]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: Asechka-*-*
+          path: ${{ runner.temp }}/mobile-downloads
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: iPhone-build-diagnostics
+          path: ${{ runner.temp }}/iphone-diagnostics
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: Native-iPhone-previews
+          path: ${{ runner.temp }}/iphone-previews
+      - name: Save downloads and build status in the private repository
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          BUILD_RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BACKEND_RESULT: ${{ needs.backend.result }}
+          ANDROID_RESULT: ${{ needs.android.result }}
+          IPHONE_RESULT: ${{ needs.iphone.result }}
+        run: |
+          if git ls-remote --exit-code --heads origin codex/mobile-delivery >/dev/null; then
+            git fetch origin codex/mobile-delivery
+            git checkout -B codex/mobile-delivery FETCH_HEAD
+          else
+            git checkout -b codex/mobile-delivery
+          fi
+          mkdir -p mobile-downloads
+          find mobile-downloads -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          python3 - <<'PY'
+          import os,json,pathlib,shutil,hashlib
+          root=pathlib.Path('mobile-downloads')
+          temp=pathlib.Path(os.environ['RUNNER_TEMP'])
+          for name in ['Asechka-Android.apk','Asechka-Android.apk.sha256','Asechka-iPhone.ipa','Asechka-iPhone.ipa.sha256','INSTALL.txt']:
+              source=temp/'mobile-downloads'/name
+              if source.is_file(): shutil.copy2(source,root/name)
+          for name in ['test.log','build.log']:
+              for source in (temp/'iphone-diagnostics').rglob(name): shutil.copy2(source,root/name)
+          for source in (temp/'iphone-previews').rglob('*.png'):
+              target=root/'previews'/source.name
+              target.parent.mkdir(exist_ok=True)
+              shutil.copy2(source,target)
+          status={'source':os.environ['SOURCE_SHA'],'run':os.environ['BUILD_RUN'],'backend':os.environ['BACKEND_RESULT'],'android':os.environ['ANDROID_RESULT'],'iphone':os.environ['IPHONE_RESULT']}
+          status['files']={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in root.iterdir() if p.suffix in ['.apk','.ipa']}
+          (root/'status.json').write_text(json.dumps(status,indent=2)+'\n')
+          PY
+          git config user.name 'Asechka app builds'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- mobile-downloads
+          git commit -m "Keep native build downloads for ${SOURCE_SHA:0:7}" || git diff --cached --quiet
+          git push origin HEAD:refs/heads/codex/mobile-delivery

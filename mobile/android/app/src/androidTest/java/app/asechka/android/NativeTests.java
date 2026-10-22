@@ -17,7 +17,7 @@ public final class NativeTests extends Instrumentation {
   private MainActivity activity;
   private ApiClient api;
   private int assertions;
-  private boolean convert, motionOnly, compatOnly, socialOnly;
+  private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly;
   private String upgrade;
 
   @Override
@@ -27,6 +27,7 @@ public final class NativeTests extends Instrumentation {
     motionOnly = "true".equals(args.getString("motionOnly"));
     compatOnly = "true".equals(args.getString("compatOnly"));
     socialOnly = "true".equals(args.getString("socialOnly"));
+    bookOnly = "true".equals(args.getString("bookOnly"));
     upgrade = args.getString("upgrade", "");
     start();
   }
@@ -56,7 +57,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (socialOnly) {
+        if (bookOnly) {
+          bookTests();
+        } else if (socialOnly) {
           socialTests();
         } else if (compatOnly) {
           compatibilityTests();
@@ -1080,6 +1083,135 @@ public final class NativeTests extends Instrumentation {
     set("images", new Images(api));
     call("restoreSaved", new Class[] {});
     call("showShell", new Class[] {});
+  }
+
+  private void bookTests() throws Exception {
+    prepareMotionFixture();
+    api.get("/api/journal");
+    api.get("/api/keepsakes");
+    offline(api, true);
+    java.util.concurrent.ExecutorService worker =
+        java.util.concurrent.Executors.newSingleThreadExecutor();
+    BookViews[] book = {null};
+    ui(
+        () -> {
+          book[0] =
+              new BookViews(
+                  activity,
+                  api,
+                  new Images(api),
+                  worker,
+                  uri -> {
+                    throw new IOException("Fixture uses a prepared picture");
+                  });
+          book[0].show(false);
+        });
+    check(hasText(book[0].content, "Tiny victories"), "Native victory chapter");
+    ui(
+        () -> {
+          book[0].edit("Victory", null);
+          book[0].editor.fields.get("title").setText("A little win, kept together");
+          book[0].editor.fields.get("note").setText("You kept trying.");
+          book[0].editor.save();
+        });
+    await(() -> book[0].editor == null, "Victory editor saved durably");
+    check(
+        api.cached("/api/journal", true).getJSONArray("victories").length() == 1,
+        "Victory visible offline");
+    ui(
+        () -> {
+          book[0].chapter = 1;
+          book[0].render();
+          book[0].edit("Recipe", null);
+          book[0].editor.fields.get("title").setText("Our fixture meal");
+          book[0].editor.fields.get("ingredients").setText("Rice\nWater");
+          book[0].editor.fields.get("steps").setText("Cook together");
+          book[0].editor.tried.setChecked(true);
+          book[0].editor.me.setSelection(4);
+          book[0].editor.asechka.setSelection(5);
+        });
+    Bitmap image = Bitmap.createBitmap(400, 300, Bitmap.Config.ARGB_8888);
+    image.eraseColor(android.graphics.Color.BLUE);
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    image.compress(Bitmap.CompressFormat.JPEG, 85, bytes);
+    image.recycle();
+    String photo =
+        "data:image/jpeg;base64,"
+            + android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP);
+    ui(
+        () -> {
+          book[0].editor.photo = photo;
+          book[0].editor.save();
+        });
+    await(() -> book[0].editor == null, "Recipe editor saved");
+    JSONObject recipe = api.cached("/api/journal", true).getJSONArray("recipes").getJSONObject(0);
+    check(
+        recipe.getJSONObject("ratings").getInt("me") == 4
+            && recipe.getJSONObject("ratings").getInt("asechka") == 5,
+        "Separate native ratings");
+    check(
+        api.image("/api/journal?photo=" + recipe.getString("photoId")).length > 0,
+        "Recipe photo retained offline");
+    ui(
+        () -> {
+          book[0].chapter = 2;
+          book[0].render();
+          book[0].edit("Joke", null);
+          book[0].editor.fields.get("title").setText("Our little phrase");
+          book[0].editor.fields.get("meaning").setText("It means something only to us");
+          book[0].editor.save();
+        });
+    await(() -> book[0].editor == null, "Inside joke saved");
+    ui(() -> views(book[0].content, EditText.class).get(0).setText("unmatched"));
+    check(
+        hasText(book[0].content, "No matching little memories yet."), "Native inside-joke search");
+    ui(
+        () -> {
+          book[0].close();
+          book[0].show(true);
+        });
+    check(hasText(book[0].content, "September 27, 2026"), "First conversation date shown natively");
+    JSONObject since = api.cached("/api/keepsakes", true).getJSONObject("since");
+    check(
+        since.getString("startedAt").equals("2026-10-16T19:41:00.000Z"),
+        "Couple beginning preserved");
+    ui(
+        () -> {
+          book[0].chapter = 1;
+          book[0].render();
+        });
+    check(views(book[0].content, Button.class).size() >= 6, "Letters listed together");
+    JSONObject letter = api.cached("/api/keepsakes", true).getJSONArray("letters").getJSONObject(0);
+    ui(
+        () -> {
+          book[0].edit("Letter", letter);
+          book[0].editor.fields.get("text").setText("My own words, kept from the phone.");
+          book[0].editor.save();
+        });
+    await(() -> book[0].editor == null, "Letter edit saved offline");
+    check(api.store.pending() == 4, "All four changes queued once");
+    ApiClient restart = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(restart, true);
+    check(
+        restart.cached("/api/journal", true).getJSONArray("jokes").length() == 1,
+        "Book restored after restart");
+    offline(api, false);
+    api.syncPending();
+    check(api.store.pending() == 0, "Book and keepsakes synchronized");
+    check(
+        api.get("/api/journal").getJSONArray("recipes").length() == 1,
+        "Recipe synchronized exactly once");
+    check(
+        api.get("/api/keepsakes")
+            .getJSONArray("letters")
+            .getJSONObject(0)
+            .getString("text")
+            .equals("My own words, kept from the phone."),
+        "Letter synchronized");
+    ui(() -> book[0].close());
+    worker.shutdownNow();
+    check(
+        BookViews.validDate("2026-09-27") && !BookViews.validDate("2026-02-30"), "Date validation");
   }
 
   private void socialTests() throws Exception {

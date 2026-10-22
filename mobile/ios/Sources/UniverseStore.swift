@@ -18,6 +18,8 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     @Published var memories=Memories()
     @Published var songs:[Song]=[]
     @Published var wishes:[Wish]=[]
+    @Published var journal:[String:Any]=[:]
+    @Published var keepsakes:[String:Any]=[:]
     @Published var translations:[Translation]=[]
     @Published var pending:[PendingChange]=[]
     @Published var message="Opening our little universe…"
@@ -55,7 +57,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard !storageUnavailable else{return}
         if preview {
             actor="asnat";unlocked=true;online=false;memories=bundledMemories()
-            try? vault.save("snapshot:/api/memories",memories);status();return
+            try? vault.save("snapshot:/api/memories",memories);restore();journal["writable"]=true;keepsakes["writable"]=true;try? vault.write("snapshot:/api/journal",JSONSerialization.data(withJSONObject:journal));try? vault.write("snapshot:/api/keepsakes",JSONSerialization.data(withJSONObject:keepsakes));status();return
         }
         cookie=vault.value("session",as:String.self) ?? ""
         locked=vault.value("locked",as:Bool.self) ?? false
@@ -80,10 +82,10 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard path.hasPrefix("/"),!path.hasPrefix("//"),!path.contains("\\"),let url=URL(string:Self.site+path)else{throw URLError(.badURL)}
         var request=URLRequest(url:url);request.httpMethod=body==nil ? "GET":"POST";request.httpBody=body
         request.setValue("application/json",forHTTPHeaderField:"Accept");request.setValue(Self.site,forHTTPHeaderField:"Origin")
-        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.0.0",forHTTPHeaderField:"User-Agent")
+        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.1.0",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
-        for (endpoint,header) in [("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation")] {
+        for (endpoint,header) in [("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation")] {
             if path==endpoint {request.setValue("1",forHTTPHeaderField:header)}
         }
         let (data,response)=try await session.data(for:request)
@@ -132,6 +134,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
             let memory=json["memory"] as? [String:Any]
             dailyText=memory?["text"] as? String ?? memory?["caption"] as? String ?? memory?["title"] as? String ?? "A new little moment, every day."
         }
+        journal=restoreBook("/api/journal","journal");keepsakes=restoreBook("/api/keepsakes","keepsakes")
         translations=vault.value("translations:"+actor,as:[Translation].self) ?? []
         for change in pending {Projection.apply(change,to:&memories);projectOther(change)}
     }
@@ -143,7 +146,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard !refreshing,unlocked,!locked,online else{status();return}
         refreshing=true;defer{refreshing=false;status()}
         await sync()
-        for path in ["/api/memories","/api/music","/api/together","/api/daily-memory"] {
+        for path in ["/api/memories","/api/music","/api/together","/api/daily-memory","/api/keepsakes","/api/journal"] {
             do{let data=try await request(path);guard !locked else{return};try vault.write("snapshot:"+path,data)}
             catch{if vault.read("snapshot:"+path)==nil {self.error=error.localizedDescription}}
         }
@@ -154,7 +157,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         if body["operationId"]==nil {body["operationId"]=UUID().uuidString.lowercased()}
         let data=try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys])
         if let encoded=body["photo"] as? String,let bytes=Data(base64Encoded:String(encoded.dropFirst(23))) {
-            let key=path=="/api/memories" ? "/"+Projection.photoPath(body) : "/api/together-photo?kind=bucket&id=\(body["operationId"] as? String ?? "")"
+            let key=path=="/api/journal" ? "/api/journal?photo=\(body["operationId"] as? String ?? "")" : path=="/api/memories" ? "/"+Projection.photoPath(body) : "/api/together-photo?kind=bucket&id=\(body["operationId"] as? String ?? "")"
             try vault.write("image:"+key,bytes)
         }
         let change=PendingChange(id:UUID().uuidString,path:path,body:data,createdAt:ISO8601DateFormatter().string(from:Date()))
@@ -232,7 +235,8 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     func prefetch()async {
         guard !prefetching else{return};prefetching=true;defer{prefetching=false}
         let sources=memories.photos.map(\.imageURL)+songs.compactMap(\.artworkUrl)+wishes.compactMap{$0.photoId.map{"/api/together-photo?kind=bucket&id="+$0}}
-        for source in sources {guard online,!locked else{return};_=await image(source)}
+        let recipePhotos=(journal["recipes"] as? [[String:Any]] ?? []).compactMap{$0["photoId"] as? String}.map{"/api/journal?photo="+$0}
+        for source in sources+recipePhotos {guard online,!locked else{return};_=await image(source)}
     }
     func search(_ query:String)async throws->[Song]{
         var parts=URLComponents();parts.queryItems=[URLQueryItem(name:"q",value:query)]

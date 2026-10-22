@@ -23,7 +23,7 @@ struct SettingsView:View {
                 }}
             }
             Section{Button("Refresh our universe"){Task{await universe.refresh()}};Button("Reconnect with our code"){reconnect=true};Button("Switch profile"){universe.choose("");dismiss()};Button("Lock our little door",role:.destructive){universe.lock();dismiss()}}
-            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.0 · made for us ♡").font(.caption)}
+            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.1 · made for us ♡").font(.caption)}
         }.navigationTitle("Our little settings").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}
             .alert("Reconnect",isPresented:$reconnect){SecureField("Our code",text:$code);Button("Open"){Task{await universe.login(code);code=""}};Button("Cancel",role:.cancel){code=""}}
         }
@@ -34,11 +34,15 @@ struct CornerView:View {
     @Environment(\.dismiss) private var dismiss
     @State private var letter=false
     @State private var hint=0
+    @State private var littleBook=false
+    @State private var personalBook=false
     private let hints=["No spoilers. Just a few butterflies.","It starts with you.","It has a little something to do with us.","Maybe there’s a question I’ve been saving…"]
     var body:some View {
         NavigationStack{ScrollView{VStack(alignment:.leading,spacing:20){
             Text(universe.actor=="asnat" ? "My favorite\nlittle universe.":"Our favorite\nlittle universe.").font(.custom("Manrope-Bold",size:33))
             Text("Of all the people, in all the places, somehow my heart keeps finding you.").foregroundColor(Palette.muted)
+            Button("Since us · letters & little things"){personalBook=true}.primary()
+            Button("Our little book"){littleBook=true}.primary()
             CachedPhoto(source:"assets/our-little-universe.png").aspectRatio(1.25,contentMode:.fit).clipShape(RoundedRectangle(cornerRadius:24))
             Button(universe.actor=="asnat" ? "Your letter ♡":"Letter to Asnat ♡"){letter=true}.primary()
             VStack(alignment:.leading,spacing:12){Text("A LITTLE MOMENT, JUST FOR US").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
@@ -56,6 +60,8 @@ struct CornerView:View {
             QuoteCarousel();Text("Made with a whole lot of love. Only for you. ♡").font(.caption).foregroundColor(Palette.muted)
         }.padding(22)}.background(Palette.background).navigationTitle("Our corner").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}
             .sheet(isPresented:$letter){LetterView()}
+            .sheet(isPresented:$littleBook){BookView()}
+            .sheet(isPresented:$personalBook){BookView(personal:true)}
     }
     private func feeling(_ title:String,_ text:String)->some View{VStack(alignment:.leading,spacing:10){Text(title).font(.headline);Text(text).font(.subheadline).foregroundColor(Palette.muted)}.card()}
     private func birthday(_ name:String,month:Int,day:Int)->some View {

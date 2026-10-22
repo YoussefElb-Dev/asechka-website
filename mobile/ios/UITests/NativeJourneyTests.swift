@@ -42,6 +42,25 @@ final class NativeJourneyTests:XCTestCase {
         app.buttons["Words"].firstMatch.tap()
         capture("06-iPhone-words")
     }
+    func testOurLittleBookAndSinceUsAreNativeAndEditableOffline() {
+        let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
+        XCTAssertTrue(app.buttons["Our days"].firstMatch.waitForExistence(timeout:15));app.buttons["Our days"].firstMatch.tap()
+        app.buttons["Our little book"].tap()
+        XCTAssertTrue(app.buttons["Tiny victories"].firstMatch.waitForExistence(timeout:5))
+        app.buttons["Add a victory"].tap()
+        let title=app.textFields["Title"];XCTAssertTrue(title.waitForExistence(timeout:5));title.tap();title.typeText("A little win, kept together")
+        app.buttons["Save"].tap()
+        XCTAssertTrue(app.staticTexts["A little win, kept together"].waitForExistence(timeout:5))
+        capture("07-iPhone-little-book")
+        app.buttons["Recipes for two"].tap();app.buttons["Add a recipe"].tap()
+        XCTAssertTrue(app.buttons["Choose a recipe photo"].waitForExistence(timeout:5));capture("08-iPhone-recipe-editor");app.buttons["Cancel"].tap()
+        app.buttons["Inside jokes"].tap();XCTAssertTrue(app.textFields["Find one of our inside jokes…"].exists)
+        app.buttons["Done"].tap();app.buttons["Since us · letters & little things"].tap()
+        XCTAssertTrue(app.staticTexts["September 27, 2026"].waitForExistence(timeout:5));capture("09-iPhone-since-us")
+        app.buttons["Open when…"].tap();capture("10-iPhone-open-when-letters")
+        let letter=app.buttons.matching(NSPredicate(format:"label CONTAINS %@","Open with love")).firstMatch
+        XCTAssertTrue(letter.waitForExistence(timeout:5));letter.tap();XCTAssertTrue(app.buttons["Keep it close ♡"].waitForExistence(timeout:5));capture("11-iPhone-letter")
+    }
     private func capture(_ name:String) {
         let attachment=XCTAttachment(screenshot:XCUIApplication().screenshot())
         attachment.name=name;attachment.lifetime = .keepAlways;add(attachment)

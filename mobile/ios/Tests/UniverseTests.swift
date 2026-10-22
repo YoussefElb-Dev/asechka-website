@@ -3,6 +3,34 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    func testBookProjectionKeepsRecipesPhotosRatingsAndOtherEntries() {
+        var book:[String:Any]=["version":1,"recipes":[],"victories":[],"jokes":[]]
+        let saved:[String:Any]=["action":"saveRecipe","id":"recipe","operationId":"photo-id","title":"Our meal","ingredients":"Rice\nWater","steps":"Cook together","note":"","tried":true,"ratings":["me":4,"asechka":5],"photo":"data:image/jpeg;base64,test"]
+        BookProjection.apply(saved,to:&book,createdAt:"2026-10-22T12:00:00Z")
+        BookProjection.apply(saved,to:&book,createdAt:"2026-10-22T12:00:00Z")
+        var recipes=book["recipes"] as? [[String:Any]] ?? []
+        XCTAssertEqual(recipes.count,1);XCTAssertEqual(recipes[0]["photoId"] as? String,"photo-id")
+        XCTAssertEqual((recipes[0]["ratings"] as? [String:Int])?["asechka"],5)
+        BookProjection.apply(["action":"saveJoke","id":"joke","operationId":"joke-revision","title":"Our phrase","meaning":"Only us"],to:&book,createdAt:"2026-10-22T12:00:00Z")
+        BookProjection.apply(["action":"saveRecipe","id":"recipe","operationId":"new-revision","removePhoto":true],to:&book,createdAt:"2026-10-22T13:00:00Z")
+        recipes=book["recipes"] as? [[String:Any]] ?? []
+        XCTAssertTrue(recipes[0]["photoId"] is NSNull);XCTAssertEqual(recipes[0]["ingredients"] as? String,"Rice\nWater")
+        BookProjection.apply(["action":"removeRecipe","id":"recipe","operationId":"remove"],to:&book,createdAt:"")
+        XCTAssertEqual((book["recipes"] as? [[String:Any]])?.count,0)
+        XCTAssertEqual((book["jokes"] as? [[String:Any]])?.count,1)
+    }
+    func testConversationDateAndKeepsakeEditsPreserveCoupleBeginning() throws {
+        let file=try XCTUnwrap(Bundle.main.url(forResource:"keepsakes",withExtension:"json",subdirectory:"default"))
+        var data=try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:file)) as? [String:Any])
+        let start=(data["since"] as? [String:Any])?["startedAt"] as? String
+        BookProjection.apply(["action":"saveSince","id":"since","operationId":"edit","startedTalkingAt":"2026-09-27"],to:&data,createdAt:"")
+        XCTAssertEqual((data["since"] as? [String:Any])?["startedAt"] as? String,start)
+        XCTAssertNil(BookDates.day("2026-02-30"));XCTAssertEqual(BookDates.dayString(try XCTUnwrap(BookDates.day("2026-09-27"))),"2026-09-27")
+        let began=try XCTUnwrap(BookDates.instant("2026-10-16T19:41:00.000Z"))
+        let now=try XCTUnwrap(BookDates.instant("2026-10-22T12:00:00Z"))
+        XCTAssertEqual(BookDates.dayString(BookDates.next(began,yearly:false,now:now)),"2026-11-16")
+        XCTAssertEqual(BookDates.dayString(BookDates.next(began,yearly:true,now:now)),"2027-10-16")
+    }
     func testBundledPhotosDecodeWithoutInternet()throws {
         let file=try XCTUnwrap(Bundle.main.url(forResource:"memories",withExtension:"json",subdirectory:"default"))
         let memories=try JSONDecoder().decode(Memories.self,from:Data(contentsOf:file))

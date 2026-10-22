@@ -6,10 +6,14 @@ struct DaysView:View {
     @EnvironmentObject private var universe:UniverseStore
     @State private var editing:WishSelection?
     @State private var filter=0
+    @State private var littleBook=false
+    @State private var personalBook=false
     var body:some View {
         ScrollView{VStack(alignment:.leading,spacing:20){
             Text("Our little days.").font(.custom("Manrope-Bold",size:30))
             Text("Places to go. Things to try. A little more us.").foregroundColor(Palette.muted)
+            Button("Our little book"){littleBook=true}.primary()
+            Button("Since us · letters & little things"){personalBook=true}.primary()
             VStack(alignment:.leading,spacing:14){Text("Thinking of you.").font(.title3.weight(.semibold));Text("A little heart, from \(universe.name) to \(universe.partner).").foregroundColor(Palette.muted)
                 Button{do{try universe.enqueue("/api/together",["action":"sendHeart","from":universe.actor=="asnat" ? "asechka":"me"]);Touch.tap(true)}catch{universe.error=error.localizedDescription}}label:{Label("Send a heart to \(universe.partner)",systemImage:"heart.fill").primary()}
                 ForEach(["asechka","me"],id:\.self){who in if let date=universe.hearts[who]{Text("\(who=="asechka" ? "Asnat":"Youssef") sent a heart · \(String(date.prefix(10))) ♡").font(.caption).foregroundColor(Palette.muted)}}
@@ -30,6 +34,8 @@ struct DaysView:View {
             if universe.wishes.isEmpty {Text("Our next adventure starts with a little wish.").foregroundColor(Palette.muted).padding(.vertical,25)}
         }.padding(22)}.refreshable{await universe.refresh()}
             .sheet(item:$editing){selection in WishEditor(original:selection.wish)}
+            .sheet(isPresented:$littleBook){BookView()}
+            .sheet(isPresented:$personalBook){BookView(personal:true)}
     }
     private func toggle(_ wish:Wish,_ done:Bool){do{try universe.enqueue("/api/together",["action":"toggleItem","id":wish.id,"completed":done,"expectedRevision":wish.revision as Any? ?? NSNull()]);Touch.tap()}catch{universe.error=error.localizedDescription}}
     private func remove(_ wish:Wish){do{try universe.enqueue("/api/together",["action":"removeItem","id":wish.id,"expectedRevision":wish.revision as Any? ?? NSNull()])}catch{universe.error=error.localizedDescription}}
