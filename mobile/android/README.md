@@ -1,4 +1,4 @@
-# Asechka for Android — 2.1.0
+# Asechka for Android — 2.1.1
 
 A native Android app for [our live website](https://asechka-website.vercel.app). All screens use Android views, text inputs, dialogs, image rendering, navigation, and the system photo picker. The application contains no WebView, bundled website, browser shell, JavaScript bridge, or website credentials.
 
@@ -12,7 +12,7 @@ This is one universal APK: Android 6.0 (API 23) and newer, with no ARM/x86 split
 
 Earlier compatibility work added explicit v1, v2, and v3 signatures using the original release certificate, plus Android 6–8 fallbacks for photo decoding and EXIF orientation, static bundled fonts, animation settings, navigation labels, network callbacks, background scheduling, dates, and password verification. Existing encrypted storage and pending changes remain compatible with previous versions. Newer Android retains its modern image decoder and variable fonts.
 
-Download or transfer **Asechka-v2.1.0.apk** as a complete file, retaining the `.apk` extension. Send it as a document or download from a browser into Downloads, then open it in Files. Compare its SHA-256 with the supplied file if a transfer is suspect. Install over the existing app to retain app-private saved data. A parsing error can also mean an incomplete/corrupted transfer or an unsupported OS; Samsung Galaxy alone does not identify the Android version.
+Download or transfer **Asechka-v2.1.1.apk** as a complete file, retaining the `.apk` extension. Send it as a document or download from a browser into Downloads, then open it in Files. Compare its SHA-256 with the supplied file if a transfer is suspect. Install over the existing app to retain app-private saved data. A parsing error can also mean an incomplete/corrupted transfer or an unsupported OS; Samsung Galaxy alone does not identify the Android version.
 
 ## Connected features
 
