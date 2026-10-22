@@ -52,6 +52,15 @@ function clock() {
   $$('[data-since-milestone]').forEach(node => { if (node.textContent !== state.message) node.textContent = state.message; });
   const date = new Intl.DateTimeFormat('en-US', { timeZone: data.since.timeZone, month: 'long', day: 'numeric', year: 'numeric' });
   const put = (selector, text) => { $$(selector).forEach(node => { if (node.textContent !== text) node.textContent = text; }); };
+  $$('[data-talking-beginning]').forEach(node => { node.hidden = !data.since.startedTalkingAt; });
+  if (data.since.startedTalkingAt) {
+    const day = data.since.startedTalkingAt;
+    const label = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' }).format(Date.parse(day));
+    $$('[data-talking-date]').forEach(node => { node.dateTime = day; node.textContent = label; });
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: data.since.timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    const days = Math.max(0, Math.floor((Date.parse(today) - Date.parse(day)) / 86400000));
+    put('[data-talking-days]', `${days} ${days === 1 ? 'day' : 'days'} of getting to know you. ♡`);
+  }
   const start = Date.parse(data.since.startedAt), time = new Intl.DateTimeFormat('en-US', { timeZone: data.since.timeZone, hour: 'numeric', minute: '2-digit' }).format(start);
   const format = options => new Intl.DateTimeFormat('en-US', { timeZone: data.since.timeZone, ...options }).format(start);
   const weekday = format({ weekday: 'long' });
@@ -181,12 +190,15 @@ function edit(kind, original, opener, remove = false) {
   const close = element('button', 'keepsake-modal-close', '×'); close.type = 'button'; close.setAttribute('aria-label', 'Close editor');
   close.addEventListener('click', () => dialog.close());
   form.append(element('p', 'eyebrow', remove ? 'OUR LITTLE COLLECTION' : 'IN YOUR OWN WORDS'), heading, fieldset);
-  let title, text, dateInput, monthlyInput, yearlyInput;
+  let title, text, dateInput, talkingInput, monthlyInput, yearlyInput;
   if (remove) fieldset.append(element('p', '', 'Remove this from our shared collection?'), element('div', 'keepsake-remove-copy', kind === 'Letter' ? `Open when ${item.title}\n\n${item.text}` : item.text));
   else if (kind === 'Since') {
     const dateLabel = element('label', '', 'The moment we became us · Eastern time'); dateLabel.htmlFor = 'beginning-date';
     dateInput = element('input'); dateInput.type = 'datetime-local'; dateInput.id = 'beginning-date'; dateInput.required = true; dateInput.step = '60'; dateInput.value = localDateTime(item.startedAt);
     fieldset.append(dateLabel, dateInput, element('p', 'management-hint', 'Anniversaries stay at this Eastern clock time, including daylight saving changes.'));
+    const talkingLabel = element('label', '', 'The day we started talking'); talkingLabel.htmlFor = 'talking-date';
+    talkingInput = element('input'); talkingInput.type = 'date'; talkingInput.id = 'talking-date'; talkingInput.value = item.startedTalkingAt || '';
+    fieldset.append(talkingLabel, talkingInput, element('p', 'management-hint', 'Leave blank to hide this little beginning.'));
     for (const [key, labelText] of [['monthlyMessage','On our monthly anniversary'], ['yearlyMessage','On our yearly anniversary']]) {
       const label = element('label', '', labelText); label.htmlFor = key;
       const input = element('textarea'); input.id = key; input.rows = 3; input.maxLength = 2000; input.placeholder = 'Leave blank for the simple milestone message'; input.value = item[key] || '';
@@ -213,7 +225,7 @@ function edit(kind, original, opener, remove = false) {
     event.preventDefault(); if (busy) return;
     let fields = {};
     try {
-      if (kind === 'Since') fields = { startedAt: fromLocalDateTime(dateInput.value), monthlyMessage: monthlyInput.value, yearlyMessage: yearlyInput.value };
+      if (kind === 'Since') fields = { startedAt: fromLocalDateTime(dateInput.value), startedTalkingAt: talkingInput.value || null, monthlyMessage: monthlyInput.value, yearlyMessage: yearlyInput.value };
       else if (!remove) fields = { text: text.value, ...(title ? { title: title.value } : {}) };
     } catch (error) { notice.textContent = error.message; notice.hidden = false; return; }
     const payload = { action: `${remove ? 'remove' : 'save'}${kind}`, id, expectedRevision: item?.revision || null, ...fields };

@@ -6,6 +6,7 @@ import { handleMusic } from './server/music-api.js';
 import { handleTogether } from './server/together-api.js';
 import { handleTranslation } from './server/translation-api.js';
 import { handleKeepsakes } from './server/keepsakes-api.js';
+import { handleJournal } from './server/journal-api.js';
 import { readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 const directory = resolve('dist');
@@ -21,7 +22,7 @@ createServer(async (req, res) => {
     const isMusic = ['/api/music', '/api/music-search'].includes(new URL(request.url).pathname);
     const isTogether = ['/api/together','/api/together-photo','/api/daily-memory'].includes(new URL(request.url).pathname);
     const isTranslation = new URL(request.url).pathname === '/api/translation';
-    const gate = new URL(request.url).pathname === '/api/keepsakes' ? await handleKeepsakes(request) : new URL(request.url).pathname === '/api/memories' ? await handleMemories(request) : isMusic ? await handleMusic(request) : isTogether ? await handleTogether(request) : isTranslation ? await handleTranslation(request) : await authorize(request);
+    const gate = new URL(request.url).pathname === '/api/journal' ? await handleJournal(request) : new URL(request.url).pathname === '/api/keepsakes' ? await handleKeepsakes(request) : new URL(request.url).pathname === '/api/memories' ? await handleMemories(request) : isMusic ? await handleMusic(request) : isTogether ? await handleTogether(request) : isTranslation ? await handleTranslation(request) : await authorize(request);
     if (gate) {
       res.writeHead(gate.status, Object.fromEntries(gate.headers));
       res.end(req.method === 'HEAD' ? undefined : Buffer.from(await gate.arrayBuffer()));

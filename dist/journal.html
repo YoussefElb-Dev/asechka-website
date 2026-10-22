@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#edf2ff"><meta name="description" content="The things we’re proud of, the meals we’ll make, and the jokes only we understand.">
+  <title>Our little book · Asechka ♡</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="memories.css"><link rel="stylesheet" href="collections.css"><link rel="stylesheet" href="journal.css">
+  <script type="module" src="journal.js"></script>
+</head>
+<body class="collection-page journal-page">
+  <a class="skip-link" href="#main">Skip to our little book</a>
+  <svg class="svg-definitions" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
+  <header class="site-header collection-header wrap">
+    <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
+    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html">Music</a><a href="/us.html">Since us</a><a href="/together.html">Our days</a><a href="/journal.html" aria-current="page">Our little book</a></nav>
+  </header>
+  <main class="collection-main journal-main wrap" id="main">
+    <a class="collection-back" href="/">← Back to our little universe</a>
+    <section class="journal-intro" aria-labelledby="book-title">
+      <div><p class="eyebrow">THE ORDINARY THINGS THAT BECOME OURS</p><h1 id="book-title">Our little book.<br><span class="handwritten">Still being written.</span></h1><p>The things we’re proud of. Something good to cook.<br>And the jokes that make sense to exactly two people.</p><a class="journal-since" href="/us.html">From our first conversation, to all of this. ↗</a></div>
+      <div class="book-drawing" aria-hidden="true"><span class="book-tape"></span><span class="book-number">VOL. 01 · YOU + ME</span><span class="handwritten">a little bit<br>of our life.</span><span class="book-star">✧</span><div class="book-spine"></div><span class="book-bottom">LEAVE SOME ROOM FOR TOMORROW ♡</span></div>
+    </section>
+    <div class="journal-tabs" role="tablist" aria-label="Chapters of our little book">
+      <button type="button" role="tab" id="tab-victories" aria-controls="victories" aria-selected="true" data-chapter="victories">Tiny victories <span data-count="victories">0</span></button>
+      <button type="button" role="tab" id="tab-recipes" aria-controls="recipes" aria-selected="false" tabindex="-1" data-chapter="recipes">Recipes for two <span data-count="recipes">0</span></button>
+      <button type="button" role="tab" id="tab-jokes" aria-controls="jokes" aria-selected="false" tabindex="-1" data-chapter="jokes">Inside jokes <span data-count="jokes">0</span></button>
+    </div>
+    <p class="journal-status" data-book-status role="status">Opening our little book…</p><button type="button" class="journal-retry" data-book-retry hidden>Try again</button>
+    <section class="journal-panel" id="victories" role="tabpanel" aria-labelledby="tab-victories" tabindex="0">
+      <div class="chapter-heading"><div><p class="eyebrow">BIG FEELINGS ABOUT LITTLE WINS</p><h2>Tiny <span class="handwritten">victories.</span></h2><p>A place to say, “I noticed. And I’m proud of you.”</p></div><button type="button" class="button button-primary" data-add="Victory" disabled>Keep a little victory +</button></div>
+      <div class="journal-grid victory-grid" data-grid="victories" aria-busy="true"></div>
+      <div class="journal-empty" data-empty="victories" hidden><span class="empty-emblem" aria-hidden="true">✧</span><h3 class="handwritten">Even the small wins belong here.</h3><p>Something brave. Something finished. Something that took effort.<br>Keep the first thing you’re proud of each other for.</p><button type="button" class="button button-outline" data-add="Victory" disabled>Add our first victory +</button></div>
+    </section>
+    <section class="journal-panel" id="recipes" role="tabpanel" aria-labelledby="tab-recipes" tabindex="0" hidden>
+      <div class="chapter-heading"><div><p class="eyebrow">TWO PLATES, ONE LITTLE PLAN</p><h2>A recipe book <span class="handwritten">for two.</span></h2><p>Save a dish, make it together, then keep the picture and your verdicts.</p></div><button type="button" class="button button-primary" data-add="Recipe" disabled>Add a recipe +</button></div>
+      <div class="recipe-filters" role="group" aria-label="Show recipes"><button type="button" data-recipe-filter="all" aria-pressed="true">All our recipes</button><button type="button" data-recipe-filter="wishlist" aria-pressed="false">Want to make</button><button type="button" data-recipe-filter="tried" aria-pressed="false">We tried it ♡</button></div>
+      <div class="journal-grid recipe-grid" data-grid="recipes" aria-busy="true"></div>
+      <div class="journal-empty" data-empty="recipes" hidden><span class="empty-emblem" aria-hidden="true">♧</span><h3 class="handwritten">What should we make first?</h3><p>Your ingredients, your steps, your little kitchen experiments.<br>After you try a dish, add a photo and a rating from each of you.</p><button type="button" class="button button-outline" data-add="Recipe" disabled>Save our first recipe +</button></div>
+      <p class="journal-filter-empty" data-recipe-empty hidden>No recipes in this chapter yet. There’s time for another little kitchen adventure.</p>
+    </section>
+    <section class="journal-panel" id="jokes" role="tabpanel" aria-labelledby="tab-jokes" tabindex="0" hidden>
+      <div class="chapter-heading"><div><p class="eyebrow">ONLY WE KNOW WHAT THAT MEANS</p><h2>Our inside-joke <span class="handwritten">dictionary.</span></h2><p>The nicknames, strange phrases, and stories we’d have to explain.</p></div><button type="button" class="button button-primary" data-add="Joke" disabled>Add an inside joke +</button></div>
+      <label class="joke-search" for="joke-search"><span>Find one of our words</span><input id="joke-search" type="search" placeholder="A phrase, nickname, or little story…" maxlength="160"></label>
+      <div class="journal-grid joke-grid" data-grid="jokes" aria-busy="true"></div>
+      <div class="journal-empty" data-empty="jokes" hidden><span class="empty-emblem handwritten" aria-hidden="true">“ ”</span><h3 class="handwritten">Our own little language.</h3><p>Write down a phrase and what it means to you.<br>Keep the story, before you forget how it started.</p><button type="button" class="button button-outline" data-add="Joke" disabled>Add our first inside joke +</button></div>
+      <p class="journal-filter-empty" data-joke-empty hidden>No matching words yet. Try another little phrase.</p>
+    </section>
+    <p class="book-signoff handwritten">all the little things, in our own words. ♡</p>
+  </main>
+  <footer class="site-footer collection-footer wrap"><div><a class="brand footer-brand" href="/">asechka<span class="brand-dot">.</span></a><p>Made with a whole lot of love. Only for you.</p></div><div class="footer-controls"><a class="collection-back" href="/together.html">Back to our little days ↗</a><form method="post" action="/api/logout"><button class="lock-site" type="submit">Lock our little door ↗</button></form></div></footer>
+  <noscript><p class="noscript-notice">Enable JavaScript to open and edit our little book.</p></noscript>
+</body>
+</html>

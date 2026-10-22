@@ -1,11 +1,13 @@
 import { GitHubTogetherStore, TogetherError } from './together-store.js';
 import { UUID } from './daily-memory.js';
 const SHA = /^[a-f0-9]{40}$/;
+const talkingDate = value => value === null || typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 const invalid = () => { throw new TogetherError('Our little letters couldn’t be read. Nothing has been changed.'); };
 export function checkedKeepsakes(value) {
   if (!value || value.version !== 1 || !value.since || !Number.isFinite(Date.parse(value.since.startedAt))
       || !UUID.test(value.since.id || '') || !UUID.test(value.since.revision || '')
       || ['monthlyMessage','yearlyMessage'].some(key => typeof (value.since[key] ?? '') !== 'string' || (value.since[key] || '').length > 2000)
+      || value.since.startedTalkingAt !== undefined && !talkingDate(value.since.startedTalkingAt)
       || value.since.timeZone !== 'America/New_York' || !Array.isArray(value.letters) || !Array.isArray(value.things)
       || value.letters.length > 100 || value.things.length > 500) invalid();
   const ids = new Set([value.since.id]);
@@ -26,7 +28,8 @@ export function checkedKeepsakeChange(input) {
   if (input.action === 'saveSince') {
     if (typeof input.startedAt !== 'string' || !/^\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d(?:\.\d{3})?)?(?:Z|[+-]\d\d:\d\d)$/.test(input.startedAt) || !Number.isFinite(Date.parse(input.startedAt))
         || ['monthlyMessage','yearlyMessage'].some(key => typeof input[key] !== 'string' || input[key].length > 2000)) throw new TogetherError('Choose a date and keep each anniversary message under 2,000 characters.', 400);
-    return { ...change, startedAt: new Date(input.startedAt).toISOString(), monthlyMessage: input.monthlyMessage.trim(), yearlyMessage: input.yearlyMessage.trim() };
+    if (input.startedTalkingAt !== undefined && !talkingDate(input.startedTalkingAt)) throw new TogetherError('Choose a valid date for when we started talking.', 400);
+    return { ...change, startedAt: new Date(input.startedAt).toISOString(), monthlyMessage: input.monthlyMessage.trim(), yearlyMessage: input.yearlyMessage.trim(), ...(input.startedTalkingAt === undefined ? {} : { startedTalkingAt: input.startedTalkingAt }) };
   }
   if (input.action.startsWith('save')) {
     const max = input.action.endsWith('Letter') ? 16000 : 2000;
@@ -48,11 +51,11 @@ export function changeKeepsakes(base, change, now = new Date()) {
   if (change.action === 'saveSince') {
     if (data.since.id !== change.id) conflict();
     if (data.since.revision === change.operationId) {
-      if (['startedAt','monthlyMessage','yearlyMessage'].some(key => data.since[key] !== change[key])) conflict();
+      if (['startedAt','monthlyMessage','yearlyMessage', ...(change.startedTalkingAt === undefined ? [] : ['startedTalkingAt'])].some(key => data.since[key] !== change[key])) conflict();
       return { data, changed: false };
     }
     if (data.since.revision !== change.expectedRevision) conflict();
-    data.since = { ...data.since, startedAt: change.startedAt, monthlyMessage: change.monthlyMessage, yearlyMessage: change.yearlyMessage, revision: change.operationId };
+    data.since = { ...data.since, startedAt: change.startedAt, monthlyMessage: change.monthlyMessage, yearlyMessage: change.yearlyMessage, revision: change.operationId, ...(change.startedTalkingAt === undefined ? {} : { startedTalkingAt: change.startedTalkingAt }) };
     data.updatedAt = now.toISOString();
     if (Buffer.byteLength(JSON.stringify(data)) > 500000) throw new TogetherError('Our little collection is full. Your draft is still here.', 409);
     return { data, changed: true };

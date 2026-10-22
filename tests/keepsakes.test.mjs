@@ -23,6 +23,15 @@ test('elapsed time starts at the supplied minute, never goes negative, and celeb
   assert.match(sinceUs(seed.since,Date.parse('2026-10-23T19:41:00Z')).message,/One whole week/);
   assert.equal(sinceUs(seed.since,Date.parse('2026-10-15T19:41:00Z')).elapsed.days,0);
 });
+test('the first conversation date is independently editable and survives older clients',()=>{
+  assert.equal(seed.since.startedTalkingAt,'2026-09-27');
+  const input={action:'saveSince',id:seed.since.id,expectedRevision:seed.since.revision,operationId:randomUUID(),startedAt:seed.since.startedAt,monthlyMessage:'',yearlyMessage:'',startedTalkingAt:'2026-09-28'};
+  const saved=apply(seed,input).data;assert.equal(saved.since.startedTalkingAt,'2026-09-28');assert.equal(saved.since.startedAt,new Date(seed.since.startedAt).toISOString());assert.equal(apply(saved,input).changed,false);
+  const legacy={...input,operationId:randomUUID(),expectedRevision:saved.since.revision};delete legacy.startedTalkingAt;
+  assert.equal(apply(saved,legacy).data.since.startedTalkingAt,'2026-09-28');
+  assert.equal(apply(seed,{...input,startedTalkingAt:null}).data.since.startedTalkingAt,null);
+  assert.throws(()=>checkedKeepsakeChange({...input,startedTalkingAt:'2026-02-30'}),error=>error.status===400);
+});
 test('anniversaries keep 3:41 Eastern across DST, roll over precisely, and use custom messages',()=>{
   assert.equal(new Date(anniversaryAt(seed.since.startedAt,1)).toISOString(),'2026-11-16T20:41:00.000Z');
   assert.equal(new Date(anniversaryAt(seed.since.startedAt,12)).toISOString(),'2027-10-16T19:41:00.000Z');

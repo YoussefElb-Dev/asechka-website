@@ -11,7 +11,7 @@ export function memoryPhotoURL(photo) {
     : photo.src;
 }
 
-async function preparePhoto(file) {
+export async function preparePhoto(file) {
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('Choose a JPG, PNG, or WebP picture.');
   if (file.size > 25 * 1024 * 1024) throw new Error('Choose a picture smaller than 25 MB.');
   let bitmap;

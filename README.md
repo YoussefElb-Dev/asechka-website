@@ -97,7 +97,7 @@ The letter is in `dist/index.html`, the hints in `dist/app.js`, and the styling 
 
 Open **Since us** (`/us.html`). The beginning is **Friday, October 16, 2026 at 3:41 PM Eastern**, as supplied by you. The home page has a live time-together counter; Since us also counts down to both monthly and yearly anniversaries. Anniversaries keep the original Eastern clock time through daylight saving changes. Months without the original day use their last day. The counter shows factual milestone messages, or your own monthly/yearly message on the anniversary after its exact time.
 
-Choose **Edit our beginning** to change the date, time, and anniversary messages. Leave either message blank to use a simple milestone message. **Add a letter** and **Add a little thing** open forms for your words. **Edit our words** exposes Edit/Remove under every letter and a complete editing list of the little things. All letter envelopes appear together in a responsive grid: three across on desktop, two on smaller screens, and one on very narrow phones. Removing first shows the selected content and asks you to confirm; **Keep it** cancels. All these controls use the existing signed login and shared connection.
+Choose **Edit our beginning** to change the date, time, first-conversation date, and anniversary messages. **We started talking** is September 27, 2026, shown separately from becoming a couple on October 16. The talking date can be changed or cleared to hide it. Leave either message blank to use a simple milestone message. **Add a letter** and **Add a little thing** open forms for your words. **Edit our words** exposes Edit/Remove under every letter and a complete editing list of the little things. All letter envelopes appear together in a responsive grid: three across on desktop, two on smaller screens, and one on very narrow phones. Removing first shows the selected content and asks you to confirm; **Keep it** cancels. All these controls use the existing signed login and shared connection.
 
 Open when shows the complete letter collection side by side, ready to open in any order. Opening a letter sends a brief blue/lavender confetti shower and floating hearts across the screen, with gently floating hearts beneath the message. **Pause the hearts** stops the motion; reduced-motion preferences are respected. Closing a letter removes its animation immediately. All letter content remains editable as before.
 
@@ -135,3 +135,15 @@ The native Android app reads `/api/memories`, and its quote/photo forms save int
 Stable operation IDs prevent duplicates after retries. Each save creates one atomic Git commit for the data and any photo, retaining the current repository tree and retrying simultaneous additions. Existing entries are preserved. The website reads the live API and serves gallery photos through its authenticated photo endpoint, so a new phone upload is available before the next static deployment finishes. Studio continues to fetch and merge the shared collection before publishing.
 
 The phone encrypts pending additions and original downloaded images in private storage. Quotes and photos saved without internet appear locally and synchronize when connectivity and a valid sign-in return. The collection currently has a 900 KB JSON metadata limit; a full collection is reported without replacing existing content or dropping the phone's queued addition.
+
+## Our little book
+
+Open **Our little book** (`/journal.html`) from the home page, Our days, or Since us. Three keyboard-accessible tabs keep the collections together. They start empty for your own entries.
+
+- **Tiny victories:** title, who you’re proud of (Me, Asechka, or both), date, and a personal note.
+- **Recipes for two:** dish title, ingredients and steps (one per line), notes, optional photo, and a “We’ve tried this one” choice. After trying it, each of you can leave a separate 1–5 rating. Filter between all, want to make, and tried. Open a recipe for its complete instructions. Photos are compressed on this device before upload; existing photos can be replaced or removed.
+- **Inside-joke dictionary:** a phrase or nickname, what it means, and its optional origin story. Search across all three fields.
+
+Every entry has Edit and Remove controls, with a confirmation before removal. Saves appear immediately and refresh on the other screen every minute or when reopened. Failed saves keep the draft while the editor stays open. Closing or reloading discards unsaved website drafts.
+
+`/api/journal` uses the existing signed login and server-only GitHub connection. It saves `dist/journal.json` and bounded JPEGs under `dist/assets/recipes/` atomically, preserves concurrent additions and other files, and rejects stale edits. Recipe images are served through the authenticated API for immediate updates. No extra account, paid service, or new secret is needed. Existing hosting and GitHub limits apply.

@@ -4,6 +4,6 @@
   "buildCommand": "",
   "outputDirectory": "dist",
   "functions": {
-    "api/*.js": { "includeFiles": "dist/{*.json,assets/photos/**}", "maxDuration": 60 }
+    "api/*.js": { "includeFiles": "dist/{*.json,assets/photos/**,assets/recipes/**}", "maxDuration": 60 }
   }
 }
