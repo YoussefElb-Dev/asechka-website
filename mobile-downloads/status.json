@@ -1,0 +1,13 @@
+{
+  "source": "eb92ffa2cbf9866b3f4b13dd9d2b20aa57e98356",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/39847831041",
+  "backend": "success",
+  "android": "success",
+  "iphone": "failure",
+  "files": {
+    "Asechka-Android.apk": {
+      "bytes": 6697955,
+      "sha256": "871753575193600bb4956968eb147522e7f18c51af68a30e02881bd622420d18"
+    }
+  }
+}
