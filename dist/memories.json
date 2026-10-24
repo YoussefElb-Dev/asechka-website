@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T04:22:19.262Z",
+  "updatedAt": "2026-10-24T04:22:21.635Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -210,7 +210,19 @@
       "id": "9f1d47be-4e82-4a7c-b36e-3747729b47c5",
       "src": "assets/photos/2026/10/9f1d47be-4e82-4a7c-b36e-3747729b47c5.jpg",
       "caption": "Right after WE busted our ahhh",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "772cdee4-bd09-4c0a-a0a9-42e02641216c",
+            "hash": "457ca137e24928ac7a7af14290014d41575b9074bb65bd2da0e520875112b284"
+          }
+        ]
+      }
     },
     {
       "id": "72e1acc4-95fe-4de9-9bdb-2ec725c8738e",
