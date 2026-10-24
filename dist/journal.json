@@ -26,7 +26,15 @@
       "id": "cc71577b-cb97-42c1-a290-31ca349ef9f6",
       "revision": "3f8314a2-4525-4723-bab2-23f5670a995c",
       "createdAt": "2026-10-24T03:14:22.982Z"
+    },
+    {
+      "title": "Telepathy Telepathy",
+      "meaning": "We're always interconnected",
+      "story": "Whether its texting at the same time or doing the same things we're always synced",
+      "id": "e1305b02-0efc-48c8-a5c4-586bac2decf5",
+      "revision": "e22664d6-8b17-4488-b104-c1cf1953bd4a",
+      "createdAt": "2026-10-24T03:15:32.196Z"
     }
   ],
-  "updatedAt": "2026-10-24T03:14:22.982Z"
+  "updatedAt": "2026-10-24T03:15:32.196Z"
 }
