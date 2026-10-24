@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T04:22:41.956Z",
+  "updatedAt": "2026-10-24T04:22:43.669Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -134,7 +134,19 @@
       "id": "19db02b0-45b1-4a7b-824b-85959b328803",
       "src": "assets/photos/2026/10/19db02b0-45b1-4a7b-824b-85959b328803.jpg",
       "caption": "First ever plushieeee (I adore it)",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0422a853-0ab4-4716-a194-1ce2de7ae105",
+            "hash": "ecfa26059f534238320282a0efcbf296b9efa66f6a96d0bb72df8c81ba632949"
+          }
+        ]
+      }
     },
     {
       "id": "e17b9d16-42bf-421a-a87b-080f2342b939",
