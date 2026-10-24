@@ -2,5 +2,15 @@
   "version": 1,
   "victories": [],
   "recipes": [],
-  "jokes": []
+  "jokes": [
+    {
+      "title": "Naveah",
+      "meaning": "Holy ARGHHHH",
+      "story": "Neveah raging in gym after Frank sniped her AGAIN",
+      "id": "48c13446-7c65-4476-a1d9-ab324d7dc12c",
+      "revision": "2d6e05e4-14ea-4f7f-89db-1037132458a6",
+      "createdAt": "2026-10-24T03:13:11.333Z"
+    }
+  ],
+  "updatedAt": "2026-10-24T03:13:11.333Z"
 }
