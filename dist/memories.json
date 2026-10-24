@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T04:22:35.861Z",
+  "updatedAt": "2026-10-24T04:22:37.948Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -168,7 +168,19 @@
       "id": "8f1a3eb5-950c-486d-a9ef-c3b104881bd5",
       "src": "assets/photos/2026/10/8f1a3eb5-950c-486d-a9ef-c3b104881bd5.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "32f0f046-f45e-47f3-95f6-ff924a0fd416",
+            "hash": "23d594ea77bb0243c15997fdeba38fe84c0e783179d95d6acd7a0992fda4832c"
+          }
+        ]
+      }
     },
     {
       "id": "63675850-bece-463e-b004-5967b738099e",
