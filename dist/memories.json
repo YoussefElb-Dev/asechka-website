@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T04:22:40.002Z",
+  "updatedAt": "2026-10-24T04:22:41.956Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -140,7 +140,19 @@
       "id": "e17b9d16-42bf-421a-a87b-080f2342b939",
       "src": "assets/photos/2026/10/e17b9d16-42bf-421a-a87b-080f2342b939.jpg",
       "caption": "Is this considered a professional photo sesh",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "fd11c9fa-7f93-4ad7-8466-e6fe440b1333",
+            "hash": "3d8604357967fe4c1913716c0dd2e7aebc392c71a74028b46bb33a92a52a10d3"
+          }
+        ]
+      }
     },
     {
       "id": "b13d93e1-f6ec-461b-99d7-bc3f8fc0ffbd",
