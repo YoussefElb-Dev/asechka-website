@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T04:22:45.573Z",
+  "updatedAt": "2026-10-24T04:22:47.480Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -122,7 +122,19 @@
       "id": "9a085af2-e61c-4673-8186-9007ae966211",
       "src": "assets/photos/2026/10/9a085af2-e61c-4673-8186-9007ae966211.jpg",
       "caption": "Look at this cutie js like you",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "916adb83-5b6a-42ca-a8e1-c1eb50624599",
+            "hash": "eed7c93b6d6f66d281905164413a175833db28f297d3085861dce98432da5214"
+          }
+        ]
+      }
     },
     {
       "id": "c1d3bcfc-4ff4-4bff-8cda-13128f60864b",
