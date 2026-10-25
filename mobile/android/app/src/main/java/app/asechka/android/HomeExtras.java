@@ -108,15 +108,31 @@ final class HomeExtras {
     heart.addView(title);
     LinearLayout clock = u.card(root, Ui.BLUE);
     ((LinearLayout.LayoutParams) clock.getLayoutParams()).topMargin = u.dp(7);
-    clock.setPadding(u.dp(12), u.dp(9), u.dp(12), u.dp(9));
-    LinearLayout timeRow = u.row(8);
-    timeRow.addView(u.text("Together  ♡", 12, Ui.PURPLE));
+    clock.setPadding(u.dp(12), u.dp(6), u.dp(12), u.dp(6));
+    clock.setMinimumHeight(u.dp(48));
+    android.graphics.drawable.GradientDrawable clockSurface =
+        new android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
+            new int[] {Ui.BLUE, 0xfff0edfb});
+    clockSurface.setCornerRadius(u.dp(20));
+    clock.setBackground(clockSurface);
+    LinearLayout timeRow = u.row(10);
+    timeRow.addView(
+        new HomeGlyph(activity, 5, Ui.PURPLE, Color.WHITE),
+        new LinearLayout.LayoutParams(u.dp(32), u.dp(32)));
+    LinearLayout timeCopy = u.column();
     elapsed = u.title("", 18);
     elapsed.setFontFeatureSettings("tnum");
-    timeRow.addView(elapsed, new LinearLayout.LayoutParams(0, -2, 1));
-    clock.addView(timeRow);
+    elapsed.setIncludeFontPadding(false);
+    timeCopy.addView(elapsed);
     sinceLabel = u.text("", 10, Ui.MUTED);
-    u.add(clock, sinceLabel, 3);
+    sinceLabel.setTextSize(9.5f);
+    sinceLabel.setIncludeFontPadding(false);
+    sinceLabel.setSingleLine(true);
+    sinceLabel.setEllipsize(android.text.TextUtils.TruncateAt.END);
+    u.add(timeCopy, sinceLabel, 2);
+    timeRow.addView(timeCopy, new LinearLayout.LayoutParams(0, -2, 1));
+    clock.addView(timeRow);
     clock.setContentDescription("Our time together. Open Since us.");
     clock.setOnClickListener(v -> open.open(0));
     String[] names = {
@@ -127,7 +143,8 @@ final class HomeExtras {
       "Little things",
       "Our beginning"
     };
-    String[] symbols = {"Aa", "✉", "✦", "♧", "♡", "∞"};
+    int[] accents = {Ui.PURPLE, 0xff9373ab, 0xff748bc1, 0xff8b80b1, 0xffaa759d, 0xff6f92b7};
+    int[] tints = {Ui.PALE, 0xfff3ebf7, Ui.BLUE, 0xffeeecf7, 0xfff7ecf3, 0xffeaf1f8};
     int[] destinations = {3, 1, 4, 5, 2, 0};
     int columns = activity.getResources().getConfiguration().fontScale > 1.3f ? 2 : 3;
     LinearLayout row = null;
@@ -138,19 +155,25 @@ final class HomeExtras {
       }
       final int destination = destinations[i];
       LinearLayout tile = u.column();
-      tile.setPadding(u.dp(6), u.dp(7), u.dp(6), u.dp(7));
-      tile.setMinimumHeight(u.dp(48));
+      tile.setPadding(u.dp(8), u.dp(8), u.dp(8), u.dp(8));
+      tile.setMinimumHeight(u.dp(56));
       tile.setGravity(Gravity.CENTER);
-      android.graphics.drawable.GradientDrawable shape = u.shape(Color.WHITE, 16);
-      shape.setStroke(u.dp(1), 0xffe6e7f2);
+      android.graphics.drawable.GradientDrawable shape = u.shape(Color.WHITE, 18);
+      shape.setStroke(u.dp(1), 0xffe6e2f1);
       tile.setBackground(
           new android.graphics.drawable.RippleDrawable(
               android.content.res.ColorStateList.valueOf(0x196b5cb5), shape, null));
-      LinearLayout heading = u.row(4);
-      heading.setGravity(Gravity.CENTER);
-      heading.addView(u.text(symbols[i], 14, Ui.PURPLE));
-      TextView label = u.text(names[i], 12, Ui.PURPLE);
-      label.setGravity(Gravity.CENTER);
+      LinearLayout heading = u.row(7);
+      heading.addView(
+          new HomeGlyph(activity, i, accents[i], tints[i]),
+          new LinearLayout.LayoutParams(u.dp(26), u.dp(30)));
+      TextView label = u.text(names[i], 13, Ui.INK);
+      label.setTextSize(12.5f);
+      Compat.font(label, R.font.dm_sans, 650);
+      label.setGravity(Gravity.CENTER_VERTICAL);
+      label.setIncludeFontPadding(false);
+      label.setLineSpacing(0, 1.04f);
+      label.setMaxLines(2);
       heading.addView(label, new LinearLayout.LayoutParams(0, -2, 1));
       tile.addView(heading);
       tile.setContentDescription(names[i]);
@@ -270,7 +293,14 @@ final class HomeExtras {
     sinceLabel.setText(
         start <= 0
             ? "Set our beginning in Since us"
-            : "Since " + BookViews.displayDate(start, true) + " · Eastern");
+            : "Together since " + shortBeginning(start) + " ET");
+  }
+
+  private String shortBeginning(long start) {
+    java.text.SimpleDateFormat format =
+        new java.text.SimpleDateFormat("MMM d, yyyy · h:mm a", Locale.US);
+    format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+    return format.format(new Date(start));
   }
 
   Ui.Sheet history() {

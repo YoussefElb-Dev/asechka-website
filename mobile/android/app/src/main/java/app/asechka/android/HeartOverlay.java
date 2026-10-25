@@ -33,7 +33,8 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
     manager = activity.getWindowManager();
     setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
     setSystemUiVisibility(
-        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        activity.getWindow().getDecorView().getSystemUiVisibility()
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     setWillNotDraw(false);
@@ -67,6 +68,7 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
                   | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                   | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                   | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                  | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
                   | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
               PixelFormat.TRANSLUCENT);
       params.gravity = Gravity.TOP | Gravity.LEFT;

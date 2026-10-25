@@ -22,7 +22,7 @@ struct HomeHub:View {
     @AppStorage("motion-paused") private var paused=false
     @Environment(\.dynamicTypeSize) private var textSize
     var open:(BookRoute)->Void
-    @State private var history=false
+    var openHistory:()->Void
     private var from:String{universe.actor=="asnat" ? "asechka":"me"}
     private var other:String{from=="me" ? "asechka":"me"}
     private var routes:[(String,String,String,Bool,Int)]{[
@@ -41,19 +41,22 @@ struct HomeHub:View {
                 Button{Touch.tap();open(BookRoute(personal:route.3,chapter:route.4))}label:{Label(route.0,systemImage:route.2).font(.system(size:12,weight:.medium)).foregroundColor(Palette.purple).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:48).padding(.horizontal,5).background(.white,in:RoundedRectangle(cornerRadius:16,style:.continuous)).overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.09),lineWidth:1))}.accessibilityLabel(route.0).accessibilityHint(route.1)
             }}
         }.padding(.horizontal,16)
-        .sheet(isPresented:$history){HeartHistoryView()}
     }
     private var heartCard:some View {
         HStack(spacing:12){
-            VStack(alignment:.leading,spacing:3){
+            Button{Touch.tap();openHistory()}label:{VStack(alignment:.leading,spacing:3){
                 TimelineView(.periodic(from:.now,by:30)){context in let today=HeartLedger.day(context.date)
                     Text("You \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)").font(.system(size:12)).foregroundColor(Palette.muted).accessibilityLabel("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)")
                 }
                 TimelineView(.periodic(from:.now,by:30)){context in let streak=HeartLedger.streak(universe.heartDays,who:from,today:HeartLedger.day(context.date))
-                    Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple).accessibilityLabel("Heart streak, \(streak) days").accessibilityHint("Long press for our heart history").accessibilityAction(named:Text("Heart history")){history=true}
+                    Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple)
                 }
-            }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle())
-                .highPriorityGesture(LongPressGesture(minimumDuration:0.6,maximumDistance:28).onEnded{_ in Touch.tap();history=true})
+            }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle())}
+                .buttonStyle(.plain)
+                .accessibilityLabel("Our heart history")
+                .accessibilityValue("Today · you \(universe.heartDays[HeartLedger.day()]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[HeartLedger.day()]?[other] ?? 0). Heart streak, \(HeartLedger.streak(universe.heartDays,who:from)) days")
+                .accessibilityHint("Tap or hold to see our daily hearts")
+                .simultaneousGesture(LongPressGesture(minimumDuration:0.6,maximumDistance:28).onEnded{_ in Touch.tap();openHistory()})
             HeartSendButton()
         }.padding(.horizontal,12).padding(.vertical,8).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
     }
