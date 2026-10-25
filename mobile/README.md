@@ -1,4 +1,6 @@
-# Asechka native apps — 2.2.1
+# Asechka native apps — 2.2.2
+
+The Home heart sender now uses a compact white capsule, a rose heart icon, and dark, readable text on both Android and iPhone. The 48-point touch target, soft press feedback, floating hearts, and offline queue remain available.
 
 Two native applications share the existing private website services: Android Views (Android 6+) and SwiftUI (iOS 16+, iPhone/iPad). Neither app contains a WebView. Home is a scrolling social feed; Photos and Quotes have their own feeds. Music, Our days, Words, the letter, personal corner, birthdays, and profile choices remain available.
 

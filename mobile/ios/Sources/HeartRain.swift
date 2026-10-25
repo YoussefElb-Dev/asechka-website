@@ -80,7 +80,13 @@ struct HeartSendButton:View {
     @EnvironmentObject private var universe:UniverseStore
     @State private var anchor=CGRect.zero
     var body:some View {
-        Button{HeartRain.shared.emit(at:anchor);Touch.tap();do{try universe.sendHeart()}catch{universe.error=error.localizedDescription}}label:{Label("Send a heart",systemImage:"heart.fill").primary()}
+        Button{HeartRain.shared.emit(at:anchor);Touch.tap();do{try universe.sendHeart()}catch{universe.error=error.localizedDescription}}label:{
+            HStack(spacing:8){
+                Image(systemName:"heart.fill").font(.system(size:16,weight:.semibold)).foregroundColor(Color(red:174/255,green:118/255,blue:156/255))
+                Text("Send a heart").font(.system(size:14,weight:.semibold)).foregroundColor(Palette.ink)
+            }.padding(.horizontal,14).frame(minHeight:48).background(.white,in:Capsule())
+                .overlay(Capsule().stroke(Palette.purple.opacity(0.14),lineWidth:1))
+        }.fixedSize(horizontal:true,vertical:false)
             .accessibilityLabel("Send a heart to \(universe.partner)")
             .background(GeometryReader{proxy in Color.clear.preference(key:HeartAnchor.self,value:proxy.frame(in:.global))})
             .onPreferenceChange(HeartAnchor.self){anchor=$0}

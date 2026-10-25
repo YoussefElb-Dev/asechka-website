@@ -158,7 +158,7 @@ public final class NativeTests extends Instrumentation {
                   .getPackageManager()
                   .getPackageInfo(getTargetContext().getPackageName(), 0)
                   .versionCode
-              == 10,
+              == 11,
           "Updated package version");
     }
   }
@@ -1182,7 +1182,7 @@ public final class NativeTests extends Instrumentation {
                   <= shortcut.getWidth() + 1,
           "Home shortcut is readable without breaking words: " + title);
     }
-    View send = text("♡  Send a heart");
+    View send = text("Send a heart");
     check(send != null, "Heart sender is on Home");
     verifyHomeActionLayout();
     runOnMainSync(

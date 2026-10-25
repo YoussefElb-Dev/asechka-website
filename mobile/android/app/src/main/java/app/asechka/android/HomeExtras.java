@@ -100,8 +100,23 @@ final class HomeExtras {
           return true;
         });
     title.addView(summary, new LinearLayout.LayoutParams(0, -2, 1));
-    Button send = u.button("♡  Send a heart", true, null);
-    send.setTextSize(15);
+    Button send = u.button("Send a heart", false, null);
+    send.setTextSize(14);
+    send.setTextColor(Ui.INK);
+    send.setSingleLine(true);
+    send.setIncludeFontPadding(false);
+    send.setMinWidth(0);
+    send.setMinimumWidth(0);
+    send.setPadding(u.dp(14), 0, u.dp(14), 0);
+    android.graphics.drawable.Drawable heartIcon = activity.getDrawable(R.drawable.ic_send_heart);
+    heartIcon.setBounds(0, 0, u.dp(18), u.dp(18));
+    send.setCompoundDrawablesRelative(heartIcon, null, null, null);
+    send.setCompoundDrawablePadding(u.dp(8));
+    android.graphics.drawable.GradientDrawable sendSurface = u.shape(Color.WHITE, 24);
+    sendSurface.setStroke(u.dp(1), 0xffdfdaef);
+    send.setBackground(
+        new android.graphics.drawable.RippleDrawable(
+            android.content.res.ColorStateList.valueOf(0x196b5cb5), sendSurface, null));
     send.setContentDescription("Send a heart to " + partner());
     send.setOnClickListener(v -> send(v));
     title.addView(send, new LinearLayout.LayoutParams(-2, -2));

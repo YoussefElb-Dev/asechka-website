@@ -23,7 +23,7 @@ struct SettingsView:View {
                 }}
             }
             Section{Button("Refresh our universe"){Task{await universe.refresh()}};Button("Reconnect with our code"){reconnect=true};Button("Switch profile"){universe.choose("");dismiss()};Button("Lock our little door",role:.destructive){universe.lock();dismiss()}}
-            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.2.1 · made for us ♡").font(.caption)}
+            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.2.2 · made for us ♡").font(.caption)}
         }.navigationTitle("Our little settings").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}
             .alert("Reconnect",isPresented:$reconnect){SecureField("Our code",text:$code);Button("Open"){Task{await universe.login(code);code=""}};Button("Cancel",role:.cancel){code=""}}
         }

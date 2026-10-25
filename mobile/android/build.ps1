@@ -28,7 +28,7 @@ $manifest.Save($manifestPath)
 $resZip = Join-Path $buildDir 'resources.zip'
 $unsigned = Join-Path $buildDir 'unsigned.apk'
 Run-Tool "$buildTools\aapt2.exe" @('compile','--dir',"$projectRoot\app\src\main\res",'-o',$resZip)
-Run-Tool "$buildTools\aapt2.exe" @('link','-o',$unsigned,'-I',$platform,'--manifest',$manifestPath,'-R',$resZip,'--java',$generated,'--min-sdk-version','23','--target-sdk-version','36','--version-code','10','--version-name','2.2.1','--auto-add-overlay','-A',"$projectRoot\app\src\main\assets")
+Run-Tool "$buildTools\aapt2.exe" @('link','-o',$unsigned,'-I',$platform,'--manifest',$manifestPath,'-R',$resZip,'--java',$generated,'--min-sdk-version','23','--target-sdk-version','36','--version-code','11','--version-name','2.2.2','--auto-add-overlay','-A',"$projectRoot\app\src\main\assets")
 $sources = @(Get-ChildItem -LiteralPath "$projectRoot\app\src\main\java",$generated -Recurse -Filter '*.java' | ForEach-Object { '"' + $_.FullName.Replace('\','/') + '"' })
 $sourceList = Join-Path $buildDir 'sources.txt'
 [System.IO.File]::WriteAllLines($sourceList,$sources,[System.Text.UTF8Encoding]::new($false))
