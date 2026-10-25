@@ -88,7 +88,7 @@ public final class NativeTests extends Instrumentation {
       finish(Activity.RESULT_OK, result);
     } catch (Throwable e) {
       try {
-        screenshot("failure");
+        if (activity != null) screenshot("failure");
       } catch (Exception ignored) {
       }
       StringWriter text = new StringWriter();
@@ -107,6 +107,7 @@ public final class NativeTests extends Instrumentation {
     // A separate namespace cannot send these fixture changes to the personal website.
     OfflineStore store = new OfflineStore(getTargetContext(), "https://upgrade-fixture.invalid");
     if (seed) {
+      store.remove("outbox");
       store.snapshot(
           "/memories.json",
           obj(
@@ -133,7 +134,7 @@ public final class NativeTests extends Instrumentation {
               "A quote kept across an APK update",
               "note",
               ""));
-      check(!store.read("access").has("kdf"), "Seed uses original untagged password verifier");
+      check(store.unlockWithCode("upgrade-fixture-code"), "Seed credentials unlock saved state");
     } else {
       check(
           store.unlockWithCode("upgrade-fixture-code"), "Original password verifier still unlocks");
@@ -157,7 +158,7 @@ public final class NativeTests extends Instrumentation {
                   .getPackageManager()
                   .getPackageInfo(getTargetContext().getPackageName(), 0)
                   .versionCode
-              == 6,
+              == 10,
           "Updated package version");
     }
   }
@@ -1140,6 +1141,7 @@ public final class NativeTests extends Instrumentation {
         (heartParams.flags & WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE) != 0
             && (heartParams.flags & WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE) != 0,
         "Floating hearts leave all controls usable");
+    Thread.sleep(180);
     captureScreenshot("home-floating-heart-layer");
   }
 

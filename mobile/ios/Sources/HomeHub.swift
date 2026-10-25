@@ -52,7 +52,8 @@ struct HomeHub:View {
                 TimelineView(.periodic(from:.now,by:30)){context in let streak=HeartLedger.streak(universe.heartDays,who:from,today:HeartLedger.day(context.date))
                     Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple).accessibilityLabel("Heart streak, \(streak) days").accessibilityHint("Long press for our heart history").accessibilityAction(named:Text("Heart history")){history=true}
                 }
-            }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle()).onLongPressGesture{Touch.tap();history=true}
+            }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle())
+                .highPriorityGesture(LongPressGesture(minimumDuration:0.6,maximumDistance:28).onEnded{_ in Touch.tap();history=true})
             HeartSendButton()
         }.padding(.horizontal,12).padding(.vertical,8).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
     }
