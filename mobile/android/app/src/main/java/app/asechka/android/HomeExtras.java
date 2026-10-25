@@ -25,6 +25,16 @@ final class HomeExtras {
   HeartRain rain;
   JSONObject bundledKeepsakes;
   final Runnable flush;
+  final java.util.concurrent.ExecutorService heartWriter =
+      java.util.concurrent.Executors.newSingleThreadExecutor();
+  int pendingWrites, shownStreak;
+  long shownOwn, shownOther;
+  String shownDay;
+  boolean closed;
+  final Runnable settle =
+      () -> {
+        if (!closed && pendingWrites == 0) update();
+      };
 
   HomeExtras(Activity a, ApiClient api, Open open, Runnable flush) {
     activity = a;
@@ -58,6 +68,7 @@ final class HomeExtras {
       };
 
   LinearLayout view() {
+    rain = ((MainActivity) activity).hearts();
     root = u.column();
     root.setPadding(u.dp(16), 0, u.dp(16), 0);
     root.addOnAttachStateChangeListener(
@@ -151,23 +162,59 @@ final class HomeExtras {
   }
 
   void send(View anchor) {
-    try {
-      api.store.tapHeart(from(), HeartCounts.day(System.currentTimeMillis()));
-      update();
-      Motion.haptic(anchor, true);
-      if (Motion.enabled(activity)) {
-        if (rain == null) rain = new HeartRain(activity);
-        rain.emit(anchor);
-      }
-      main.removeCallbacks(flush);
-      main.postDelayed(flush, 900);
-    } catch (Exception e) {
-      Toast.makeText(
-              activity,
-              "Your phone couldn’t save that heart. Please try again.",
-              Toast.LENGTH_SHORT)
-          .show();
+    if (closed) return;
+    main.removeCallbacks(settle);
+    String who = from(), day = HeartCounts.day(System.currentTimeMillis());
+    if (counts != null) {
+      if (!day.equals(shownDay)) update();
+      if (shownOwn++ == 0) shownStreak++;
+      renderCounts();
     }
+    Motion.haptic(anchor, false);
+    if (Motion.enabled(activity)) {
+      if (rain == null) rain = ((MainActivity) activity).hearts();
+      rain.emit(anchor);
+    }
+    pendingWrites++;
+    heartWriter.execute(
+        () -> {
+          Exception failure = null;
+          try {
+            api.store.tapHeart(who, day);
+          } catch (Exception e) {
+            failure = e;
+          }
+          final Exception error = failure;
+          main.post(
+              () -> {
+                pendingWrites--;
+                if (activity.isDestroyed()) return;
+                if (error != null) {
+                  shownOwn = Math.max(0, shownOwn - 1);
+                  renderCounts();
+                  Toast.makeText(
+                          activity,
+                          "Your phone couldn’t save that heart. Please try again.",
+                          Toast.LENGTH_SHORT)
+                      .show();
+                }
+                if (pendingWrites == 0) {
+                  if (!closed) main.postDelayed(settle, 120);
+                  main.removeCallbacks(flush);
+                  main.postDelayed(flush, closed ? 0 : 900);
+                }
+              });
+        });
+  }
+
+  void awaitHeartWrites() throws Exception {
+    heartWriter.submit(() -> {}).get(20, java.util.concurrent.TimeUnit.SECONDS);
+  }
+
+  void renderCounts() {
+    if (counts == null) return;
+    counts.setText("You " + shownOwn + "  ♡  " + partner() + " " + shownOther);
+    streak.setText("✦ " + shownStreak + " day" + (shownStreak == 1 ? "" : "s"));
   }
 
   JSONObject data() {
@@ -181,19 +228,17 @@ final class HomeExtras {
 
   void update() {
     if (counts == null) return;
-    JSONObject d = data();
-    String today = HeartCounts.day(System.currentTimeMillis()),
-        own = from(),
-        other = own.equals("me") ? "asechka" : "me";
-    counts.setText(
-        "You "
-            + HeartCounts.count(d, today, own)
-            + "  ♡  "
-            + partner()
-            + " "
-            + HeartCounts.count(d, today, other));
-    int days = HeartCounts.streak(d, own, today);
-    streak.setText("✦ " + days + " day" + (days == 1 ? "" : "s"));
+    if (pendingWrites == 0) {
+      JSONObject d = data();
+      String today = HeartCounts.day(System.currentTimeMillis()),
+          own = from(),
+          other = own.equals("me") ? "asechka" : "me";
+      shownDay = today;
+      shownOwn = HeartCounts.count(d, today, own);
+      shownOther = HeartCounts.count(d, today, other);
+      shownStreak = HeartCounts.streak(d, own, today);
+      renderCounts();
+    }
     JSONObject keepsakes = null;
     try {
       keepsakes = api.cached("/api/keepsakes", !api.connected());
@@ -262,91 +307,21 @@ final class HomeExtras {
   }
 
   void close() {
+    if (closed) return;
+    closed = true;
     main.removeCallbacksAndMessages(null);
-    if (rain != null) rain.stop();
+    heartWriter.execute(
+        () ->
+            main.post(
+                () -> {
+                  if (!activity.isDestroyed()) flush.run();
+                }));
+    heartWriter.shutdown();
   }
 
-  static final class HeartRain extends View {
-    final ArrayList<float[]> particles = new ArrayList<>();
-    final Random random = new Random();
-    final Paint paint = new Paint(3);
-    final Path heart = new Path();
-    ValueAnimator animator;
-    ViewGroup host;
-
-    HeartRain(Activity a) {
-      super(a);
-      setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-      heart.moveTo(0, 8);
-      heart.cubicTo(-22, -6, -18, -23, -7, -19);
-      heart.cubicTo(-3, -18, 0, -14, 0, -12);
-      heart.cubicTo(4, -23, 21, -22, 20, -10);
-      heart.cubicTo(19, -2, 8, 5, 0, 13);
-      heart.close();
-    }
-
-    void emit(View anchor) {
-      View root = anchor.getRootView();
-      if (!(root instanceof ViewGroup)) return;
-      host = (ViewGroup) root;
-      int[] a = new int[2], b = new int[2];
-      anchor.getLocationOnScreen(a);
-      host.getLocationOnScreen(b);
-      if (getParent() == null && animator == null) {
-        layout(0, 0, host.getWidth(), host.getHeight());
-        host.getOverlay().add(this);
-      }
-      if (particles.size() >= 60) particles.remove(0);
-      particles.add(
-          new float[] {
-            a[0] - b[0] + anchor.getWidth() * (.3f + random.nextFloat() * .4f),
-            a[1] - b[1],
-            SystemClock.uptimeMillis(),
-            random.nextFloat() * 6.28f,
-            random.nextFloat() * .4f + .65f,
-            random.nextInt(3)
-          });
-      if (animator == null) {
-        animator = ValueAnimator.ofFloat(0, 1);
-        animator.setDuration(1800);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.addUpdateListener(
-            v -> {
-              long now = SystemClock.uptimeMillis();
-              for (int i = particles.size() - 1; i >= 0; i--)
-                if (now - particles.get(i)[2] > 1700) particles.remove(i);
-              invalidate();
-              if (particles.isEmpty()) stop();
-            });
-        animator.start();
-      }
-    }
-
-    void stop() {
-      if (animator != null) {
-        animator.cancel();
-        animator = null;
-      }
-      particles.clear();
-      if (host != null) host.getOverlay().remove(this);
-    }
-
-    protected void onDraw(Canvas canvas) {
-      float density = getResources().getDisplayMetrics().density;
-      long now = SystemClock.uptimeMillis();
-      for (float[] p : particles) {
-        float t = (now - p[2]) / 1700f;
-        int save = canvas.save();
-        canvas.translate(
-            p[0] + (float) Math.sin(t * 6 + p[3]) * 32 * density, p[1] - t * 320 * density);
-        float size = density * p[4] * (.35f + Math.min(1, t * 8) * .65f);
-        canvas.scale(size, size);
-        canvas.rotate((float) Math.sin(t * 5 + p[3]) * 18);
-        paint.setColor(p[5] == 0 ? 0xffa18bd3 : p[5] == 1 ? 0xff889fce : 0xffd393bd);
-        paint.setAlpha((int) (255 * (1 - t)));
-        canvas.drawPath(heart, paint);
-        canvas.restoreToCount(save);
-      }
+  static final class HeartRain extends HeartOverlay {
+    HeartRain(Activity activity) {
+      super(activity);
     }
   }
 }

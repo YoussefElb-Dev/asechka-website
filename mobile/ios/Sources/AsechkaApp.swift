@@ -11,9 +11,11 @@ enum Palette {
     static let gradient=LinearGradient(colors:[lavender,blue],startPoint:.topLeading,endPoint:.bottomTrailing)
 }
 enum Touch {
+    private static let soft=UIImpactFeedbackGenerator(style:.soft)
+    private static let confirmation=UINotificationFeedbackGenerator()
     static func tap(_ success:Bool=false){
         guard UserDefaults.standard.object(forKey:"haptics") as? Bool != false else{return}
-        if success{UINotificationFeedbackGenerator().notificationOccurred(.success)}else{UIImpactFeedbackGenerator(style:.soft).impactOccurred()}
+        if success{confirmation.notificationOccurred(.success);confirmation.prepare()}else{soft.impactOccurred();soft.prepare()}
     }
 }
 struct SoftPress:ButtonStyle {
@@ -70,7 +72,7 @@ struct RootView:View {
         }message:{Text(universe.error ?? "")}
         .task {if universe.unlocked {await universe.refresh()}}
         .task(id:phase){
-            guard phase == .active else{return}
+            guard phase == .active else{await universe.finishHeartSaves();HeartRain.shared.stop();return}
             if universe.unlocked {await universe.refresh()}
             while !Task.isCancelled {
                 do{try await Task.sleep(nanoseconds:60_000_000_000)}catch{return}

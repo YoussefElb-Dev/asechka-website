@@ -1,3 +1,4 @@
+import { floatHearts } from './heart-motion.js';
 import { getCountdown } from './countdown.js';
 
 const timer = document.querySelector('[data-surprise-timer]');
@@ -78,19 +79,5 @@ document.getElementById('send-love').addEventListener('click', event => {
   hearts++;
   document.getElementById('love-status').textContent = hearts === 1 ? 'One little heart, just for you ♡' : `${hearts} little hearts. Still not enough to say it all ♡`;
   if (motionPaused || reducedMotion.matches) return;
-  const rect = event.currentTarget.getBoundingClientRect();
-  for (let i = 0; i < 9; i++) {
-    const heart = document.createElement('span');
-    heart.className = 'heart-particle';
-    heart.textContent = i % 3 ? '♡' : '✦';
-    heart.style.left = `${rect.left + rect.width / 2}px`;
-    heart.style.top = `${rect.top + rect.height / 2}px`;
-    heart.style.setProperty('--dx', `${(Math.random() - .5) * 260}px`);
-    heart.style.setProperty('--dy', `${-60 - Math.random() * 180}px`);
-    heart.style.setProperty('--rotation', `${(Math.random() - .5) * 90}deg`);
-    heart.style.color = ['#9a82c5', '#83a0ce', '#afa6d4'][i % 3];
-    heart.style.animationDelay = `${i * 35}ms`;
-    document.getElementById('heart-particles').appendChild(heart);
-    setTimeout(() => heart.remove(), 2100);
-  }
+  floatHearts(event.currentTarget,3);
 });

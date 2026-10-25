@@ -1119,8 +1119,20 @@ public final class NativeTests extends Instrumentation {
     check(send != null, "Heart sender is on Home");
     ui(
         () -> {
-          for (int i = 0; i < 100; i++) home.send(send);
+          android.os.StrictMode.ThreadPolicy previous = android.os.StrictMode.getThreadPolicy();
+          android.os.StrictMode.setThreadPolicy(
+              new android.os.StrictMode.ThreadPolicy.Builder()
+                  .detectDiskReads()
+                  .detectDiskWrites()
+                  .penaltyDeath()
+                  .build());
+          try {
+            for (int i = 0; i < 100; i++) home.send(send);
+          } finally {
+            android.os.StrictMode.setThreadPolicy(previous);
+          }
         });
+    home.awaitHeartWrites();
     check(
         HeartCounts.count(
                 api.cached("/api/together", true),
@@ -1136,6 +1148,7 @@ public final class NativeTests extends Instrumentation {
         () -> {
           for (int i = 0; i < 5; i++) home.send(send);
         });
+    home.awaitHeartWrites();
     check(api.store.queue().length() == 2, "New taps never mutate an attempted batch");
     check(
         api.store.queue().getJSONObject(0).getJSONObject("body").getLong("count") == 100,
@@ -1150,7 +1163,7 @@ public final class NativeTests extends Instrumentation {
             == 105,
         "Cold storage retains every heart");
     check(
-        home.rain == null || home.rain.particles.size() <= 60,
+        home.rain == null || home.rain.particles.size() <= HeartOverlay.LIMIT,
         "Particle work is bounded while spamming");
     JSONObject streak =
         OfflineStore.json(

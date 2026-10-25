@@ -46,6 +46,10 @@ final class NativeJourneyTests:XCTestCase {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         let send=app.buttons["Send a heart to Youssef"].firstMatch
         XCTAssertTrue(send.waitForExistence(timeout:15))
+        let create=app.buttons["Create"].firstMatch,corner=app.buttons["Our corner"].firstMatch,saved=app.buttons["Saved"].firstMatch
+        XCTAssertEqual(create.frame.width,corner.frame.width,accuracy:2)
+        XCTAssertEqual(saved.frame.width,corner.frame.width,accuracy:2)
+        XCTAssertEqual(saved.frame.maxX,app.frame.maxX-16,accuracy:2,"Home actions fill the row without an empty trailing area")
         let media=app.otherElements["Post media"].firstMatch
         XCTAssertTrue(media.waitForExistence(timeout:5))
         let visibleBottom=app.buttons["Home"].firstMatch.frame.minY

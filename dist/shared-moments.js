@@ -1,3 +1,5 @@
+import { floatHearts } from './heart-motion.js';
+import { HeartOutbox, heartDay } from './heart-outbox.js';
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
@@ -7,6 +9,22 @@ const uuid=()=>crypto.randomUUID();
 let shared=null, fingerprint='', side='', busy=false, filter='all', editing=null, returnFocus=null, chosenPhoto=null, photoBusy=false;
 try{side=localStorage.getItem('asechka-heart-side') || '';}catch{}
 if(!['me','asechka'].includes(side))side='';
+let heartSending=false,heartTimer;
+const heartQueue=new HeartOutbox({load:()=>{try{return JSON.parse(localStorage.getItem('asechka-heart-outbox')||'[]')}catch{return []}},save:items=>localStorage.setItem('asechka-heart-outbox',JSON.stringify(items))});
+function queueHeartFlush(){if(!heartTimer)heartTimer=setTimeout(()=>{heartTimer=null;flushHearts();},600);}
+async function flushHearts(){
+  if(heartSending || !navigator.onLine || !heartQueue.items.length)return;
+  if(busy){queueHeartFlush();return;}
+  heartSending=true;
+  const status=$('[data-heart-status]');
+  try{
+    while(heartQueue.items.length){const body=heartQueue.seal();const result=await api('/api/together',body);installState(result);heartQueue.acknowledge(body.operationId);renderHearts();}
+    if(status)status.textContent='Every little heart is saved for both of us. ♡';
+  }catch(error){if(status)status.textContent=error.status===401?'Unlock our little door to send your saved hearts.':'Your hearts are saved on this device. We’ll try again when connected.';if(error.status===401)notice(error.message,error);}
+  finally{heartSending=false;}
+}
+window.addEventListener('online',()=>{loadShared({quiet:true});flushHearts();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(heartTimer);heartTimer=null;flushHearts();}else queueHeartFlush();});
 class RequestError extends Error{constructor(message,status){super(message);this.status=status;}}
 async function api(path,body){
   let response;
@@ -31,7 +49,7 @@ function installState(data){
   if(next!==fingerprint){fingerprint=next;renderList();}
 }
 async function loadShared({quiet=false}={}){
-  if(busy)return;
+  if(busy || heartSending)return;
   try{installState(await api('/api/together'));notice(isWritable()?'Our little plans and hearts, saved for both of us.':'Shared saving is being connected. Our memories are safe.');}
   catch(error){if(!quiet || error.status===401)notice(error.message,error);if(error.status===401){if(shared)shared.writable=false;renderHearts();$$('[data-add-plan]').forEach(button=>button.disabled=true);}}
   finally{const list=$('#bucket-list');if(list)list.setAttribute('aria-busy','false');}
@@ -45,7 +63,7 @@ function renderSummary(){
 function renderHearts(){
   const select=$('[data-heart-side]');if(select && select.value!==side)select.value=side;
   if(select)select.disabled=busy;
-  const button=$('[data-send-heart]');if(button){button.disabled=!side || !isWritable() || busy;button.setAttribute('aria-label',side==='asechka'?'Send him a thinking-of-you heart':'Send Asechka a thinking-of-you heart');}
+  const button=$('[data-send-heart]');if(button){button.disabled=!side || !isWritable();button.setAttribute('aria-label',side==='asechka'?'Send him a thinking-of-you heart':'Send Asechka a thinking-of-you heart');}
   const invitation=$('[data-heart-invitation]');if(invitation)invitation.textContent=!side?'Choose your side, then leave a little heart.':side==='asechka'?'A little heart, from you to him.':'A little heart, from you to Asechka.';
   const message=$('[data-heart-message]'), own=$('[data-own-heart]');if(!message)return;
   message.replaceChildren();
@@ -57,12 +75,12 @@ function renderHearts(){
 }
 const heartSide=$('[data-heart-side]');
 heartSide?.addEventListener('change',()=>{side=heartSide.value;try{localStorage.setItem('asechka-heart-side',side);}catch{}$('[data-heart-status]').textContent='';renderHearts();});
-$('[data-send-heart]')?.addEventListener('click',async()=>{
-  if(!side || !isWritable() || busy)return;
-  busy=true;renderHearts();const status=$('[data-heart-status]');status.textContent='Sending your little heart…';
-  try{installState(await api('/api/together',{action:'sendHeart',from:side,operationId:uuid()}));status.textContent=side==='me'?'Asechka will see your little heart here. ♡':'He’ll see your little heart here. ♡';const button=$('[data-send-heart]');button.classList.remove('is-sent');requestAnimationFrame(()=>button.classList.add('is-sent'));}
-  catch(error){status.textContent=error.message;if(error.status===401)notice(error.message,error);}
-  finally{busy=false;renderHearts();renderList();}
+$('[data-send-heart]')?.addEventListener('click',event=>{
+  if(!side || !isWritable())return;
+  floatHearts(event.currentTarget);
+  const status=$('[data-heart-status]');
+  try{heartQueue.tap(side);status.textContent='Your little hearts are saved on this device. ♡';queueHeartFlush();}
+  catch{status.textContent='This browser couldn’t save that heart. Please free some storage and try again.';}
 });
 $$('[data-retry-shared]').forEach(button=>button.addEventListener('click',()=>{loadShared();loadMemory();}));
 async function loadMemory(){
@@ -192,7 +210,7 @@ function openPhoto(item){
 }
 $('#close-bucket-photo')?.addEventListener('click',()=>$('#bucket-lightbox').close());
 $('#bucket-lightbox')?.addEventListener('close',()=>{document.body.classList.remove('shared-dialog-open');returnFocus?.focus({preventScroll:true});});
-loadShared();loadMemory();renderHearts();
-setInterval(()=>{if(!document.hidden && !busy && !dialog?.open){loadShared({quiet:true});}},20000);
+loadShared();loadMemory();renderHearts();queueHeartFlush();
+setInterval(()=>{if(!document.hidden && !busy && !dialog?.open){loadShared({quiet:true});queueHeartFlush();}},20000);
 setInterval(()=>{if(!document.hidden && !busy)loadMemory();},60000);
 window.addEventListener('focus',()=>{if(!busy && !dialog?.open){loadShared({quiet:true});loadMemory();}});

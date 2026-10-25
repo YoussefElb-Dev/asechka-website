@@ -6,7 +6,7 @@ import Security
 final class Vault: @unchecked Sendable {
     private let directory: URL
     private let key: SymmetricKey
-    private let lock=NSLock()
+    private let io=DispatchQueue(label:"app.asechka.encrypted-storage",qos:.userInitiated)
     private var unavailableError:Error?
     private init(unavailable error:Error){directory=FileManager.default.temporaryDirectory;key=SymmetricKey(size:.bits256);unavailableError=error}
     static func unavailable(_ error:Error)->Vault{Vault(unavailable:error)}
@@ -31,18 +31,30 @@ final class Vault: @unchecked Sendable {
     private func url(_ name:String)->URL {directory.appendingPathComponent(SHA256.hash(data:Data(name.utf8)).map{String(format:"%02x",$0)}.joined())}
     func read(_ name:String)->Data? {
         guard unavailableError==nil else{return nil}
-        lock.lock();defer{lock.unlock()}
+        return io.sync {
         guard let bytes=try? Data(contentsOf:url(name)),let sealed=try? AES.GCM.SealedBox(combined:bytes) else{return nil}
         return try? AES.GCM.open(sealed,using:key,authenticating:Data(name.utf8))
+        }
     }
     func write(_ name:String,_ data:Data) throws {
+        try io.sync { try writeOnQueue(name,data) }
+    }
+    private func writeOnQueue(_ name:String,_ data:Data)throws {
         if let unavailableError{throw unavailableError}
-        lock.lock();defer{lock.unlock()}
         let sealed=try AES.GCM.seal(data,using:key,authenticating:Data(name.utf8))
         guard let bytes=sealed.combined else{throw CocoaError(.fileWriteUnknown)}
         try bytes.write(to:url(name),options:[.atomic,.completeFileProtectionUntilFirstUserAuthentication])
     }
     func value<T:Decodable>(_ name:String,as:T.Type)->T? {read(name).flatMap{try? JSONDecoder().decode(T.self,from:$0)}}
     func save<T:Encodable>(_ name:String,_ value:T)throws {try write(name,JSONEncoder().encode(value))}
-    func remove(_ name:String){guard unavailableError==nil else{return};lock.lock();defer{lock.unlock()};try? FileManager.default.removeItem(at:url(name))}
+    // FIFO with every other vault operation: a later comment/save or server acknowledgement
+    // cannot be overwritten by an older heart snapshot. Encoding and encryption stay off UI.
+    func saveDeferred<T:Encodable>(_ name:String,_ value:T,completion:@escaping @Sendable (Error?)->Void) {
+        io.async { [self] in
+            do { try writeOnQueue(name,JSONEncoder().encode(value));completion(nil) }
+            catch { completion(error) }
+        }
+    }
+    func drain()async {await withCheckedContinuation{continuation in io.async{continuation.resume()}}}
+    func remove(_ name:String){guard unavailableError==nil else{return};io.sync{_ = try? FileManager.default.removeItem(at:url(name))}}
 }

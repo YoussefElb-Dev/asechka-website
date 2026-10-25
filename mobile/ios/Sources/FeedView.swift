@@ -35,12 +35,15 @@ struct FeedView:View {
     }
     private var header:some View {
         VStack(alignment:.leading,spacing:home ? 8:19){
-            ScrollView(.horizontal,showsIndicators:false){HStack(spacing:home ? 10:18){
-                story("Create","plus"){create(mode != 2)}
-                story("Our corner","heart",action:corner)
-                if !home{story("Our days","sparkles"){navigate(4)};story("Music","music.note"){navigate(3)}}
-                story(savedOnly ? "All posts":"Saved","bookmark"){savedOnly.toggle()}
-            }.padding(.horizontal,home ? 16:22)}
+            if home {
+                HStack(spacing:10){story("Create","plus"){create(true)};story("Our corner","heart",action:corner);story("Saved","bookmark"){savedOnly.toggle()}}.padding(.horizontal,16)
+            }else {
+                ScrollView(.horizontal,showsIndicators:false){HStack(spacing:18){
+                    story("Create","plus"){create(mode != 2)};story("Our corner","heart",action:corner)
+                    story("Our days","sparkles"){navigate(4)};story("Music","music.note"){navigate(3)}
+                    story(savedOnly ? "All posts":"Saved","bookmark"){savedOnly.toggle()}
+                }.padding(.horizontal,22)}
+            }
             if mode==0 && !savedOnly {HomeHub{shortcut=$0}}
             if !home {VStack(alignment:.leading,spacing:6){
                 Text(savedOnly ? "Kept close.":mode==1 ? "Our camera roll.":mode==2 ? "Words to keep.":"Our little us.").font(.custom("Manrope-Bold",size:28))
@@ -51,7 +54,7 @@ struct FeedView:View {
     }
     private func story(_ text:String,_ symbol:String,action:@escaping()->Void)->some View {
         Button{Touch.tap();action()}label:{
-            if home{Label(text,systemImage:symbol).font(.system(size:13,weight:.medium)).padding(.horizontal,16).frame(minHeight:44).background(Palette.lavender,in:Capsule())}
+            if home{Label(text,systemImage:symbol).font(.system(size:13,weight:.medium)).padding(.horizontal,6).frame(maxWidth:.infinity,minHeight:44).background(Palette.lavender,in:Capsule())}
             else{VStack(spacing:8){Image(systemName:symbol).font(.system(size:25,weight:.light)).frame(width:62,height:62).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:70)}
         }
     }

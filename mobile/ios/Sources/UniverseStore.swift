@@ -88,7 +88,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard path.hasPrefix("/"),!path.hasPrefix("//"),!path.contains("\\"),let url=URL(string:Self.site+path)else{throw URLError(.badURL)}
         var request=URLRequest(url:url);request.httpMethod=body==nil ? "GET":"POST";request.httpBody=body
         request.setValue("application/json",forHTTPHeaderField:"Accept");request.setValue(Self.site,forHTTPHeaderField:"Origin")
-        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.0",forHTTPHeaderField:"User-Agent")
+        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.1",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
         for (endpoint,header) in [("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation")] {
@@ -173,9 +173,18 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
             let body:[String:Any]=["action":"sendHeart","from":from,"day":day,"count":1,"operationId":UUID().uuidString.lowercased()]
             next.append(PendingChange(id:UUID().uuidString,path:"/api/together",body:try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]),createdAt:ISO8601DateFormatter().string(from:Date())))
         }
-        try vault.save("outbox",next);pending=next;restore();status()
+        pending=next
+        heartDays[day,default:[:]][from,default:0]+=1
+        hearts[from]=ISO8601DateFormatter().string(from:Date())
+        vault.saveDeferred("outbox",next){[weak self] error in
+            guard let error else{return}
+            Task{@MainActor in self?.error="Your phone couldn’t finish saving those hearts. Please keep the app open and try again. "+error.localizedDescription}
+        }
+        status()
         heartFlush?.cancel();heartFlush=Task{do{try await Task.sleep(nanoseconds:900_000_000)}catch{return};await sync();restore();status()}
     }
+
+    func finishHeartSaves()async {await vault.drain()}
 
     func enqueue(_ path:String,_ input:[String:Any])throws {
         var body=input

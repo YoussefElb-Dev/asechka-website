@@ -17,3 +17,8 @@ body.motion-paused *,body.motion-paused *:before,body.motion-paused *:after{anim
 .hero-art .orbit-one{width:85%;height:79%}.hero-art .orbit-two{width:90%;height:57%}
 @media(max-width:360px){.wrap{width:calc(100% - 28px)}.hero h1{font-size:39px}.hero-actions{gap:14px}.button-primary{padding-inline:12px}.button-primary .button-arrow{display:none}.countdown-digits{gap:12px}.secret-date{font-size:9px}.art-caption{right:-2%;font-size:16px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.heart-particle{display:none}}
+
+/* Center navigation when it fits; auto margins release naturally for genuine overflow. */
+.site-header nav{min-width:0;flex:1;overflow-x:auto;scrollbar-width:none}
+.site-header nav>a:first-child{margin-inline-start:auto}.site-header nav>a:last-child{margin-inline-end:auto}
+#floating-heart-layer{contain:strict;touch-action:none}#floating-heart-layer::backdrop{background:transparent;pointer-events:none}

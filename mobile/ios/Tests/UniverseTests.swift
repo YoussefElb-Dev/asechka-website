@@ -3,6 +3,18 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    func testDeferredHeartSavesKeepOrderWithOtherEdits()async throws {
+        let folder=FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let vault=try Vault(directory:folder,key:SymmetricKey(size:.bits256))
+        defer{try? FileManager.default.removeItem(at:folder)}
+        for count in 1...150 {vault.saveDeferred("outbox",[count]){_ in}}
+        try vault.save("outbox",[150,999])
+        await vault.drain()
+        XCTAssertEqual(vault.value("outbox",as:[Int].self),[150,999],"An older background heart save must never overwrite a later post or acknowledgement")
+        vault.saveDeferred("outbox",[151,999]){_ in}
+        await vault.drain()
+        XCTAssertEqual(vault.value("outbox",as:[Int].self),[151,999])
+    }
     func testHeartCountsStreakAndEasternMidnight()throws {
         var days:[String:[String:Int]]=["2026-10-31":["me":2,"asechka":1],"2026-11-01":["me":15,"asechka":4]]
         XCTAssertEqual(HeartLedger.streak(days,who:"me",today:"2026-11-02"),2)

@@ -23,7 +23,6 @@ struct HomeHub:View {
     @Environment(\.dynamicTypeSize) private var textSize
     var open:(BookRoute)->Void
     @State private var history=false
-    @State private var particles:[HeartParticle]=[]
     private var from:String{universe.actor=="asnat" ? "asechka":"me"}
     private var other:String{from=="me" ? "asechka":"me"}
     private var routes:[(String,String,String,Bool,Int)]{[
@@ -54,8 +53,7 @@ struct HomeHub:View {
                     Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple).accessibilityLabel("Heart streak, \(streak) days").accessibilityHint("Long press for our heart history").accessibilityAction(named:Text("Heart history")){history=true}
                 }
             }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle()).onLongPressGesture{Touch.tap();history=true}
-            Button{do{try universe.sendHeart();Touch.tap(true);emit()}catch{universe.error=error.localizedDescription}}label:{Label("Send a heart",systemImage:"heart.fill").primary()}.accessibilityLabel("Send a heart to \(universe.partner)")
-                .overlay(alignment:.bottomTrailing){HeartStream(particles:particles).frame(width:210,height:310).offset(y:-35).allowsHitTesting(false).accessibilityHidden(true)}
+            HeartSendButton()
         }.padding(.horizontal,12).padding(.vertical,8).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
     }
     private var sinceCard:some View {
@@ -70,17 +68,6 @@ struct HomeHub:View {
             }.frame(maxWidth:.infinity,minHeight:44,alignment:.leading).padding(.horizontal,12).padding(.vertical,7).background(Palette.blue,in:RoundedRectangle(cornerRadius:20,style:.continuous))
         }.accessibilityLabel("Our time together. Open Since us")
     }
-    private func emit(){guard !reduced,!paused else{return};let particle=HeartParticle();if particles.count>=60{particles.removeFirst()};particles.append(particle);Task{try? await Task.sleep(nanoseconds:1_800_000_000);particles.removeAll{$0.id==particle.id}}}
-}
-struct HeartParticle:Identifiable {let id=UUID();let born=Date();let seed=Double.random(in:0...6.28);let size=Double.random(in:14...25)}
-struct HeartStream:View {
-    var particles:[HeartParticle]
-    var body:some View {TimelineView(.animation(minimumInterval:1.0/30,paused:particles.isEmpty)){context in
-        Canvas{canvas,size in for p in particles {let age=context.date.timeIntervalSince(p.born)/1.8;guard age>=0,age<1 else{continue}
-            let text=Text("♥").font(.system(size:p.size)).foregroundColor([Palette.purple,Color(red:0.82,green:0.55,blue:0.7),Color(red:0.52,green:0.65,blue:0.83)][Int(p.seed*100)%3])
-            var layer=canvas;layer.opacity=(1-age)*min(1,age*12);layer.draw(text,at:CGPoint(x:size.width*0.6+sin(age*6+p.seed)*29,y:size.height-age*(size.height-12)))
-        }}
-    }}
 }
 struct HeartHistoryView:View {
     @EnvironmentObject private var universe:UniverseStore

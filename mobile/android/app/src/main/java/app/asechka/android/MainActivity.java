@@ -27,6 +27,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private Images images;
   private BookViews book;
   private HomeExtras homeExtras;
+  private HomeExtras.HeartRain heartRain;
+
+  HomeExtras.HeartRain hearts() {
+    if (heartRain == null) heartRain = new HomeExtras.HeartRain(this);
+    return heartRain;
+  }
+
   private final Runnable flushHearts = this::flushHeartQueue;
 
   private void flushHeartQueue() {
@@ -185,6 +192,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     socialWrites.shutdown();
     if (book != null) book.close();
     if (homeExtras != null) homeExtras.close();
+    if (heartRain != null) heartRain.stop();
     images.close();
     if (activeDialog != null) activeDialog.dismiss();
     super.onDestroy();
@@ -765,7 +773,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         label.setText(symbols[i] + "  " + titles[i]);
         label.setTextSize(13);
         label.setMinHeight(u.dp(44));
-        label.setPadding(u.dp(16), 0, u.dp(16), 0);
+        label.setPadding(u.dp(6), 0, u.dp(6), 0);
         label.setBackground(u.shape(Ui.PALE, 18));
       }
       u.add(story, label, home ? 0 : 7);
@@ -785,10 +793,17 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               render(false);
             }
           });
-      row.addView(story, new LinearLayout.LayoutParams(home ? -2 : u.dp(72), -2));
+      row.addView(
+          story,
+          home
+              ? new LinearLayout.LayoutParams(0, -2, 1)
+              : new LinearLayout.LayoutParams(u.dp(72), -2));
     }
-    stories.addView(row);
-    header.addView(stories);
+    if (home) header.addView(row);
+    else {
+      stories.addView(row);
+      header.addView(stories);
+    }
     LinearLayout intro = u.column();
     intro.setPadding(u.dp(22), u.dp(7), u.dp(22), u.dp(16));
     intro.addView(
