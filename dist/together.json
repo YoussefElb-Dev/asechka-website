@@ -83,5 +83,27 @@
     "d2c9c63e-d7fd-49e4-b658-3f91ac883d5e": "me|126|2026-10-25",
     "e6e6e6ae-693d-407c-b837-2d6778a27a61": "me|89|2026-10-25",
     "1a202398-ed93-46fe-9be3-c01ac3181e88": "me|6|2026-10-25"
+  },
+  "heartStreak": {
+    "version": 1,
+    "startedOn": "2026-10-12",
+    "seededThrough": "2026-10-25",
+    "seedDays": 13,
+    "timeZone": "America/New_York",
+    "dailyRule": "either-person",
+    "monthlyLives": 1
+  },
+  "streakStatus": {
+    "version": 1,
+    "today": "2026-10-25",
+    "days": 13,
+    "lives": 1,
+    "livesEarned": 1,
+    "livesUsed": 0,
+    "protectedDays": [],
+    "lastResetOn": null,
+    "nextLifeOn": "2026-11-12",
+    "todayComplete": true,
+    "asOf": "2026-10-25T16:00:00.000Z"
   }
 }

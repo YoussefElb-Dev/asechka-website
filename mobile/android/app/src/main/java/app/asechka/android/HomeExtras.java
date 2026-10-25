@@ -30,7 +30,8 @@ final class HomeExtras {
   int pendingWrites, shownStreak;
   long shownOwn, shownOther;
   String shownDay;
-  boolean closed;
+  boolean closed, shownTodayComplete;
+  int shownLives;
   final Runnable settle =
       () -> {
         if (!closed && pendingWrites == 0) update();
@@ -207,7 +208,11 @@ final class HomeExtras {
     String who = from(), day = HeartCounts.day(System.currentTimeMillis());
     if (counts != null) {
       if (!day.equals(shownDay)) update();
-      if (shownOwn++ == 0) shownStreak++;
+      shownOwn++;
+      if (!shownTodayComplete) {
+        shownStreak = shownStreak > 0 ? shownStreak + 1 : 1;
+        shownTodayComplete = true;
+      }
       renderCounts();
     }
     Motion.haptic(anchor, false);
@@ -254,7 +259,14 @@ final class HomeExtras {
   void renderCounts() {
     if (counts == null) return;
     counts.setText("You " + shownOwn + "  ♡  " + partner() + " " + shownOther);
-    streak.setText("✦ " + shownStreak + " day" + (shownStreak == 1 ? "" : "s"));
+    streak.setText(
+        "✦ " + shownStreak + " days · " + shownLives + (shownLives == 1 ? " life" : " lives"));
+    streak.setContentDescription(
+        "Our shared streak, "
+            + shownStreak
+            + " days. "
+            + shownLives
+            + " lives available. Long press for history.");
   }
 
   JSONObject data() {
@@ -270,13 +282,16 @@ final class HomeExtras {
     if (counts == null) return;
     if (pendingWrites == 0) {
       JSONObject d = data();
-      String today = HeartCounts.day(System.currentTimeMillis()),
+      String today = SharedHeartStreak.today(d, api.connected()),
           own = from(),
           other = own.equals("me") ? "asechka" : "me";
       shownDay = today;
       shownOwn = HeartCounts.count(d, today, own);
       shownOther = HeartCounts.count(d, today, other);
-      shownStreak = HeartCounts.streak(d, own, today);
+      SharedHeartStreak shared = SharedHeartStreak.calculate(d, today);
+      shownStreak = shared.days;
+      shownLives = shared.lives;
+      shownTodayComplete = shared.todayComplete;
       renderCounts();
     }
     JSONObject keepsakes = null;
@@ -336,10 +351,19 @@ final class HomeExtras {
       her += HeartCounts.count(d, day, "asechka");
     }
     sheet.note("All time · Youssef " + me + " ♡  ·  Asnat " + her + " ♡");
+    SharedHeartStreak shared =
+        SharedHeartStreak.calculate(d, SharedHeartStreak.today(d, api.connected()));
     sheet.note(
-        "Together streak · "
-            + HeartCounts.streak(d, "both", HeartCounts.day(System.currentTimeMillis()))
-            + " days");
+        "Our shared streak · "
+            + shared.days
+            + " days · "
+            + shared.lives
+            + (shared.lives == 1 ? " life" : " lives"));
+    sheet.note(
+        "One heart from either of us keeps our day. A missed day uses a life; without one, we start"
+            + " again. Unused lives stack.");
+    sheet.note("Next life · " + shared.nextLifeOn + " · one more every month on the 12th");
+    for (String day : shared.protectedDays) sheet.note(day + " · protected with a life ♡");
     if (keys.isEmpty()) sheet.note("Your first heart starts our story here.");
     for (String day : keys)
       sheet.note(

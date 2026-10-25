@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { UUID, photoPath, dailyMemory } from './daily-memory.js';
-import { addHearts, validHeartDay } from './heart-counts.js';
+import { addHearts, validHeartDay, saveSharedStreak } from './heart-counts.js';
 const repo = 'https://api.github.com/repos/YoussefElb-Dev/asechka-website';
 const SHA = /^[a-f0-9]{40}$/;
 const PHOTO_LIMIT = 320000;
@@ -93,6 +93,7 @@ export function changeTogether(base,change,now=new Date()){
       if(current) data.bucketList[index]=item; else data.bucketList.push(item);
     }
   }
+  saveSharedStreak(data, now);
   data.updatedAt=time;
   return {data,changed:true};
 }

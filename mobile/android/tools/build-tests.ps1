@@ -8,7 +8,7 @@ $bt=Join-Path $SdkRoot 'build-tools\36.0.0'
 $dir=Join-Path $projectRoot 'build\tests'
 New-Item -ItemType Directory -Path "$dir\classes","$dir\generated","$dir\dex" -Force | Out-Null
 function Run-Tool([string]$Exe,[string[]]$ToolArgs){ & $Exe @ToolArgs; if($LASTEXITCODE -ne 0){throw "$Exe failed"} }
-Run-Tool "$bt\aapt2.exe" @('link','-o',"$dir\unsigned.apk",'-I',$platform,'--manifest',"$projectRoot\app\src\androidTest\AndroidManifest.xml",'--java',"$dir\generated")
+Run-Tool "$bt\aapt2.exe" @('link','-o',"$dir\unsigned.apk",'-I',$platform,'--manifest',"$projectRoot\app\src\androidTest\AndroidManifest.xml",'--java',"$dir\generated",'-A',"$projectRoot\..\shared-test-resources")
 $cp="$platform;$projectRoot\build\debug\classes"
 $sources=@(Get-ChildItem -LiteralPath "$projectRoot\app\src\androidTest\java" -Recurse -Filter '*.java' | ForEach-Object {'"'+$_.FullName.Replace('\','/')+'"'})
 [IO.File]::WriteAllLines("$dir\sources.txt",$sources,[Text.UTF8Encoding]::new($false))

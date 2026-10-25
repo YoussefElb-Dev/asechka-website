@@ -1,3 +1,4 @@
+import { sharedStreak, streakPolicy } from '../dist/heart-streak.js';
 const dayPattern = /^\d{4}-\d{2}-\d{2}$/;
 export function heartDay(now = new Date()) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
@@ -25,7 +26,11 @@ export function addHearts(data, change, now) {
   data.hearts[change.from] = {id:change.operationId,sentAt:now.toISOString()};
   return true;
 }
-export function publicTogether(data) {
+export function saveSharedStreak(data, now = new Date()) {
+  data.heartStreak = streakPolicy(data.heartStreak);
+  data.streakStatus = { ...sharedStreak(data, heartDay(now)), asOf: now.toISOString() };
+}
+export function publicTogether(data, now = new Date()) {
   const {heartOperations,...visible} = data;
-  return {...visible,heartReceipts:Object.keys(heartOperations || {}).slice(-512)};
+  return {...visible,heartStreak:streakPolicy(data.heartStreak),streakStatus:{...sharedStreak(data,heartDay(now)),asOf:now.toISOString()},heartReceipts:Object.keys(heartOperations || {}).slice(-512)};
 }

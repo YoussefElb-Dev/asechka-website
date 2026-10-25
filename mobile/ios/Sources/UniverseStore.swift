@@ -29,6 +29,27 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     @Published var bookmarks:Set<String>=[]
     @Published var hearts:[String:String]=[:]
     @Published var heartDays:[String:[String:Int]]=[:]
+    @Published var heartStreakPolicy:[String:Any]=[:]
+    @Published var serverHeartDay=""
+    private var serverHeartAsOf:Date?
+    private var refreshingHearts=false
+    func sharedHeartStreak(at date:Date=Date())->SharedHeartStreak {
+        SharedHeartStreak.calculate(heartDays,policy:heartStreakPolicy,today:online && !serverHeartDay.isEmpty && abs(date.timeIntervalSince(serverHeartAsOf ?? .distantPast))<90 ? serverHeartDay:HeartLedger.day(date))
+    }
+    private func saveTogether(_ data:Data)throws {
+        let incoming=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] ?? [:]
+        if let saved=vault.read("snapshot:/api/together"), let current=(try? JSONSerialization.jsonObject(with:saved)) as? [String:Any],
+           ((current["updatedAt"] as? String ?? "") > (incoming["updatedAt"] as? String ?? "") ||
+            ((current["updatedAt"] as? String ?? "") == (incoming["updatedAt"] as? String ?? "") &&
+             ((current["streakStatus"] as? [String:Any])?["asOf"] as? String ?? "") > ((incoming["streakStatus"] as? [String:Any])?["asOf"] as? String ?? ""))) {return}
+        try vault.write("snapshot:/api/together",data)
+    }
+    func refreshSharedHearts()async {
+        guard unlocked,!locked,online,!cookie.isEmpty,!refreshingHearts else{return}
+        refreshingHearts=true;defer{refreshingHearts=false}
+        await sync()
+        do {let data=try await request("/api/together");guard !locked else{return};try saveTogether(data);restore();status()}catch{}
+    }
     private var heartReceipts:Set<String>=[]
     private var inFlightChange:String?
     private var sealedHearts:Set<String>=[]
@@ -88,7 +109,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard path.hasPrefix("/"),!path.hasPrefix("//"),!path.contains("\\"),let url=URL(string:Self.site+path)else{throw URLError(.badURL)}
         var request=URLRequest(url:url);request.httpMethod=body==nil ? "GET":"POST";request.httpBody=body
         request.setValue("application/json",forHTTPHeaderField:"Accept");request.setValue(Self.site,forHTTPHeaderField:"Origin")
-        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.3",forHTTPHeaderField:"User-Agent")
+        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.4",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
         for (endpoint,header) in [("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation")] {
@@ -130,12 +151,16 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     }
     func lock(){locked=true;unlocked=false;try? vault.save("locked",true);cookie="";vault.remove("session")}
     func restore(){
-        heartDays=[:];heartReceipts=[]
+        heartDays=[:];heartReceipts=[];heartStreakPolicy=[:];serverHeartDay="";serverHeartAsOf=nil
         memories=vault.value("snapshot:/api/memories",as:Memories.self) ?? bundledMemories()
         songs=(vault.read("snapshot:/api/music").flatMap{try? JSONDecoder().decode(SongList.self,from:$0)})?.tracks ?? []
         wishes=(vault.read("snapshot:/api/together").flatMap{try? JSONDecoder().decode(WishList.self,from:$0)})?.bucketList ?? []
-        if let data=vault.read("snapshot:/api/together"),let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any],let values=json["hearts"] as? [String:[String:Any]] {
-            hearts=values.compactMapValues{$0["sentAt"] as? String}
+        if let data=vault.read("snapshot:/api/together"),let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] {
+            let values=json["hearts"] as? [String:Any] ?? [:]
+            heartStreakPolicy=json["heartStreak"] as? [String:Any] ?? [:]
+            serverHeartDay=(json["streakStatus"] as? [String:Any])?["today"] as? String ?? ""
+            serverHeartAsOf=BookDates.instant((json["streakStatus"] as? [String:Any])?["asOf"] as? String ?? "")
+            hearts=values.compactMapValues{($0 as? [String:Any])?["sentAt"] as? String}
             heartDays=json["heartDays"] as? [String:[String:Int]] ?? [:]
             heartReceipts=Set(json["heartReceipts"] as? [String] ?? [])
         }
@@ -156,7 +181,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         refreshing=true;defer{refreshing=false;status()}
         await sync()
         for path in ["/api/memories","/api/music","/api/together","/api/daily-memory","/api/keepsakes","/api/journal"] {
-            do{let data=try await request(path);guard !locked else{return};try vault.write("snapshot:"+path,data)}
+            do{let data=try await request(path);guard !locked else{return};if path=="/api/together"{try saveTogether(data)}else{try vault.write("snapshot:"+path,data)}}
             catch{if vault.read("snapshot:"+path)==nil {self.error=error.localizedDescription}}
         }
         guard !locked else{return};restore();await prefetch()
@@ -220,7 +245,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                     if first.path=="/api/music",let list=json["tracks"] as? [[String:Any]],let value=list.first(where:{$0["rank"] as? Int==body["rank"] as? Int})?["id"] as? String {idMap[first.id]=value}
                 }
                 // Persist the server snapshot before dropping the queued operation. Retried writes are idempotent.
-                try vault.write("snapshot:"+first.path,data);try vault.save("id-map",idMap)
+                if first.path=="/api/together"{try saveTogether(data)}else{try vault.write("snapshot:"+first.path,data)};try vault.save("id-map",idMap)
                 var next=pending;next.removeAll{$0.id==first.id};try vault.save("outbox",next);pending=next
                 sealedHearts.remove(first.id);try? vault.save("heart-sealed",Array(sealedHearts))
             }catch {

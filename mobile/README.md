@@ -1,6 +1,12 @@
-# Asechka native apps — 2.2.3
+# Asechka native apps — 2.2.4
 
-The Home heart sender now uses a compact white capsule, a rose heart icon, and dark, readable text on both Android and iPhone. The 48-point touch target, soft press feedback, floating hearts, and offline queue remain available.
+The streak is now shared by Android, iPhone, and the website. It starts at the website's 13-day age on October 25, 2026, using its first source record of October 12. This seed is saved once in `dist/together.json` and never advances on later releases. Either person's heart keeps a day. Daily heart totals retain only real sends.
+
+One life is available initially; each monthly anniversary, the 12th, grants another. Unused lives stack without a cap. A completed day with no hearts consumes one life and preserves the day in the streak. Without a life, the streak resets; the next heart restarts at one. Once inactive, idle days do not consume newly earned lives. Lives continue accruing every month. Daily settlement uses Eastern midnight, including daylight saving time. The hidden heart history lists protected days and the next allowance.
+
+The server persists the shared policy and computes status from its saved heart dates. All three clients use the same calendar rules and twelve common regression fixtures. Offline heart sends keep their original day; syncing a late heart repairs that day and restores any life it no longer needs. Retries cannot spend a life twice. Older responses cannot replace a newer ledger. Hearts refresh every 15 seconds while the apps are open, independently of image downloads. Offline views use the last saved ledger and pending hearts; devices converge after connecting.
+
+The Home heart sender uses a compact white capsule, a rose heart icon, and dark, readable text on both Android and iPhone. The 48-point touch target, soft press feedback, floating hearts, and offline queue remain available.
 
 Two native applications share the existing private website services: Android Views (Android 6+) and SwiftUI (iOS 16+, iPhone/iPad). Neither app contains a WebView. Home is a scrolling social feed; Photos and Quotes have their own feeds. Music, Our days, Words, the letter, personal corner, birthdays, and profile choices remain available.
 
@@ -32,7 +38,7 @@ Pushes changing mobile sources, shared server code, tests, or the workflow build
 
 Both profiles can create photos and quotes, like posts, comment, edit posts, and save personal bookmarks. Native composers preview the post and preserve drafts. Original photos, artwork, fonts, and licenses are bundled. Online refresh saves the shared collections and referenced images; new pictures work offline after downloading. Own changes are saved locally before sending and remain queued across restarts. Reconnect retries ordered edits; conflicts stay available for review. Encrypted device storage protects saved content and the session.
 
-Apps refresh every 60 seconds while open, on return, on reconnect, and after saves. Other-person changes appear within that foreground refresh interval. Android also requests background sync, subject to Android's scheduling and battery rules. iOS does not promise one-minute refresh while closed. The existing backend has no push event service.
+Hearts and the shared streak refresh every 15 seconds while open. Other content refreshes every 60 seconds, on return, on reconnect, and after saves. Other-person changes appear within the corresponding foreground interval. Android also requests background sync, subject to Android's scheduling and battery rules. iOS does not promise one-minute refresh while closed. The existing backend has no push event service.
 
 Website content changes appear through the shared APIs without reinstalling. Changes to native screens or new application features need a new APK/IPA. New translations, new music searches, and external playback need internet; saved results remain available offline. Music recordings are not bundled.
 

@@ -102,6 +102,29 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           main.postDelayed(this, REFRESH_INTERVAL);
         }
       };
+  private boolean heartRefreshing;
+  private final Runnable heartPoll =
+      new Runnable() {
+        public void run() {
+          if (started && api.canOpen() && api.connected() && !heartRefreshing) {
+            heartRefreshing = true;
+            work.execute(
+                () -> {
+                  try {
+                    api.syncPending();
+                    api.get("/api/together");
+                  } catch (Exception ignored) {
+                  }
+                  main.post(
+                      () -> {
+                        heartRefreshing = false;
+                        if (homeExtras != null) homeExtras.update();
+                      });
+                });
+          }
+          main.postDelayed(this, 15000);
+        }
+      };
   private final Runnable clock =
       new Runnable() {
         public void run() {
@@ -139,6 +162,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     else showIdentity();
     main.post(clock);
     main.postDelayed(poll, REFRESH_INTERVAL);
+    main.postDelayed(heartPoll, 15000);
     networkCallback =
         new ConnectivityManager.NetworkCallback() {
           @Override

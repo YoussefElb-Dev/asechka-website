@@ -196,6 +196,22 @@ final class OfflineStore {
   void snapshot(String path, JSONObject data) throws IOException {
     if (path.equals("/api/memories")) path = "/memories.json";
     synchronized (LOCK) {
+      // A GET started before a heart POST must not overwrite the newer saved ledger.
+      if (path.equals("/api/together")) {
+        JSONObject current = base(path);
+        if (current != null
+            && current.optString("updatedAt").compareTo(data.optString("updatedAt")) > 0) return;
+      }
+      if (path.equals("/api/together")) {
+        JSONObject current = base(path);
+        JSONObject before = current == null ? null : current.optJSONObject("streakStatus"),
+            after = data.optJSONObject("streakStatus");
+        if (current != null
+            && current.optString("updatedAt").equals(data.optString("updatedAt"))
+            && before != null
+            && after != null
+            && before.optString("asOf").compareTo(after.optString("asOf")) > 0) return;
+      }
       JSONObject clean = copy(data);
       clean.remove("_offline");
       clean.remove("_savedAt");

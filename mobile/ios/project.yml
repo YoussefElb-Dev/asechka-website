@@ -6,8 +6,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '2.2.3'
-    CURRENT_PROJECT_VERSION: '12'
+    MARKETING_VERSION: '2.2.4'
+    CURRENT_PROJECT_VERSION: '13'
     TARGETED_DEVICE_FAMILY: '1,2'
     CODE_SIGNING_ALLOWED: NO
 targets:
@@ -31,7 +31,10 @@ targets:
   AsechkaTests:
     type: bundle.unit-test
     platform: iOS
-    sources: [Tests]
+    sources:
+      - path: Tests
+      - path: ../shared-test-resources/heart-streak-cases.json
+        buildPhase: resources
     dependencies:
       - target: Asechka
     settings:

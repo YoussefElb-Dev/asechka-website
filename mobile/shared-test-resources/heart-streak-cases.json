@@ -1,0 +1,129 @@
+[
+  {
+    "name": "website age",
+    "today": "2026-10-25",
+    "days": 13,
+    "lives": 1,
+    "complete": true
+  },
+  {
+    "name": "either person keeps day",
+    "today": "2026-10-26",
+    "heartDays": {
+      "2026-10-26": {
+        "asechka": 1
+      }
+    },
+    "days": 14,
+    "lives": 1,
+    "complete": true
+  },
+  {
+    "name": "both people and spam count one day",
+    "today": "2026-10-26",
+    "heartDays": {
+      "2026-10-26": {
+        "me": 200,
+        "asechka": 500
+      }
+    },
+    "days": 14,
+    "lives": 1,
+    "complete": true
+  },
+  {
+    "name": "today remains open until midnight",
+    "today": "2026-10-26",
+    "days": 13,
+    "lives": 1,
+    "complete": false
+  },
+  {
+    "name": "first missed day spends one shared life",
+    "today": "2026-10-27",
+    "days": 14,
+    "lives": 0,
+    "protected": [
+      "2026-10-26"
+    ],
+    "complete": false
+  },
+  {
+    "name": "second missed day resets without a life",
+    "today": "2026-10-28",
+    "days": 0,
+    "lives": 0,
+    "protected": [
+      "2026-10-26"
+    ],
+    "reset": "2026-10-27",
+    "complete": false
+  },
+  {
+    "name": "heart after reset restarts at one",
+    "today": "2026-10-28",
+    "heartDays": {
+      "2026-10-28": {
+        "me": 1
+      }
+    },
+    "days": 1,
+    "lives": 0,
+    "protected": [
+      "2026-10-26"
+    ],
+    "reset": "2026-10-27",
+    "complete": true
+  },
+  {
+    "name": "late offline heart restores the life",
+    "today": "2026-10-27",
+    "heartDays": {
+      "2026-10-26": {
+        "me": 1
+      }
+    },
+    "days": 14,
+    "lives": 1,
+    "complete": false
+  },
+  {
+    "name": "monthly allowance arrives on the 12th",
+    "today": "2026-11-12",
+    "through": "2026-11-11",
+    "days": 30,
+    "lives": 2,
+    "complete": false
+  },
+  {
+    "name": "four monthly allowances stack",
+    "today": "2027-01-12",
+    "through": "2027-01-12",
+    "days": 92,
+    "lives": 4,
+    "complete": true
+  },
+  {
+    "name": "future allowance cannot rescue earlier failure",
+    "today": "2026-11-12",
+    "through": "2026-11-09",
+    "days": 0,
+    "lives": 1,
+    "protected": [
+      "2026-11-10"
+    ],
+    "reset": "2026-11-11",
+    "complete": false
+  },
+  {
+    "name": "inactive streak does not waste new lives",
+    "today": "2027-01-12",
+    "days": 0,
+    "lives": 3,
+    "protected": [
+      "2026-10-26"
+    ],
+    "reset": "2026-10-27",
+    "complete": false
+  }
+]

@@ -1,5 +1,6 @@
 import { floatHearts } from './heart-motion.js';
 import { HeartOutbox } from './heart-outbox.js';
+import { sharedStreak, projectStreak, streakDay } from './heart-streak.js';
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
@@ -9,6 +10,7 @@ const uuid=()=>crypto.randomUUID();
 let shared=null, fingerprint='', side='', busy=false, filter='all', editing=null, returnFocus=null, chosenPhoto=null, photoBusy=false;
 try{side=localStorage.getItem('asechka-heart-side') || '';}catch{}
 if(!['me','asechka'].includes(side))side='';
+try{shared=JSON.parse(localStorage.getItem('asechka-heart-ledger') || 'null');}catch{}
 let heartSending=false,heartTimer;
 const heartQueue=new HeartOutbox({load:()=>{try{return JSON.parse(localStorage.getItem('asechka-heart-outbox')||'[]')}catch{return []}},save:items=>localStorage.setItem('asechka-heart-outbox',JSON.stringify(items))});
 function queueHeartFlush(){if(!heartTimer)heartTimer=setTimeout(()=>{heartTimer=null;flushHearts();},600);}
@@ -42,7 +44,10 @@ function notice(text,error){
 function isWritable(){return shared?.writable===true;}
 function installState(data){
   if(data.version!==1 || !Array.isArray(data.bucketList) || !data.hearts)throw new RequestError('Our little plans couldn’t be read. Try again shortly.',503);
+  if(shared?.updatedAt && data.updatedAt && shared.updatedAt>data.updatedAt)return;
+  if(shared?.updatedAt===data.updatedAt && (shared?.streakStatus?.asOf || "")>(data.streakStatus?.asOf || ""))return;
   shared=data;
+  try{localStorage.setItem('asechka-heart-ledger',JSON.stringify({version:1,bucketList:[],hearts:data.hearts,heartDays:data.heartDays,heartReceipts:data.heartReceipts,heartStreak:data.heartStreak,streakStatus:data.streakStatus,updatedAt:data.updatedAt}));}catch{}
   $$('[data-add-plan]').forEach(button=>button.disabled=!isWritable());
   renderHearts();renderSummary();
   const next=JSON.stringify(data.bucketList);
@@ -60,7 +65,45 @@ function renderSummary(){
   const summary=$('[data-bucket-summary]');if(summary)summary.textContent=list.length?`${remaining} still dreaming · ${done} we’ve made into memories.`:'Our first little wish is waiting to be written.';
   const preview=$('[data-preview-wishes]');if(preview){preview.replaceChildren();list.filter(item=>!item.completed).slice(0,3).forEach(item=>preview.append(node('li','',item.title)));}
 }
+function currentStreak(){
+  const data=projectStreak(shared,heartQueue.items);
+  return {data,result:sharedStreak(data,navigator.onLine && shared?.streakStatus?.today && Math.abs(Date.now()-Date.parse(shared.streakStatus.asOf))<90000 ? shared.streakStatus.today:streakDay())};
+}
+let streakButton, streakDialog;
+function renderStreak(){
+  const invitation=$('[data-heart-invitation]');if(!invitation)return;
+  if(!streakButton){
+    streakButton=node('button','shared-streak');streakButton.type='button';streakButton.addEventListener('click',openHeartHistory);invitation.after(streakButton);
+  }
+  const {result:r}=currentStreak();
+  streakButton.textContent=shared ? `✦ ${r.days} days together · ${r.lives} ${r.lives===1?'life':'lives'} ♡`:'Our shared streak · connect to sync';
+  streakButton.setAttribute('aria-label',shared ? `Our shared streak: ${r.days} days, ${r.lives} ${r.lives===1?'life':'lives'}. Open heart history`:'Our shared heart history');
+  streakButton.disabled=!shared;
+  if(streakDialog?.open)fillHeartHistory();
+}
+function fillHeartHistory(){
+  const {data,result:r}=currentStreak();
+  const body=streakDialog.querySelector('.shared-heart-history-body');body.replaceChildren();
+  body.append(node('p','shared-heart-total',`${r.days} days together · ${r.lives} ${r.lives===1?'life':'lives'} saved`),node('p','','One heart from either of us keeps our day. A missed day automatically uses one shared life. Without a life, we start again with our next heart.'),node('p','',`Unused lives stack. Our next life arrives ${dateText(r.nextLifeOn)}; we get one more on the 12th each month. Days end at midnight Eastern time.`));
+  const days=new Set([...Object.keys(data.heartDays),...r.protectedDays]);
+  if(!days.size)body.append(node('p','','Our daily heart history starts with our first heart.'));
+  for(const day of [...days].sort().reverse()){
+    const row=node('div','shared-heart-history-day');row.append(node('strong','',dateText(day)));
+    row.append(node('span','',r.protectedDays.includes(day)?'♡ Protected with a life':`Youssef ${data.heartDays[day]?.me || 0} ♡ · Asnat ${data.heartDays[day]?.asechka || 0} ♡`));body.append(row);
+  }
+}
+function openHeartHistory(){
+  if(!streakDialog){
+    streakDialog=node('dialog','shared-heart-history');streakDialog.setAttribute('aria-labelledby','heart-history-title');
+    const heading=node('h2','','Our little heart history');heading.id='heart-history-title';
+    const close=node('button','shared-heart-history-close','Done');close.type='button';close.addEventListener('click',()=>streakDialog.close());
+    streakDialog.append(heading,node('div','shared-heart-history-body'),close);document.body.append(streakDialog);
+    streakDialog.addEventListener('close',()=>streakButton.focus({preventScroll:true}));
+  }
+  fillHeartHistory();streakDialog.showModal();
+}
 function renderHearts(){
+  renderStreak();
   const select=$('[data-heart-side]');if(select && select.value!==side)select.value=side;
   if(select)select.disabled=busy;
   const button=$('[data-send-heart]');if(button){button.disabled=!side || !isWritable();button.setAttribute('aria-label',side==='asechka'?'Send him a thinking-of-you heart':'Send Asechka a thinking-of-you heart');}
@@ -79,7 +122,7 @@ $('[data-send-heart]')?.addEventListener('click',event=>{
   if(!side || !isWritable())return;
   floatHearts(event.currentTarget);
   const status=$('[data-heart-status]');
-  try{heartQueue.tap(side);status.textContent='Your little hearts are saved on this device. ♡';queueHeartFlush();}
+  try{heartQueue.tap(side);renderStreak();status.textContent='Your little hearts are saved on this device. ♡';queueHeartFlush();}
   catch{status.textContent='This browser couldn’t save that heart. Please free some storage and try again.';}
 });
 $$('[data-retry-shared]').forEach(button=>button.addEventListener('click',()=>{loadShared();loadMemory();}));
@@ -211,6 +254,6 @@ function openPhoto(item){
 $('#close-bucket-photo')?.addEventListener('click',()=>$('#bucket-lightbox').close());
 $('#bucket-lightbox')?.addEventListener('close',()=>{document.body.classList.remove('shared-dialog-open');returnFocus?.focus({preventScroll:true});});
 loadShared();loadMemory();renderHearts();queueHeartFlush();
-setInterval(()=>{if(!document.hidden && !busy && !dialog?.open){loadShared({quiet:true});queueHeartFlush();}},20000);
+setInterval(()=>{if(!document.hidden && !busy && !dialog?.open){loadShared({quiet:true});queueHeartFlush();}},15000);
 setInterval(()=>{if(!document.hidden && !busy)loadMemory();},60000);
 window.addEventListener('focus',()=>{if(!busy && !dialog?.open){loadShared({quiet:true});loadMemory();}});

@@ -59,6 +59,7 @@ public final class NativeTests extends Instrumentation {
         result.putString("stream", "QA previews ready\n");
       } else {
         if (homeOnly) {
+          sharedStreakTests();
           homeTests();
         } else if (bookOnly) {
           bookTests();
@@ -158,7 +159,7 @@ public final class NativeTests extends Instrumentation {
                   .getPackageManager()
                   .getPackageInfo(getTargetContext().getPackageName(), 0)
                   .versionCode
-              == 12,
+              == 13,
           "Updated package version");
     }
   }
@@ -1072,6 +1073,8 @@ public final class NativeTests extends Instrumentation {
           .close();
     api = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
     api.store.remove("outbox");
+    // Resetting the isolated server is an intentional ledger rollback between test journeys.
+    api.store.remove("data:/api/together");
     api.login("native-test-code");
     for (String path :
         new String[] {"/memories.json", "/api/music", "/api/together", "/api/daily-memory"})
@@ -1143,6 +1146,57 @@ public final class NativeTests extends Instrumentation {
         "Floating hearts leave all controls usable");
     Thread.sleep(180);
     captureScreenshot("home-floating-heart-layer");
+  }
+
+  private void sharedStreakTests() throws Exception {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    try (InputStream in = getContext().getAssets().open("heart-streak-cases.json")) {
+      byte[] buffer = new byte[4096];
+      int n;
+      while ((n = in.read(buffer)) != -1) out.write(buffer, 0, n);
+    }
+    JSONArray cases = new JSONArray(out.toString("UTF-8"));
+    for (int i = 0; i < cases.length(); i++) {
+      JSONObject c = cases.getJSONObject(i), days = c.optJSONObject("heartDays");
+      if (days == null) days = new JSONObject();
+      String through = c.optString("through");
+      for (String day = through;
+          !day.isEmpty() && day.compareTo("2026-10-26") >= 0;
+          day = HeartCounts.previous(day)) days.put(day, OfflineStore.json("me", 1));
+      JSONObject data = OfflineStore.json("heartDays", days);
+      SharedHeartStreak r = SharedHeartStreak.calculate(data, c.getString("today"));
+      String name = c.getString("name");
+      check(
+          r.days == c.getInt("days")
+              && r.lives == c.getInt("lives")
+              && r.todayComplete == c.getBoolean("complete"),
+          name + ": shared count and lives");
+      check(
+          new JSONArray(r.protectedDays)
+              .toString()
+              .equals(
+                  c.optJSONArray("protected") == null
+                      ? "[]"
+                      : c.getJSONArray("protected").toString()),
+          name + ": protected dates");
+      check(
+          Objects.equals(r.lastResetOn, c.has("reset") ? c.getString("reset") : null),
+          name + ": reset date");
+    }
+    OfflineStore saved = new OfflineStore(getTargetContext(), "https://streak-race.invalid");
+    saved.snapshot(
+        "/api/together",
+        OfflineStore.json(
+            "updatedAt",
+            "2026-10-25T12:01:00Z",
+            "heartDays",
+            OfflineStore.json("2026-10-25", OfflineStore.json("me", 9))));
+    saved.snapshot(
+        "/api/together",
+        OfflineStore.json("updatedAt", "2026-10-25T12:00:00Z", "heartDays", new JSONObject()));
+    check(
+        HeartCounts.count(saved.base("/api/together"), "2026-10-25", "me") == 9,
+        "An older refresh cannot erase a newer shared heart");
   }
 
   private void homeTests() throws Exception {

@@ -72,6 +72,13 @@ struct RootView:View {
         }message:{Text(universe.error ?? "")}
         .task {if universe.unlocked {await universe.refresh()}}
         .task(id:phase){
+            guard phase == .active else{return}
+            while !Task.isCancelled {
+                if universe.unlocked{await universe.refreshSharedHearts()}
+                do{try await Task.sleep(nanoseconds:15_000_000_000)}catch{return}
+            }
+        }
+        .task(id:phase){
             guard phase == .active else{await universe.finishHeartSaves();HeartRain.shared.stop();return}
             if universe.unlocked {await universe.refresh()}
             while !Task.isCancelled {

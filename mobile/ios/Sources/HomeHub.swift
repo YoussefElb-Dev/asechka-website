@@ -45,16 +45,16 @@ struct HomeHub:View {
     private var heartCard:some View {
         HStack(spacing:12){
             Button{Touch.tap();openHistory()}label:{VStack(alignment:.leading,spacing:3){
-                TimelineView(.periodic(from:.now,by:30)){context in let today=HeartLedger.day(context.date)
+                TimelineView(.periodic(from:.now,by:30)){context in let today=universe.sharedHeartStreak(at:context.date).today
                     Text("You \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)").font(.system(size:12)).foregroundColor(Palette.muted).accessibilityLabel("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)")
                 }
-                TimelineView(.periodic(from:.now,by:30)){context in let streak=HeartLedger.streak(universe.heartDays,who:from,today:HeartLedger.day(context.date))
-                    Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple)
+                TimelineView(.periodic(from:.now,by:30)){context in let shared=universe.sharedHeartStreak(at:context.date)
+                    Text("✦ \(shared.days) days · \(shared.lives) \(shared.lives==1 ? "life":"lives")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple)
                 }
             }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle())}
                 .buttonStyle(.plain)
                 .accessibilityLabel("Our heart history")
-                .accessibilityValue("Today · you \(universe.heartDays[HeartLedger.day()]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[HeartLedger.day()]?[other] ?? 0). Heart streak, \(HeartLedger.streak(universe.heartDays,who:from)) days")
+                .accessibilityValue("Today · you \(universe.heartDays[HeartLedger.day()]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[HeartLedger.day()]?[other] ?? 0). Heart streak, \(universe.sharedHeartStreak().days) days, \(universe.sharedHeartStreak().lives) lives")
                 .accessibilityHint("Tap to see our daily hearts")
             HeartSendButton()
         }.padding(.horizontal,12).padding(.vertical,8).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
@@ -79,7 +79,11 @@ struct HeartHistoryView:View {
         Section{Text("Every heart counts. Days follow Eastern time.").font(.subheadline).foregroundColor(Palette.muted)
             let total=universe.heartDays.values.reduce((me:0,her:0)){($0.me+($1["me"] ?? 0),$0.her+($1["asechka"] ?? 0))}
             Text("All time · Youssef \(total.me) ♡  ·  Asnat \(total.her) ♡").font(.subheadline)
-            Text("Together streak · \(HeartLedger.streak(universe.heartDays,who:"both")) days").foregroundColor(Palette.purple)
+            let shared=universe.sharedHeartStreak()
+            Text("Our shared streak · \(shared.days) days · \(shared.lives) \(shared.lives==1 ? "life":"lives")").foregroundColor(Palette.purple)
+            Text("One heart from either of us keeps our day. A missed day uses a life; without one, we start again. Unused lives stack.").font(.subheadline).foregroundColor(Palette.muted)
+            Text("Next life · \(shared.nextLifeOn) · one more every month on the 12th").font(.subheadline)
+            ForEach(shared.protectedDays,id:\.self){day in Text("\(day) · protected with a life ♡").font(.subheadline).foregroundColor(Palette.purple)}
         }
         Section("Our days of little hearts"){
             if universe.heartDays.isEmpty{Text("Your first heart starts our story here.").foregroundColor(Palette.muted)}

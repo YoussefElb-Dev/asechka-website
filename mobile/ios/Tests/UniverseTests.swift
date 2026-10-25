@@ -3,6 +3,22 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    func testSharedStreakAndStackingLivesMatchWebsiteFixtures()throws {
+        let url=try XCTUnwrap(Bundle(for:Self.self).url(forResource:"heart-streak-cases",withExtension:"json"))
+        let cases=try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:url)) as? [[String:Any]])
+        for c in cases {
+            var days=c["heartDays"] as? [String:[String:Int]] ?? [:]
+            var cursor=c["through"] as? String ?? ""
+            while !cursor.isEmpty && cursor>="2026-10-26" {days[cursor]=["me":1];cursor=HeartLedger.previous(cursor)}
+            let r=SharedHeartStreak.calculate(days,today:try XCTUnwrap(c["today"] as? String))
+            let name=c["name"] as? String ?? ""
+            XCTAssertEqual(r.days,c["days"] as? Int,name);XCTAssertEqual(r.lives,c["lives"] as? Int,name)
+            XCTAssertEqual(r.todayComplete,c["complete"] as? Bool,name)
+            XCTAssertEqual(r.protectedDays,c["protected"] as? [String] ?? [],name)
+            XCTAssertEqual(r.lastResetOn,c["reset"] as? String,name)
+        }
+    }
+
     func testDeferredHeartSavesKeepOrderWithOtherEdits()async throws {
         let folder=FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let vault=try Vault(directory:folder,key:SymmetricKey(size:.bits256))
