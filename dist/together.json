@@ -3,13 +3,22 @@
   "bucketList": [],
   "hearts": {
     "me": {
-      "id": "d2dbf307-e822-41e3-9d35-45f5d04ab882",
-      "sentAt": "2026-10-24T23:49:12.306Z"
+      "id": "dcb4f747-0f15-4833-8cc0-cc3fe761919e",
+      "sentAt": "2026-10-25T02:36:57.372Z"
     },
     "asechka": {
       "id": "c45f8a8f-c46b-408a-bc91-bdd65afbb59a",
       "sentAt": "2026-10-24T03:14:32.014Z"
     }
   },
-  "updatedAt": "2026-10-24T23:49:12.306Z"
+  "updatedAt": "2026-10-25T02:36:57.372Z",
+  "heartDays": {
+    "2026-10-24": {
+      "me": 63,
+      "asechka": 0
+    }
+  },
+  "heartOperations": {
+    "dcb4f747-0f15-4833-8cc0-cc3fe761919e": "me|63|2026-10-24"
+  }
 }
