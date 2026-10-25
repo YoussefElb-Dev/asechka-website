@@ -16,12 +16,18 @@ struct FeedView:View {
     @State private var heartHistory=false
     private var home:Bool{mode==0 && !savedOnly}
     var posts:[Post]{universe.memories.posts.filter{(mode==0 || (mode==1 ? $0.isPhoto:!$0.isPhoto)) && (!savedOnly || universe.bookmarks.contains($0.key))}}
+    private var quoteBackgrounds:[String:Int]{
+        var result:[String:Int]=[:],previous = -1
+        for post in posts where !post.isPhoto {let index=QuoteBackgrounds.next(post.id.isEmpty ? post.text ?? "":post.id,after:previous);result[post.key]=index;previous=index}
+        return result
+    }
     var body:some View {
         ScrollViewReader{proxy in
             ScrollView{LazyVStack(spacing:12){
                 header.id("top")
                 if mode==2 && !savedOnly {QuoteCarousel().padding(.horizontal,18)}
-                ForEach(posts){post in PostCard(post:post,comments:{comments=PostSelection(post:post)},open:{viewer=PostSelection(post:post)},edit:{edit=ComposeRequest(photo:post.isPhoto,post:post)},delete:{deletion=PostSelection(post:post)})}
+                let backgrounds=quoteBackgrounds
+                ForEach(posts){post in PostCard(post:post,backgroundIndex:backgrounds[post.key] ?? 0,comments:{comments=PostSelection(post:post)},open:{viewer=PostSelection(post:post)},edit:{edit=ComposeRequest(photo:post.isPhoto,post:post)},delete:{deletion=PostSelection(post:post)})}
                 Text(posts.isEmpty ? "Our next favorite moment starts with you. ♡":"All caught up. More little moments soon. ♡").font(.footnote).foregroundColor(Palette.muted).padding(30)
             }.padding(.bottom,12)}
             .refreshable{await universe.refresh()}
@@ -89,10 +95,37 @@ struct CachedPhoto:View {
         guard let source=CGImageSourceCreateWithData(data as CFData,nil),let image=CGImageSourceCreateThumbnailAtIndex(source,0,[kCGImageSourceCreateThumbnailFromImageAlways:true,kCGImageSourceThumbnailMaxPixelSize:1600,kCGImageSourceCreateThumbnailWithTransform:true] as CFDictionary)else{return nil};return UIImage(cgImage:image)
     }
 }
+enum QuoteBackgrounds {
+    static let count=10
+    static func next(_ key:String,after previous:Int)->Int {
+        var hash=0
+        for value in key.utf16 {hash=(hash*31+Int(value)) & 0x7fffffff}
+        let choice=hash % count
+        return choice == previous ? (choice+1+(hash/count) % (count-1)) % count:choice
+    }
+    static func source(_ index:Int)->String{String(format:"assets/quote-backgrounds/orbit-%02d.jpg",index+1)}
+}
+struct QuoteBackdrop:View {
+    @EnvironmentObject private var universe:UniverseStore
+    let index:Int
+    @State private var bitmap:UIImage?
+    var body:some View {
+        GeometryReader{geometry in
+            ZStack{Palette.blue;if let bitmap{Image(uiImage:bitmap).resizable().scaledToFill()}}
+                .frame(width:geometry.size.width,height:geometry.size.height).clipped()
+        }.task(id:index){
+            bitmap=nil
+            if let data=await universe.image(QuoteBackgrounds.source(index)){
+                bitmap=await Task.detached(priority:.userInitiated){CachedPhoto.thumbnail(data)}.value
+            }
+        }.accessibilityHidden(true)
+    }
+}
 struct PostCard:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.accessibilityReduceMotion) private var reduced
     var post:Post
+    var backgroundIndex=0
     var comments:()->Void
     var open:()->Void
     var edit:()->Void
@@ -104,14 +137,16 @@ struct PostCard:View {
         VStack(alignment:.leading,spacing:0){
             HStack(spacing:11){Avatar(actor:post.author ?? "us");VStack(alignment:.leading,spacing:3){Text(post.name).font(.system(size:14,weight:.semibold));Text((post.isPhoto ? "A moment":"A thought")+(post.date.isEmpty ? "":" · "+post.date)+(post.pending==true ? " · saved offline":"")).font(.system(size:11)).foregroundColor(Palette.muted)};Spacer()
                 Menu{Button("Edit post",systemImage:"pencil",action:edit);Button(universe.bookmarks.contains(post.key) ? "Remove from saved":"Save post",systemImage:"bookmark"){universe.bookmark(post)};Button("Delete post",systemImage:"trash",role:.destructive,action:delete)}label:{Image(systemName:"ellipsis").frame(width:44,height:44)}.accessibilityLabel("Post options")
-            }.padding(.leading,18).padding(.trailing,8).padding(.vertical,10)
+            }.padding(.leading,14).padding(.trailing,6).padding(.vertical,8)
             ZStack{
                 if post.isPhoto {CachedPhoto(source:post.imageURL).aspectRatio(0.86,contentMode:.fit)}
-                else {Text("“\(post.text ?? "")”").font(.custom("Manrope-Regular",size:(post.text?.count ?? 0)>300 ? 21:25)).lineSpacing(8).lineLimit(expanded ? nil:9).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:230,alignment:.top).padding(30).background(Palette.gradient)}
+                else {Text("“\(post.text ?? "")”").font(.custom("Manrope-Regular",size:(post.text?.count ?? 0)>300 ? 20:24)).lineSpacing(7).lineLimit(expanded ? nil:9).multilineTextAlignment(.center).padding(28).frame(maxWidth:.infinity,minHeight:230).background{QuoteBackdrop(index:backgroundIndex)}}
                 if burst {Image(systemName:"heart.fill").font(.system(size:84)).foregroundColor(.white).shadow(color:Palette.purple.opacity(0.3),radius:15).scaleEffect(burst ? 1:0.1).transition(.scale.combined(with:.opacity))}
-            }.contentShape(Rectangle()).accessibilityElement(children:.contain).accessibilityIdentifier("Post media")
+            }.clipShape(RoundedRectangle(cornerRadius:18)).padding(.horizontal,10).contentShape(Rectangle()).accessibilityElement(children:.contain).accessibilityIdentifier("Post media")
                 .onTapGesture(count:2){Touch.tap(true);universe.like(post,true);withAnimation(reduced ? nil:.spring(response:0.3,dampingFraction:0.6)){burst=true};Task{try? await Task.sleep(nanoseconds:850_000_000);withAnimation{burst=false}}}
                 .onTapGesture{open()}
+            HStack{Spacer();Text("♡  Kept close").font(.system(size:11,weight:.medium)).foregroundColor(Palette.purple).padding(.horizontal,12).padding(.vertical,5).background(Palette.lavender,in:Capsule());Spacer()}.padding(.vertical,7).accessibilityHidden(true)
+            Divider().overlay(Palette.lavender).padding(.horizontal,14)
             HStack(spacing:6){
                 Button{Touch.tap();withAnimation(.spring(response:0.3,dampingFraction:0.5)){universe.like(post,!liked)}}label:{Image(systemName:liked ? "heart.fill":"heart").foregroundColor(liked ? Palette.purple:Palette.ink).scaleEffect(liked ? 1.08:1).frame(width:44,height:48)}.accessibilityLabel(liked ? "Unlike post":"Like post")
                 Button(action:comments){Image(systemName:"bubble.right").frame(width:44,height:48)}.accessibilityLabel("Comments")
@@ -124,9 +159,12 @@ struct PostCard:View {
                 if !post.isPhoto && (post.text?.count ?? 0)>260 {Button(expanded ? "Keep it little":"Read the whole quote"){withAnimation{expanded.toggle()}}.font(.caption)}
                 Button(action:comments){Text(post.social?.comments.isEmpty==false ? "View all \(post.social?.comments.count ?? 0) comments":"Start our conversation").font(.system(size:13)).foregroundColor(Palette.muted)}
                 if let last=post.social?.comments.last {Text("\(Post.name(last.author))  ").fontWeight(.semibold)+Text(last.text).font(.system(size:13))}
-                Button(action:comments){HStack(spacing:9){Avatar(actor:universe.actor,size:25);Text("Leave a little love…").font(.system(size:12)).foregroundColor(Palette.muted);Spacer();Text("♡").foregroundColor(Palette.purple)}}.padding(.top,3)
+                Button(action:comments){HStack(spacing:9){Avatar(actor:universe.actor,size:25);Text("Leave a little love…").font(.system(size:12)).foregroundColor(Palette.muted);Spacer();Text("♡").foregroundColor(Palette.purple)}.padding(.horizontal,10).frame(minHeight:44).background(Palette.background,in:Capsule())}.padding(.top,3)
             }.padding(.horizontal,20).padding(.bottom,20)
-        }.background(.white)
+        }.background(.white,in:RoundedRectangle(cornerRadius:24))
+            .clipShape(RoundedRectangle(cornerRadius:24))
+            .overlay(RoundedRectangle(cornerRadius:24).stroke(LinearGradient(colors:[Palette.blue,Palette.lavender],startPoint:.topLeading,endPoint:.bottomTrailing),lineWidth:1))
+            .shadow(color:Palette.purple.opacity(0.05),radius:8,y:3).padding(.horizontal,14)
     }
     private var likeText:String {
         let a=post.social?.likes["asnat"]==true,y=post.social?.likes["youssef"]==true
@@ -138,20 +176,21 @@ struct QuoteCarousel:View {
     @Environment(\.accessibilityReduceMotion) private var reduced
     @AppStorage("motion-paused") private var motionPaused=false
     @State private var index=0
+    @State private var backgroundIndex=0
     @State private var paused=false
     var body:some View {
         VStack(alignment:.leading,spacing:18){Text("WORDS I WANT US TO KEEP").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
             if !universe.memories.quotes.isEmpty {
                 let quote=universe.memories.quotes[index % universe.memories.quotes.count]
-                Text("“\(quote.text ?? "")”").font(.custom("Manrope-Regular",size:22)).lineSpacing(6).frame(maxWidth:.infinity,minHeight:150).id(quote.id).transition(.opacity.combined(with:.move(edge:.trailing)))
+                Text("“\(quote.text ?? "")”").font(.custom("Manrope-Regular",size:22)).lineSpacing(6).multilineTextAlignment(.center).padding(22).frame(maxWidth:.infinity,minHeight:230).background{QuoteBackdrop(index:backgroundIndex)}.clipShape(RoundedRectangle(cornerRadius:18)).id(quote.id).transition(.opacity.combined(with:.move(edge:.trailing)))
                 HStack{Button{move(-1)}label:{Image(systemName:"arrow.left").frame(width:48,height:44)};Spacer();Button(paused ? "Resume":"Pause"){paused.toggle()}.font(.caption);Spacer();Button{move(1)}label:{Image(systemName:"arrow.right").frame(width:48,height:44)}}
                 Text("\(index % universe.memories.quotes.count+1) / \(universe.memories.quotes.count)").font(.caption).foregroundColor(Palette.muted)
             }
-        }.padding(22).background(Palette.gradient,in:RoundedRectangle(cornerRadius:24)).clipped()
+        }.padding(22).background(.white,in:RoundedRectangle(cornerRadius:24)).overlay(RoundedRectangle(cornerRadius:24).stroke(Palette.lavender,lineWidth:1)).clipShape(RoundedRectangle(cornerRadius:24))
         .gesture(DragGesture(minimumDistance:45).onEnded{move($0.translation.width<0 ? 1:-1)})
-        .task{while !Task.isCancelled{do{try await Task.sleep(nanoseconds:8_000_000_000)}catch{return};if !paused && !reduced && !motionPaused{move(1)}}}
+        .task{if let quote=universe.memories.quotes.first{backgroundIndex=QuoteBackgrounds.next(quote.id,after:-1)};while !Task.isCancelled{do{try await Task.sleep(nanoseconds:8_000_000_000)}catch{return};if !paused && !reduced && !motionPaused{move(1)}}}
     }
-    private func move(_ delta:Int){let count=universe.memories.quotes.count;guard count>0 else{return};withAnimation(reduced ? nil:.easeInOut(duration:0.45)){index=(index+delta+count)%count}}
+    private func move(_ delta:Int){let count=universe.memories.quotes.count;guard count>0 else{return};withAnimation(reduced ? nil:.easeInOut(duration:0.45)){index=(index+delta+count)%count;backgroundIndex=QuoteBackgrounds.next(universe.memories.quotes[index].id,after:backgroundIndex)}}
 }
 struct PhotoViewer:View {
     @EnvironmentObject private var universe:UniverseStore

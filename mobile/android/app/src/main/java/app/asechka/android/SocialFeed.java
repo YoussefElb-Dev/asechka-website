@@ -36,6 +36,7 @@ final class SocialFeed extends ListView {
     final JSONObject value;
     final String kind, id;
     final int index;
+    int backgroundIndex;
 
     Post(JSONObject value, String kind, int index) {
       this.value = value;
@@ -119,6 +120,8 @@ final class SocialFeed extends ListView {
           if (view.getTag() instanceof Holder) {
             Holder holder = (Holder) view.getTag();
             holder.photo.setImageDrawable(null);
+            holder.quoteBackdrop.setImageDrawable(null);
+            holder.backdropSource = "";
             holder.source = "";
           }
         });
@@ -174,6 +177,15 @@ final class SocialFeed extends ListView {
           if (time == 0) time = Integer.compare(b.index, a.index);
           return time;
         });
+    int previousBackground = -1;
+    for (Post post : posts) {
+      if (post.kind.equals("quote")) {
+        post.backgroundIndex =
+            QuoteBackgrounds.next(
+                post.id.isEmpty() ? post.value.optString("text") : post.id, previousBackground);
+        previousBackground = post.backgroundIndex;
+      }
+    }
     empty.setText(
         posts.isEmpty()
             ? onlySaved
@@ -236,22 +248,28 @@ final class SocialFeed extends ListView {
   private final class Holder {
     final LinearLayout root, post, header, captionBox;
     final TextView avatar, name, date, caption, likes, comments, preview, addComment, readMore;
-    final ImageView photo;
+    final ImageView photo, quoteBackdrop;
     final TextView quote;
     final Icon like, bookmark;
     String source = "";
+    String backdropSource = "";
     Post item;
     boolean expanded;
 
     Holder(boolean isPhoto) {
       root = u.column();
-      root.setPadding(0, 0, 0, u.dp(12));
+      root.setPadding(u.dp(14), u.dp(2), u.dp(14), u.dp(14));
       root.setTag(this);
       post = u.column();
-      post.setBackgroundColor(Color.WHITE);
+      GradientDrawable surface = u.shape(Color.WHITE, 24);
+      surface.setStroke(u.dp(1), 0xffdce4fb);
+      post.setBackground(surface);
+      post.setPadding(u.dp(1), u.dp(1), u.dp(1), u.dp(1));
+      post.setClipToOutline(true);
+      post.setElevation(u.dp(2));
       root.addView(post);
       header = u.row(10);
-      header.setPadding(u.dp(18), u.dp(13), u.dp(10), u.dp(12));
+      header.setPadding(u.dp(14), u.dp(8), u.dp(6), u.dp(8));
       avatar = avatar(getContext(), "us", 38);
       header.addView(avatar, new LinearLayout.LayoutParams(u.dp(38), u.dp(38)));
       LinearLayout byline = u.column();
@@ -270,20 +288,42 @@ final class SocialFeed extends ListView {
       photo.setScaleType(ImageView.ScaleType.FIT_CENTER);
       photo.setBackgroundColor(Ui.BLUE);
       photo.setAdjustViewBounds(false);
-      int width = getResources().getDisplayMetrics().widthPixels;
+      int width = getResources().getDisplayMetrics().widthPixels - u.dp(50);
       int height = Math.min(u.dp(480), Math.round(width * 1.1f));
       photo.setLayoutParams(new LinearLayout.LayoutParams(-1, height));
       quote = u.quote("", 25);
-      quote.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+      quote.setGravity(Gravity.CENTER);
       quote.setLineSpacing(u.dp(7), 1);
       quote.setPadding(u.dp(28), u.dp(34), u.dp(28), u.dp(34));
       quote.setMinHeight(u.dp(230));
-      GradientDrawable paper =
-          new GradientDrawable(
-              GradientDrawable.Orientation.TL_BR, new int[] {0xffeeeaf9, 0xffeef5ff});
-      quote.setBackground(paper);
-      if (isPhoto) post.addView(photo);
-      else post.addView(quote, new LinearLayout.LayoutParams(-1, -2));
+      quoteBackdrop = new ImageView(getContext());
+      quoteBackdrop.setScaleType(ImageView.ScaleType.CENTER_CROP);
+      quoteBackdrop.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+      FrameLayout mediaFrame = new FrameLayout(getContext());
+      mediaFrame.setBackground(u.shape(Ui.BLUE, 18));
+      mediaFrame.setClipToOutline(true);
+      if (isPhoto) mediaFrame.addView(photo, new FrameLayout.LayoutParams(-1, height));
+      else {
+        mediaFrame.addView(quoteBackdrop, new FrameLayout.LayoutParams(-1, -1));
+        mediaFrame.addView(quote, new FrameLayout.LayoutParams(-1, -2));
+      }
+      LinearLayout.LayoutParams mediaParams = new LinearLayout.LayoutParams(-1, -2);
+      mediaParams.setMargins(u.dp(10), 0, u.dp(10), 0);
+      post.addView(mediaFrame, mediaParams);
+      LinearLayout keepsake = u.row(0);
+      keepsake.setGravity(Gravity.CENTER);
+      keepsake.setPadding(0, u.dp(7), 0, u.dp(7));
+      TextView badge = u.text("♡  Kept close", 11, Ui.PURPLE);
+      badge.setPadding(u.dp(12), u.dp(4), u.dp(12), u.dp(4));
+      badge.setBackground(u.shape(Ui.PALE, 18));
+      keepsake.addView(badge);
+      keepsake.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      post.addView(keepsake);
+      View rule = new View(getContext());
+      rule.setBackgroundColor(0xffececf7);
+      LinearLayout.LayoutParams ruleParams = new LinearLayout.LayoutParams(-1, u.dp(1));
+      ruleParams.setMargins(u.dp(14), 0, u.dp(14), 0);
+      post.addView(rule, ruleParams);
       GestureDetector taps =
           new GestureDetector(
               getContext(),
@@ -378,6 +418,8 @@ final class SocialFeed extends ListView {
       preview.setOnClickListener(v -> host.comments(item));
       u.add(captionBox, preview, 1);
       LinearLayout input = u.row(8);
+      input.setPadding(u.dp(10), 0, u.dp(10), 0);
+      input.setBackground(u.shape(Ui.BG, 22));
       TextView self = avatar(getContext(), host.actor(), 25);
       input.addView(self, new LinearLayout.LayoutParams(u.dp(25), u.dp(25)));
       addComment = u.text("Leave a little love…", 13, Ui.MUTED);
@@ -414,7 +456,14 @@ final class SocialFeed extends ListView {
         photo.setContentDescription(
             next.value.optString("alt", next.value.optString("caption", "A picture of us"))
                 + ". Tap to explore. Double tap to like.");
-      } else showQuote();
+      } else {
+        String background = QuoteBackgrounds.source(next.backgroundIndex);
+        if (!background.equals(backdropSource)) {
+          backdropSource = background;
+          host.feedImages().load(background, quoteBackdrop);
+        }
+        showQuote();
+      }
       like.on = next.liked(host.actor());
       like.invalidate();
       like.setContentDescription(like.on ? "Unlike post" : "Like post");
@@ -452,7 +501,7 @@ final class SocialFeed extends ListView {
     void showQuote() {
       if (item == null) return;
       quote.setText("“" + item.value.optString("text") + "”");
-      quote.setTextSize(item.value.optString("text").length() > 300 ? 21 : 25);
+      quote.setTextSize(item.value.optString("text").length() > 300 ? 20 : 24);
       quote.setMaxLines(expanded ? Integer.MAX_VALUE : 9);
       quote.setEllipsize(expanded ? null : android.text.TextUtils.TruncateAt.END);
       readMore.setText(expanded ? "Keep it little" : "Read the whole quote");

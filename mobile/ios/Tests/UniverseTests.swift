@@ -54,6 +54,18 @@ final class UniverseTests:XCTestCase {
         XCTAssertEqual(BookDates.dayString(BookDates.next(began,yearly:true,now:now)),"2027-10-16")
     }
     func testBundledPhotosDecodeWithoutInternet()throws {
+        var previous = -1
+        var used=Set<Int>()
+        for index in 0..<2000 {
+            let next=QuoteBackgrounds.next(index % 2 == 0 ? "Repeated quote ♡":"Quote \(index) 😀",after:previous)
+            XCTAssertNotEqual(next,previous);XCTAssertTrue((0..<10).contains(next));used.insert(next);previous=next
+        }
+        XCTAssertEqual(used.count,10)
+        for index in 0..<10 {
+            let src=QuoteBackgrounds.source(index)
+            let url=try XCTUnwrap(Bundle.main.url(forResource:String(src.dropFirst(7)),withExtension:nil,subdirectory:"default"),src)
+            XCTAssertNotNil(CachedPhoto.thumbnail(try Data(contentsOf:url)),src)
+        }
         let file=try XCTUnwrap(Bundle.main.url(forResource:"memories",withExtension:"json",subdirectory:"default"))
         let memories=try JSONDecoder().decode(Memories.self,from:Data(contentsOf:file))
         XCTAssertFalse(memories.photos.isEmpty)

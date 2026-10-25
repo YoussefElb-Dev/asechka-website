@@ -1,0 +1,26 @@
+/* Soft Orbit: one post frame for pictures and words. Artwork stays behind live text. */
+.orbit-post,.collection-page .quote-item.orbit-post{padding:0;border:1px solid #dce4fb;border-radius:24px;background:#fff;box-shadow:0 4px 18px #6b5cb50a;overflow:hidden;color:#263451;min-width:0;display:flex;flex-direction:column;text-align:left}
+.orbit-header{display:flex;align-items:center;gap:11px;padding:14px;min-height:66px}
+.orbit-avatar{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:50%;background:linear-gradient(140deg,#eaf1fc,#eeebf8);font:600 15px 'DM Sans',sans-serif;color:#6b5cb5}
+.orbit-byline{display:grid;gap:3px;min-width:0}.orbit-byline strong{font:600 14px 'DM Sans',sans-serif}.orbit-byline>span{font-size:11px;color:#74829c}
+.orbit-post blockquote.orbit-quote-media{display:grid;place-items:center;min-height:230px;padding:28px;margin:0 10px;background-color:#eaf1fc;background-size:cover;background-position:center;border-radius:18px}
+.orbit-post blockquote.orbit-quote-media>p{font:400 24px/1.6 'Manrope','DM Sans',sans-serif;color:#263451;text-align:center;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.orbit-post blockquote.orbit-quote-media>p::before{content:'“'}.orbit-post blockquote.orbit-quote-media>p::after{content:'”'}
+.orbit-photo-open{display:block;padding:0;margin:0 10px;border:0;border-radius:18px;overflow:hidden;background:#eaf1fc;color:#263451;cursor:zoom-in}
+.orbit-photo-open .photo-image-wrap{aspect-ratio:.86;border-radius:0;background:#eaf1fc}.orbit-photo-open .photo-image-wrap img{object-fit:contain;transition:transform .5s ease}
+.orbit-photo-open:hover img{transform:scale(1.015)}
+.orbit-badge{display:flex;align-items:center;justify-content:center;min-height:42px;margin-inline:14px;border-bottom:1px solid #eeebf8}.orbit-badge>span{background:#eeebf8;color:#6b5cb5;border-radius:30px;font-size:11px;padding:5px 12px}
+.orbit-actions{display:flex;gap:6px;padding:0 10px;align-items:center}.orbit-actions .orbit-action:last-child{margin-left:auto}
+.orbit-action{width:44px;height:48px;display:grid;place-items:center;border:0;border-radius:16px;background:transparent;color:#263451;transition:transform .18s ease,background .18s ease,color .18s ease;cursor:pointer}
+.orbit-action svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.orbit-action.is-active{color:#6b5cb5}.orbit-action.is-active svg{fill:#eeebf8}.orbit-action:hover{background:#f4f3fb}.orbit-action:active{transform:scale(.9)}.orbit-action:disabled{opacity:.5;cursor:wait}
+.orbit-likes,.orbit-caption,.orbit-status{font-size:13px;line-height:1.65;margin:0 18px 10px;overflow-wrap:anywhere;white-space:pre-wrap}.orbit-likes{font-weight:600;font-size:12px}.orbit-caption{font-size:14px}.orbit-status{color:#6b5cb5}.orbit-status:empty{display:none}
+.orbit-conversation{border:0;background:#f7f9ff;border-radius:24px;color:#74829c;min-height:44px;text-align:left;padding:10px 14px;font-size:12px;margin:3px 18px 16px;cursor:pointer;transition:background .2s ease,transform .2s ease}.orbit-conversation:hover{background:#eeebf8}.orbit-conversation:active{transform:scale(.98)}
+.orbit-post .memory-card-actions,.collection-page .quote-item.orbit-post .memory-card-actions{margin:0;padding:0 18px 14px;justify-content:flex-end}
+.orbit-post .memory-card-actions button{border-radius:20px;min-height:44px;padding-inline:14px}
+.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;padding:0}.photo-entry.orbit-post .photo-print{transform:none}
+.quote-viewport{border-radius:24px}.quote-list>.orbit-post{align-self:stretch}.collection-page .quote-list{grid-auto-rows:auto;align-items:start}
+.orbit-dialog{width:min(480px,calc(100vw - 28px));max-height:85dvh;overflow:auto;border:1px solid #dce4fb;border-radius:28px;background:#fff;padding:24px;color:#263451;box-shadow:0 16px 60px #26345125}.orbit-dialog::backdrop{background:#26345166;backdrop-filter:blur(6px)}
+.orbit-dialog h2{font:600 22px 'Manrope',sans-serif;margin:0 0 20px}.orbit-person{border:1px solid #dce4fb;border-radius:24px;min-height:44px;padding:10px 18px;background:#eeebf8;color:#6b5cb5;margin:4px;cursor:pointer}.orbit-comments p{font-size:14px;line-height:1.65;padding:12px;background:#f7f9ff;border-radius:18px;white-space:pre-wrap;overflow-wrap:anywhere}.orbit-comment-form textarea{width:100%;min-height:90px;resize:vertical;background:#f7f9ff;border:1px solid #dce4fb;border-radius:18px;padding:14px;color:#263451;font:inherit}.orbit-comment-form .orbit-status{margin:10px 0}
+.orbit-action:focus-visible,.orbit-photo-open:focus-visible,.orbit-person:focus-visible,.orbit-conversation:focus-visible{outline:2px solid #6b5cb5;outline-offset:-3px}
+@media(max-width:600px){.photo-grid{grid-template-columns:1fr;gap:16px;padding:0}.orbit-post blockquote.orbit-quote-media>p{font-size:22px}.orbit-post blockquote.orbit-quote-media{padding:26px;min-height:230px}.quote-list>.orbit-post{width:calc(100vw - 64px);min-width:0;max-width:480px}.collection-page .quote-list>.orbit-post{width:100%;max-width:none}}
+@media(prefers-reduced-motion:reduce){.orbit-post *{transition:none!important}.orbit-photo-open:hover img{transform:none}.orbit-action:active,.orbit-conversation:active{transform:none}}

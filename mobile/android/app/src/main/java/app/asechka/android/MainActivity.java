@@ -76,6 +76,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private volatile boolean prefetching;
   private String connectionMessage = "Opening our little universe…";
   private TextView quoteText, quoteCounter, timer;
+  private ImageView quoteArtwork;
+  private int quoteArtworkIndex = -1;
   private Button quotePauseButton;
   private final String[] labels = {"Home", "Photos", "Music", "Our days", "Words", "Quotes"};
   private final String[] languageIds = {"ar-EG", "ru", "he", "fr", "es"};
@@ -1732,12 +1734,22 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private void quoteCarousel(LinearLayout parent) {
     JSONArray quotes = array(memories, "quotes");
     if (quotes.length() == 0) return;
-    LinearLayout q = u.card(parent, Ui.PALE);
+    LinearLayout q = u.card(parent, Color.WHITE);
+    quoteArtworkIndex = -1;
     u.add(q, u.label("WORDS I WANT US TO KEEP"), 0);
     quoteText = u.quote("", 22);
-    quoteText.setMinHeight(u.dp(150));
-    quoteText.setGravity(Gravity.CENTER_VERTICAL);
-    u.add(q, quoteText, 14);
+    quoteText.setMinHeight(u.dp(230));
+    quoteText.setPadding(u.dp(22), u.dp(24), u.dp(22), u.dp(24));
+    quoteText.setGravity(Gravity.CENTER);
+    FrameLayout words = new FrameLayout(this);
+    words.setBackground(u.shape(Ui.BLUE, 18));
+    words.setClipToOutline(true);
+    quoteArtwork = new ImageView(this);
+    quoteArtwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    quoteArtwork.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+    words.addView(quoteArtwork, new FrameLayout.LayoutParams(-1, -1));
+    words.addView(quoteText, new FrameLayout.LayoutParams(-1, -2));
+    u.add(q, words, 14);
     quoteCounter = u.text("", 12, Ui.MUTED);
     u.add(q, quoteCounter, 14);
     LinearLayout controls = u.row();
@@ -1797,6 +1809,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     quoteDue = android.os.SystemClock.uptimeMillis() + 8000;
     quoteIndex = Compat.wrap(quoteIndex + delta, quotes.length());
     JSONObject q = at(quotes, quoteIndex);
+    if (quoteArtwork != null) {
+      quoteArtworkIndex =
+          QuoteBackgrounds.next(
+              q.optString("id", q.optString("text")), delta == 0 ? -1 : quoteArtworkIndex);
+      images.load(QuoteBackgrounds.source(quoteArtworkIndex), quoteArtwork);
+    }
     quoteText.setContentDescription(
         "Quote "
             + (quoteIndex + 1)

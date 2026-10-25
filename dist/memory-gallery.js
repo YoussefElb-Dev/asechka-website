@@ -1,23 +1,22 @@
 import { createQuoteCarousel } from './quote-carousel.js';
 import { createMemoryEditor, memoryPhotoURL } from './collection-editor.js';
+import { quoteBackgroundSequence, quoteBackgroundSource } from './quote-backgrounds.js';
+import { postHeader, postFooter } from './soft-orbit.js';
 
 const quoteList = document.getElementById('quote-list');
 const quoteCarousel = document.getElementById('quote-carousel') ? createQuoteCarousel() : null;
 const collectionStatus = document.getElementById('collection-status');
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+let socialWritable = false;
+function savedConversation(content) {
+  localRevision++;
+  renderContent(content); lastContent = JSON.stringify(content);
+}
 function formatDate(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return '';
   const date = new Date(`${value}T12:00:00Z`);
   if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) return '';
   return dateFormatter.format(date);
-}
-function addDate(parent, value) {
-  const formatted = formatDate(value);
-  if (!formatted) return;
-  const time = document.createElement('time');
-  time.dateTime = value;
-  time.textContent = formatted;
-  parent.append(time);
 }
 
 function renderQuotes(quotes) {
@@ -26,28 +25,20 @@ const savedQuotes = (Array.isArray(quotes) ? quotes : [])
   .map(quote => typeof quote === 'string' ? { text: quote } : quote)
   .filter(quote => quote && typeof quote.text === 'string' && quote.text.trim());
 const quoteFragment = document.createDocumentFragment();
-savedQuotes.slice().reverse().forEach((quote, index) => {
+const orderedQuotes = savedQuotes.slice().reverse();
+const backgrounds = quoteBackgroundSequence(orderedQuotes.map(quote => quote.id || quote.text), !!quoteCarousel);
+orderedQuotes.forEach((quote, index) => {
   const item = document.createElement('li');
-  item.className = index % 2 ? 'quote-item quote-lavender' : 'quote-item';
-  const number = document.createElement('span');
-  number.className = 'quote-index';
-  number.setAttribute('aria-hidden', 'true');
-  number.textContent = String(savedQuotes.length - index).padStart(2, '0');
+  item.className = 'quote-item orbit-post';
   const block = document.createElement('blockquote');
+  block.className = 'orbit-quote-media';
+  const background = backgrounds[index];
+  item.dataset.quoteBackground = String(background);
+  block.style.backgroundImage = `url('${quoteBackgroundSource(background)}')`;
   const text = document.createElement('p');
   text.textContent = quote.text;
   block.append(text);
-  const meta = document.createElement('div');
-  meta.className = 'quote-meta';
-  addDate(meta, quote.date);
-  if (typeof quote.note === 'string' && quote.note.trim()) {
-    const note = document.createElement('span');
-    note.className = 'quote-note';
-    note.textContent = quote.note;
-    meta.append(note);
-  }
-  if (meta.childElementCount) block.append(meta);
-  item.append(number, block);
+  item.append(postHeader(quote, 'quote', formatDate(quote.date)), block, postFooter(quote, 'quote', { writable: socialWritable, onSaved: savedConversation }));
   const actions = editor.cardActions('Quote', quote);
   if (actions) item.append(actions);
   quoteFragment.append(item);
@@ -113,13 +104,10 @@ const previewLimit = Number(photoGrid.dataset.previewLimit) || savedPhotos.lengt
 const visiblePhotos = savedPhotos.slice(0, previewLimit);
 visiblePhotos.forEach((photo, index) => {
   const button = document.createElement('button');
-  button.className = 'photo-print';
+  button.className = 'orbit-photo-open';
   button.type = 'button';
   button.dataset.photoSrc = photo.src;
   button.setAttribute('aria-label', `Open photo: ${photoCaption(photo)}${formatDate(photo.date) ? `, ${formatDate(photo.date)}` : ''}`);
-  const tape = document.createElement('span');
-  tape.className = 'tape';
-  tape.setAttribute('aria-hidden', 'true');
   const imageWrap = document.createElement('span');
   imageWrap.className = 'photo-image-wrap';
   const image = document.createElement('img');
@@ -133,11 +121,7 @@ visiblePhotos.forEach((photo, index) => {
   error.hidden = true;
   image.addEventListener('error', () => { image.hidden = true; error.hidden = false; });
   imageWrap.append(image, error);
-  const caption = document.createElement('span');
-  caption.className = 'photo-caption';
-  caption.textContent = photoCaption(photo);
-  button.append(tape, imageWrap, caption);
-  addDate(button, photo.date);
+  button.append(imageWrap);
   button.addEventListener('click', () => {
     photoOpener = button;
     showPhoto(index);
@@ -145,10 +129,10 @@ visiblePhotos.forEach((photo, index) => {
     document.body.classList.add('dialog-open');
   });
   const actions = editor.cardActions('Photo', photo);
-  if (actions) {
-    const entry = document.createElement('div'); entry.className = 'photo-entry';
-    entry.append(button, actions); photoFragment.append(entry);
-  } else photoFragment.append(button);
+  const entry = document.createElement('article'); entry.className = 'photo-entry orbit-post';
+  entry.append(postHeader(photo, 'photo', formatDate(photo.date)), button, postFooter(photo, 'photo', { writable: socialWritable, onSaved: savedConversation }));
+  if (actions) entry.append(actions);
+  photoFragment.append(entry);
 });
 photoGrid.replaceChildren(photoFragment);
 if (focusedSrc) [...photoGrid.querySelectorAll('[data-photo-src]')].find(button => button.dataset.photoSrc === focusedSrc)?.focus({ preventScroll: true });
@@ -187,6 +171,7 @@ function renderContent(content) {
   const focusedEdit = document.activeElement?.dataset.memoryEdit;
   const focusedRemove = document.activeElement?.dataset.memoryRemove;
   editor.update(content);
+  socialWritable = content.writable === true;
   renderQuotes(content.quotes);
   renderPhotos(content.photos);
   if (focusedEdit) [...document.querySelectorAll('[data-memory-edit]')].find(button => button.dataset.memoryEdit === focusedEdit)?.focus({ preventScroll: true });

@@ -1443,6 +1443,29 @@ public final class NativeTests extends Instrumentation {
 
   private void socialTests() throws Exception {
     prepareMotionFixture();
+    boolean backgroundsReady = true;
+    for (int i = 0; i < 10; i++) {
+      byte[] bytes = api.image(QuoteBackgrounds.source(i));
+      Bitmap artwork = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+      backgroundsReady &= artwork != null && artwork.getWidth() == 768;
+      if (artwork != null) artwork.recycle();
+    }
+    check(
+        backgroundsReady, "All ten local quote backgrounds decode without network image requests");
+    boolean noRepeats = true;
+    Set<Integer> usedBackgrounds = new HashSet<>();
+    int previousBackground = -1;
+    for (int i = 0; i < 2000; i++) {
+      int next =
+          QuoteBackgrounds.next(
+              i % 2 == 0 ? "Repeated quote ♡" : "Quote " + i + " 😀", previousBackground);
+      noRepeats &= next != previousBackground && next >= 0 && next < 10;
+      usedBackgrounds.add(next);
+      previousBackground = next;
+    }
+    check(
+        noRepeats && usedBackgrounds.size() == 10,
+        "Quote artwork varies without adjacent repeats, including colliding and Unicode IDs");
     byte[] photoBytes = new byte[200000];
     new Random(23).nextBytes(photoBytes);
     api.store.bytes("image:qa-roundtrip", photoBytes);

@@ -54,7 +54,10 @@ final class Images {
     }
     if (!(target.getDrawable() instanceof BitmapDrawable)
         && !(target.getDrawable() instanceof TransitionDrawable))
-      target.setImageDrawable(new Placeholder("Opening this little moment…"));
+      target.setImageDrawable(
+          url.startsWith("assets/quote-backgrounds/")
+              ? new android.graphics.drawable.ColorDrawable(Ui.BLUE)
+              : new Placeholder("Opening this little moment…"));
     List<WeakReference<ImageView>> listeners = waiting.get(key);
     if (listeners != null) {
       listeners.add(new WeakReference<>(target));
