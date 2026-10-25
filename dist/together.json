@@ -7,11 +7,11 @@
       "sentAt": "2026-10-25T17:33:22.585Z"
     },
     "asechka": {
-      "id": "87aaafbf-e0da-40b7-affa-6daf1c80f50c",
-      "sentAt": "2026-10-25T17:33:40.457Z"
+      "id": "09e934ef-4eba-4822-8cbd-0c7f2fa2c052",
+      "sentAt": "2026-10-25T17:34:46.726Z"
     }
   },
-  "updatedAt": "2026-10-25T17:33:40.457Z",
+  "updatedAt": "2026-10-25T17:34:46.726Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -19,7 +19,7 @@
     },
     "2026-10-25": {
       "me": 295,
-      "asechka": 296
+      "asechka": 333
     }
   },
   "heartOperations": {
@@ -54,6 +54,7 @@
     "c9777ea2-6805-4753-97dd-8aca8ca20041": "asechka|6|2026-10-25",
     "ba46cfa2-8ab8-4a25-9182-83e408d36b8c": "asechka|1|2026-10-25",
     "625c7f4e-78b3-472a-a111-075362b506bc": "me|2|2026-10-25",
-    "87aaafbf-e0da-40b7-affa-6daf1c80f50c": "asechka|2|2026-10-25"
+    "87aaafbf-e0da-40b7-affa-6daf1c80f50c": "asechka|2|2026-10-25",
+    "09e934ef-4eba-4822-8cbd-0c7f2fa2c052": "asechka|37|2026-10-25"
   }
 }
