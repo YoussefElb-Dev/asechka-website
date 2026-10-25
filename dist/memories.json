@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T17:34:24.604Z",
+  "updatedAt": "2026-10-25T17:34:26.571Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -129,13 +129,18 @@
       "note": "I do mean it every time ❤️",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "5da0a2d5-9489-4d2b-9fd7-336233650108",
             "hash": "d7ea83d35f861fb248fc2fabb747dca7a8069d72b26e230d65a6e4be1da3b79c"
+          },
+          {
+            "id": "5446be16-9319-4a72-9b4a-23208d61fdbc",
+            "hash": "b5f74dc19e49aae93fe12ed98d370b42a56d70cc93beac7d0b341bb572c51499"
           }
         ]
       }
