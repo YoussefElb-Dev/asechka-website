@@ -45,7 +45,13 @@ final class NativeJourneyTests:XCTestCase {
     func testHomeShortcutsHeartsAndHiddenHistory() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         let send=app.buttons["Send a heart to Youssef"].firstMatch
-        XCTAssertTrue(send.waitForExistence(timeout:15));reveal(send,in:app)
+        XCTAssertTrue(send.waitForExistence(timeout:15))
+        let media=app.otherElements["Post media"].firstMatch
+        XCTAssertTrue(media.waitForExistence(timeout:5))
+        let visibleBottom=app.buttons["Home"].firstMatch.frame.minY
+        XCTAssertGreaterThan(min(media.frame.maxY,visibleBottom)-max(media.frame.minY,app.scrollViews.firstMatch.frame.minY),60,"The first post is visible immediately on Home")
+        capture("00-iPhone-home-first-glance")
+        reveal(send,in:app)
         for _ in 0..<15{send.tap()}
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format:"label CONTAINS %@","Today · you 15")).firstMatch.waitForExistence(timeout:5))
         capture("12-iPhone-home-hearts")

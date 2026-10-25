@@ -733,15 +733,17 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private View feedHeader() {
+    boolean home = screen == 0 && !savedPosts;
     LinearLayout header = u.column();
     header.setPadding(0, u.dp(8), 0, u.dp(12));
     HorizontalScrollView stories = new HorizontalScrollView(this);
     stories.setHorizontalScrollBarEnabled(false);
     LinearLayout row = u.row(14);
-    row.setPadding(u.dp(20), u.dp(4), u.dp(20), u.dp(14));
+    row.setPadding(u.dp(16), u.dp(2), u.dp(16), u.dp(home ? 8 : 14));
     String[] titles = {"Create", "Our corner", "Our days", "Music", "Saved"};
     String[] symbols = {"＋", "♡", "✦", "♫", "☆"};
     for (int i = 0; i < titles.length; i++) {
+      if (home && (i == 2 || i == 3)) continue;
       final int action = i;
       LinearLayout story = u.column();
       story.setGravity(Gravity.CENTER);
@@ -755,10 +757,17 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           .setCornerRadius(u.dp(100));
       ((android.graphics.drawable.GradientDrawable) circle.getBackground())
           .setStroke(u.dp(2), 0xffd1c5ec);
-      story.addView(circle, new LinearLayout.LayoutParams(u.dp(62), u.dp(62)));
+      if (!home) story.addView(circle, new LinearLayout.LayoutParams(u.dp(62), u.dp(62)));
       TextView label = u.text(titles[i], 11, Ui.INK);
       label.setGravity(Gravity.CENTER);
-      u.add(story, label, 7);
+      if (home) {
+        label.setText(symbols[i] + "  " + titles[i]);
+        label.setTextSize(13);
+        label.setMinHeight(u.dp(44));
+        label.setPadding(u.dp(16), 0, u.dp(16), 0);
+        label.setBackground(u.shape(Ui.PALE, 18));
+      }
+      u.add(story, label, home ? 0 : 7);
       story.setContentDescription(titles[i]);
       story.setOnClickListener(
           v -> {
@@ -775,7 +784,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               render(false);
             }
           });
-      row.addView(story, new LinearLayout.LayoutParams(u.dp(72), -2));
+      row.addView(story, new LinearLayout.LayoutParams(home ? -2 : u.dp(72), -2));
     }
     stories.addView(row);
     header.addView(stories);
@@ -810,7 +819,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         new SocialFeed.Icon(this, "plus"), new LinearLayout.LayoutParams(u.dp(34), u.dp(34)));
     compose.setOnClickListener(v -> choosePost());
     u.add(intro, compose, 17);
-    header.addView(intro);
+    if (!home) header.addView(intro);
     if (screen == 5 && !savedPosts) {
       LinearLayout carousel = u.column();
       carousel.setPadding(u.dp(18), 0, u.dp(18), u.dp(14));

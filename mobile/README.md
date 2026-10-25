@@ -1,6 +1,14 @@
-# Asechka native apps — 2.1.1
+# Asechka native apps — 2.2.0
 
 Two native applications share the existing private website services: Android Views (Android 6+) and SwiftUI (iOS 16+, iPhone/iPad). Neither app contains a WebView. Home is a scrolling social feed; Photos and Quotes have their own feeds. Music, Our days, Words, the letter, personal corner, birthdays, and profile choices remain available.
+
+## Home and little hearts
+
+Version 2.2 puts Send a heart directly on Home, alongside a live time-together counter and shortcuts to Secret vocab, Open when letters, Tiny victories, Recipes for two, Little things, and Our beginning. Android settings, creation choices, and post actions use rounded, animated native sheets.
+
+Tap the heart as often as you like. Every tap saves on the phone before syncing; rapid taps share a batch, while an attempted batch keeps its original identity so retries cannot add the same hearts twice. Floating hearts rise while tapping, with bounded animation work and support for reduced motion. Offline hearts keep the day they were sent and sync after reconnecting.
+
+Long-press the streak on Home to open the small heart-history page. It shows both people's totals for each day and a together streak for days when both sent at least one heart. The Home streak follows the selected profile. Days follow Eastern time; yesterday's streak stays active until today's opportunity ends. Counting begins with this update because earlier versions did not record daily totals. This feature uses the existing private backend and needs no new service account.
 
 ## Get the builds
 

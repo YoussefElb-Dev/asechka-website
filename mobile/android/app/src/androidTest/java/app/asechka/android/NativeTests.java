@@ -1115,7 +1115,7 @@ public final class NativeTests extends Instrumentation {
           "Little things",
           "Our beginning"
         }) check(text(title) != null, "Home shortcut: " + title);
-    View send = text("♡  Send a heart to Youssef");
+    View send = text("♡  Send a heart");
     check(send != null, "Heart sender is on Home");
     ui(
         () -> {
@@ -1193,8 +1193,16 @@ public final class NativeTests extends Instrumentation {
       ui(() -> book.window.dismiss());
     }
     ui(home::update);
-    ui(() -> ((ListView) get("feed")).setSelection(0));
+    ListView homeFeed = (ListView) get("feed");
+    ui(() -> homeFeed.setSelection(0));
     Thread.sleep(350);
+    View firstPost = homeFeed.getChildAt(1);
+    android.graphics.Rect visiblePost = new android.graphics.Rect();
+    check(
+        firstPost != null
+            && firstPost.getGlobalVisibleRect(visiblePost)
+            && visiblePost.height() >= activity.getResources().getDisplayMetrics().density * 100,
+        "The first post and some media are visible without scrolling Home");
     screenshot("home-hub-hearts");
     Ui.Sheet[] history = {null};
     ui(() -> history[0] = home.history());

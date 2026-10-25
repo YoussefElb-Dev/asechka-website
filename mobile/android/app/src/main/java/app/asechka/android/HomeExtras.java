@@ -59,7 +59,7 @@ final class HomeExtras {
 
   LinearLayout view() {
     root = u.column();
-    root.setPadding(u.dp(20), 0, u.dp(20), u.dp(8));
+    root.setPadding(u.dp(16), 0, u.dp(16), 0);
     root.addOnAttachStateChangeListener(
         new View.OnAttachStateChangeListener() {
           public void onViewAttachedToWindow(View v) {
@@ -72,38 +72,42 @@ final class HomeExtras {
           }
         });
     LinearLayout heart = u.card(root, Ui.PALE);
-    heart.setPadding(u.dp(18), u.dp(16), u.dp(18), u.dp(16));
+    ((LinearLayout.LayoutParams) heart.getLayoutParams()).topMargin = 0;
+    heart.setPadding(u.dp(12), u.dp(8), u.dp(12), u.dp(8));
     LinearLayout title = u.row();
-    title.addView(u.title("A little love, anytime.", 19), new LinearLayout.LayoutParams(0, -2, 1));
+    LinearLayout summary = u.column();
+    summary.setMinimumHeight(u.dp(48));
+    summary.setGravity(Gravity.CENTER_VERTICAL);
+    counts = u.text("", 12, Ui.MUTED);
+    summary.addView(counts);
     streak = u.text("", 12, Ui.PURPLE);
-    streak.setPadding(u.dp(9), u.dp(9), u.dp(9), u.dp(9));
-    streak.setBackground(u.shape(Color.WHITE, 18));
+    summary.addView(streak);
     streak.setContentDescription("Heart streak. Long press for our heart history.");
-    streak.setOnLongClickListener(
+    summary.setOnLongClickListener(
         v -> {
           history();
           return true;
         });
-    title.addView(streak);
-    heart.addView(title);
-    counts = u.text("", 12, Ui.MUTED);
-    u.add(heart, counts, 8);
-    Button send = u.button("♡  Send a heart to " + partner(), true, null);
-    send.setTextSize(17);
+    title.addView(summary, new LinearLayout.LayoutParams(0, -2, 1));
+    Button send = u.button("♡  Send a heart", true, null);
+    send.setTextSize(15);
     send.setContentDescription("Send a heart to " + partner());
     send.setOnClickListener(v -> send(v));
-    u.add(heart, send, 12);
+    title.addView(send, new LinearLayout.LayoutParams(-2, -2));
+    heart.addView(title);
     LinearLayout clock = u.card(root, Ui.BLUE);
-    clock.setPadding(u.dp(18), u.dp(16), u.dp(18), u.dp(16));
-    clock.addView(u.label("OUR TIME TOGETHER  ↗"));
-    elapsed = u.title("", 24);
+    ((LinearLayout.LayoutParams) clock.getLayoutParams()).topMargin = u.dp(7);
+    clock.setPadding(u.dp(12), u.dp(9), u.dp(12), u.dp(9));
+    LinearLayout timeRow = u.row(8);
+    timeRow.addView(u.text("Together  ♡", 12, Ui.PURPLE));
+    elapsed = u.title("", 18);
     elapsed.setFontFeatureSettings("tnum");
-    u.add(clock, elapsed, 7);
-    sinceLabel = u.text("", 12, Ui.MUTED);
-    u.add(clock, sinceLabel, 5);
+    timeRow.addView(elapsed, new LinearLayout.LayoutParams(0, -2, 1));
+    clock.addView(timeRow);
+    sinceLabel = u.text("", 10, Ui.MUTED);
+    u.add(clock, sinceLabel, 3);
     clock.setContentDescription("Our time together. Open Since us.");
     clock.setOnClickListener(v -> open.open(0));
-    u.add(root, u.label("OUR LITTLE SHORTCUTS"), 20);
     String[] names = {
       "Secret vocab",
       "Open when…",
@@ -112,40 +116,32 @@ final class HomeExtras {
       "Little things",
       "Our beginning"
     };
-    String[] notes = {
-      "Our inside-joke dictionary",
-      "A letter for every feeling",
-      "Celebrate the small wins",
-      "What shall we cook?",
-      "Things we love about us",
-      "Since that little yes"
-    };
     String[] symbols = {"Aa", "✉", "✦", "♧", "♡", "∞"};
     int[] destinations = {3, 1, 4, 5, 2, 0};
-    boolean stacked =
-        activity.getResources().getConfiguration().screenWidthDp < 340
-            || activity.getResources().getConfiguration().fontScale > 1.3f;
+    int columns = activity.getResources().getConfiguration().fontScale > 1.3f ? 2 : 3;
     LinearLayout row = null;
     for (int i = 0; i < names.length; i++) {
-      if (stacked || i % 2 == 0) {
-        row = u.row(10);
-        u.add(root, row, 10);
+      if (i % columns == 0) {
+        row = u.row(7);
+        u.add(root, row, 7);
       }
       final int destination = destinations[i];
       LinearLayout tile = u.column();
-      tile.setPadding(u.dp(14), u.dp(13), u.dp(14), u.dp(13));
-      tile.setMinimumHeight(u.dp(97));
-      android.graphics.drawable.GradientDrawable shape = u.shape(Color.WHITE, 22);
+      tile.setPadding(u.dp(6), u.dp(7), u.dp(6), u.dp(7));
+      tile.setMinimumHeight(u.dp(48));
+      tile.setGravity(Gravity.CENTER);
+      android.graphics.drawable.GradientDrawable shape = u.shape(Color.WHITE, 16);
       shape.setStroke(u.dp(1), 0xffe6e7f2);
       tile.setBackground(
           new android.graphics.drawable.RippleDrawable(
               android.content.res.ColorStateList.valueOf(0x196b5cb5), shape, null));
-      LinearLayout heading = u.row(7);
-      TextView icon = u.text(symbols[i], 19, Ui.PURPLE);
-      heading.addView(icon);
-      heading.addView(u.title(names[i], 14), new LinearLayout.LayoutParams(0, -2, 1));
+      LinearLayout heading = u.row(4);
+      heading.setGravity(Gravity.CENTER);
+      heading.addView(u.text(symbols[i], 14, Ui.PURPLE));
+      TextView label = u.text(names[i], 12, Ui.PURPLE);
+      label.setGravity(Gravity.CENTER);
+      heading.addView(label, new LinearLayout.LayoutParams(0, -2, 1));
       tile.addView(heading);
-      u.add(tile, u.text(notes[i], 11, Ui.MUTED), 6);
       tile.setContentDescription(names[i]);
       tile.setOnClickListener(v -> open.open(destination));
       row.addView(tile, new LinearLayout.LayoutParams(0, -1, 1));

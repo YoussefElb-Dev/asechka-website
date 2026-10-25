@@ -20,6 +20,7 @@ struct HomeHub:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.accessibilityReduceMotion) private var reduced
     @AppStorage("motion-paused") private var paused=false
+    @Environment(\.dynamicTypeSize) private var textSize
     var open:(BookRoute)->Void
     @State private var history=false
     @State private var particles:[HeartParticle]=[]
@@ -33,44 +34,40 @@ struct HomeHub:View {
         ("Little things","Things we love about us","heart",true,2),
         ("Our beginning","Since that little yes","infinity",true,0)]}
     var body:some View {
-        VStack(alignment:.leading,spacing:14){
+        VStack(alignment:.leading,spacing:8){
             heartCard
             sinceCard
-            Text("OUR LITTLE SHORTCUTS").font(.system(size:10,weight:.bold)).tracking(1.8).foregroundColor(Palette.purple).padding(.top,6)
-            LazyVGrid(columns:[GridItem(.adaptive(minimum:145),spacing:10)],spacing:10){ForEach(routes.indices,id:\.self){index in
+            LazyVGrid(columns:Array(repeating:GridItem(.flexible(),spacing:7),count:textSize.isAccessibilitySize ? 2:3),spacing:7){ForEach(routes.indices,id:\.self){index in
                 let route=routes[index]
-                Button{Touch.tap();open(BookRoute(personal:route.3,chapter:route.4))}label:{VStack(alignment:.leading,spacing:8){
-                    HStack(spacing:8){Image(systemName:route.2).font(.system(size:18)).foregroundColor(Palette.purple);Text(route.0).font(.system(size:14,weight:.semibold)).foregroundColor(Palette.ink)}
-                    Text(route.1).font(.system(size:11)).foregroundColor(Palette.muted)
-                }.frame(maxWidth:.infinity,minHeight:66,alignment:.leading).padding(14).background(.white,in:RoundedRectangle(cornerRadius:22,style:.continuous)).overlay(RoundedRectangle(cornerRadius:22,style:.continuous).stroke(Palette.purple.opacity(0.09),lineWidth:1))}.accessibilityLabel(route.0)
+                Button{Touch.tap();open(BookRoute(personal:route.3,chapter:route.4))}label:{Label(route.0,systemImage:route.2).font(.system(size:12,weight:.medium)).foregroundColor(Palette.purple).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:48).padding(.horizontal,5).background(.white,in:RoundedRectangle(cornerRadius:16,style:.continuous)).overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.09),lineWidth:1))}.accessibilityLabel(route.0).accessibilityHint(route.1)
             }}
-        }.padding(.horizontal,20)
+        }.padding(.horizontal,16)
         .sheet(isPresented:$history){HeartHistoryView()}
     }
     private var heartCard:some View {
-        VStack(alignment:.leading,spacing:12){
-            HStack(alignment:.top){Text("A little love, anytime.").font(.system(size:19,weight:.semibold));Spacer(minLength:8)
-                TimelineView(.periodic(from:.now,by:30)){context in let streak=HeartLedger.streak(universe.heartDays,who:from,today:HeartLedger.day(context.date))
-                    Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple).padding(10).background(.white,in:Capsule()).contentShape(Capsule()).onLongPressGesture{Touch.tap();history=true}.accessibilityLabel("Heart streak, \(streak) days").accessibilityHint("Long press for our heart history").accessibilityAction(named:Text("Heart history")){history=true}
+        HStack(spacing:12){
+            VStack(alignment:.leading,spacing:3){
+                TimelineView(.periodic(from:.now,by:30)){context in let today=HeartLedger.day(context.date)
+                    Text("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)").font(.system(size:12)).foregroundColor(Palette.muted)
                 }
-            }
-            TimelineView(.periodic(from:.now,by:30)){context in let today=HeartLedger.day(context.date)
-                Text("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)").font(.system(size:12)).foregroundColor(Palette.muted)
-            }
-            Button{do{try universe.sendHeart();Touch.tap(true);emit()}catch{universe.error=error.localizedDescription}}label:{Label("Send a heart to \(universe.partner)",systemImage:"heart.fill").font(.system(size:17,weight:.semibold)).frame(maxWidth:.infinity).primary()}.accessibilityLabel("Send a heart to \(universe.partner)")
+                TimelineView(.periodic(from:.now,by:30)){context in let streak=HeartLedger.streak(universe.heartDays,who:from,today:HeartLedger.day(context.date))
+                    Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple).accessibilityLabel("Heart streak, \(streak) days").accessibilityHint("Long press for our heart history").accessibilityAction(named:Text("Heart history")){history=true}
+                }
+            }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle()).onLongPressGesture{Touch.tap();history=true}
+            Button{do{try universe.sendHeart();Touch.tap(true);emit()}catch{universe.error=error.localizedDescription}}label:{Label("Send a heart",systemImage:"heart.fill").primary()}.accessibilityLabel("Send a heart to \(universe.partner)")
                 .overlay(alignment:.bottomTrailing){HeartStream(particles:particles).frame(width:210,height:310).offset(y:-35).allowsHitTesting(false).accessibilityHidden(true)}
-        }.padding(18).background(Palette.lavender,in:RoundedRectangle(cornerRadius:24,style:.continuous))
+        }.padding(.horizontal,12).padding(.vertical,8).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
     }
     private var sinceCard:some View {
         Button{Touch.tap();open(BookRoute(personal:true,chapter:0))}label:{
-            VStack(alignment:.leading,spacing:8){Label("OUR TIME TOGETHER",systemImage:"arrow.up.right").font(.system(size:10,weight:.bold)).tracking(1.5).foregroundColor(Palette.purple)
+            VStack(alignment:.leading,spacing:3){
                 if let since=universe.keepsakes["since"] as? [String:Any],let start=BookDates.instant(since["startedAt"] as? String ?? "") {
                     TimelineView(.periodic(from:.now,by:1)){context in let elapsed=max(0,Int(context.date.timeIntervalSince(start)))
-                        Text("\(elapsed/86400) days · "+String(format:"%02d:%02d:%02d",elapsed/3600%24,elapsed/60%60,elapsed%60)).font(.system(size:25,weight:.semibold)).monospacedDigit().foregroundColor(Palette.ink)
+                        HStack(spacing:8){Text("Together ♡").font(.system(size:12)).foregroundColor(Palette.purple);Text("\(elapsed/86400) days · "+String(format:"%02d:%02d:%02d",elapsed/3600%24,elapsed/60%60,elapsed%60)).font(.system(size:18,weight:.semibold)).monospacedDigit().foregroundColor(Palette.ink)}
                     }
-                    Text("Since "+BookDates.display(start,time:true)+" · Eastern").font(.system(size:11)).foregroundColor(Palette.muted)
+                    Text("Since "+BookDates.display(start,time:true)+" · Eastern").font(.system(size:10)).foregroundColor(Palette.muted)
                 }else {Text("Set our beginning in Since us.").foregroundColor(Palette.muted)}
-            }.frame(maxWidth:.infinity,alignment:.leading).padding(18).background(Palette.blue,in:RoundedRectangle(cornerRadius:24,style:.continuous))
+            }.frame(maxWidth:.infinity,minHeight:44,alignment:.leading).padding(.horizontal,12).padding(.vertical,7).background(Palette.blue,in:RoundedRectangle(cornerRadius:20,style:.continuous))
         }.accessibilityLabel("Our time together. Open Since us")
     }
     private func emit(){guard !reduced,!paused else{return};let particle=HeartParticle();if particles.count>=60{particles.removeFirst()};particles.append(particle);Task{try? await Task.sleep(nanoseconds:1_800_000_000);particles.removeAll{$0.id==particle.id}}}

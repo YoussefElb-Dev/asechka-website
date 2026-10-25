@@ -13,6 +13,7 @@ struct FeedView:View {
     @State private var edit:ComposeRequest?
     @State private var deletion:PostSelection?
     @State private var shortcut:BookRoute?
+    private var home:Bool{mode==0 && !savedOnly}
     var posts:[Post]{universe.memories.posts.filter{(mode==0 || (mode==1 ? $0.isPhoto:!$0.isPhoto)) && (!savedOnly || universe.bookmarks.contains($0.key))}}
     var body:some View {
         ScrollViewReader{proxy in
@@ -33,24 +34,26 @@ struct FeedView:View {
         }message:{Text("This removes it from both phones and the website.")}
     }
     private var header:some View {
-        VStack(alignment:.leading,spacing:19){
-            ScrollView(.horizontal,showsIndicators:false){HStack(spacing:18){
+        VStack(alignment:.leading,spacing:home ? 8:19){
+            ScrollView(.horizontal,showsIndicators:false){HStack(spacing:home ? 10:18){
                 story("Create","plus"){create(mode != 2)}
                 story("Our corner","heart",action:corner)
-                story("Our days","sparkles"){navigate(4)}
-                story("Music","music.note"){navigate(3)}
+                if !home{story("Our days","sparkles"){navigate(4)};story("Music","music.note"){navigate(3)}}
                 story(savedOnly ? "All posts":"Saved","bookmark"){savedOnly.toggle()}
-            }.padding(.horizontal,22)}
+            }.padding(.horizontal,home ? 16:22)}
             if mode==0 && !savedOnly {HomeHub{shortcut=$0}}
-            VStack(alignment:.leading,spacing:6){
+            if !home {VStack(alignment:.leading,spacing:6){
                 Text(savedOnly ? "Kept close.":mode==1 ? "Our camera roll.":mode==2 ? "Words to keep.":"Our little us.").font(.custom("Manrope-Bold",size:28))
                 Text("A little life together, one moment at a time.").font(.subheadline).foregroundColor(Palette.muted)
                 Button{create(mode != 2)}label:{HStack(spacing:12){Avatar(actor:universe.actor);Text("Something to share, \(universe.name)?").font(.subheadline).foregroundColor(Palette.muted);Spacer();Image(systemName:"plus")}.padding(14).background(.white,in:RoundedRectangle(cornerRadius:22))}.padding(.top,10)
-            }.padding(.horizontal,22)
-        }.padding(.top,12).padding(.bottom,8)
+            }.padding(.horizontal,22)}
+        }.padding(.top,home ? 4:12).padding(.bottom,home ? 0:8)
     }
     private func story(_ text:String,_ symbol:String,action:@escaping()->Void)->some View {
-        Button{Touch.tap();action()}label:{VStack(spacing:8){Image(systemName:symbol).font(.system(size:25,weight:.light)).frame(width:62,height:62).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:70)}
+        Button{Touch.tap();action()}label:{
+            if home{Label(text,systemImage:symbol).font(.system(size:13,weight:.medium)).padding(.horizontal,16).frame(minHeight:44).background(Palette.lavender,in:Capsule())}
+            else{VStack(spacing:8){Image(systemName:symbol).font(.system(size:25,weight:.light)).frame(width:62,height:62).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:70)}
+        }
     }
 }
 struct CachedPhoto:View {
@@ -101,7 +104,7 @@ struct PostCard:View {
                 if post.isPhoto {CachedPhoto(source:post.imageURL).aspectRatio(0.86,contentMode:.fit)}
                 else {Text("“\(post.text ?? "")”").font(.custom("Manrope-Regular",size:(post.text?.count ?? 0)>300 ? 21:25)).lineSpacing(8).lineLimit(expanded ? nil:9).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:230).padding(30).background(Palette.gradient)}
                 if burst {Image(systemName:"heart.fill").font(.system(size:84)).foregroundColor(.white).shadow(color:Palette.purple.opacity(0.3),radius:15).scaleEffect(burst ? 1:0.1).transition(.scale.combined(with:.opacity))}
-            }.contentShape(Rectangle())
+            }.contentShape(Rectangle()).accessibilityElement(children:.contain).accessibilityIdentifier("Post media")
                 .onTapGesture(count:2){Touch.tap(true);universe.like(post,true);withAnimation(reduced ? nil:.spring(response:0.3,dampingFraction:0.6)){burst=true};Task{try? await Task.sleep(nanoseconds:850_000_000);withAnimation{burst=false}}}
                 .onTapGesture{open()}
             HStack(spacing:6){
