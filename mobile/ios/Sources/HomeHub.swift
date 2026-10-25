@@ -48,7 +48,7 @@ struct HomeHub:View {
         HStack(spacing:12){
             VStack(alignment:.leading,spacing:3){
                 TimelineView(.periodic(from:.now,by:30)){context in let today=HeartLedger.day(context.date)
-                    Text("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)").font(.system(size:12)).foregroundColor(Palette.muted)
+                    Text("You \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)").font(.system(size:12)).foregroundColor(Palette.muted).accessibilityLabel("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)")
                 }
                 TimelineView(.periodic(from:.now,by:30)){context in let streak=HeartLedger.streak(universe.heartDays,who:from,today:HeartLedger.day(context.date))
                     Text("✦ \(streak) \(streak==1 ? "day":"days")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple).accessibilityLabel("Heart streak, \(streak) days").accessibilityHint("Long press for our heart history").accessibilityAction(named:Text("Heart history")){history=true}

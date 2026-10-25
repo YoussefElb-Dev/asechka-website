@@ -274,7 +274,7 @@ final class SocialFeed extends ListView {
       int height = Math.min(u.dp(480), Math.round(width * 1.1f));
       photo.setLayoutParams(new LinearLayout.LayoutParams(-1, height));
       quote = u.quote("", 25);
-      quote.setGravity(Gravity.CENTER);
+      quote.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
       quote.setLineSpacing(u.dp(7), 1);
       quote.setPadding(u.dp(28), u.dp(34), u.dp(28), u.dp(34));
       quote.setMinHeight(u.dp(230));

@@ -466,15 +466,16 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void showShell() {
+    boolean shortScreen = getResources().getConfiguration().screenHeightDp < 700;
     root = u.column();
     root.setFocusableInTouchMode(true);
     root.setDescendantFocusability(android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS);
     LinearLayout toolbar = u.row(8);
-    toolbar.setPadding(u.dp(20), u.dp(6), u.dp(16), u.dp(6));
+    toolbar.setPadding(u.dp(20), u.dp(shortScreen ? 4 : 6), u.dp(16), u.dp(shortScreen ? 4 : 6));
     Ui.Icon sparkle = new Ui.Icon(this, 6, Ui.PURPLE);
     toolbar.addView(sparkle, new LinearLayout.LayoutParams(u.dp(23), u.dp(23)));
     TextView brand = u.title("asechka.", 23);
-    toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(54), 1));
+    toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(shortScreen ? 44 : 54), 1));
     brand.setGravity(Gravity.CENTER_VERTICAL);
     SocialFeed.Icon create = new SocialFeed.Icon(this, "plus");
     create.setContentDescription("Create a post");
@@ -500,11 +501,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     mp.leftMargin = u.dp(6);
     toolbar.addView(menu, mp);
     root.addView(toolbar);
-    toolbar.setMinimumHeight(u.dp(compact() ? 56 : 64));
+    toolbar.setMinimumHeight(u.dp(shortScreen ? 56 : 64));
     notice = u.text(connectionMessage, 12, Ui.MUTED);
     notice.setMaxLines(2);
     notice.setEllipsize(android.text.TextUtils.TruncateAt.END);
-    if (compact()) notice.setVisibility(View.GONE);
+    if (shortScreen) notice.setVisibility(View.GONE);
     notice.setPadding(u.dp(24), u.dp(2), u.dp(24), u.dp(9));
     notice.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     notice.setOnClickListener(v -> showOutbox());

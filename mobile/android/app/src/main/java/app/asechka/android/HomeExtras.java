@@ -186,7 +186,7 @@ final class HomeExtras {
         own = from(),
         other = own.equals("me") ? "asechka" : "me";
     counts.setText(
-        "Today · you "
+        "You "
             + HeartCounts.count(d, today, own)
             + "  ♡  "
             + partner()

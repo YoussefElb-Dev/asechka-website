@@ -102,7 +102,7 @@ struct PostCard:View {
             }.padding(.leading,18).padding(.trailing,8).padding(.vertical,10)
             ZStack{
                 if post.isPhoto {CachedPhoto(source:post.imageURL).aspectRatio(0.86,contentMode:.fit)}
-                else {Text("“\(post.text ?? "")”").font(.custom("Manrope-Regular",size:(post.text?.count ?? 0)>300 ? 21:25)).lineSpacing(8).lineLimit(expanded ? nil:9).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:230).padding(30).background(Palette.gradient)}
+                else {Text("“\(post.text ?? "")”").font(.custom("Manrope-Regular",size:(post.text?.count ?? 0)>300 ? 21:25)).lineSpacing(8).lineLimit(expanded ? nil:9).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:230,alignment:.top).padding(30).background(Palette.gradient)}
                 if burst {Image(systemName:"heart.fill").font(.system(size:84)).foregroundColor(.white).shadow(color:Palette.purple.opacity(0.3),radius:15).scaleEffect(burst ? 1:0.1).transition(.scale.combined(with:.opacity))}
             }.contentShape(Rectangle()).accessibilityElement(children:.contain).accessibilityIdentifier("Post media")
                 .onTapGesture(count:2){Touch.tap(true);universe.like(post,true);withAnimation(reduced ? nil:.spring(response:0.3,dampingFraction:0.6)){burst=true};Task{try? await Task.sleep(nanoseconds:850_000_000);withAnimation{burst=false}}}
