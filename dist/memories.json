@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T17:34:26.571Z",
+  "updatedAt": "2026-10-25T17:34:28.742Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -109,13 +109,18 @@
       "note": "You lwky slept before this buttt it’ll always be there 😘",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "7e2246e0-9ed4-465f-9603-8f42b1b9a86f",
             "hash": "6d450c83aa30376bc6a130b7a9b01c253e2c5928830b3660c87c11f31f6e33fd"
+          },
+          {
+            "id": "215eeefc-5e73-4047-afd8-cfb26d66df3d",
+            "hash": "2d3a897b596ac813a215ac742b8fe90b9e16de35ceb2cfda1765b0e2576553c6"
           }
         ]
       }
