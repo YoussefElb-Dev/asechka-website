@@ -45,8 +45,8 @@ ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --version --output-format xml1
 
-Build description signature: bc0a72c5c12a4a6d8535117399b8f35b
-Build description path: /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/XCBuildData/bc0a72c5c12a4a6d8535117399b8f35b.xcbuilddata
+Build description signature: 6aac21a7859e332a0f4b5b8851eea628
+Build description path: /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/XCBuildData/6aac21a7859e332a0f4b5b8851eea628.xcbuilddata
 ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache
@@ -71,37 +71,25 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka-3739e29b6552f3bd49e0e90c2d5d4295-VFS-iphonesimulator/all-product-headers.yaml
 
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist (in target 'AsechkaTests' from project 'Asechka')
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/ProductTypeInfoPlistAdditions.plist (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json (in target 'AsechkaTests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList (in target 'AsechkaTests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftConstValuesFileList (in target 'AsechkaTests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftConstValuesFileList
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/ProductTypeInfoPlistAdditions.plist
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/empty-AsechkaUITests.plist (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/empty-AsechkaUITests.plist
 
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/ProductTypeInfoPlistAdditions.plist (in target 'AsechkaUITests' from project 'Asechka')
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/ProductTypeInfoPlistAdditions.plist
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json (in target 'AsechkaUITests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftConstValuesFileList (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -110,10 +98,6 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.LinkFileList (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.LinkFileList
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources/Entitlements-Simulated.plist (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -150,6 +134,22 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-non-framework-target-headers.hmap (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftConstValuesFileList (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftConstValuesFileList
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.LinkFileList (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -259,13 +259,13 @@ MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/B
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest
 
-MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns
-
 MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest
+
+MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns
 
 MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Frameworks (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -387,20 +387,18 @@ SwiftDriver Asechka normal arm64 com.apple.xcode.tools.swift.compiler (in target
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Asechka -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
-SwiftEmitModule normal arm64 Emitting\ module\ for\ Asechka (in target 'Asechka' from project 'Asechka')
-EmitSwiftModule normal arm64 (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 Compiling\ HomeHub.swift,\ LetterCelebration.swift,\ Models.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:78: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
-                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
-                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                                                                 await 
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:82: note: calls to static method 'preparePhoto' from outside of its actor context are implicitly asynchronous
-                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
-                                                                                 ^
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:74:17: note: main actor isolation inferred from conformance to protocol 'View'
-    static func preparePhoto(_ data:Data)throws->Data {
-                ^
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
 
 SwiftCompile normal arm64 Compiling\ AsechkaApp.swift,\ BookModels.swift,\ BookViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift (in target 'Asechka' from project 'Asechka')
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift (in target 'Asechka' from project 'Asechka')
@@ -448,27 +446,53 @@ SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mob
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
-SwiftCompile normal arm64 Compiling\ HomeHub.swift,\ LetterCelebration.swift,\ Models.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+SwiftEmitModule normal arm64 Emitting\ module\ for\ Asechka (in target 'Asechka' from project 'Asechka')
 
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift (in target 'Asechka' from project 'Asechka')
+EmitSwiftModule normal arm64 (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:78: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
+                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                 await 
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:82: note: calls to static method 'preparePhoto' from outside of its actor context are implicitly asynchronous
+                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
+                                                                                 ^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:74:17: note: main actor isolation inferred from conformance to protocol 'View'
+    static func preparePhoto(_ data:Data)throws->Data {
+                ^
 
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 Compiling\ ComposerView.swift,\ FeedView.swift,\ HeartRain.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HeartRain.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:78: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
+                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                 await 
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:82: note: calls to static method 'preparePhoto' from outside of its actor context are implicitly asynchronous
+                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
+                                                                                 ^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:74:17: note: main actor isolation inferred from conformance to protocol 'View'
+    static func preparePhoto(_ data:Data)throws->Data {
+                ^
 
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift:79:68: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            let image=await Task.detached(priority:.userInitiated){Self.thumbnail(data)}.value
+                                                                   ^~~~~~~~~~~~~~~~~~~~
+                                                                   await 
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift:79:68: note: calls to static method 'thumbnail' from outside of its actor context are implicitly asynchronous
+            let image=await Task.detached(priority:.userInitiated){Self.thumbnail(data)}.value
+                                                                   ^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift:86:17: note: main actor isolation inferred from conformance to protocol 'View'
+    static func thumbnail(_ data:Data)->UIImage?{
+                ^
 
-SwiftCompile normal arm64 Compiling\ Vault.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Vault.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Vault.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HeartRain.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
@@ -509,36 +533,13 @@ Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Bu
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.swiftsourceinfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
 
-SwiftCompile normal arm64 Compiling\ ComposerView.swift,\ FeedView.swift,\ HeartRain.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HeartRain.swift (in target 'Asechka' from project 'Asechka')
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 Compiling\ Vault.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Vault.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Vault.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:78: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
-                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
-                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                                                                 await 
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:58:82: note: calls to static method 'preparePhoto' from outside of its actor context are implicitly asynchronous
-                draft.photo=try await Task.detached(priority:.userInitiated){try Self.preparePhoto(bytes)}.value;persist();Touch.tap(true)
-                                                                                 ^
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:74:17: note: main actor isolation inferred from conformance to protocol 'View'
-    static func preparePhoto(_ data:Data)throws->Data {
-                ^
 
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift:79:68: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
-            let image=await Task.detached(priority:.userInitiated){Self.thumbnail(data)}.value
-                                                                   ^~~~~~~~~~~~~~~~~~~~
-                                                                   await 
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift:79:68: note: calls to static method 'thumbnail' from outside of its actor context are implicitly asynchronous
-            let image=await Task.detached(priority:.userInitiated){Self.thumbnail(data)}.value
-                                                                   ^
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift:86:17: note: main actor isolation inferred from conformance to protocol 'View'
-    static func thumbnail(_ data:Data)->UIImage?{
-                ^
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HeartRain.swift (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
@@ -571,16 +572,20 @@ SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mob
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
-SwiftDriver AsechkaUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaUITests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
-
-SwiftDriverJobDiscovery normal arm64 Compiling Vault.swift, GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
-
 SwiftCompile normal arm64 Compiling\ UniverseTests.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Tests/UniverseTests.swift (in target 'AsechkaTests' from project 'Asechka')
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Tests/UniverseTests.swift (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
+
+SwiftDriverJobDiscovery normal arm64 Compiling Vault.swift, GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftDriverJobDiscovery normal arm64 Compiling AsechkaApp.swift, BookModels.swift, BookViews.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftDriverJobDiscovery normal arm64 Compiling ComposerView.swift, FeedView.swift, HeartRain.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftDriver AsechkaUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaUITests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaUITests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
 SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaUITests (in target 'AsechkaUITests' from project 'Asechka')
 
@@ -588,17 +593,12 @@ SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mob
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
-SwiftDriverJobDiscovery normal arm64 Compiling AsechkaApp.swift, BookModels.swift, BookViews.swift (in target 'Asechka' from project 'Asechka')
-
 SwiftCompile normal arm64 Compiling\ NativeJourneyTests.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
-
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
 SwiftDriverJobDiscovery normal arm64 Compiling PersonalViews.swift, SharedViews.swift, UniverseStore.swift (in target 'Asechka' from project 'Asechka')
-
-SwiftDriverJobDiscovery normal arm64 Compiling ComposerView.swift, FeedView.swift, HeartRain.swift (in target 'Asechka' from project 'Asechka')
 
 SwiftDriver\ Compilation Asechka normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -616,6 +616,26 @@ note: Using stub executor library with Swift entry point. (in target 'Asechka' f
 Ld /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka normal (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios16.0-simulator -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -O0 -L/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/Frameworks -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-DebugDylibPath-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-DebugDylibInstallName-normal-arm64.txt -Xlinker -filelist -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-ExecutorLinkFileList-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __entitlements -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __ents_der -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent.der /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka.debug.dylib -Xlinker -no_adhoc_codesign -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka
+
+ExtractAppIntentsMetadata (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Asechka --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.ios --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-10-25 03:16:31.560 appintentsmetadataprocessor[40347:104181] Starting appintentsmetadataprocessor export
+2026-10-25 03:16:31.562 appintentsmetadataprocessor[40347:104181] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka.debug.dylib --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Frameworks --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/SystemExtensions --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Extensions --platform iphonesimulator --toolchain /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+AppIntentsSSUTraining (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/ssu --bundle-id app.asechka.ios --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList --archive-ssu-assets
+2026-10-25 03:16:31.626 appintentsnltrainingprocessor[40348:104203] Parsing options for appintentsnltrainingprocessor
+2026-10-25 03:16:31.626 appintentsnltrainingprocessor[40348:104203] No AppShortcuts found - Skipping.
+
+ProcessInfoPlistFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Info.plist /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-infoPlistUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist -producttype com.apple.product-type.bundle.unit-test -expandbuildsettings -format binary -platform iphonesimulator -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Info.plist
 
 SwiftDriverJobDiscovery normal arm64 Emitting module for AsechkaUITests (in target 'AsechkaUITests' from project 'Asechka')
 
@@ -643,33 +663,23 @@ Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Bu
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftsourceinfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
 
-CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka.debug.dylib --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Frameworks --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/SystemExtensions --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Extensions --platform iphonesimulator --toolchain /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
-
-ExtractAppIntentsMetadata (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Asechka --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.ios --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-25 03:09:29.813 appintentsmetadataprocessor[13050:43651] Starting appintentsmetadataprocessor export
-2026-10-25 03:09:29.815 appintentsmetadataprocessor[13050:43651] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
-
 SwiftDriverJobDiscovery normal arm64 Emitting module for AsechkaTests (in target 'AsechkaTests' from project 'Asechka')
 
 SwiftDriver\ Compilation\ Requirements AsechkaTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-Swift-Compilation-Requirements -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaTests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList -DDEBUG -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
-SwiftMergeGeneratedHeaders /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h (in target 'AsechkaTests' from project 'Asechka')
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftdoc (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftmodule (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftmodule /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule
 
-Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftdoc (in target 'AsechkaTests' from project 'Asechka')
+SwiftMergeGeneratedHeaders /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc
+    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.abi.json (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -678,22 +688,6 @@ Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Bu
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftsourceinfo (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftsourceinfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
-
-AppIntentsSSUTraining (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/ssu --bundle-id app.asechka.ios --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList --archive-ssu-assets
-2026-10-25 03:09:29.843 appintentsnltrainingprocessor[13052:43656] Parsing options for appintentsnltrainingprocessor
-2026-10-25 03:09:29.845 appintentsnltrainingprocessor[13052:43656] No AppShortcuts found - Skipping.
-
-ProcessInfoPlistFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Info.plist /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist (in target 'AsechkaTests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-infoPlistUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist -producttype com.apple.product-type.bundle.unit-test -expandbuildsettings -format binary -platform iphonesimulator -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Info.plist
-
-SwiftDriverJobDiscovery normal arm64 Compiling NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
-
-SwiftDriver\ Compilation AsechkaUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-Swift-Compilation -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaUITests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
 SwiftDriverJobDiscovery normal arm64 Compiling UniverseTests.swift (in target 'AsechkaTests' from project 'Asechka')
 
@@ -705,21 +699,27 @@ Ld /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Buil
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios16.0-simulator -bundle -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -O0 -L/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -L/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -filelist /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.LinkFileList -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -dead_strip -bundle_loader /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka -Xlinker -object_path_lto -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftmodule -framework XCTest -lXCTestSwiftSupport /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka.debug.dylib -Xlinker -no_adhoc_codesign -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/AsechkaTests
 
-CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest (in target 'AsechkaTests' from project 'Asechka')
+SwiftDriverJobDiscovery normal arm64 Compiling NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
+
+SwiftDriver\ Compilation AsechkaUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/AsechkaTests --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Frameworks --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/PlugIns --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/SystemExtensions --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Extensions --platform iphonesimulator --toolchain /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+    builtin-Swift-Compilation -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaUITests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
 ExtractAppIntentsMetadata (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name AsechkaTests --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.AsechkaTests --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/AsechkaTests --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-25 03:09:30.147 appintentsmetadataprocessor[13057:43680] Starting appintentsmetadataprocessor export
-2026-10-25 03:09:30.148 appintentsmetadataprocessor[13057:43680] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+2026-10-25 03:16:34.195 appintentsmetadataprocessor[40623:104829] Starting appintentsmetadataprocessor export
+2026-10-25 03:16:34.198 appintentsmetadataprocessor[40623:104829] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/AsechkaTests --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Frameworks --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/PlugIns --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/SystemExtensions --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Extensions --platform iphonesimulator --toolchain /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
 
 AppIntentsSSUTraining (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/ssu --bundle-id app.asechka.AsechkaTests --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.DependencyMetadataFileList --archive-ssu-assets
-2026-10-25 03:09:30.160 appintentsnltrainingprocessor[13058:43681] Parsing options for appintentsnltrainingprocessor
-2026-10-25 03:09:30.161 appintentsnltrainingprocessor[13058:43681] No AppShortcuts found - Skipping.
+2026-10-25 03:16:34.213 appintentsnltrainingprocessor[40624:104830] Parsing options for appintentsnltrainingprocessor
+2026-10-25 03:16:34.214 appintentsnltrainingprocessor[40624:104830] No AppShortcuts found - Skipping.
 
 CodeSign /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -780,8 +780,8 @@ Ld /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Buil
 ExtractAppIntentsMetadata (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name AsechkaUITests --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.AsechkaUITests --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/AsechkaUITests --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-25 03:09:30.395 appintentsmetadataprocessor[13067:43729] Starting appintentsmetadataprocessor export
-2026-10-25 03:09:30.396 appintentsmetadataprocessor[13067:43729] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+2026-10-25 03:16:34.458 appintentsmetadataprocessor[40633:104862] Starting appintentsmetadataprocessor export
+2026-10-25 03:16:34.459 appintentsmetadataprocessor[40633:104862] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
 
 CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -790,32 +790,32 @@ CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/buil
 AppIntentsSSUTraining (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/ssu --bundle-id app.asechka.AsechkaUITests --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyMetadataFileList --archive-ssu-assets
-2026-10-25 03:09:30.407 appintentsnltrainingprocessor[13068:43730] Parsing options for appintentsnltrainingprocessor
-2026-10-25 03:09:30.408 appintentsnltrainingprocessor[13068:43730] No AppShortcuts found - Skipping.
-
-CopyPlistFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Info.plist /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-copyPlist --validate --convert xml1 --macro-expansion WRAPPEDPRODUCTNAME AsechkaUITests-Runner --macro-expansion WRAPPEDPRODUCTBUNDLEIDENTIFIER app.asechka.AsechkaUITests.xctrunner --macro-expansion TESTPRODUCTNAME AsechkaUITests --macro-expansion TESTPRODUCTBUNDLEIDENTIFIER app.asechka.AsechkaUITests --copy-value UIDeviceFamily /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Info.plist --outdir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app -- /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist
+2026-10-25 03:16:34.471 appintentsnltrainingprocessor[40634:104863] Parsing options for appintentsnltrainingprocessor
+2026-10-25 03:16:34.471 appintentsnltrainingprocessor[40634:104863] No AppShortcuts found - Skipping.
 
 MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app
 
-CopyAndPreserveArchs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner (in target 'AsechkaUITests' from project 'Asechka')
+CopyPlistFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Info.plist /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/XCTRunner -output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner -extract arm64
+    builtin-copyPlist --validate --convert xml1 --macro-expansion WRAPPEDPRODUCTNAME AsechkaUITests-Runner --macro-expansion WRAPPEDPRODUCTBUNDLEIDENTIFIER app.asechka.AsechkaUITests.xctrunner --macro-expansion TESTPRODUCTNAME AsechkaUITests --macro-expansion TESTPRODUCTBUNDLEIDENTIFIER app.asechka.AsechkaUITests --copy-value UIDeviceFamily /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Info.plist --outdir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app -- /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PkgInfo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app
 
-Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/XCUnit.framework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework (in target 'AsechkaUITests' from project 'Asechka')
+CopyAndPreserveArchs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/XCTRunner -output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner -extract arm64
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/libXCTestSwiftSupport.dylib /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks
+
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/XCUnit.framework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework (in target 'AsechkaUITests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/XCUIAutomation.framework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -864,197 +864,204 @@ Touch /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/B
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /usr/bin/touch -c /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest
 
-2026-10-25 03:10:12.141112+0000 Asechka[13406:46456] [library] load_eligibility_plist: Failed to open /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Containers/Data/Application/F50BE1AD-107E-469D-9250-B400FBA6A36F/private/var/db/eligibilityd/eligibility.plist: No such file or directory(2)
-Test Suite 'All tests' started at 2026-10-25 03:10:14.351.
-Test Suite 'AsechkaTests.xctest' started at 2026-10-25 03:10:14.351.
-Test Suite 'UniverseTests' started at 2026-10-25 03:10:14.351.
+2026-10-25 03:17:08.951501+0000 Asechka[41321:108435] [library] load_eligibility_plist: Failed to open /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Containers/Data/Application/37085369-F26D-4EB7-8665-5012BB8B7E49/private/var/db/eligibilityd/eligibility.plist: No such file or directory(2)
+2026-10-25 03:17:09.082866+0000 Asechka[41321:108903] [General] Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+2026-10-25 03:17:09.148826+0000 Asechka[41321:108911] [General] Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+Test Suite 'All tests' started at 2026-10-25 03:17:10.413.
+Test Suite 'AsechkaTests.xctest' started at 2026-10-25 03:17:10.413.
+Test Suite 'UniverseTests' started at 2026-10-25 03:17:10.413.
 Test Case '-[AsechkaTests.UniverseTests testBookProjectionKeepsRecipesPhotosRatingsAndOtherEntries]' started.
-Test Case '-[AsechkaTests.UniverseTests testBookProjectionKeepsRecipesPhotosRatingsAndOtherEntries]' passed (0.002 seconds).
+Test Case '-[AsechkaTests.UniverseTests testBookProjectionKeepsRecipesPhotosRatingsAndOtherEntries]' passed (0.001 seconds).
 Test Case '-[AsechkaTests.UniverseTests testBothProfilesAndIdempotentComments]' started.
-Test Case '-[AsechkaTests.UniverseTests testBothProfilesAndIdempotentComments]' passed (0.002 seconds).
+Test Case '-[AsechkaTests.UniverseTests testBothProfilesAndIdempotentComments]' passed (0.001 seconds).
 Test Case '-[AsechkaTests.UniverseTests testBundledPhotosDecodeWithoutInternet]' started.
-Test Case '-[AsechkaTests.UniverseTests testBundledPhotosDecodeWithoutInternet]' passed (0.282 seconds).
+Test Case '-[AsechkaTests.UniverseTests testBundledPhotosDecodeWithoutInternet]' passed (0.205 seconds).
 Test Case '-[AsechkaTests.UniverseTests testConversationDateAndKeepsakeEditsPreserveCoupleBeginning]' started.
 Test Case '-[AsechkaTests.UniverseTests testConversationDateAndKeepsakeEditsPreserveCoupleBeginning]' passed (0.003 seconds).
 Test Case '-[AsechkaTests.UniverseTests testDecodingOriginalAndLegacyPosts]' started.
 Test Case '-[AsechkaTests.UniverseTests testDecodingOriginalAndLegacyPosts]' passed (0.001 seconds).
 Test Case '-[AsechkaTests.UniverseTests testDeferredHeartSavesKeepOrderWithOtherEdits]' started.
-Test Case '-[AsechkaTests.UniverseTests testDeferredHeartSavesKeepOrderWithOtherEdits]' passed (0.077 seconds).
+Test Case '-[AsechkaTests.UniverseTests testDeferredHeartSavesKeepOrderWithOtherEdits]' passed (0.068 seconds).
 Test Case '-[AsechkaTests.UniverseTests testEncryptedStorageRoundTripAndTamperDetection]' started.
 Test Case '-[AsechkaTests.UniverseTests testEncryptedStorageRoundTripAndTamperDetection]' passed (0.003 seconds).
 Test Case '-[AsechkaTests.UniverseTests testHeartCountsStreakAndEasternMidnight]' started.
 Test Case '-[AsechkaTests.UniverseTests testHeartCountsStreakAndEasternMidnight]' passed (0.002 seconds).
 Test Case '-[AsechkaTests.UniverseTests testOfflinePhotoThenCaptionEditRetainsConversation]' started.
-Test Case '-[AsechkaTests.UniverseTests testOfflinePhotoThenCaptionEditRetainsConversation]' passed (0.002 seconds).
-Test Suite 'UniverseTests' passed at 2026-10-25 03:10:14.945.
-	 Executed 9 tests, with 0 failures (0 unexpected) in 0.374 (0.594) seconds
-Test Suite 'AsechkaTests.xctest' passed at 2026-10-25 03:10:14.945.
-	 Executed 9 tests, with 0 failures (0 unexpected) in 0.374 (0.594) seconds
-Test Suite 'All tests' passed at 2026-10-25 03:10:14.945.
-	 Executed 9 tests, with 0 failures (0 unexpected) in 0.374 (0.595) seconds
-2026-10-25 03:10:17.167741+0000 AsechkaUITests-Runner[13625:47211] [Default] Running tests...
-Test Suite 'All tests' started at 2026-10-25 03:10:28.955.
-Test Suite 'AsechkaUITests.xctest' started at 2026-10-25 03:10:28.955.
-Test Suite 'NativeJourneyTests' started at 2026-10-25 03:10:28.955.
+Test Case '-[AsechkaTests.UniverseTests testOfflinePhotoThenCaptionEditRetainsConversation]' passed (0.001 seconds).
+Test Suite 'UniverseTests' passed at 2026-10-25 03:17:10.818.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.287 (0.405) seconds
+Test Suite 'AsechkaTests.xctest' passed at 2026-10-25 03:17:10.818.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.287 (0.405) seconds
+Test Suite 'All tests' passed at 2026-10-25 03:17:10.818.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.287 (0.406) seconds
+2026-10-25 03:17:12.900948+0000 AsechkaUITests-Runner[41804:109689] [Default] Running tests...
+Test Suite 'All tests' started at 2026-10-25 03:17:21.386.
+Test Suite 'AsechkaUITests.xctest' started at 2026-10-25 03:17:21.386.
+Test Suite 'NativeJourneyTests' started at 2026-10-25 03:17:21.387.
 Test Case '-[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory]' started.
-    t =     0.00s Start Test at 2026-10-25 03:10:28.956
-    t =     0.37s Set Up
-    t =     0.39s Open app.asechka.ios
-    t =     0.39s     Launch app.asechka.ios
-    t =     6.43s         Setting up automation session
-    t =     6.58s         Wait for app.asechka.ios to idle
-    t =     7.61s Waiting 15.0s for "Send a heart to Youssef" Button to exist
-    t =     8.65s     Checking `Expect predicate `existsNoRetry == 1` for object "Send a heart to Youssef" Button`
-    t =     8.65s         Checking existence of `"Send a heart to Youssef" Button`
-    t =     8.82s Find the "Create" Button
-    t =     9.04s Find the "Our corner" Button
-    t =     9.22s Find the "Saved" Button
-    t =     9.69s Find the "Our corner" Button
-    t =    10.15s Find the "Saved" Button
-    t =    10.22s Find the Target Application 'app.asechka.ios'
-    t =    10.24s Waiting 5.0s for "Post media" Other to exist
-    t =    11.24s     Checking `Expect predicate `existsNoRetry == 1` for object "Post media" Other`
-    t =    11.25s         Checking existence of `"Post media" Other`
-    t =    12.94s Find the "Home" Button
-    t =    12.98s Find the "Post media" Other
-    t =    13.10s Find the "Post media" Other
-    t =    13.19s Find the ScrollView (First Match)
-    t =    13.21s Find the Target Application 'app.asechka.ios'
-    t =    13.35s Added attachment named '00-iPhone-home-first-glance'
-    t =    13.35s Find the "Send a heart to Youssef" Button
-    t =    13.46s Find the ScrollView (First Match)
-    t =    13.48s Find the "Home" Button
-    t =    13.59s Find the "Send a heart to Youssef" Button
-    t =    13.83s Tap "Send a heart to Youssef" Button
-    t =    13.83s     Wait for app.asechka.ios to idle
-    t =    13.83s     Find the "Send a heart to Youssef" Button
-    t =    14.07s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    14.10s     Synthesize event
-    t =    14.52s     Wait for app.asechka.ios to idle
-    t =    14.53s Tap "Send a heart to Youssef" Button
-    t =    14.53s     Wait for app.asechka.ios to idle
-    t =    14.54s     Find the "Send a heart to Youssef" Button
-    t =    14.59s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    14.61s     Synthesize event
-    t =    14.92s     Wait for app.asechka.ios to idle
-    t =    14.92s Tap "Send a heart to Youssef" Button
-    t =    14.92s     Wait for app.asechka.ios to idle
-    t =    14.95s     Find the "Send a heart to Youssef" Button
-    t =    15.09s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    15.15s     Synthesize event
-    t =    15.48s     Wait for app.asechka.ios to idle
-    t =    15.48s Tap "Send a heart to Youssef" Button
-    t =    15.48s     Wait for app.asechka.ios to idle
-    t =    15.48s     Find the "Send a heart to Youssef" Button
-    t =    15.55s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    15.59s     Synthesize event
-    t =    15.94s     Wait for app.asechka.ios to idle
-    t =    15.94s Tap "Send a heart to Youssef" Button
-    t =    15.94s     Wait for app.asechka.ios to idle
-    t =    15.95s     Find the "Send a heart to Youssef" Button
-    t =    16.01s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    16.06s     Synthesize event
-    t =    16.38s     Wait for app.asechka.ios to idle
-    t =    16.38s Tap "Send a heart to Youssef" Button
-    t =    16.38s     Wait for app.asechka.ios to idle
-    t =    16.40s     Find the "Send a heart to Youssef" Button
-    t =    16.49s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    16.53s     Synthesize event
-    t =    16.83s     Wait for app.asechka.ios to idle
-    t =    16.85s Tap "Send a heart to Youssef" Button
-    t =    16.85s     Wait for app.asechka.ios to idle
-    t =    16.88s     Find the "Send a heart to Youssef" Button
-    t =    16.95s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    17.15s     Synthesize event
-    t =    17.48s     Wait for app.asechka.ios to idle
+    t =     0.00s Start Test at 2026-10-25 03:17:21.387
+    t =     0.48s Set Up
+    t =     0.49s Open app.asechka.ios
+    t =     0.49s     Launch app.asechka.ios
+    t =     5.32s         Setting up automation session
+    t =     5.37s         Wait for app.asechka.ios to idle
+    t =     6.38s Waiting 15.0s for "Send a heart to Youssef" Button to exist
+    t =     7.42s     Checking `Expect predicate `existsNoRetry == 1` for object "Send a heart to Youssef" Button`
+    t =     7.42s         Checking existence of `"Send a heart to Youssef" Button`
+    t =     7.55s Find the "Create" Button
+    t =     7.84s Find the "Our corner" Button
+    t =     7.91s Find the "Saved" Button
+    t =     7.96s Find the "Our corner" Button
+    t =     8.02s Find the "Saved" Button
+    t =     8.06s Find the Target Application 'app.asechka.ios'
+    t =     8.08s Waiting 5.0s for "Post media" Other to exist
+    t =     9.12s     Checking `Expect predicate `existsNoRetry == 1` for object "Post media" Other`
+    t =     9.12s         Checking existence of `"Post media" Other`
+    t =     9.59s Find the "Home" Button
+    t =     9.60s Find the "Post media" Other
+    t =     9.69s Find the "Post media" Other
+    t =     9.84s Find the ScrollView (First Match)
+    t =     9.86s Find the Target Application 'app.asechka.ios'
+    t =     9.98s Added attachment named '00-iPhone-home-first-glance'
+    t =     9.98s Find the "Send a heart to Youssef" Button
+    t =    10.07s Find the ScrollView (First Match)
+    t =    10.08s Find the "Home" Button
+    t =    10.10s Find the "Send a heart to Youssef" Button
+    t =    10.18s Tap "Send a heart to Youssef" Button
+    t =    10.18s     Wait for app.asechka.ios to idle
+    t =    10.18s     Find the "Send a heart to Youssef" Button
+    t =    10.32s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    10.36s     Synthesize event
+    t =    10.87s     Wait for app.asechka.ios to idle
+    t =    10.87s Tap "Send a heart to Youssef" Button
+    t =    10.87s     Wait for app.asechka.ios to idle
+    t =    10.89s     Find the "Send a heart to Youssef" Button
+    t =    13.06s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    13.56s     Synthesize event
+    t =    14.14s     Wait for app.asechka.ios to idle
+    t =    14.14s Tap "Send a heart to Youssef" Button
+    t =    14.14s     Wait for app.asechka.ios to idle
+    t =    14.14s     Find the "Send a heart to Youssef" Button
+    t =    14.22s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    14.25s     Synthesize event
+    t =    14.54s     Wait for app.asechka.ios to idle
+    t =    14.54s Tap "Send a heart to Youssef" Button
+    t =    14.54s     Wait for app.asechka.ios to idle
+    t =    14.55s     Find the "Send a heart to Youssef" Button
+    t =    14.62s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    14.65s     Synthesize event
+    t =    14.96s     Wait for app.asechka.ios to idle
+    t =    14.96s Tap "Send a heart to Youssef" Button
+    t =    14.96s     Wait for app.asechka.ios to idle
+    t =    14.97s     Find the "Send a heart to Youssef" Button
+    t =    15.05s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    15.08s     Synthesize event
+    t =    15.38s     Wait for app.asechka.ios to idle
+    t =    15.39s Tap "Send a heart to Youssef" Button
+    t =    15.39s     Wait for app.asechka.ios to idle
+    t =    15.42s     Find the "Send a heart to Youssef" Button
+    t =    15.49s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    15.55s     Synthesize event
+    t =    15.85s     Wait for app.asechka.ios to idle
+    t =    15.85s Tap "Send a heart to Youssef" Button
+    t =    15.85s     Wait for app.asechka.ios to idle
+    t =    15.86s     Find the "Send a heart to Youssef" Button
+    t =    15.93s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    15.98s     Synthesize event
+    t =    16.28s     Wait for app.asechka.ios to idle
+    t =    16.28s Tap "Send a heart to Youssef" Button
+    t =    16.28s     Wait for app.asechka.ios to idle
+    t =    16.28s     Find the "Send a heart to Youssef" Button
+    t =    16.35s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    16.37s     Synthesize event
+    t =    16.67s     Wait for app.asechka.ios to idle
+    t =    16.67s Tap "Send a heart to Youssef" Button
+    t =    16.67s     Wait for app.asechka.ios to idle
+    t =    16.67s     Find the "Send a heart to Youssef" Button
+    t =    16.75s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    16.78s     Synthesize event
+    t =    17.08s     Wait for app.asechka.ios to idle
+    t =    17.08s Tap "Send a heart to Youssef" Button
+    t =    17.08s     Wait for app.asechka.ios to idle
+    t =    17.08s     Find the "Send a heart to Youssef" Button
+    t =    17.14s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    17.18s     Synthesize event
+    t =    17.50s     Wait for app.asechka.ios to idle
     t =    17.50s Tap "Send a heart to Youssef" Button
     t =    17.50s     Wait for app.asechka.ios to idle
-    t =    17.51s     Find the "Send a heart to Youssef" Button
-    t =    17.67s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    17.71s     Synthesize event
-    t =    18.01s     Wait for app.asechka.ios to idle
-    t =    18.02s Tap "Send a heart to Youssef" Button
-    t =    18.02s     Wait for app.asechka.ios to idle
-    t =    18.08s     Find the "Send a heart to Youssef" Button
-    t =    18.18s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    18.22s     Synthesize event
-    t =    18.51s     Wait for app.asechka.ios to idle
-    t =    18.52s Tap "Send a heart to Youssef" Button
-    t =    18.52s     Wait for app.asechka.ios to idle
-    t =    18.52s     Find the "Send a heart to Youssef" Button
-    t =    18.58s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    18.62s     Synthesize event
-    t =    18.94s     Wait for app.asechka.ios to idle
-    t =    18.95s Tap "Send a heart to Youssef" Button
-    t =    18.95s     Wait for app.asechka.ios to idle
-    t =    18.96s     Find the "Send a heart to Youssef" Button
-    t =    19.01s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    19.05s     Synthesize event
-    t =    19.36s     Wait for app.asechka.ios to idle
-    t =    19.36s Tap "Send a heart to Youssef" Button
-    t =    19.36s     Wait for app.asechka.ios to idle
-    t =    19.37s     Find the "Send a heart to Youssef" Button
-    t =    19.44s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    19.49s     Synthesize event
-    t =    19.78s     Wait for app.asechka.ios to idle
-    t =    19.78s Tap "Send a heart to Youssef" Button
-    t =    19.78s     Wait for app.asechka.ios to idle
-    t =    19.79s     Find the "Send a heart to Youssef" Button
-    t =    19.85s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    19.90s     Synthesize event
-    t =    20.20s     Wait for app.asechka.ios to idle
-    t =    20.20s Tap "Send a heart to Youssef" Button
-    t =    20.20s     Wait for app.asechka.ios to idle
-    t =    20.21s     Find the "Send a heart to Youssef" Button
-    t =    20.33s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    20.37s     Synthesize event
-    t =    20.69s     Wait for app.asechka.ios to idle
-    t =    20.69s Tap "Send a heart to Youssef" Button
-    t =    20.69s     Wait for app.asechka.ios to idle
-    t =    20.70s     Find the "Send a heart to Youssef" Button
-    t =    20.81s     Check for interrupting elements affecting "Send a heart to Youssef" Button
-    t =    21.58s     Synthesize event
-    t =    21.98s     Wait for app.asechka.ios to idle
-    t =    22.00s Waiting 5.0s for StaticText (First Match) to exist
-    t =    23.16s     Checking `Expect predicate `existsNoRetry == 1` for object StaticText (First Match)`
-    t =    23.16s         Checking existence of `StaticText (First Match)`
-    t =    23.27s Find the Target Application 'app.asechka.ios'
-    t =    23.45s Added attachment named '12-iPhone-home-hearts'
-    t =    23.45s Checking existence of `StaticText (First Match)`
-    t =    23.51s Press StaticText (First Match) for 1.1 seconds
-    t =    23.51s     Wait for app.asechka.ios to idle
-    t =    23.51s     Find the StaticText (First Match)
-    t =    23.58s     Check for interrupting elements affecting "Heart streak, 1 days" StaticText
-    t =    23.64s     Synthesize event
-    t =    24.98s     Wait for app.asechka.ios to idle
-    t =    25.53s Waiting 5.0s for "Our heart history" NavigationBar to exist
-    t =    26.58s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
-    t =    26.58s         Checking existence of `"Our heart history" NavigationBar`
-    t =    26.62s         Capturing element debug description
-    t =    27.56s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
-    t =    27.56s         Checking existence of `"Our heart history" NavigationBar`
-    t =    27.59s         Capturing element debug description
-    t =    28.54s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
-    t =    28.54s         Checking existence of `"Our heart history" NavigationBar`
-    t =    28.57s         Capturing element debug description
-    t =    29.62s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
-    t =    29.62s         Checking existence of `"Our heart history" NavigationBar`
-    t =    29.66s         Capturing element debug description
-    t =    30.53s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
-    t =    30.53s         Checking existence of `"Our heart history" NavigationBar`
-    t =    30.57s         Capturing element debug description
-    t =    30.57s     Checking existence of `"Our heart history" NavigationBar`
-    t =    30.60s Collecting debug information to assist test failure triage
-    t =    30.60s     Requesting snapshot of accessibility hierarchy for app with pid 13835
+    t =    17.52s     Find the "Send a heart to Youssef" Button
+    t =    17.56s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    17.60s     Synthesize event
+    t =    17.89s     Wait for app.asechka.ios to idle
+    t =    17.90s Tap "Send a heart to Youssef" Button
+    t =    17.90s     Wait for app.asechka.ios to idle
+    t =    17.90s     Find the "Send a heart to Youssef" Button
+    t =    18.00s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    18.03s     Synthesize event
+    t =    18.32s     Wait for app.asechka.ios to idle
+    t =    18.32s Tap "Send a heart to Youssef" Button
+    t =    18.32s     Wait for app.asechka.ios to idle
+    t =    18.33s     Find the "Send a heart to Youssef" Button
+    t =    18.37s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    18.40s     Synthesize event
+    t =    18.69s     Wait for app.asechka.ios to idle
+    t =    18.70s Tap "Send a heart to Youssef" Button
+    t =    18.70s     Wait for app.asechka.ios to idle
+    t =    18.70s     Find the "Send a heart to Youssef" Button
+    t =    18.74s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    18.77s     Synthesize event
+    t =    19.06s     Wait for app.asechka.ios to idle
+    t =    19.06s Tap "Send a heart to Youssef" Button
+    t =    19.06s     Wait for app.asechka.ios to idle
+    t =    19.07s     Find the "Send a heart to Youssef" Button
+    t =    19.12s     Check for interrupting elements affecting "Send a heart to Youssef" Button
+    t =    19.17s     Synthesize event
+    t =    19.47s     Wait for app.asechka.ios to idle
+    t =    19.47s Waiting 5.0s for StaticText (First Match) to exist
+    t =    20.52s     Checking `Expect predicate `existsNoRetry == 1` for object StaticText (First Match)`
+    t =    20.53s         Checking existence of `StaticText (First Match)`
+    t =    20.61s Find the Target Application 'app.asechka.ios'
+    t =    20.77s Added attachment named '12-iPhone-home-hearts'
+    t =    20.77s Checking existence of `StaticText (First Match)`
+    t =    20.82s Find the StaticText (First Match)
+    t =    20.85s Find the ScrollView (First Match)
+    t =    20.87s Find the "Home" Button
+    t =    20.90s Find the "Heart streak, 1 days" StaticText
+    t =    20.95s Find the "Heart streak, 1 days" StaticText
+    t =    21.01s Press "Heart streak, 1 days" StaticText for 1.2 seconds
+    t =    21.01s     Wait for app.asechka.ios to idle
+    t =    21.01s     Find the "Heart streak, 1 days" StaticText
+    t =    21.04s     Check for interrupting elements affecting "Heart streak, 1 days" StaticText
+    t =    21.07s     Synthesize event
+    t =    22.50s     Wait for app.asechka.ios to idle
+    t =    23.06s Waiting 5.0s for "Our heart history" NavigationBar to exist
+    t =    24.07s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
+    t =    24.07s         Checking existence of `"Our heart history" NavigationBar`
+    t =    24.10s         Capturing element debug description
+    t =    25.08s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
+    t =    25.08s         Checking existence of `"Our heart history" NavigationBar`
+    t =    25.11s         Capturing element debug description
+    t =    26.13s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
+    t =    26.14s         Checking existence of `"Our heart history" NavigationBar`
+    t =    26.16s         Capturing element debug description
+    t =    27.12s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
+    t =    27.12s         Checking existence of `"Our heart history" NavigationBar`
+    t =    27.14s         Capturing element debug description
+    t =    28.07s     Checking `Expect predicate `existsNoRetry == 1` for object "Our heart history" NavigationBar`
+    t =    28.07s         Checking existence of `"Our heart history" NavigationBar`
+    t =    28.09s         Capturing element debug description
+    t =    28.09s     Checking existence of `"Our heart history" NavigationBar`
+    t =    28.12s Collecting debug information to assist test failure triage
+    t =    28.12s     Requesting snapshot of accessibility hierarchy for app with pid 41951
 /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:64: error: -[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory] : XCTAssertTrue failed
-    t =    31.18s Find the Target Application 'app.asechka.ios'
-    t =    31.32s Added attachment named '13-iPhone-heart-history'
-    t =    31.32s Tap "Done" Button
-    t =    31.32s     Wait for app.asechka.ios to idle
-    t =    31.32s     Find the "Done" Button
-    t =    32.36s         Find the "Done" Button (retry 1)
-    t =    33.40s         Find the "Done" Button (retry 2)
-    t =    33.46s Requesting snapshot of accessibility hierarchy for app with pid 13835
+    t =    28.49s Find the Target Application 'app.asechka.ios'
+    t =    28.60s Added attachment named '13-iPhone-heart-history'
+    t =    28.60s Tap "Done" Button
+    t =    28.60s     Wait for app.asechka.ios to idle
+    t =    28.60s     Find the "Done" Button
+    t =    29.63s         Find the "Done" Button (retry 1)
+    t =    30.67s         Find the "Done" Button (retry 2)
+    t =    30.69s Requesting snapshot of accessibility hierarchy for app with pid 41951
 /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:64: error: -[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory] : Failed to tap "Done" Button: No matches found for Elements matching predicate '"Done" IN identifiers' from input {(
     Button, identifier: 'plus.app', label: 'Create post',
     Button, label: 'Profile and settings',
@@ -1101,311 +1108,311 @@ Automation type mismatch: computed Button from legacy attributes vs PopUpButton 
     "XC_kAXXCAttributeTraits" = 1108101562369;
 }
 See test report attachments for more detail.
-    t =    33.55s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory]' failed (33.822 seconds).
+    t =    30.75s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory]' failed (30.963 seconds).
 Test Case '-[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer]' started.
-    t =     0.00s Start Test at 2026-10-25 03:11:02.778
-    t =     0.08s Set Up
-    t =     0.08s Open app.asechka.ios
-    t =     0.08s     Launch app.asechka.ios
-    t =     0.08s         Terminate app.asechka.ios:13835
-    t =     1.74s         Setting up automation session
-    t =     2.88s         Wait for app.asechka.ios to idle
-    t =     4.33s Waiting 15.0s for "Create post" Button to exist
-    t =     5.35s     Checking `Expect predicate `existsNoRetry == 1` for object "Create post" Button`
-    t =     5.35s         Checking existence of `"Create post" Button`
-    t =     5.46s Checking existence of `"Home" Button`
-    t =     5.48s Checking existence of `"Photos" Button`
-    t =     5.52s Checking existence of `"Quotes" Button`
-    t =     5.54s Checking existence of `"Music" Button`
-    t =     5.56s Checking existence of `"Our days" Button`
-    t =     5.66s Checking existence of `"Words" Button`
-    t =     5.69s Find the Target Application 'app.asechka.ios'
-    t =     5.82s Added attachment named '01-iPhone-home'
-    t =     5.82s Tap "Photos" Button
-    t =     5.82s     Wait for app.asechka.ios to idle
-    t =     5.83s     Find the "Photos" Button
-    t =     5.86s     Check for interrupting elements affecting "Photos" Button
-    t =     5.90s     Synthesize event
-    t =     6.23s     Wait for app.asechka.ios to idle
-    t =     6.52s Waiting 8.0s for "Our shared photo" Other to exist
-    t =     7.58s     Checking `Expect predicate `existsNoRetry == 1` for object "Our shared photo" Other`
-    t =     7.58s         Checking existence of `"Our shared photo" Other`
-    t =     7.64s Find the "Our shared photo" Other
-    t =     7.71s Find the Target Application 'app.asechka.ios'
-    t =     7.84s Added attachment named '02-iPhone-photos'
-    t =     7.84s Tap "Quotes" Button
-    t =     7.84s     Wait for app.asechka.ios to idle
-    t =     7.84s     Find the "Quotes" Button
-    t =     7.86s     Check for interrupting elements affecting "Quotes" Button
-    t =     7.89s     Synthesize event
-    t =     8.21s     Wait for app.asechka.ios to idle
-    t =     8.22s Tap "Create post" Button
-    t =     8.22s     Wait for app.asechka.ios to idle
-    t =     8.22s     Find the "Create post" Button
-    t =     8.28s     Check for interrupting elements affecting "plus.app" Button
-    t =     8.32s     Synthesize event
-    t =     8.63s     Wait for app.asechka.ios to idle
-    t =     8.75s Waiting 5.0s for "Quote text" TextView to exist
-    t =     9.79s     Checking `Expect predicate `existsNoRetry == 1` for object "Quote text" TextView`
-    t =     9.79s         Checking existence of `"Quote text" TextView`
-    t =     9.91s Tap "Quote text" TextView
-    t =     9.91s     Wait for app.asechka.ios to idle
-    t =     9.92s     Find the "Quote text" TextView
-    t =     9.97s     Check for interrupting elements affecting "Quote text" TextView
-    t =    10.04s     Synthesize event
-    t =    10.37s     Wait for app.asechka.ios to idle
-    t =    11.46s Type 'A little native mo...' into "Quote text" TextView
-    t =    11.46s     Wait for app.asechka.ios to idle
-    t =    12.00s     Find the "Quote text" TextView
-    t =    12.52s     Check for interrupting elements affecting "Quote text" TextView
-    t =    12.66s     Synthesize event
-    t =    13.56s     Wait for app.asechka.ios to idle
-    t =    13.60s Find the Target Application 'app.asechka.ios'
-    t =    13.98s Added attachment named '03-iPhone-composer'
-    t =    13.99s Tap "Share" Button
-    t =    13.99s     Wait for app.asechka.ios to idle
-    t =    13.99s     Find the "Share" Button
-    t =    14.09s     Check for interrupting elements affecting "Share" Button
-    t =    14.15s     Synthesize event
-    t =    14.51s     Wait for app.asechka.ios to idle
-    t =    14.53s Waiting 5.0s for "Create post" Button to exist
-    t =    15.57s     Checking `Expect predicate `existsNoRetry == 1` for object "Create post" Button`
-    t =    15.57s         Checking existence of `"Create post" Button`
-    t =    15.62s Tap "Home" Button
-    t =    15.62s     Wait for app.asechka.ios to idle
-    t =    15.62s     Find the "Home" Button
-    t =    15.66s     Check for interrupting elements affecting "Home" Button
-    t =    15.72s     Synthesize event
-    t =    16.04s     Wait for app.asechka.ios to idle
-    t =    16.05s Find the "Like post" Button
-    t =    16.19s Find the ScrollView (First Match)
-    t =    16.22s Find the "Home" Button
-    t =    16.26s Find the "heart" Button
-    t =    16.35s Press ScrollView at {{0.0, 142.3}, {402.0, 731.7}}[0.50, 0.78] for 0.0 seconds, then drag to ScrollView at {{0.0, 142.3}, {402.0, 731.7}}[0.50, 0.38] with velocity of 500.00 pixels per second, and then hold for 0.0 seconds 
-    t =    16.35s     Wait for app.asechka.ios to idle
-    t =    16.35s     Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
-    t =    16.37s     Check for interrupting elements affecting ScrollView
-    t =    16.41s     Synthesize event
-    t =    16.41s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
-    t =    16.43s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
-    t =    16.45s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
-    t =    16.50s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
-    t =    16.53s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
-    t =    17.41s     Wait for app.asechka.ios to idle
-    t =    18.99s Find the "heart" Button
-    t =    19.13s Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
-    t =    19.16s Find the "Home" Button
-    t =    19.19s Find the "heart" Button
-    t =    19.40s Waiting 5.0s for "heart" Button to exist
-    t =    20.44s     Checking `Expect predicate `existsNoRetry == 1` for object "heart" Button`
-    t =    20.44s         Checking existence of `"heart" Button`
-    t =    20.93s Tap "heart" Button
-    t =    20.93s     Wait for app.asechka.ios to idle
-    t =    20.93s     Find the "heart" Button
-    t =    21.04s     Check for interrupting elements affecting "heart" Button
-    t =    21.12s     Synthesize event
-    t =    21.41s     Wait for app.asechka.ios to idle
-    t =    21.43s Waiting 5.0s for "Unlike post" Button to exist
-    t =    22.45s     Checking `Expect predicate `existsNoRetry == 1` for object "Unlike post" Button`
-    t =    22.45s         Checking existence of `"Unlike post" Button`
-    t =    22.80s Tap "Comments" Button
-    t =    22.80s     Wait for app.asechka.ios to idle
-    t =    22.80s     Find the "Comments" Button
-    t =    22.92s     Check for interrupting elements affecting "bubble.right" Button
-    t =    22.96s     Synthesize event
-    t =    23.26s     Wait for app.asechka.ios to idle
-    t =    23.70s Waiting 5.0s for "Leave a little love…" TextField to exist
-    t =    24.75s     Checking `Expect predicate `existsNoRetry == 1` for object "Leave a little love…" TextField`
-    t =    24.75s         Checking existence of `"Leave a little love…" TextField`
-    t =    24.84s Tap "Leave a little love…" TextField
-    t =    24.84s     Wait for app.asechka.ios to idle
-    t =    24.84s     Find the "Leave a little love…" TextField
-    t =    24.89s     Check for interrupting elements affecting "Leave a little love…" TextField
-    t =    24.95s     Synthesize event
-    t =    25.24s     Wait for app.asechka.ios to idle
-    t =    25.68s Type 'Kept close, even o...' into "Leave a little love…" TextField
-    t =    25.68s     Wait for app.asechka.ios to idle
-    t =    25.68s     Find the "Leave a little love…" TextField
-    t =    25.77s     Check for interrupting elements affecting "Leave a little love…" TextField
-    t =    25.84s     Synthesize event
-    t =    26.47s     Wait for app.asechka.ios to idle
-    t =    26.47s Tap "Send comment" Button
-    t =    26.47s     Wait for app.asechka.ios to idle
-    t =    26.48s     Find the "Send comment" Button
-    t =    26.54s     Check for interrupting elements affecting "arrow.up" Button
-    t =    26.60s     Synthesize event
-    t =    26.90s     Wait for app.asechka.ios to idle
-    t =    26.91s Waiting 5.0s for "Kept close, even offline." StaticText to exist
-    t =    27.94s     Checking `Expect predicate `existsNoRetry == 1` for object "Kept close, even offline." StaticText`
-    t =    27.94s         Checking existence of `"Kept close, even offline." StaticText`
-    t =    28.20s Find the Target Application 'app.asechka.ios'
-    t =    28.35s Added attachment named '04-iPhone-comments'
-    t =    28.35s Tap "Done" Button
-    t =    28.35s     Wait for app.asechka.ios to idle
-    t =    28.35s     Find the "Done" Button
-    t =    28.43s     Check for interrupting elements affecting "Done" Button
-    t =    28.51s     Synthesize event
-    t =    28.83s     Wait for app.asechka.ios to idle
-    t =    29.24s Tap "Our days" Button
-    t =    29.24s     Wait for app.asechka.ios to idle
-    t =    29.25s     Find the "Our days" Button
-    t =    29.29s     Check for interrupting elements affecting "Our days" Button
-    t =    29.34s     Synthesize event
-    t =    29.66s     Wait for app.asechka.ios to idle
-    t =    29.67s Waiting 5.0s for "Our little days." StaticText to exist
-    t =    30.69s     Checking `Expect predicate `existsNoRetry == 1` for object "Our little days." StaticText`
-    t =    30.69s         Checking existence of `"Our little days." StaticText`
-    t =    30.74s Find the Target Application 'app.asechka.ios'
-    t =    30.86s Added attachment named '05-iPhone-days'
-    t =    30.86s Tap "Words" Button
-    t =    30.86s     Wait for app.asechka.ios to idle
-    t =    30.87s     Find the "Words" Button
-    t =    30.90s     Check for interrupting elements affecting "Words" Button
-    t =    31.01s     Synthesize event
-    t =    31.31s     Wait for app.asechka.ios to idle
-    t =    31.32s Find the Target Application 'app.asechka.ios'
-    t =    31.47s Added attachment named '06-iPhone-words'
-    t =    31.47s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer]' passed (31.737 seconds).
-Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' started.
-    t =     0.00s Start Test at 2026-10-25 03:11:34.515
-    t =     0.05s Set Up
-    t =     0.06s Open app.asechka.ios
-    t =     0.06s     Launch app.asechka.ios
-    t =     0.06s         Terminate app.asechka.ios:15267
+    t =     0.00s Start Test at 2026-10-25 03:17:52.350
+    t =     0.02s Set Up
+    t =     0.02s Open app.asechka.ios
+    t =     0.02s     Launch app.asechka.ios
+    t =     0.02s         Terminate app.asechka.ios:41951
     t =     1.32s         Setting up automation session
-    t =     2.72s         Wait for app.asechka.ios to idle
-    t =     4.18s Waiting 15.0s for "Our days" Button to exist
-    t =     5.21s     Checking `Expect predicate `existsNoRetry == 1` for object "Our days" Button`
-    t =     5.21s         Checking existence of `"Our days" Button`
-    t =     5.34s Tap "Our days" Button
-    t =     5.34s     Wait for app.asechka.ios to idle
-    t =     5.36s     Find the "Our days" Button
-    t =     5.40s     Check for interrupting elements affecting "Our days" Button
-    t =     5.44s     Synthesize event
-    t =     5.76s     Wait for app.asechka.ios to idle
-    t =     5.77s Tap "Our little book" Button
-    t =     5.77s     Wait for app.asechka.ios to idle
-    t =     5.78s     Find the "Our little book" Button
-    t =     5.84s     Check for interrupting elements affecting "Our little book" Button
-    t =     5.88s     Synthesize event
-    t =     6.18s     Wait for app.asechka.ios to idle
-    t =     6.62s Waiting 5.0s for "Tiny victories" Button to exist
-    t =     7.64s     Checking `Expect predicate `existsNoRetry == 1` for object "Tiny victories" Button`
-    t =     7.64s         Checking existence of `"Tiny victories" Button`
-    t =     7.82s Tap "Add a victory" Button
-    t =     7.82s     Wait for app.asechka.ios to idle
-    t =     7.82s     Find the "Add a victory" Button
-    t =     7.85s     Check for interrupting elements affecting "Add a victory" Button
-    t =     7.89s     Synthesize event
-    t =     8.20s     Wait for app.asechka.ios to idle
-    t =     8.29s Waiting 5.0s for "Title" TextField to exist
-    t =     9.37s     Checking `Expect predicate `existsNoRetry == 1` for object "Title" TextField`
-    t =     9.37s         Checking existence of `"Title" TextField`
-    t =     9.50s Tap "Title" TextField
-    t =     9.51s     Wait for app.asechka.ios to idle
-    t =     9.51s     Find the "Title" TextField
-    t =     9.59s     Check for interrupting elements affecting "Title" TextField
-    t =     9.65s     Synthesize event
-    t =     9.95s     Wait for app.asechka.ios to idle
-    t =    10.27s Type 'A little win, kept...' into "Title" TextField
-    t =    10.27s     Wait for app.asechka.ios to idle
-    t =    10.80s     Find the "Title" TextField
-    t =    10.96s     Check for interrupting elements affecting "Title" TextField
-    t =    11.04s     Synthesize event
-    t =    11.78s     Wait for app.asechka.ios to idle
-    t =    12.04s Tap "Save" Button
-    t =    12.04s     Wait for app.asechka.ios to idle
-    t =    12.12s     Find the "Save" Button
-    t =    12.60s     Check for interrupting elements affecting "Save" Button
-    t =    12.74s     Synthesize event
-    t =    13.12s     Wait for app.asechka.ios to idle
-    t =    13.55s Waiting 5.0s for "A little win, kept together" StaticText to exist
-    t =    14.59s     Checking `Expect predicate `existsNoRetry == 1` for object "A little win, kept together" StaticText`
-    t =    14.59s         Checking existence of `"A little win, kept together" StaticText`
+    t =     2.02s         Wait for app.asechka.ios to idle
+    t =     3.30s Waiting 15.0s for "Create post" Button to exist
+    t =     4.36s     Checking `Expect predicate `existsNoRetry == 1` for object "Create post" Button`
+    t =     4.36s         Checking existence of `"Create post" Button`
+    t =     4.45s Checking existence of `"Home" Button`
+    t =     4.48s Checking existence of `"Photos" Button`
+    t =     4.50s Checking existence of `"Quotes" Button`
+    t =     4.52s Checking existence of `"Music" Button`
+    t =     4.53s Checking existence of `"Our days" Button`
+    t =     4.57s Checking existence of `"Words" Button`
+    t =     4.59s Find the Target Application 'app.asechka.ios'
+    t =     4.71s Added attachment named '01-iPhone-home'
+    t =     4.71s Tap "Photos" Button
+    t =     4.71s     Wait for app.asechka.ios to idle
+    t =     4.71s     Find the "Photos" Button
+    t =     4.74s     Check for interrupting elements affecting "Photos" Button
+    t =     4.89s     Synthesize event
+    t =     5.24s     Wait for app.asechka.ios to idle
+    t =     5.47s Waiting 8.0s for "Our shared photo" Other to exist
+    t =     6.51s     Checking `Expect predicate `existsNoRetry == 1` for object "Our shared photo" Other`
+    t =     6.51s         Checking existence of `"Our shared photo" Other`
+    t =     6.56s Find the "Our shared photo" Other
+    t =     6.63s Find the Target Application 'app.asechka.ios'
+    t =     6.75s Added attachment named '02-iPhone-photos'
+    t =     6.75s Tap "Quotes" Button
+    t =     6.75s     Wait for app.asechka.ios to idle
+    t =     6.75s     Find the "Quotes" Button
+    t =     6.77s     Check for interrupting elements affecting "Quotes" Button
+    t =     6.80s     Synthesize event
+    t =     7.10s     Wait for app.asechka.ios to idle
+    t =     7.11s Tap "Create post" Button
+    t =     7.11s     Wait for app.asechka.ios to idle
+    t =     7.12s     Find the "Create post" Button
+    t =     7.17s     Check for interrupting elements affecting "plus.app" Button
+    t =     7.20s     Synthesize event
+    t =     7.51s     Wait for app.asechka.ios to idle
+    t =     7.58s Waiting 5.0s for "Quote text" TextView to exist
+    t =     8.64s     Checking `Expect predicate `existsNoRetry == 1` for object "Quote text" TextView`
+    t =     8.64s         Checking existence of `"Quote text" TextView`
+    t =     8.71s Tap "Quote text" TextView
+    t =     8.71s     Wait for app.asechka.ios to idle
+    t =     8.72s     Find the "Quote text" TextView
+    t =     8.75s     Check for interrupting elements affecting "Quote text" TextView
+    t =     8.79s     Synthesize event
+    t =     9.08s     Wait for app.asechka.ios to idle
+    t =     9.58s Type 'A little native mo...' into "Quote text" TextView
+    t =     9.58s     Wait for app.asechka.ios to idle
+    t =    10.08s     Find the "Quote text" TextView
+    t =    10.18s     Check for interrupting elements affecting "Quote text" TextView
+    t =    10.25s     Synthesize event
+    t =    11.10s     Wait for app.asechka.ios to idle
+    t =    11.10s Find the Target Application 'app.asechka.ios'
+    t =    11.31s Added attachment named '03-iPhone-composer'
+    t =    11.31s Tap "Share" Button
+    t =    11.31s     Wait for app.asechka.ios to idle
+    t =    11.31s     Find the "Share" Button
+    t =    11.38s     Check for interrupting elements affecting "Share" Button
+    t =    11.42s     Synthesize event
+    t =    11.73s     Wait for app.asechka.ios to idle
+    t =    12.15s Waiting 5.0s for "Create post" Button to exist
+    t =    13.18s     Checking `Expect predicate `existsNoRetry == 1` for object "Create post" Button`
+    t =    13.18s         Checking existence of `"Create post" Button`
+    t =    13.21s Tap "Home" Button
+    t =    13.21s     Wait for app.asechka.ios to idle
+    t =    13.21s     Find the "Home" Button
+    t =    13.27s     Check for interrupting elements affecting "Home" Button
+    t =    13.29s     Synthesize event
+    t =    13.58s     Wait for app.asechka.ios to idle
+    t =    13.58s Find the "Like post" Button
+    t =    13.65s Find the ScrollView (First Match)
+    t =    13.67s Find the "Home" Button
+    t =    13.70s Find the "heart" Button
+    t =    13.79s Press ScrollView at {{0.0, 142.3}, {402.0, 731.7}}[0.50, 0.78] for 0.0 seconds, then drag to ScrollView at {{0.0, 142.3}, {402.0, 731.7}}[0.50, 0.38] with velocity of 500.00 pixels per second, and then hold for 0.0 seconds 
+    t =    13.79s     Wait for app.asechka.ios to idle
+    t =    13.79s     Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
+    t =    13.80s     Check for interrupting elements affecting ScrollView
+    t =    13.84s     Synthesize event
+    t =    13.84s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
+    t =    13.86s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
+    t =    13.88s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
+    t =    13.92s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
+    t =    13.94s         Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
+    t =    14.80s     Wait for app.asechka.ios to idle
+    t =    14.80s Find the "heart" Button
+    t =    14.93s Find the ScrollView at {{0.0, 142.3}, {402.0, 731.7}}
+    t =    14.95s Find the "Home" Button
+    t =    14.97s Find the "heart" Button
+    t =    15.05s Waiting 5.0s for "heart" Button to exist
+    t =    16.07s     Checking `Expect predicate `existsNoRetry == 1` for object "heart" Button`
+    t =    16.07s         Checking existence of `"heart" Button`
+    t =    16.14s Tap "heart" Button
+    t =    16.14s     Wait for app.asechka.ios to idle
+    t =    16.14s     Find the "heart" Button
+    t =    16.19s     Check for interrupting elements affecting "heart" Button
+    t =    16.22s     Synthesize event
+    t =    16.51s     Wait for app.asechka.ios to idle
+    t =    16.51s Waiting 5.0s for "Unlike post" Button to exist
+    t =    17.54s     Checking `Expect predicate `existsNoRetry == 1` for object "Unlike post" Button`
+    t =    17.54s         Checking existence of `"Unlike post" Button`
+    t =    17.63s Tap "Comments" Button
+    t =    17.63s     Wait for app.asechka.ios to idle
+    t =    17.64s     Find the "Comments" Button
+    t =    17.72s     Check for interrupting elements affecting "bubble.right" Button
+    t =    17.75s     Synthesize event
+    t =    18.05s     Wait for app.asechka.ios to idle
+    t =    18.47s Waiting 5.0s for "Leave a little love…" TextField to exist
+    t =    19.52s     Checking `Expect predicate `existsNoRetry == 1` for object "Leave a little love…" TextField`
+    t =    19.52s         Checking existence of `"Leave a little love…" TextField`
+    t =    19.57s Tap "Leave a little love…" TextField
+    t =    19.57s     Wait for app.asechka.ios to idle
+    t =    19.57s     Find the "Leave a little love…" TextField
+    t =    19.62s     Check for interrupting elements affecting "Leave a little love…" TextField
+    t =    19.65s     Synthesize event
+    t =    19.94s     Wait for app.asechka.ios to idle
+    t =    20.38s Type 'Kept close, even o...' into "Leave a little love…" TextField
+    t =    20.38s     Wait for app.asechka.ios to idle
+    t =    20.38s     Find the "Leave a little love…" TextField
+    t =    20.44s     Check for interrupting elements affecting "Leave a little love…" TextField
+    t =    20.48s     Synthesize event
+    t =    21.10s     Wait for app.asechka.ios to idle
+    t =    21.10s Tap "Send comment" Button
+    t =    21.10s     Wait for app.asechka.ios to idle
+    t =    21.11s     Find the "Send comment" Button
+    t =    21.16s     Check for interrupting elements affecting "arrow.up" Button
+    t =    21.20s     Synthesize event
+    t =    21.49s     Wait for app.asechka.ios to idle
+    t =    21.50s Waiting 5.0s for "Kept close, even offline." StaticText to exist
+    t =    22.54s     Checking `Expect predicate `existsNoRetry == 1` for object "Kept close, even offline." StaticText`
+    t =    22.54s         Checking existence of `"Kept close, even offline." StaticText`
+    t =    22.79s Find the Target Application 'app.asechka.ios'
+    t =    22.89s Added attachment named '04-iPhone-comments'
+    t =    22.89s Tap "Done" Button
+    t =    22.89s     Wait for app.asechka.ios to idle
+    t =    22.90s     Find the "Done" Button
+    t =    22.95s     Check for interrupting elements affecting "Done" Button
+    t =    22.99s     Synthesize event
+    t =    23.29s     Wait for app.asechka.ios to idle
+    t =    23.65s Tap "Our days" Button
+    t =    23.65s     Wait for app.asechka.ios to idle
+    t =    23.66s     Find the "Our days" Button
+    t =    23.70s     Check for interrupting elements affecting "Our days" Button
+    t =    23.73s     Synthesize event
+    t =    24.01s     Wait for app.asechka.ios to idle
+    t =    24.02s Waiting 5.0s for "Our little days." StaticText to exist
+    t =    25.07s     Checking `Expect predicate `existsNoRetry == 1` for object "Our little days." StaticText`
+    t =    25.07s         Checking existence of `"Our little days." StaticText`
+    t =    25.11s Find the Target Application 'app.asechka.ios'
+    t =    25.18s Added attachment named '05-iPhone-days'
+    t =    25.18s Tap "Words" Button
+    t =    25.18s     Wait for app.asechka.ios to idle
+    t =    25.19s     Find the "Words" Button
+    t =    25.21s     Check for interrupting elements affecting "Words" Button
+    t =    25.23s     Synthesize event
+    t =    25.52s     Wait for app.asechka.ios to idle
+    t =    25.52s Find the Target Application 'app.asechka.ios'
+    t =    25.61s Added attachment named '06-iPhone-words'
+    t =    25.61s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer]' passed (25.842 seconds).
+Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' started.
+    t =     0.00s Start Test at 2026-10-25 03:18:18.192
+    t =     0.02s Set Up
+    t =     0.02s Open app.asechka.ios
+    t =     0.02s     Launch app.asechka.ios
+    t =     0.02s         Terminate app.asechka.ios:43447
+    t =     1.27s         Setting up automation session
+    t =     2.03s         Wait for app.asechka.ios to idle
+    t =     3.33s Waiting 15.0s for "Our days" Button to exist
+    t =     4.37s     Checking `Expect predicate `existsNoRetry == 1` for object "Our days" Button`
+    t =     4.37s         Checking existence of `"Our days" Button`
+    t =     4.50s Tap "Our days" Button
+    t =     4.50s     Wait for app.asechka.ios to idle
+    t =     4.51s     Find the "Our days" Button
+    t =     4.54s     Check for interrupting elements affecting "Our days" Button
+    t =     4.57s     Synthesize event
+    t =     4.88s     Wait for app.asechka.ios to idle
+    t =     4.88s Tap "Our little book" Button
+    t =     4.88s     Wait for app.asechka.ios to idle
+    t =     4.89s     Find the "Our little book" Button
+    t =     4.92s     Check for interrupting elements affecting "Our little book" Button
+    t =     4.94s     Synthesize event
+    t =     5.24s     Wait for app.asechka.ios to idle
+    t =     5.68s Waiting 5.0s for "Tiny victories" Button to exist
+    t =     6.71s     Checking `Expect predicate `existsNoRetry == 1` for object "Tiny victories" Button`
+    t =     6.71s         Checking existence of `"Tiny victories" Button`
+    t =     6.83s Tap "Add a victory" Button
+    t =     6.83s     Wait for app.asechka.ios to idle
+    t =     6.83s     Find the "Add a victory" Button
+    t =     6.87s     Check for interrupting elements affecting "Add a victory" Button
+    t =     6.90s     Synthesize event
+    t =     7.19s     Wait for app.asechka.ios to idle
+    t =     7.66s Waiting 5.0s for "Title" TextField to exist
+    t =     8.71s     Checking `Expect predicate `existsNoRetry == 1` for object "Title" TextField`
+    t =     8.71s         Checking existence of `"Title" TextField`
+    t =     8.80s Tap "Title" TextField
+    t =     8.80s     Wait for app.asechka.ios to idle
+    t =     8.80s     Find the "Title" TextField
+    t =     8.85s     Check for interrupting elements affecting "Title" TextField
+    t =     8.88s     Synthesize event
+    t =     9.19s     Wait for app.asechka.ios to idle
+    t =     9.69s Type 'A little win, kept...' into "Title" TextField
+    t =     9.69s     Wait for app.asechka.ios to idle
+    t =     9.69s     Find the "Title" TextField
+    t =     9.76s     Check for interrupting elements affecting "Title" TextField
+    t =     9.81s     Synthesize event
+    t =    10.45s     Wait for app.asechka.ios to idle
+    t =    10.45s Tap "Save" Button
+    t =    10.45s     Wait for app.asechka.ios to idle
+    t =    10.45s     Find the "Save" Button
+    t =    10.51s     Check for interrupting elements affecting "Save" Button
+    t =    10.56s     Synthesize event
+    t =    10.85s     Wait for app.asechka.ios to idle
+    t =    11.28s Waiting 5.0s for "A little win, kept together" StaticText to exist
+    t =    12.29s     Checking `Expect predicate `existsNoRetry == 1` for object "A little win, kept together" StaticText`
+    t =    12.29s         Checking existence of `"A little win, kept together" StaticText`
+    t =    12.32s Find the Target Application 'app.asechka.ios'
+    t =    12.40s Added attachment named '07-iPhone-little-book'
+    t =    12.40s Tap "Recipes for two" Button
+    t =    12.40s     Wait for app.asechka.ios to idle
+    t =    12.41s     Find the "Recipes for two" Button
+    t =    12.43s     Check for interrupting elements affecting "Recipes for two" Button
+    t =    12.46s     Synthesize event
+    t =    12.75s     Wait for app.asechka.ios to idle
+    t =    12.76s Tap "Add a recipe" Button
+    t =    12.76s     Wait for app.asechka.ios to idle
+    t =    12.76s     Find the "Add a recipe" Button
+    t =    12.79s     Check for interrupting elements affecting "Add a recipe" Button
+    t =    12.81s     Synthesize event
+    t =    13.10s     Wait for app.asechka.ios to idle
+    t =    13.56s Waiting 5.0s for "Choose a recipe photo" Button to exist
+    t =    14.58s     Checking `Expect predicate `existsNoRetry == 1` for object "Choose a recipe photo" Button`
+    t =    14.58s         Checking existence of `"Choose a recipe photo" Button`
     t =    14.65s Find the Target Application 'app.asechka.ios'
-    t =    14.77s Added attachment named '07-iPhone-little-book'
-    t =    14.77s Tap "Recipes for two" Button
-    t =    14.77s     Wait for app.asechka.ios to idle
-    t =    14.77s     Find the "Recipes for two" Button
-    t =    14.83s     Check for interrupting elements affecting "Recipes for two" Button
-    t =    14.89s     Synthesize event
-    t =    15.23s     Wait for app.asechka.ios to idle
-    t =    15.23s Tap "Add a recipe" Button
-    t =    15.23s     Wait for app.asechka.ios to idle
-    t =    15.24s     Find the "Add a recipe" Button
-    t =    15.30s     Check for interrupting elements affecting "Add a recipe" Button
-    t =    15.34s     Synthesize event
-    t =    15.64s     Wait for app.asechka.ios to idle
-    t =    16.15s Waiting 5.0s for "Choose a recipe photo" Button to exist
-    t =    17.18s     Checking `Expect predicate `existsNoRetry == 1` for object "Choose a recipe photo" Button`
-    t =    17.18s         Checking existence of `"Choose a recipe photo" Button`
-    t =    17.28s Find the Target Application 'app.asechka.ios'
-    t =    17.40s Added attachment named '08-iPhone-recipe-editor'
-    t =    17.40s Tap "Cancel" Button
-    t =    17.40s     Wait for app.asechka.ios to idle
-    t =    17.40s     Find the "Cancel" Button
-    t =    17.48s     Check for interrupting elements affecting "Cancel" Button
-    t =    17.54s     Synthesize event
-    t =    17.85s     Wait for app.asechka.ios to idle
-    t =    18.25s Tap "Inside jokes" Button
-    t =    18.25s     Wait for app.asechka.ios to idle
-    t =    18.26s     Find the "Inside jokes" Button
-    t =    18.29s     Check for interrupting elements affecting "Inside jokes" Button
-    t =    18.33s     Synthesize event
-    t =    18.63s     Wait for app.asechka.ios to idle
-    t =    18.63s Checking existence of `"Find one of our inside jokes…" TextField`
-    t =    18.67s Tap "Done" Button
-    t =    18.67s     Wait for app.asechka.ios to idle
-    t =    18.67s     Find the "Done" Button
-    t =    18.70s     Check for interrupting elements affecting "Done" Button
-    t =    18.74s     Synthesize event
-    t =    19.04s     Wait for app.asechka.ios to idle
-    t =    19.41s Tap "Since us · letters & little things" Button
-    t =    19.41s     Wait for app.asechka.ios to idle
-    t =    19.41s     Find the "Since us · letters & little things" Button
-    t =    19.46s     Check for interrupting elements affecting "Since us · letters & little things" Button
-    t =    19.51s     Synthesize event
-    t =    19.81s     Wait for app.asechka.ios to idle
-    t =    20.27s Waiting 5.0s for "September 27, 2026" StaticText to exist
-    t =    21.34s     Checking `Expect predicate `existsNoRetry == 1` for object "September 27, 2026" StaticText`
-    t =    21.34s         Checking existence of `"September 27, 2026" StaticText`
-    t =    21.39s Find the Target Application 'app.asechka.ios'
-    t =    21.52s Added attachment named '09-iPhone-since-us'
-    t =    21.52s Tap "Open when…" Button
-    t =    21.52s     Wait for app.asechka.ios to idle
-    t =    21.52s     Find the "Open when…" Button
-    t =    21.57s     Check for interrupting elements affecting "Open when…" Button
-    t =    21.60s     Synthesize event
-    t =    21.91s     Wait for app.asechka.ios to idle
-    t =    21.91s Find the Target Application 'app.asechka.ios'
-    t =    22.04s Added attachment named '10-iPhone-open-when-letters'
-    t =    22.04s Waiting 5.0s for Button (First Match) to exist
-    t =    23.05s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
-    t =    23.05s         Checking existence of `Button (First Match)`
-    t =    23.21s Tap Button (First Match)
-    t =    23.21s     Wait for app.asechka.ios to idle
-    t =    23.22s     Find the Button (First Match)
-    t =    23.39s     Check for interrupting elements affecting "you miss me, Open with love ♡" Button
-    t =    23.43s     Synthesize event
-    t =    23.74s     Wait for app.asechka.ios to idle
-    t =    24.18s Waiting 5.0s for "Keep it close ♡" Button to exist
-    t =    25.22s     Checking `Expect predicate `existsNoRetry == 1` for object "Keep it close ♡" Button`
-    t =    25.22s         Checking existence of `"Keep it close ♡" Button`
-    t =    25.32s Find the Target Application 'app.asechka.ios'
-    t =    25.46s Added attachment named '11-iPhone-letter'
-    t =    25.46s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' passed (25.785 seconds).
-Test Suite 'NativeJourneyTests' failed at 2026-10-25 03:12:00.301.
-	 Executed 3 tests, with 2 failures (0 unexpected) in 91.345 (91.346) seconds
-Test Suite 'AsechkaUITests.xctest' failed at 2026-10-25 03:12:00.305.
-	 Executed 3 tests, with 2 failures (0 unexpected) in 91.345 (91.350) seconds
-Test Suite 'All tests' failed at 2026-10-25 03:12:00.307.
-	 Executed 3 tests, with 2 failures (0 unexpected) in 91.345 (91.352) seconds
-2026-10-25 03:12:17.490 xcodebuild[12472:41948] [MT] IDETestOperationsObserverDebug: 166.991 elapsed -- Testing started completed.
-2026-10-25 03:12:17.490 xcodebuild[12472:41948] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
-2026-10-25 03:12:17.490 xcodebuild[12472:41948] [MT] IDETestOperationsObserverDebug: 166.991 sec, +166.991 sec -- end
+    t =    14.75s Added attachment named '08-iPhone-recipe-editor'
+    t =    14.75s Tap "Cancel" Button
+    t =    14.75s     Wait for app.asechka.ios to idle
+    t =    14.75s     Find the "Cancel" Button
+    t =    14.80s     Check for interrupting elements affecting "Cancel" Button
+    t =    14.85s     Synthesize event
+    t =    15.14s     Wait for app.asechka.ios to idle
+    t =    15.62s Tap "Inside jokes" Button
+    t =    15.62s     Wait for app.asechka.ios to idle
+    t =    15.62s     Find the "Inside jokes" Button
+    t =    15.64s     Check for interrupting elements affecting "Inside jokes" Button
+    t =    15.67s     Synthesize event
+    t =    15.96s     Wait for app.asechka.ios to idle
+    t =    15.97s Checking existence of `"Find one of our inside jokes…" TextField`
+    t =    15.99s Tap "Done" Button
+    t =    15.99s     Wait for app.asechka.ios to idle
+    t =    16.00s     Find the "Done" Button
+    t =    16.02s     Check for interrupting elements affecting "Done" Button
+    t =    16.04s     Synthesize event
+    t =    16.34s     Wait for app.asechka.ios to idle
+    t =    16.69s Tap "Since us · letters & little things" Button
+    t =    16.69s     Wait for app.asechka.ios to idle
+    t =    16.69s     Find the "Since us · letters & little things" Button
+    t =    16.71s     Check for interrupting elements affecting "Since us · letters & little things" Button
+    t =    16.73s     Synthesize event
+    t =    17.02s     Wait for app.asechka.ios to idle
+    t =    17.40s Waiting 5.0s for "September 27, 2026" StaticText to exist
+    t =    18.40s     Checking `Expect predicate `existsNoRetry == 1` for object "September 27, 2026" StaticText`
+    t =    18.40s         Checking existence of `"September 27, 2026" StaticText`
+    t =    18.43s Find the Target Application 'app.asechka.ios'
+    t =    18.52s Added attachment named '09-iPhone-since-us'
+    t =    18.52s Tap "Open when…" Button
+    t =    18.52s     Wait for app.asechka.ios to idle
+    t =    18.52s     Find the "Open when…" Button
+    t =    18.54s     Check for interrupting elements affecting "Open when…" Button
+    t =    18.57s     Synthesize event
+    t =    18.86s     Wait for app.asechka.ios to idle
+    t =    18.87s Find the Target Application 'app.asechka.ios'
+    t =    18.95s Added attachment named '10-iPhone-open-when-letters'
+    t =    18.95s Waiting 5.0s for Button (First Match) to exist
+    t =    19.96s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    19.96s         Checking existence of `Button (First Match)`
+    t =    20.02s Tap Button (First Match)
+    t =    20.02s     Wait for app.asechka.ios to idle
+    t =    20.03s     Find the Button (First Match)
+    t =    20.10s     Check for interrupting elements affecting "you miss me, Open with love ♡" Button
+    t =    20.13s     Synthesize event
+    t =    20.43s     Wait for app.asechka.ios to idle
+    t =    20.80s Waiting 5.0s for "Keep it close ♡" Button to exist
+    t =    21.81s     Checking `Expect predicate `existsNoRetry == 1` for object "Keep it close ♡" Button`
+    t =    21.81s         Checking existence of `"Keep it close ♡" Button`
+    t =    21.86s Find the Target Application 'app.asechka.ios'
+    t =    21.96s Added attachment named '11-iPhone-letter'
+    t =    21.96s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' passed (22.258 seconds).
+Test Suite 'NativeJourneyTests' failed at 2026-10-25 03:18:40.449.
+	 Executed 3 tests, with 2 failures (0 unexpected) in 79.062 (79.063) seconds
+Test Suite 'AsechkaUITests.xctest' failed at 2026-10-25 03:18:40.450.
+	 Executed 3 tests, with 2 failures (0 unexpected) in 79.062 (79.063) seconds
+Test Suite 'All tests' failed at 2026-10-25 03:18:40.450.
+	 Executed 3 tests, with 2 failures (0 unexpected) in 79.062 (79.064) seconds
+2026-10-25 03:18:54.298 xcodebuild[39998:102964] [MT] IDETestOperationsObserverDebug: 139.763 elapsed -- Testing started completed.
+2026-10-25 03:18:54.298 xcodebuild[39998:102964] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-25 03:18:54.298 xcodebuild[39998:102964] [MT] IDETestOperationsObserverDebug: 139.763 sec, +139.763 sec -- end
 
 Test session results, code coverage, and logs:
 	/Users/runner/work/asechka-website/asechka-website/mobile/ios/NativeChecks.xcresult
