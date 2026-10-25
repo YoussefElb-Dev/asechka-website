@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T17:34:31.466Z",
+  "updatedAt": "2026-10-25T17:34:33.891Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -90,7 +90,19 @@
       "createdAt": "2026-10-19T04:29:08.955Z",
       "author": "youssef",
       "text": "One day, when we’re old and our hands have begun to shake, I hope you look at me and realize that the boy who once promised you forever never stopped choosing you. And if my memory ever fades, I pray my heart remembers you, because even if I forget the whole world, I never want to forget the girl who became my entire world.",
-      "note": "Soooo Forever together bby ❤️"
+      "note": "Soooo Forever together bby ❤️",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "028d967d-303d-46ab-8289-33ba86d5851d",
+            "hash": "0c5c91b9e3455bf86e6edf68df1f4d901c86dcc12249511321c9710497b27c5d"
+          }
+        ]
+      }
     },
     {
       "id": "2ece931e-ee81-41ae-a3b2-ae2fea5ab5a2",
