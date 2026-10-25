@@ -1,1 +1,0 @@
-Native iOS 16+ app. Sign this IPA with your sideloading tool and Apple ID before installation. This is not an App Store or enterprise-signed IPA.

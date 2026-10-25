@@ -1,9 +1,9 @@
 {
-  "source": "5f6363bb76aa0fd62122da74ee65da31dcf6596b",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/39872579547",
+  "source": "99f713a56fdba4209f061dc8a768486a57d0dd12",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40153353635",
   "backend": "success",
   "android": "success",
-  "iphone": "success",
+  "iphone": "failure",
   "jobs": [
     {
       "name": "Android APK",
@@ -64,6 +64,64 @@
       ]
     },
     {
+      "name": "iPhone IPA for sideloading",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Generate the native Xcode project",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build project",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test native screens, offline posts, and encrypted storage",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Capture native iPhone preview",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the iPhone app",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Package IPA for signing by a sideloading tool",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
       "name": "Shared collection tests",
       "conclusion": "success",
       "steps": [
@@ -100,74 +158,12 @@
           "conclusion": "success"
         }
       ]
-    },
-    {
-      "name": "iPhone IPA for sideloading",
-      "conclusion": "success",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Generate the native Xcode project",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build project",
-          "conclusion": "success"
-        },
-        {
-          "name": "Test native screens, offline posts, and encrypted storage",
-          "conclusion": "success"
-        },
-        {
-          "name": "Capture native iPhone preview",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build the iPhone app",
-          "conclusion": "success"
-        },
-        {
-          "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "skipped"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
     }
   ],
   "files": {
-    "Asechka-iPhone.ipa": {
-      "bytes": 8963772,
-      "sha256": "b4c640ab9cd563254caf6235d1f6e7f3775ce80e4684fed2d891536fd3689005"
-    },
     "Asechka-Android.apk": {
-      "bytes": 7435514,
-      "sha256": "b77307aa0b1783bc64debe24cf3fe5f3fe4ac6a7f8481603c0b288ab3c3dc558"
+      "bytes": 7445135,
+      "sha256": "6c0a323697d8a7170689c63a0c54b35672099addb885800c5e9831a6699a61da"
     }
   }
 }
