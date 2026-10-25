@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T17:34:28.742Z",
+  "updatedAt": "2026-10-25T17:34:31.466Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -98,7 +98,19 @@
       "createdAt": "2026-10-20T04:11:12.979Z",
       "author": "youssef",
       "text": "If fate were to write the story of my life a thousand times, I would pray that every version leads me to you. I promise to love you through the beauty of our brightest days and the silence of our darkest nights. Let time take our youth, let the seasons change, and let the world become unrecognizable, but may the love between us remain untouched. And when our hands grow weak and our final sunset approaches, I hope we look into each other’s eyes and realize that forever was never just a promise we made, but a life we built, a love we protected, and a dream we never stopped living.",
-      "note": "I’ll keep every promise, I want you and only you bby"
+      "note": "I’ll keep every promise, I want you and only you bby",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "07bfa340-7cc8-4951-ac19-ae8b0c66dc63",
+            "hash": "16f835063e436053dd25b1aff34bb06df1c050f31b774138ebb9f1bcb61335cc"
+          }
+        ]
+      }
     },
     {
       "id": "a26a97ba-1f6e-41a0-b549-95e7222d52d8",
