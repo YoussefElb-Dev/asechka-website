@@ -22,3 +22,5 @@ body.motion-paused *,body.motion-paused *:before,body.motion-paused *:after{anim
 .site-header nav{min-width:0;flex:1;overflow-x:auto;scrollbar-width:none}
 .site-header nav>a:first-child{margin-inline-start:auto}.site-header nav>a:last-child{margin-inline-end:auto}
 #floating-heart-layer{contain:strict;touch-action:none}#floating-heart-layer::backdrop{background:transparent;pointer-events:none}
+
+@media(max-width:600px){.site-header nav{flex:0 0 100%}.site-header nav>a{flex-shrink:0}}

@@ -2,6 +2,12 @@
 
 Two native applications share the existing private website services: Android Views (Android 6+) and SwiftUI (iOS 16+, iPhone/iPad). Neither app contains a WebView. Home is a scrolling social feed; Photos and Quotes have their own feeds. Music, Our days, Words, the letter, personal corner, birthdays, and profile choices remain available.
 
+## Smoother hearts in 2.2.1
+
+Android uses a Choreographer-driven application window; iPhone uses a CADisplayLink-driven, non-key UIWindow above sheets. Both target 60 Hz, reuse cached heart artwork, bound active particles, and leave underlying controls interactive. Hearts travel beyond cards and headers to the top of the screen. Reduced motion and the existing pause option remain supported. Actual frame rates depend on the device and system load.
+
+Android saves taps on an ordered worker; iPhone serializes encrypted heart writes on its vault queue. Visual feedback happens immediately and writes finish before synchronization. Home's Create / Our corner / Saved actions share the full available width. The website uses a requestAnimationFrame canvas in the browser top layer and durable retry batches, with a full-width mobile navigation row.
+
 ## Home and little hearts
 
 Version 2.2 puts Send a heart directly on Home, alongside a live time-together counter and shortcuts to Secret vocab, Open when letters, Tiny victories, Recipes for two, Little things, and Our beginning. Android settings, creation choices, and post actions use rounded, animated native sheets.

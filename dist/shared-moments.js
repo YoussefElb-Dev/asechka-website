@@ -1,5 +1,5 @@
 import { floatHearts } from './heart-motion.js';
-import { HeartOutbox, heartDay } from './heart-outbox.js';
+import { HeartOutbox } from './heart-outbox.js';
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};

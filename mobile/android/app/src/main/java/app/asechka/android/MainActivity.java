@@ -33,7 +33,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     if (heartRain == null) heartRain = new HomeExtras.HeartRain(this);
     return heartRain;
   }
-  void raiseHearts() { if (heartRain != null) heartRain.raise(); }
+
+  void raiseHearts() {
+    if (heartRain != null) heartRain.raise();
+  }
 
   private final Runnable flushHearts = this::flushHeartQueue;
 

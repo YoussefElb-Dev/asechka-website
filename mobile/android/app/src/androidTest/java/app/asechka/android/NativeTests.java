@@ -388,6 +388,10 @@ public final class NativeTests extends Instrumentation {
                     + decor().getScrollY());
           }
         });
+    captureScreenshot(name);
+  }
+
+  private void captureScreenshot(String name) throws Exception {
     Bitmap bitmap = getUiAutomation().takeScreenshot();
     check(bitmap != null, "Screenshot " + name);
     File dir = new File(getTargetContext().getExternalFilesDir(null), "qa");
@@ -1088,6 +1092,57 @@ public final class NativeTests extends Instrumentation {
     call("showShell", new Class[] {});
   }
 
+  private void verifyHomeActionLayout() throws Exception {
+    Thread.sleep(150);
+    View createAction = text("＋  Create"),
+        cornerAction = text("♡  Our corner"),
+        savedAction = text("☆  Saved");
+    check(
+        createAction != null && cornerAction != null && savedAction != null,
+        "All three Home actions are visible");
+    check(
+        Math.abs(createAction.getWidth() - cornerAction.getWidth()) <= 1
+            && Math.abs(createAction.getWidth() - savedAction.getWidth()) <= 1,
+        "Home actions share the available width equally");
+    int[] savedPosition = new int[2];
+    savedAction.getLocationOnScreen(savedPosition);
+    check(
+        Math.abs(
+                savedPosition[0]
+                    + savedAction.getWidth()
+                    - (decor().getWidth()
+                        - activity.getResources().getDisplayMetrics().density * 16))
+            <= 2,
+        "Saved reaches the right inset without empty trailing space");
+  }
+
+  private void verifyHeartWindow(HomeExtras home) throws Exception {
+    long deadline = SystemClock.uptimeMillis() + 1500;
+    while ((home.rain.frames == 0 || home.rain.getWidth() == 0)
+        && SystemClock.uptimeMillis() < deadline) Thread.sleep(20);
+    check(home.rain.running && home.rain.frames > 0, "Rapid hearts advance on display frames");
+    check(
+        home.rain.getHeight() >= decor().getHeight() && home.rain.getWidth() == decor().getWidth(),
+        "Heart layer covers the full application window: overlay="
+            + home.rain.getWidth()
+            + "x"
+            + home.rain.getHeight()
+            + ", application="
+            + decor().getWidth()
+            + "x"
+            + decor().getHeight());
+    int[] overlayPosition = new int[2];
+    home.rain.getLocationOnScreen(overlayPosition);
+    check(overlayPosition[1] == 0, "Hearts can travel above the status bar inset");
+    WindowManager.LayoutParams heartParams =
+        (WindowManager.LayoutParams) home.rain.getLayoutParams();
+    check(
+        (heartParams.flags & WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE) != 0
+            && (heartParams.flags & WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE) != 0,
+        "Floating hearts leave all controls usable");
+    captureScreenshot("home-floating-heart-layer");
+  }
+
   private void homeTests() throws Exception {
     prepareMotionFixture();
     api.get("/api/journal");
@@ -1117,7 +1172,8 @@ public final class NativeTests extends Instrumentation {
         }) check(text(title) != null, "Home shortcut: " + title);
     View send = text("♡  Send a heart");
     check(send != null, "Heart sender is on Home");
-    ui(
+    verifyHomeActionLayout();
+    runOnMainSync(
         () -> {
           android.os.StrictMode.ThreadPolicy previous = android.os.StrictMode.getThreadPolicy();
           android.os.StrictMode.setThreadPolicy(
@@ -1132,6 +1188,7 @@ public final class NativeTests extends Instrumentation {
             android.os.StrictMode.setThreadPolicy(previous);
           }
         });
+    verifyHeartWindow(home);
     home.awaitHeartWrites();
     check(
         HeartCounts.count(

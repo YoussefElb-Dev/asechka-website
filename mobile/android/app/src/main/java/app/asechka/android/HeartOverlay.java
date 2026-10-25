@@ -32,6 +32,10 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
     this.activity = activity;
     manager = activity.getWindowManager();
     setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+    setSystemUiVisibility(
+        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     setWillNotDraw(false);
     int pixels = Math.round(48 * getResources().getDisplayMetrics().density);
     Path path = new Path();

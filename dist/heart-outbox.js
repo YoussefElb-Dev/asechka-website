@@ -1,4 +1,8 @@
-export const heartDay=(date=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
+const dayFormat=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'});
+export const heartDay=(date=new Date())=>{
+  const parts=Object.fromEntries(dayFormat.formatToParts(date).map(part=>[part.type,part.value]));
+  return `${parts.year}-${parts.month}-${parts.day}`;
+};
 export class HeartOutbox {
   constructor({load=()=>[],save=()=>{},uuid=()=>crypto.randomUUID()}={}){
     this.save=save;this.uuid=uuid;

@@ -1,6 +1,7 @@
 const LIMIT=96,colors=['#a18bd3','#889fce','#d393bd'];
 let canvas,context,particles=[],frame=0,sprites=[],observer;
-const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('motion-paused');
+const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
+const reduced=()=>motionPreference.matches || document.body.classList.contains('motion-paused');
 function promote(){
   if(!canvas)return;
   if(typeof canvas.showPopover==='function'){
