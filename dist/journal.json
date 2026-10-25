@@ -2,5 +2,63 @@
   "version": 1,
   "victories": [],
   "recipes": [],
-  "jokes": []
+  "jokes": [
+    {
+      "title": "Naveah",
+      "meaning": "Holy ARGHHHH",
+      "story": "Neveah raging in gym after Frank sniped her AGAIN",
+      "id": "48c13446-7c65-4476-a1d9-ab324d7dc12c",
+      "revision": "2d6e05e4-14ea-4f7f-89db-1037132458a6",
+      "createdAt": "2026-10-24T03:13:11.333Z"
+    },
+    {
+      "title": "Main office",
+      "meaning": "AHhuHAA",
+      "story": "NO METRO FOR YOUR BRING YOUR PARENTS",
+      "id": "1691d8c9-5eca-4dee-8eef-30278a68c0d1",
+      "revision": "29742e6e-1f37-41a8-b5ac-731cdff3df1a",
+      "createdAt": "2026-10-24T03:13:36.290Z"
+    },
+    {
+      "title": "Ragazzi look up",
+      "meaning": "Holy double take?",
+      "story": "Nah cuz why Joseph munching in english",
+      "id": "cc71577b-cb97-42c1-a290-31ca349ef9f6",
+      "revision": "3f8314a2-4525-4723-bab2-23f5670a995c",
+      "createdAt": "2026-10-24T03:14:22.982Z"
+    },
+    {
+      "title": "Telepathy Telepathy",
+      "meaning": "We're always interconnected",
+      "story": "Whether its texting at the same time or doing the same things we're always synced",
+      "id": "e1305b02-0efc-48c8-a5c4-586bac2decf5",
+      "revision": "e22664d6-8b17-4488-b104-c1cf1953bd4a",
+      "createdAt": "2026-10-24T03:15:32.196Z"
+    },
+    {
+      "title": "ALL JIM",
+      "meaning": "Nah thats not my problem",
+      "story": "Yo Bilalalala can get jumped on his own and your typo is now our inside joke",
+      "id": "ce54c4f0-aae8-4850-a1e4-72bb19fb6f08",
+      "revision": "fc45f51b-65eb-4784-927f-9fc821b247cc",
+      "createdAt": "2026-10-24T03:17:46.447Z"
+    },
+    {
+      "title": "Friend under the bed",
+      "meaning": "When we fail at being nonchalant they're there to help",
+      "story": "Nah cuz hypothetically my friend wanted to know some details 👀",
+      "id": "176ac4ab-4b18-4c08-8cc0-95d900093f2f",
+      "revision": "ba5292b4-6544-4086-a603-bd77bb124948",
+      "createdAt": "2026-10-24T04:18:09.882Z"
+    },
+    {
+      "title": "Straight plastic",
+      "meaning": "We don’t gotta talk about the supporters righttt? Stsu aiiiii",
+      "story": "Ask your friend the big Meghan supporter 🤮",
+      "id": "161fce5b-5c86-41ce-8927-df14208db49b",
+      "revision": "4b6368b9-1db2-40c1-8fef-a4a7788cab03",
+      "createdAt": "2026-10-25T01:51:14.948Z"
+    }
+  ],
+  "updatedAt": "2026-10-25T01:51:14.948Z"
 }

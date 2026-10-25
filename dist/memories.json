@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-22T02:51:44.110Z",
+  "updatedAt": "2026-10-25T01:53:11.953Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -106,7 +106,19 @@
       "createdAt": "2026-10-21T03:39:10.226Z",
       "author": "youssef",
       "text": "If life is a story written by fate, then I hope every chapter has you beside me. I want to love you in ways that time cannot weaken, to hold your hand through moments we haven't even lived yet, and to turn every promise I make into a memory we share. One day, when our faces carry the years and our voices grow softer, I hope you still see the same boy who fell in love with you, only with a heart that has learned to love you a thousand times more. And when the world asks what I made of my life, I hope my greatest answer will always be that I spent it loving you.",
-      "note": "You lwky slept before this buttt it’ll always be there 😘"
+      "note": "You lwky slept before this buttt it’ll always be there 😘",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7e2246e0-9ed4-465f-9603-8f42b1b9a86f",
+            "hash": "6d450c83aa30376bc6a130b7a9b01c253e2c5928830b3660c87c11f31f6e33fd"
+          }
+        ]
+      }
     },
     {
       "id": "8d103168-1d15-4015-8fb8-5a22457758af",
@@ -122,25 +134,88 @@
       "id": "9a085af2-e61c-4673-8186-9007ae966211",
       "src": "assets/photos/2026/10/9a085af2-e61c-4673-8186-9007ae966211.jpg",
       "caption": "Look at this cutie js like you",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "916adb83-5b6a-42ca-a8e1-c1eb50624599",
+            "hash": "eed7c93b6d6f66d281905164413a175833db28f297d3085861dce98432da5214"
+          }
+        ]
+      }
     },
     {
       "id": "c1d3bcfc-4ff4-4bff-8cda-13128f60864b",
       "src": "assets/photos/2026/10/c1d3bcfc-4ff4-4bff-8cda-13128f60864b.jpg",
       "caption": "omggggg",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0d66c7f7-03c0-4a5d-b545-d03e9a7118ce",
+            "hash": "c11815f57a8f938ea60b10e5c45c8c1a3ca9999cc31e7f8d1387be7eebf67fcd"
+          },
+          {
+            "id": "b4561ec1-88c4-4cd2-bc36-ec05b1446b5a",
+            "hash": "a11841c79bb942143efb9f1ac198444e79721099a2572b544097f7b731f2eaeb"
+          }
+        ]
+      }
     },
     {
       "id": "19db02b0-45b1-4a7b-824b-85959b328803",
       "src": "assets/photos/2026/10/19db02b0-45b1-4a7b-824b-85959b328803.jpg",
       "caption": "First ever plushieeee (I adore it)",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0422a853-0ab4-4716-a194-1ce2de7ae105",
+            "hash": "ecfa26059f534238320282a0efcbf296b9efa66f6a96d0bb72df8c81ba632949"
+          },
+          {
+            "id": "e032648b-cfa6-464f-9060-259cf5ec3799",
+            "hash": "ddd5e4b2e2eb864a8035f0dbc06ea36523b2f7690fe02afe111647c980509013"
+          }
+        ]
+      }
     },
     {
       "id": "e17b9d16-42bf-421a-a87b-080f2342b939",
       "src": "assets/photos/2026/10/e17b9d16-42bf-421a-a87b-080f2342b939.jpg",
       "caption": "Is this considered a professional photo sesh",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "fd11c9fa-7f93-4ad7-8466-e6fe440b1333",
+            "hash": "3d8604357967fe4c1913716c0dd2e7aebc392c71a74028b46bb33a92a52a10d3"
+          },
+          {
+            "id": "9d26f750-81cd-4530-b921-c4eaa36a5a9d",
+            "hash": "90ae756590cd40ba8b6d1ceca3eb66cc4105f02440e81647735f251a9f26c691"
+          }
+        ]
+      }
     },
     {
       "id": "b13d93e1-f6ec-461b-99d7-bc3f8fc0ffbd",
@@ -149,7 +224,8 @@
       "date": "2026-10-17",
       "social": {
         "likes": {
-          "youssef": false
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
@@ -160,6 +236,14 @@
           {
             "id": "1fd3d474-8a27-4e6b-9cb8-2e5e1e053d6d",
             "hash": "d707933c865e6c3a8474f43309383a91200945f1299b8bd015f9f7a1399a2839"
+          },
+          {
+            "id": "f055a293-1b9a-42bd-b8dc-e7a0ab0661e9",
+            "hash": "e504e983ce1d69bac6b9e0be087d844ebb6320e3e6719624e3f7905fae5a5b27"
+          },
+          {
+            "id": "34b0ed0c-e531-4ff9-a9ce-cc2e73722e4e",
+            "hash": "e6512d4717ed7ecacad06c1aa1317df2b3e64282d79c78977f9019f3ab8775c6"
           }
         ]
       }
@@ -168,49 +252,185 @@
       "id": "8f1a3eb5-950c-486d-a9ef-c3b104881bd5",
       "src": "assets/photos/2026/10/8f1a3eb5-950c-486d-a9ef-c3b104881bd5.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "32f0f046-f45e-47f3-95f6-ff924a0fd416",
+            "hash": "23d594ea77bb0243c15997fdeba38fe84c0e783179d95d6acd7a0992fda4832c"
+          },
+          {
+            "id": "a4e721a3-d8da-43dd-865f-231e7b3fcba2",
+            "hash": "ff34ff1e920c800b58468aa05bc9f61877c84a912aa95fb13210fedd5f43ee29"
+          }
+        ]
+      }
     },
     {
       "id": "63675850-bece-463e-b004-5967b738099e",
       "src": "assets/photos/2026/10/63675850-bece-463e-b004-5967b738099e.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a56ff3eb-80fd-4ed7-b835-1ff62ca2343f",
+            "hash": "f5f35c763dd7ae5635304e622199e771ddd5b0529d70b0569fd6690d81b6f47a"
+          },
+          {
+            "id": "bae0fb9a-ca01-4887-af12-56c911f1aad1",
+            "hash": "d8ac28ab67e023ff41bb6dcec3d94de67cb93f7fc8d4f433a4ffa0f18579b369"
+          }
+        ]
+      }
     },
     {
       "id": "51122d40-4ee7-4700-9642-fcd3d212acc0",
       "src": "assets/photos/2026/10/51122d40-4ee7-4700-9642-fcd3d212acc0.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7afde50c-00e3-4b4b-abd6-d2258064240d",
+            "hash": "f40c5aec995f299b542b834c99b14fa2707d4a310efb62882a5d5d9f79df7e55"
+          },
+          {
+            "id": "aa5b05f2-142e-4d2d-9763-6e2e5c714709",
+            "hash": "04f09b94195ba7fe0e97e0482416b4249e87b2760d709891cc9ad57e22e23089"
+          }
+        ]
+      }
     },
     {
       "id": "133d4111-79d5-4db5-bbb5-18aac0998f14",
       "src": "assets/photos/2026/10/133d4111-79d5-4db5-bbb5-18aac0998f14.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "f536549e-29e9-4d85-aa70-89b3b1fb473e",
+            "hash": "dd55845d3196909ec4374fc63cdf9b58d01773e17527f54b6ce191f342a5c7cf"
+          },
+          {
+            "id": "4d0e0630-cc00-440b-aef7-43ea3be88e37",
+            "hash": "5fb6b637943c5aabdd04bb0afd69399dd20949a2bfbf08bfdcc3db3d93e4c901"
+          }
+        ]
+      }
     },
     {
       "id": "2cf1667d-d03f-4970-8837-8d464f8d244f",
       "src": "assets/photos/2026/10/2cf1667d-d03f-4970-8837-8d464f8d244f.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "83a0a75c-b5b3-4e7f-ac8d-7ab70889329c",
+            "hash": "b34377bf31edb89e10d35f9a268014854424b870b540a4259c051b51da20255e"
+          },
+          {
+            "id": "8e3ccb39-facf-4925-9287-1342d7192813",
+            "hash": "04adb39d893e14aaafd126a832a743116e4229fd0bd2b53071e1a9a0d54175da"
+          }
+        ]
+      }
     },
     {
       "id": "bbe78df8-1332-411e-a6da-d99baf41fcbe",
       "src": "assets/photos/2026/10/bbe78df8-1332-411e-a6da-d99baf41fcbe.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "4548b273-42a0-41f1-b025-6245dbab5fb1",
+            "hash": "1c9b79deead56cda529c396f281f95e54d69be0e76450890edc3c738c7316832"
+          },
+          {
+            "id": "ea90655e-77a2-4f61-9af6-e96fdec33d51",
+            "hash": "172dc30456d3c33ffb4324911ea114550c31d74e48cf0b50eef1441566e3b554"
+          }
+        ]
+      }
     },
     {
       "id": "f8bd5c6b-388b-40fe-87c7-0bbfbc3e6248",
       "src": "assets/photos/2026/10/f8bd5c6b-388b-40fe-87c7-0bbfbc3e6248.jpg",
       "caption": "look at MY GF",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "e43c992d-4bb3-4060-b074-d7fa1715c842",
+            "hash": "f2226e70fdd8bcf33a18c6f1b62d54fdf195c6c6c0471e435fdb05bb7db43c33"
+          },
+          {
+            "id": "840196d5-425e-4063-8b6c-39af17c021a9",
+            "hash": "f3ce59b60ab3853f0eec370ef6688fb2ad2356b36e03d1bd61ab6029fb43c374"
+          }
+        ]
+      }
     },
     {
       "id": "9f1d47be-4e82-4a7c-b36e-3747729b47c5",
       "src": "assets/photos/2026/10/9f1d47be-4e82-4a7c-b36e-3747729b47c5.jpg",
       "caption": "Right after WE busted our ahhh",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "772cdee4-bd09-4c0a-a0a9-42e02641216c",
+            "hash": "457ca137e24928ac7a7af14290014d41575b9074bb65bd2da0e520875112b284"
+          },
+          {
+            "id": "11ae8825-abe4-4f97-8b99-5cc41773def4",
+            "hash": "ef135e24f8d506348e634f948427323f9cd7bc5cd10d4f12560fc460ecd61845"
+          }
+        ]
+      }
     },
     {
       "id": "72e1acc4-95fe-4de9-9bdb-2ec725c8738e",
@@ -220,7 +440,24 @@
       "src": "assets/photos/2026/10/72e1acc4-95fe-4de9-9bdb-2ec725c8738e.jpg",
       "caption": "Sonion actually didn’t clip us and your so adorable like always urghhh I love you and I miss you 💕 😘",
       "alt": "Sonion actually didn’t clip us and your so adorable like always urghhh I love you and I miss you 💕 😘",
-      "contentHash": "3e4c3734a1d4951c09ba5d8c371ad688c5d7c7af86d3174c06e4d4a21b9d5e2d"
+      "contentHash": "3e4c3734a1d4951c09ba5d8c371ad688c5d7c7af86d3174c06e4d4a21b9d5e2d",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "f6fbe04d-79cb-4b6b-b764-489572445a3a",
+            "hash": "2ab59e0adb55fd1b827a0c9ba3d83ae9f6c68ebd3a614532f715a89f7e127cf4"
+          },
+          {
+            "id": "ca87f267-ca75-4e5f-aa96-2bd3b86c6a04",
+            "hash": "7ddffe319f63c99ed7d7a041d0effdd1b04684907b93b2e12713cd3543c79ef9"
+          }
+        ]
+      }
     }
   ]
 }
