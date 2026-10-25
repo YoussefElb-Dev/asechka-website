@@ -1,106 +1,10 @@
 {
-  "source": "16820076631e410260d4fbe188c7a7d8b8058c80",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40164587721",
+  "source": "393874e915dcaa34edc443e2f11dbddfd3f35ed4",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40165480185",
   "backend": "success",
   "android": "success",
   "iphone": "success",
   "jobs": [
-    {
-      "name": "Android APK",
-      "conclusion": "success",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/setup-java@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run android-actions/setup-android@v3",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run sdkmanager 'platforms;android-36' 'build-tools;36.0.0'",
-          "conclusion": "success"
-        },
-        {
-          "name": "Restore the existing Android signing identity",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build an APK with Android 6 and newer compatibility",
-          "conclusion": "success"
-        },
-        {
-          "name": "Package Android download",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Remove temporary signing material",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/setup-java@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
-    },
-    {
-      "name": "Shared collection tests",
-      "conclusion": "success",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/setup-node@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run node --test tests/*.test.mjs",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/setup-node@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
-    },
     {
       "name": "iPhone IPA for sideloading",
       "conclusion": "success",
@@ -158,16 +62,112 @@
           "conclusion": "success"
         }
       ]
+    },
+    {
+      "name": "Shared collection tests",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node --test tests/*.test.mjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Android APK",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-java@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run android-actions/setup-android@v3",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run sdkmanager 'platforms;android-36' 'build-tools;36.0.0'",
+          "conclusion": "success"
+        },
+        {
+          "name": "Restore the existing Android signing identity",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build an APK with Android 6 and newer compatibility",
+          "conclusion": "success"
+        },
+        {
+          "name": "Package Android download",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Remove temporary signing material",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-java@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
     }
   ],
   "files": {
     "Asechka-iPhone.ipa": {
-      "bytes": 9047560,
-      "sha256": "c39cbce9762de2e74d7c04a5f8bf0ec129885c579d4e2d77ef250c60e2e8b86d"
+      "bytes": 9047920,
+      "sha256": "b4b590fa4783bebbe994bb824aef65e846208c68f630b0d647f0b55e70857784"
     },
     "Asechka-Android.apk": {
-      "bytes": 7448974,
-      "sha256": "8f6d6928d73bea3628794a50cdf89b0da8a69cf8b30d88c7c7881066622bff05"
+      "bytes": 7449338,
+      "sha256": "b7e47b7071f36ef2b61ec3895ee367fd630dd8d5ed9569bcd2d29401097e521e"
     }
   }
 }
