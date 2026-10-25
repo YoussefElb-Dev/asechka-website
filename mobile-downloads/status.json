@@ -1,9 +1,9 @@
 {
-  "source": "cb7eacd6c22b6d4cd9bbaa6fcfd78528b4b123f0",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40156063226",
+  "source": "bb946cc6b06322dc3c53811560f056411987b4e5",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40156244321",
   "backend": "success",
-  "android": "failure",
-  "iphone": "cancelled",
+  "android": "success",
+  "iphone": "success",
   "jobs": [
     {
       "name": "Shared collection tests",
@@ -45,7 +45,7 @@
     },
     {
       "name": "iPhone IPA for sideloading",
-      "conclusion": "cancelled",
+      "conclusion": "success",
       "steps": [
         {
           "name": "Set up job",
@@ -77,15 +77,15 @@
         },
         {
           "name": "Build the iPhone app",
-          "conclusion": "skipped"
+          "conclusion": "success"
         },
         {
           "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "skipped"
+          "conclusion": "success"
         },
         {
           "name": "Run actions/upload-artifact@v4",
-          "conclusion": "skipped"
+          "conclusion": "success"
         },
         {
           "name": "Run actions/upload-artifact@v4",
@@ -103,7 +103,7 @@
     },
     {
       "name": "Android APK",
-      "conclusion": "failure",
+      "conclusion": "success",
       "steps": [
         {
           "name": "Set up job",
@@ -131,15 +131,15 @@
         },
         {
           "name": "Build an APK with Android 6 and newer compatibility",
-          "conclusion": "failure"
+          "conclusion": "success"
         },
         {
           "name": "Package Android download",
-          "conclusion": "skipped"
+          "conclusion": "success"
         },
         {
           "name": "Run actions/upload-artifact@v4",
-          "conclusion": "skipped"
+          "conclusion": "success"
         },
         {
           "name": "Remove temporary signing material",
@@ -160,5 +160,14 @@
       ]
     }
   ],
-  "files": {}
+  "files": {
+    "Asechka-iPhone.ipa": {
+      "bytes": 9042404,
+      "sha256": "ffcca115fef72e541d1e52790c1320bb70a1e1d1eb34abe5a2d574a8ce3b6287"
+    },
+    "Asechka-Android.apk": {
+      "bytes": 7447079,
+      "sha256": "d7856ab400fd70cfcf312e536d285c1898a987e26e328d6a9a4fdc6111cb5188"
+    }
+  }
 }
