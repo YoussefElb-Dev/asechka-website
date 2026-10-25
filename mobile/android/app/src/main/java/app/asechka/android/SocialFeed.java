@@ -287,22 +287,18 @@ final class SocialFeed extends ListView {
       photo = new Motion.LivingImage(getContext());
       photo.setScaleType(ImageView.ScaleType.FIT_CENTER);
       photo.setBackgroundColor(Ui.BLUE);
-      photo.setAdjustViewBounds(false);
-      int width = getResources().getDisplayMetrics().widthPixels - u.dp(50);
-      int height = Math.min(u.dp(480), Math.round(width * 1.1f));
-      photo.setLayoutParams(new LinearLayout.LayoutParams(-1, height));
+      photo.setAdjustViewBounds(true);
       quote = u.quote("", 25);
       quote.setGravity(Gravity.CENTER);
       quote.setLineSpacing(u.dp(7), 1);
-      quote.setPadding(u.dp(28), u.dp(34), u.dp(28), u.dp(34));
-      quote.setMinHeight(u.dp(230));
-      quoteBackdrop = new ImageView(getContext());
+      quote.setPadding(u.dp(24), u.dp(24), u.dp(24), u.dp(24));
+      quoteBackdrop = Images.backdrop(getContext());
       quoteBackdrop.setScaleType(ImageView.ScaleType.CENTER_CROP);
       quoteBackdrop.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
       FrameLayout mediaFrame = new FrameLayout(getContext());
       mediaFrame.setBackground(u.shape(Ui.BLUE, 18));
       mediaFrame.setClipToOutline(true);
-      if (isPhoto) mediaFrame.addView(photo, new FrameLayout.LayoutParams(-1, height));
+      if (isPhoto) mediaFrame.addView(photo, new FrameLayout.LayoutParams(-1, -2));
       else {
         mediaFrame.addView(quoteBackdrop, new FrameLayout.LayoutParams(-1, -1));
         mediaFrame.addView(quote, new FrameLayout.LayoutParams(-1, -2));

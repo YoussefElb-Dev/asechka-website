@@ -1738,13 +1738,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     quoteArtworkIndex = -1;
     u.add(q, u.label("WORDS I WANT US TO KEEP"), 0);
     quoteText = u.quote("", 22);
-    quoteText.setMinHeight(u.dp(230));
     quoteText.setPadding(u.dp(22), u.dp(24), u.dp(22), u.dp(24));
     quoteText.setGravity(Gravity.CENTER);
     FrameLayout words = new FrameLayout(this);
     words.setBackground(u.shape(Ui.BLUE, 18));
     words.setClipToOutline(true);
-    quoteArtwork = new ImageView(this);
+    quoteArtwork = Images.backdrop(this);
     quoteArtwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
     quoteArtwork.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
     words.addView(quoteArtwork, new FrameLayout.LayoutParams(-1, -1));

@@ -13,6 +13,19 @@ import java.util.concurrent.*;
 
 /** Shared requests, bounded decode sizes, encrypted originals, and a visible retry state. */
 final class Images {
+  // A decorative image must not contribute its own intrinsic height to a text-sized panel.
+  static ImageView backdrop(android.content.Context context) {
+    return new ImageView(context) {
+      protected void onMeasure(int widthSpec, int heightSpec) {
+        setMeasuredDimension(
+            MeasureSpec.getSize(widthSpec),
+            MeasureSpec.getMode(heightSpec) == MeasureSpec.EXACTLY
+                ? MeasureSpec.getSize(heightSpec)
+                : 0);
+      }
+    };
+  }
+
   private final ApiClient api;
   private final ExecutorService executor = Executors.newFixedThreadPool(3);
   private final Handler main = new Handler(Looper.getMainLooper());
@@ -117,9 +130,17 @@ final class Images {
     Drawable old = target.getDrawable();
     if (old instanceof BitmapDrawable && ((BitmapDrawable) old).getBitmap() == bitmap) return;
     if (old != null && target.isAttachedToWindow() && Motion.enabled(target.getContext())) {
+      BitmapDrawable incoming = new BitmapDrawable(target.getResources(), bitmap);
       TransitionDrawable crossfade =
-          new TransitionDrawable(
-              new Drawable[] {old, new BitmapDrawable(target.getResources(), bitmap)});
+          new TransitionDrawable(new Drawable[] {old, incoming}) {
+            public int getIntrinsicWidth() {
+              return incoming.getIntrinsicWidth();
+            }
+
+            public int getIntrinsicHeight() {
+              return incoming.getIntrinsicHeight();
+            }
+          };
       crossfade.setCrossFadeEnabled(true);
       target.setImageDrawable(crossfade);
       crossfade.startTransition(420);
@@ -166,6 +187,14 @@ final class Images {
 
     public int getOpacity() {
       return PixelFormat.OPAQUE;
+    }
+
+    public int getIntrinsicWidth() {
+      return 600;
+    }
+
+    public int getIntrinsicHeight() {
+      return 450;
     }
   }
 }

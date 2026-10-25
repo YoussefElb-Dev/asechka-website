@@ -1527,6 +1527,19 @@ public final class NativeTests extends Instrumentation {
     call("select", new Class[] {int.class}, 1);
     ui(() -> ((SocialFeed) uncheckedGet("feed")).setSelection(1));
     await(() -> hasBitmap(decor()), "Gallery photo decoded");
+    ImageView fittedPhoto = views(decor(), Motion.LivingImage.class).get(0);
+    await(
+        () -> fittedPhoto.getDrawable() instanceof android.graphics.drawable.BitmapDrawable,
+        "Photo crossfade completes");
+    android.graphics.drawable.Drawable fittedDrawable = fittedPhoto.getDrawable();
+    check(
+        Math.abs(
+                fittedPhoto.getHeight()
+                    - fittedPhoto.getWidth()
+                        * (float) fittedDrawable.getIntrinsicHeight()
+                        / fittedDrawable.getIntrinsicWidth())
+            <= 2,
+        "Photo card hugs the decoded image ratio without letterbox space");
     screenshot("21-social-photo");
     ui(() -> activity.comments(q));
     Dialog comments = (Dialog) get("activeDialog");
@@ -1640,6 +1653,16 @@ public final class NativeTests extends Instrumentation {
     call("select", new Class[] {int.class}, 5);
     check(get("quoteText") != null, "Quote carousel retained above quote posts");
     screenshot("24-social-quotes");
+    SocialFeed quoteFeed = (SocialFeed) get("feed");
+    ui(() -> quoteFeed.setSelection(1));
+    await(() -> quoteFeed.getFirstVisiblePosition() == 1, "Quote post scrolled into view");
+    TextView fittedQuote = (TextView) inner(quoteFeed.getChildAt(0).getTag(), "quote");
+    check(
+        fittedQuote.getMinimumHeight() == 0
+            && Math.abs(((View) fittedQuote.getParent()).getHeight() - fittedQuote.getHeight())
+                <= 2,
+        "Quote media hugs text height; its artwork does not add empty space");
+    screenshot("26-soft-orbit-quote-post");
     call("select", new Class[] {int.class}, 2);
     call("select", new Class[] {int.class}, 3);
     call("select", new Class[] {int.class}, 4);

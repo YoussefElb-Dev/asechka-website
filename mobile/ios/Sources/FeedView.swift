@@ -73,10 +73,15 @@ struct CachedPhoto:View {
     @AppStorage("motion-paused") private var paused=false
     let source:String
     var living=true
+    var fitContent=false
     @State private var bitmap:UIImage?
     @State private var loading=true
     @State private var drift=false
-    var body:some View {
+    @ViewBuilder var body:some View {
+        if fitContent {picture.aspectRatio(bitmap.map{$0.size.width / max(1,$0.size.height)} ?? 4/3,contentMode:.fit)}
+        else {picture}
+    }
+    private var picture:some View {
         ZStack{
             Palette.blue
             if let bitmap {Image(uiImage:bitmap).resizable().scaledToFit().scaleEffect(drift && living && !reduced && !paused ? 1.025:1).transition(.opacity)}
@@ -139,10 +144,9 @@ struct PostCard:View {
                 Menu{Button("Edit post",systemImage:"pencil",action:edit);Button(universe.bookmarks.contains(post.key) ? "Remove from saved":"Save post",systemImage:"bookmark"){universe.bookmark(post)};Button("Delete post",systemImage:"trash",role:.destructive,action:delete)}label:{Image(systemName:"ellipsis").frame(width:44,height:44)}.accessibilityLabel("Post options")
             }.padding(.leading,14).padding(.trailing,6).padding(.vertical,8)
             ZStack{
-                if post.isPhoto {CachedPhoto(source:post.imageURL).aspectRatio(0.86,contentMode:.fit)}
-                else {Text("“\(post.text ?? "")”").font(.custom("Manrope-Regular",size:(post.text?.count ?? 0)>300 ? 20:24)).lineSpacing(7).lineLimit(expanded ? nil:9).multilineTextAlignment(.center).padding(28).frame(maxWidth:.infinity,minHeight:230).background{QuoteBackdrop(index:backgroundIndex)}}
-                if burst {Image(systemName:"heart.fill").font(.system(size:84)).foregroundColor(.white).shadow(color:Palette.purple.opacity(0.3),radius:15).scaleEffect(burst ? 1:0.1).transition(.scale.combined(with:.opacity))}
-            }.clipShape(RoundedRectangle(cornerRadius:18)).padding(.horizontal,10).contentShape(Rectangle()).accessibilityElement(children:.contain).accessibilityIdentifier("Post media")
+                if post.isPhoto {CachedPhoto(source:post.imageURL,fitContent:true)}
+                else {Text("“\(post.text ?? "")”").font(.custom("Manrope-Regular",size:(post.text?.count ?? 0)>300 ? 20:24)).lineSpacing(7).lineLimit(expanded ? nil:9).multilineTextAlignment(.center).padding(24).frame(maxWidth:.infinity).background{QuoteBackdrop(index:backgroundIndex)}}
+            }.overlay{if burst {Image(systemName:"heart.fill").font(.system(size:84)).foregroundColor(.white).shadow(color:Palette.purple.opacity(0.3),radius:15).scaleEffect(burst ? 1:0.1).transition(.scale.combined(with:.opacity))}}.clipShape(RoundedRectangle(cornerRadius:18)).padding(.horizontal,10).contentShape(Rectangle()).accessibilityElement(children:.contain).accessibilityIdentifier("Post media")
                 .onTapGesture(count:2){Touch.tap(true);universe.like(post,true);withAnimation(reduced ? nil:.spring(response:0.3,dampingFraction:0.6)){burst=true};Task{try? await Task.sleep(nanoseconds:850_000_000);withAnimation{burst=false}}}
                 .onTapGesture{open()}
             HStack{Spacer();Text("♡  Kept close").font(.system(size:11,weight:.medium)).foregroundColor(Palette.purple).padding(.horizontal,12).padding(.vertical,5).background(Palette.lavender,in:Capsule());Spacer()}.padding(.vertical,7).accessibilityHidden(true)
@@ -182,7 +186,7 @@ struct QuoteCarousel:View {
         VStack(alignment:.leading,spacing:18){Text("WORDS I WANT US TO KEEP").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
             if !universe.memories.quotes.isEmpty {
                 let quote=universe.memories.quotes[index % universe.memories.quotes.count]
-                Text("“\(quote.text ?? "")”").font(.custom("Manrope-Regular",size:22)).lineSpacing(6).multilineTextAlignment(.center).padding(22).frame(maxWidth:.infinity,minHeight:230).background{QuoteBackdrop(index:backgroundIndex)}.clipShape(RoundedRectangle(cornerRadius:18)).id(quote.id).transition(.opacity.combined(with:.move(edge:.trailing)))
+                Text("“\(quote.text ?? "")”").font(.custom("Manrope-Regular",size:22)).lineSpacing(6).multilineTextAlignment(.center).padding(22).frame(maxWidth:.infinity).background{QuoteBackdrop(index:backgroundIndex)}.clipShape(RoundedRectangle(cornerRadius:18)).id(quote.id).transition(.opacity.combined(with:.move(edge:.trailing)))
                 HStack{Button{move(-1)}label:{Image(systemName:"arrow.left").frame(width:48,height:44)};Spacer();Button(paused ? "Resume":"Pause"){paused.toggle()}.font(.caption);Spacer();Button{move(1)}label:{Image(systemName:"arrow.right").frame(width:48,height:44)}}
                 Text("\(index % universe.memories.quotes.count+1) / \(universe.memories.quotes.count)").font(.caption).foregroundColor(Palette.muted)
             }

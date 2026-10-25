@@ -2,6 +2,8 @@
 
 Selected post direction C, shared by the native Android app, native iPhone app, and website. Both pictures and quotes use white rounded cards, a subtle blue/lavender rim, inset rounded media, a small Kept close capsule, and a common action row. Quote text remains selectable/readable content, rather than being baked into an image.
 
+Media height follows its content. A photo uses its decoded, orientation-corrected aspect ratio; quote panels use natural text height with 24-point padding and expand for longer text. Neither uses a fixed media-height template or empty letterbox bands.
+
 Ten original background images were generated with the built-in image generation tool. The optimized 768 × 768 JPEGs ship under `dist/assets/quote-backgrounds/` and each app's `default/quote-backgrounds/` resource folder. These three copies must match. The complete set adds about 312 KiB to each app before package compression. Original PNG artwork and generation briefs are included in the separate background download.
 
 Each quote's ID supplies stable pseudorandom variety. A collision with the previous quote chooses a different design; photos do not reset that comparison. Filtering recomputes the visible sequence to prevent neighboring saved quotes from matching too. Refreshing unchanged content keeps its artwork steady. The website carousel checks the last-to-first seam as well. Older quotes without IDs fall back to their text.
