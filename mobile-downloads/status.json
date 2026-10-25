@@ -1,6 +1,6 @@
 {
-  "source": "393874e915dcaa34edc443e2f11dbddfd3f35ed4",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40165480185",
+  "source": "d7124c585e20c03707c2cce79afc1d09b811474b",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40166962244",
   "backend": "success",
   "android": "success",
   "iphone": "success",
@@ -162,12 +162,12 @@
   ],
   "files": {
     "Asechka-iPhone.ipa": {
-      "bytes": 9047920,
-      "sha256": "b4b590fa4783bebbe994bb824aef65e846208c68f630b0d647f0b55e70857784"
+      "bytes": 9386075,
+      "sha256": "449c0fb13fdf022a7010f7d0af40f239cc036cc1da5f7aefd92256f67983ea5b"
     },
     "Asechka-Android.apk": {
-      "bytes": 7449338,
-      "sha256": "b7e47b7071f36ef2b61ec3895ee367fd630dd8d5ed9569bcd2d29401097e521e"
+      "bytes": 7772377,
+      "sha256": "24ca3695f27471c1112c47088095685a36be2eb84f2541e41b04f611de346269"
     }
   }
 }
