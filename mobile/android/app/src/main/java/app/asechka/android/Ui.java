@@ -110,6 +110,7 @@ final class Ui {
 
     public void show() {
       super.show();
+      if (c instanceof MainActivity) ((MainActivity) c).raiseHearts();
       Window w = getWindow();
       if (w == null) return;
       w.setBackgroundDrawableResource(android.R.color.transparent);

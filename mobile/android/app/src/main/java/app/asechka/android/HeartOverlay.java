@@ -25,6 +25,7 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
   final Activity activity;
   boolean running;
   long frames;
+  WindowManager.LayoutParams windowParams;
 
   HeartOverlay(Activity activity) {
     super(activity);
@@ -57,14 +58,13 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
           new WindowManager.LayoutParams(
               -1,
               -1,
-              WindowManager.LayoutParams.TYPE_APPLICATION_ABOVE_SUB_PANEL,
+              WindowManager.LayoutParams.TYPE_APPLICATION,
               WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                   | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                   | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                   | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                   | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
               PixelFormat.TRANSLUCENT);
-      params.token = anchor.getRootView().getWindowToken();
       params.gravity = Gravity.TOP | Gravity.LEFT;
       params.preferredRefreshRate = 60;
       params.setTitle("Floating hearts");
@@ -72,6 +72,7 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
         params.layoutInDisplayCutoutMode =
             WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
       if (Build.VERSION.SDK_INT >= 30) params.setFitInsetsTypes(0);
+      windowParams = params;
       manager.addView(this, params);
       running = true;
       Choreographer.getInstance().postFrameCallback(this);
@@ -88,6 +89,12 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
     p.color = random.nextInt(sprites.length);
     if (particles.size() >= LIMIT) particles.remove(0);
     particles.add(p);
+  }
+
+  void raise() {
+    if (!running) return;
+    manager.removeViewImmediate(this);
+    manager.addView(this, windowParams);
   }
 
   @Override

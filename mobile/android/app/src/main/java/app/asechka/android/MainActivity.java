@@ -33,6 +33,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     if (heartRain == null) heartRain = new HomeExtras.HeartRain(this);
     return heartRain;
   }
+  void raiseHearts() { if (heartRain != null) heartRain.raise(); }
 
   private final Runnable flushHearts = this::flushHeartQueue;
 
@@ -3533,6 +3534,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     activeDialog = dialog;
     dialog.setOnShowListener(
         d -> {
+          if (!(dialog instanceof Ui.Sheet)) raiseHearts();
           if (dialog.getWindow() != null) {
             View decor = dialog.getWindow().getDecorView();
             Motion.install(decor);

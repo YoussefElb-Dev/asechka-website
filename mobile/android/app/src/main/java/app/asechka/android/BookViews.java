@@ -77,6 +77,7 @@ final class BookViews {
           if (editor != null && editor.dialog.isShowing()) editor.dialog.dismiss();
         });
     window.show();
+    if (activity instanceof MainActivity) ((MainActivity) activity).raiseHearts();
     window.getWindow().setLayout(-1, -1);
     restore();
     render();
