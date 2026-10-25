@@ -27,13 +27,19 @@ final class HeartCounts {
   }
 
   static int streak(JSONObject data, String from, String today) {
-    String cursor = count(data, today, from) > 0 ? today : previous(today);
+    String cursor = sent(data, today, from) ? today : previous(today);
     int days = 0;
-    while (count(data, cursor, from) > 0) {
+    while (sent(data, cursor, from)) {
       days++;
       cursor = previous(cursor);
     }
     return days;
+  }
+
+  private static boolean sent(JSONObject data, String day, String from) {
+    return from.equals("both")
+        ? count(data, day, "me") > 0 && count(data, day, "asechka") > 0
+        : count(data, day, from) > 0;
   }
 
   static void apply(JSONObject data, JSONObject body, long time) throws Exception {

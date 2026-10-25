@@ -23,6 +23,7 @@ final class HomeExtras {
   TextView counts, streak, elapsed, sinceLabel;
   LinearLayout root;
   HeartRain rain;
+  JSONObject bundledKeepsakes;
   final Runnable flush;
 
   HomeExtras(Activity a, ApiClient api, Open open, Runnable flush) {
@@ -202,7 +203,7 @@ final class HomeExtras {
       keepsakes = api.cached("/api/keepsakes", !api.connected());
     } catch (Exception ignored) {
     }
-    if (keepsakes == null)
+    if (keepsakes == null && bundledKeepsakes == null)
       try {
         java.io.InputStream in = activity.getAssets().open("default/keepsakes.json");
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
@@ -210,9 +211,10 @@ final class HomeExtras {
         int n;
         while ((n = in.read(b)) != -1) out.write(b, 0, n);
         in.close();
-        keepsakes = new JSONObject(out.toString("UTF-8"));
+        bundledKeepsakes = new JSONObject(out.toString("UTF-8"));
       } catch (Exception ignored) {
       }
+    if (keepsakes == null) keepsakes = bundledKeepsakes;
     JSONObject since = keepsakes == null ? null : keepsakes.optJSONObject("since");
     long start = since == null ? 0 : Dates.instant(since.optString("startedAt"));
     long seconds = start <= 0 ? 0 : Math.max(0, (System.currentTimeMillis() - start) / 1000);
@@ -230,7 +232,7 @@ final class HomeExtras {
             : "Since " + BookViews.displayDate(start, true) + " · Eastern");
   }
 
-  void history() {
+  Ui.Sheet history() {
     JSONObject d = data(), days = d.optJSONObject("heartDays");
     ArrayList<String> keys = new ArrayList<>();
     if (days != null) {
@@ -246,6 +248,10 @@ final class HomeExtras {
       her += HeartCounts.count(d, day, "asechka");
     }
     sheet.note("All time · Youssef " + me + " ♡  ·  Asnat " + her + " ♡");
+    sheet.note(
+        "Together streak · "
+            + HeartCounts.streak(d, "both", HeartCounts.day(System.currentTimeMillis()))
+            + " days");
     if (keys.isEmpty()) sheet.note("Your first heart starts our story here.");
     for (String day : keys)
       sheet.note(
@@ -256,6 +262,7 @@ final class HomeExtras {
               + HeartCounts.count(d, day, "asechka")
               + " ♡");
     sheet.show();
+    return sheet;
   }
 
   void close() {

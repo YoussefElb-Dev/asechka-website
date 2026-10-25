@@ -1193,7 +1193,14 @@ public final class NativeTests extends Instrumentation {
       ui(() -> book.window.dismiss());
     }
     ui(home::update);
+    ui(() -> ((ListView) get("feed")).setSelection(0));
+    Thread.sleep(350);
     screenshot("home-hub-hearts");
+    Ui.Sheet[] history = {null};
+    ui(() -> history[0] = home.history());
+    screenshot("home-hidden-heart-history");
+    ui(() -> history[0].dismiss());
+    Thread.sleep(300);
     call("settings", new Class[] {View.class}, send);
     Dialog settings = (Dialog) get("activeDialog");
     check(settings instanceof Ui.Sheet, "Settings use a rounded native sheet");

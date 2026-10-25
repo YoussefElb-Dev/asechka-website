@@ -65,9 +65,16 @@ final class NativeJourneyTests:XCTestCase {
         app.buttons["Profile and settings"].tap();capture("16-iPhone-settings");app.buttons["Done"].tap()
     }
     private func reveal(_ element:XCUIElement,in app:XCUIApplication) {
-        if element.isHittable{return}
-        for _ in 0..<8{app.scrollViews.firstMatch.swipeUp();if element.isHittable{return}}
-        for _ in 0..<8{app.scrollViews.firstMatch.swipeDown();if element.isHittable{return}}
+        let scroll=app.scrollViews.firstMatch
+        for _ in 0..<16 {
+            let frame=element.frame,viewport=scroll.frame
+            let top=viewport.minY+8,bottom=min(viewport.maxY-8,app.buttons["Home"].firstMatch.frame.minY-12)
+            if element.isHittable && frame.minY>=top && frame.maxY<=bottom{return}
+            let below=frame.isEmpty || frame.maxY>bottom
+            let start=scroll.coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:below ? 0.78:0.28))
+            let end=scroll.coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:below ? 0.38:0.68))
+            start.press(forDuration:0.02,thenDragTo:end)
+        }
     }
     func testOurLittleBookAndSinceUsAreNativeAndEditableOffline() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
