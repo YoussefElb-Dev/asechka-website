@@ -23,7 +23,8 @@ import UIKit
         surface?.emit(at:CGPoint(x:anchor.midX,y:anchor.midY))
         if link == nil {
             let display=CADisplayLink(target:self,selector:#selector(frame(_:)))
-            display.preferredFrameRateRange=CAFrameRateRange(minimum:60,maximum:60,preferred:60)
+            let maximum=Float(scene.screen.maximumFramesPerSecond)
+            display.preferredFrameRateRange=CAFrameRateRange(minimum:min(60,maximum),maximum:maximum,preferred:maximum)
             display.add(to:.main,forMode:.common);link=display
         }
     }
@@ -47,6 +48,7 @@ private struct FloatingHeart {
 }
 private final class HeartSurface:UIView {
     var particles:[FloatingHeart]=[]
+    private var presentationTime:CFTimeInterval=0
     private let sprites:[UIImage]=[UIColor(red:0.63,green:0.55,blue:0.83,alpha:1),UIColor(red:0.53,green:0.62,blue:0.81,alpha:1),UIColor(red:0.83,green:0.58,blue:0.74,alpha:1)].map{color in
         UIGraphicsImageRenderer(size:CGSize(width:48,height:48)).image{_ in
             color.setFill();let p=UIBezierPath();p.move(to:CGPoint(x:24,y:43))
@@ -59,10 +61,10 @@ private final class HeartSurface:UIView {
     override init(frame:CGRect){super.init(frame:frame);isOpaque=false;isUserInteractionEnabled=false;accessibilityElementsHidden=true}
     required init?(coder:NSCoder){fatalError("init(coder:) is unavailable")}
     func emit(at point:CGPoint){if particles.count>=HeartRain.particleLimit{particles.removeFirst()};particles.append(FloatingHeart(origin:point))}
-    func advance(_ now:CFTimeInterval){particles.removeAll{now-$0.born >= $0.duration};setNeedsDisplay()}
+    func advance(_ now:CFTimeInterval){presentationTime=now;particles.removeAll{now-$0.born >= $0.duration};setNeedsDisplay()}
     override func draw(_ rect:CGRect){
         guard let c=UIGraphicsGetCurrentContext() else{return}
-        let now=CACurrentMediaTime()
+        let now=presentationTime>0 ? presentationTime:CACurrentMediaTime()
         for p in particles {
             let t=CGFloat((now-p.born)/p.duration);guard t>=0,t<1 else{continue}
             let x=p.origin.x+sin(t*7+p.phase)*26,y=p.origin.y-t*(p.origin.y+90)

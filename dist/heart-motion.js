@@ -34,8 +34,9 @@ function stop(){cancelAnimationFrame(frame);frame=0;particles=[];if(context)cont
 function draw(now){
   if(reduced()){stop();return;}
   context.clearRect(0,0,innerWidth,innerHeight);
-  particles=particles.filter(p=>now-p.born<p.duration);
-  for(const p of particles){const t=(now-p.born)/p.duration;if(t<0)continue;const size=p.size*(.6+.4*Math.min(1,t*12));context.save();context.globalAlpha=Math.min(1,t*15)*Math.min(1,(1-t)*4);context.translate(p.x+Math.sin(t*7+p.phase)*26,p.y-t*(p.y+90));context.rotate(Math.sin(t*5+p.phase)*.24);context.drawImage(sprites[p.color],-size/2,-size/2,size,size);context.restore();}
+  let alive=0;
+  for(let index=0;index<particles.length;index++){const p=particles[index];if(now-p.born>=p.duration)continue;particles[alive++]=p;const t=(now-p.born)/p.duration;if(t<0)continue;const size=p.size*(.6+.4*Math.min(1,t*12));context.save();context.globalAlpha=Math.min(1,t*15)*Math.min(1,(1-t)*4);context.translate(p.x+Math.sin(t*7+p.phase)*26,p.y-t*(p.y+90));context.rotate(Math.sin(t*5+p.phase)*.24);context.drawImage(sprites[p.color],-size/2,-size/2,size,size);context.restore();}
+  particles.length=alive;
   if(particles.length)frame=requestAnimationFrame(draw);else stop();
 }
 export function floatHearts(anchor,count=1){

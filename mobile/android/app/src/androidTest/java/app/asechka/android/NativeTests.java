@@ -158,7 +158,7 @@ public final class NativeTests extends Instrumentation {
                   .getPackageManager()
                   .getPackageInfo(getTargetContext().getPackageName(), 0)
                   .versionCode
-              == 11,
+              == 12,
           "Updated package version");
     }
   }

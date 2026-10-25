@@ -16,20 +16,24 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
     int color;
   }
 
-  final ArrayList<Particle> particles = new ArrayList<>();
+  final ArrayList<Particle> particles = new ArrayList<>(LIMIT);
   final Random random = new Random();
   final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   final RectF target = new RectF();
   final Bitmap[] sprites = new Bitmap[3];
   final WindowManager manager;
   final Activity activity;
+  final int[] anchorPoint = new int[2];
+  final float density;
   boolean running;
   long frames;
+  double frameTime;
   WindowManager.LayoutParams windowParams;
 
   HeartOverlay(Activity activity) {
     super(activity);
     this.activity = activity;
+    density = getResources().getDisplayMetrics().density;
     manager = activity.getWindowManager();
     setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
     setSystemUiVisibility(
@@ -72,7 +76,15 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
                   | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
               PixelFormat.TRANSLUCENT);
       params.gravity = Gravity.TOP | Gravity.LEFT;
-      params.preferredRefreshRate = 60;
+      Display display = activity.getWindowManager().getDefaultDisplay();
+      Display.Mode fastest = display.getMode();
+      for (Display.Mode mode : display.getSupportedModes()) {
+        if (mode.getPhysicalWidth() == fastest.getPhysicalWidth()
+            && mode.getPhysicalHeight() == fastest.getPhysicalHeight()
+            && mode.getRefreshRate() > fastest.getRefreshRate()) fastest = mode;
+      }
+      params.preferredDisplayModeId = fastest.getModeId();
+      params.preferredRefreshRate = fastest.getRefreshRate();
       params.setTitle("Floating hearts");
       if (Build.VERSION.SDK_INT >= 28)
         params.layoutInDisplayCutoutMode =
@@ -83,14 +95,13 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
       running = true;
       Choreographer.getInstance().postFrameCallback(this);
     }
-    int[] point = new int[2];
-    anchor.getLocationOnScreen(point);
+    anchor.getLocationOnScreen(anchorPoint);
     Particle p = new Particle();
     p.born = System.nanoTime() / 1e9;
-    p.x = point[0] + anchor.getWidth() * (.3f + random.nextFloat() * .4f);
-    p.y = point[1] + anchor.getHeight() * .5f;
+    p.x = anchorPoint[0] + anchor.getWidth() * (.3f + random.nextFloat() * .4f);
+    p.y = anchorPoint[1] + anchor.getHeight() * .5f;
     p.phase = random.nextFloat() * 6.283f;
-    p.size = (20 + random.nextFloat() * 15) * getResources().getDisplayMetrics().density;
+    p.size = (20 + random.nextFloat() * 15) * density;
     p.duration = 2.0f + random.nextFloat() * .45f;
     p.color = random.nextInt(sprites.length);
     if (particles.size() >= LIMIT) particles.remove(0);
@@ -106,6 +117,7 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
   @Override
   public void doFrame(long time) {
     double now = time / 1e9;
+    frameTime = now;
     for (int i = particles.size() - 1; i >= 0; i--)
       if (now - particles.get(i).born >= particles.get(i).duration) particles.remove(i);
     if (particles.isEmpty()) {
@@ -119,8 +131,7 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
 
   @Override
   protected void onDraw(Canvas canvas) {
-    double now = System.nanoTime() / 1e9;
-    float density = getResources().getDisplayMetrics().density;
+    double now = frameTime == 0 ? System.nanoTime() / 1e9 : frameTime;
     for (Particle p : particles) {
       float t = (float) ((now - p.born) / p.duration);
       if (t < 0 || t >= 1) continue;
@@ -139,6 +150,7 @@ class HeartOverlay extends View implements Choreographer.FrameCallback {
   void stop() {
     Choreographer.getInstance().removeFrameCallback(this);
     particles.clear();
+    frameTime = 0;
     if (running) {
       running = false;
       manager.removeViewImmediate(this);

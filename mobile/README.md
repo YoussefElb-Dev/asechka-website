@@ -1,12 +1,12 @@
-# Asechka native apps — 2.2.2
+# Asechka native apps — 2.2.3
 
 The Home heart sender now uses a compact white capsule, a rose heart icon, and dark, readable text on both Android and iPhone. The 48-point touch target, soft press feedback, floating hearts, and offline queue remain available.
 
 Two native applications share the existing private website services: Android Views (Android 6+) and SwiftUI (iOS 16+, iPhone/iPad). Neither app contains a WebView. Home is a scrolling social feed; Photos and Quotes have their own feeds. Music, Our days, Words, the letter, personal corner, birthdays, and profile choices remain available.
 
-## Smoother hearts in 2.2.1
+## Adaptive heart motion in 2.2.3
 
-Android uses a Choreographer-driven application window; iPhone uses a CADisplayLink-driven, non-key UIWindow above sheets. Both target 60 Hz, reuse cached heart artwork, bound active particles, and leave underlying controls interactive. Hearts travel beyond cards and headers to the top of the screen. Reduced motion and the existing pause option remain supported. Actual frame rates depend on the device and system load.
+Android uses a Choreographer-driven application window; iPhone uses a CADisplayLink-driven, non-key UIWindow above sheets. Both request the supported display refresh rate, including 90/120 Hz where available, reuse cached heart artwork, bound active particles, and leave underlying controls interactive. Particle positions follow display timestamps for steadier pacing. Android selects a faster mode only at the current display resolution; iPhone opts into ProMotion. Hearts travel beyond cards and headers to the top of the screen. Reduced motion and the existing pause option remain supported. Actual frame rates depend on the device and system load. The website follows browser animation frames and compacts active particles in place to avoid a fresh array each frame.
 
 Android saves taps on an ordered worker; iPhone serializes encrypted heart writes on its vault queue. Visual feedback happens immediately and writes finish before synchronization. Home's Create / Our corner / Saved actions share the full available width. The website uses a requestAnimationFrame canvas in the browser top layer and durable retry batches, with a full-width mobile navigation row.
 
