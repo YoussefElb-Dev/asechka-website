@@ -33,8 +33,16 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     @Published var serverHeartDay=""
     private var serverHeartAsOf:Date?
     private var refreshingHearts=false
+    private var streakCacheKey=""
+    private var streakCache:SharedHeartStreak?
     func sharedHeartStreak(at date:Date=Date())->SharedHeartStreak {
-        SharedHeartStreak.calculate(heartDays,policy:heartStreakPolicy,today:online && !serverHeartDay.isEmpty && abs(date.timeIntervalSince(serverHeartAsOf ?? .distantPast))<90 ? serverHeartDay:HeartLedger.day(date))
+        let today=online && !serverHeartDay.isEmpty && abs(date.timeIntervalSince(serverHeartAsOf ?? .distantPast))<90 ? serverHeartDay:HeartLedger.day(date)
+        // Repeated hearts change totals, but cannot change the streak again that day.
+        let activeDays=heartDays.keys.filter{(heartDays[$0]?["me"] ?? 0)>0 || (heartDays[$0]?["asechka"] ?? 0)>0}.sorted().joined(separator:",")
+        let key="\(today)|\(heartStreakPolicy["startedOn"] ?? "")|\(heartStreakPolicy["seededThrough"] ?? "")|\(heartStreakPolicy["seedDays"] ?? 13)|\(activeDays)"
+        if key==streakCacheKey,let result=streakCache{return result}
+        let result=SharedHeartStreak.calculate(heartDays,policy:heartStreakPolicy,today:today)
+        streakCacheKey=key;streakCache=result;return result
     }
     private func saveTogether(_ data:Data)throws {
         let incoming=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] ?? [:]
