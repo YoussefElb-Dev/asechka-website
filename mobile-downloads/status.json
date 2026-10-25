@@ -1,9 +1,9 @@
 {
-  "source": "bb946cc6b06322dc3c53811560f056411987b4e5",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40156244321",
+  "source": "44f7cd25a1982a4225f29d808478f6c0bfbdb442",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40157138789",
   "backend": "success",
   "android": "success",
-  "iphone": "success",
+  "iphone": "failure",
   "jobs": [
     {
       "name": "Shared collection tests",
@@ -45,7 +45,7 @@
     },
     {
       "name": "iPhone IPA for sideloading",
-      "conclusion": "success",
+      "conclusion": "failure",
       "steps": [
         {
           "name": "Set up job",
@@ -65,7 +65,7 @@
         },
         {
           "name": "Test native screens, offline posts, and encrypted storage",
-          "conclusion": "success"
+          "conclusion": "failure"
         },
         {
           "name": "Capture native iPhone preview",
@@ -77,19 +77,19 @@
         },
         {
           "name": "Build the iPhone app",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Run actions/upload-artifact@v4",
           "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
         },
         {
           "name": "Post Run actions/checkout@v4",
@@ -161,13 +161,9 @@
     }
   ],
   "files": {
-    "Asechka-iPhone.ipa": {
-      "bytes": 9042404,
-      "sha256": "ffcca115fef72e541d1e52790c1320bb70a1e1d1eb34abe5a2d574a8ce3b6287"
-    },
     "Asechka-Android.apk": {
-      "bytes": 7447079,
-      "sha256": "d7856ab400fd70cfcf312e536d285c1898a987e26e328d6a9a4fdc6111cb5188"
+      "bytes": 7447076,
+      "sha256": "ef845713e99031c2a3d3724ce94320ed86088aee5e30e06b28bc0cefbdb4bfc1"
     }
   }
 }
