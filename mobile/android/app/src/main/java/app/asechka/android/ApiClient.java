@@ -244,6 +244,7 @@ public final class ApiClient {
     }
     try {
       while (true) {
+        store.sealHeartBatches();
         JSONArray items = store.queue();
         if (items.length() == 0) break;
         if (!store.unlocked() || !signedIn() || Thread.currentThread().isInterrupted()) break;
@@ -434,7 +435,7 @@ public final class ApiClient {
     connection.setUseCaches(false);
     connection.setRequestProperty("Accept", "application/json");
     connection.setRequestProperty("Cache-Control", "no-store");
-    connection.setRequestProperty("User-Agent", "Asechka-Android/2.1.1");
+    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.0");
     connection.setRequestProperty("Origin", base);
     final String sentCookie;
     final String sentSession = prefs.getString("session", "");

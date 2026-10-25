@@ -17,7 +17,7 @@ public final class NativeTests extends Instrumentation {
   private MainActivity activity;
   private ApiClient api;
   private int assertions;
-  private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly;
+  private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly;
   private String upgrade;
 
   @Override
@@ -28,6 +28,7 @@ public final class NativeTests extends Instrumentation {
     compatOnly = "true".equals(args.getString("compatOnly"));
     socialOnly = "true".equals(args.getString("socialOnly"));
     bookOnly = "true".equals(args.getString("bookOnly"));
+    homeOnly = "true".equals(args.getString("homeOnly"));
     upgrade = args.getString("upgrade", "");
     start();
   }
@@ -57,7 +58,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (bookOnly) {
+        if (homeOnly) {
+          homeTests();
+        } else if (bookOnly) {
           bookTests();
         } else if (socialOnly) {
           socialTests();
@@ -1083,6 +1086,132 @@ public final class NativeTests extends Instrumentation {
     set("images", new Images(api));
     call("restoreSaved", new Class[] {});
     call("showShell", new Class[] {});
+  }
+
+  private void homeTests() throws Exception {
+    prepareMotionFixture();
+    api.get("/api/journal");
+    api.get("/api/keepsakes");
+    offline(api, true);
+    set(
+        "book",
+        new BookViews(
+            activity,
+            api,
+            new Images(api),
+            java.util.concurrent.Executors.newSingleThreadExecutor(),
+            uri -> {
+              throw new IOException("Fixture");
+            }));
+    call("select", new Class[] {int.class}, 0);
+    HomeExtras home = (HomeExtras) get("homeExtras");
+    check(home != null, "Home has a native shortcuts hub");
+    for (String title :
+        new String[] {
+          "Secret vocab",
+          "Open when…",
+          "Tiny victories",
+          "Recipes for two",
+          "Little things",
+          "Our beginning"
+        }) check(text(title) != null, "Home shortcut: " + title);
+    View send = text("♡  Send a heart to Youssef");
+    check(send != null, "Heart sender is on Home");
+    ui(
+        () -> {
+          for (int i = 0; i < 100; i++) home.send(send);
+        });
+    check(
+        HeartCounts.count(
+                api.cached("/api/together", true),
+                HeartCounts.day(System.currentTimeMillis()),
+                "asechka")
+            == 100,
+        "Every spam tap is counted offline");
+    check(api.store.queue().length() == 1, "One hundred taps are durably batched");
+    String first =
+        api.store.queue().getJSONObject(0).getJSONObject("body").getString("operationId");
+    api.store.sealHeartBatches();
+    ui(
+        () -> {
+          for (int i = 0; i < 5; i++) home.send(send);
+        });
+    check(api.store.queue().length() == 2, "New taps never mutate an attempted batch");
+    check(
+        api.store.queue().getJSONObject(0).getJSONObject("body").getLong("count") == 100,
+        "Attempted batch retains original count");
+    ApiClient reopened = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(reopened, true);
+    check(
+        HeartCounts.count(
+                reopened.cached("/api/together", true),
+                HeartCounts.day(System.currentTimeMillis()),
+                "asechka")
+            == 105,
+        "Cold storage retains every heart");
+    check(
+        home.rain == null || home.rain.particles.size() <= 60,
+        "Particle work is bounded while spamming");
+    JSONObject streak =
+        OfflineStore.json(
+            "heartDays",
+            OfflineStore.json(
+                "2026-10-31",
+                OfflineStore.json("me", 1),
+                "2026-11-01",
+                OfflineStore.json("me", 20)));
+    check(
+        HeartCounts.streak(streak, "me", "2026-11-02") == 2,
+        "Yesterday’s streak remains active today");
+    check(HeartCounts.streak(streak, "me", "2026-11-03") == 0, "A missed day resets the streak");
+    check(
+        HeartCounts.day(Dates.instant("2026-11-02T04:59:59Z")).equals("2026-11-01"),
+        "Eastern midnight survives DST");
+    JSONObject received =
+        OfflineStore.json(
+            "heartReceipts",
+            new JSONArray().put(first),
+            "heartDays",
+            OfflineStore.json(
+                HeartCounts.day(System.currentTimeMillis()), OfflineStore.json("asechka", 100)),
+            "hearts",
+            new JSONObject());
+    HeartCounts.apply(
+        received,
+        api.store.queue().getJSONObject(0).getJSONObject("body"),
+        System.currentTimeMillis());
+    check(
+        HeartCounts.count(received, HeartCounts.day(System.currentTimeMillis()), "asechka") == 100,
+        "A lost acknowledgement cannot double-project hearts");
+    int[][] routes = {{3, 0, 2}, {1, 1, 1}, {4, 0, 0}, {5, 0, 1}, {2, 1, 2}, {0, 1, 0}};
+    for (int[] route : routes) {
+      ui(() -> home.open.open(route[0]));
+      BookViews book = (BookViews) get("book");
+      check(
+          book.chapter == route[2] && book.personal == (route[1] == 1),
+          "Shortcut opens the correct native chapter");
+      ui(() -> book.window.dismiss());
+    }
+    ui(home::update);
+    screenshot("home-hub-hearts");
+    call("settings", new Class[] {View.class}, send);
+    Dialog settings = (Dialog) get("activeDialog");
+    check(settings instanceof Ui.Sheet, "Settings use a rounded native sheet");
+    screenshot("home-rounded-settings");
+    ui(settings::dismiss);
+    Thread.sleep(300);
+    call("choosePost", new Class[] {});
+    Dialog chooser = (Dialog) get("activeDialog");
+    check(chooser instanceof Ui.Sheet, "Composer selection uses a rounded sheet");
+    screenshot("home-rounded-create");
+    ui(chooser::dismiss);
+    offline(api, false);
+    api.syncPending();
+    JSONObject synced = api.get("/api/together");
+    check(
+        HeartCounts.count(synced, HeartCounts.day(System.currentTimeMillis()), "asechka") == 105,
+        "Every queued heart reaches the shared server");
+    check(api.store.queue().length() == 0, "Heart batches clear after acknowledgement");
   }
 
   private void bookTests() throws Exception {

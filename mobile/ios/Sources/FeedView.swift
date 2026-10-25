@@ -12,6 +12,7 @@ struct FeedView:View {
     @State private var viewer:PostSelection?
     @State private var edit:ComposeRequest?
     @State private var deletion:PostSelection?
+    @State private var shortcut:BookRoute?
     var posts:[Post]{universe.memories.posts.filter{(mode==0 || (mode==1 ? $0.isPhoto:!$0.isPhoto)) && (!savedOnly || universe.bookmarks.contains($0.key))}}
     var body:some View {
         ScrollViewReader{proxy in
@@ -24,6 +25,7 @@ struct FeedView:View {
             .refreshable{await universe.refresh()}
         }
         .sheet(item:$comments){selection in CommentsView(post:selection.post)}
+        .sheet(item:$shortcut){route in BookView(personal:route.personal,initialChapter:route.chapter)}
         .sheet(item:$edit){ComposerView(request:$0)}
         .fullScreenCover(item:$viewer){selection in PhotoViewer(post:selection.post)}
         .confirmationDialog("Delete this shared post?",isPresented:Binding(get:{deletion != nil},set:{if !$0{deletion=nil}}),titleVisibility:.visible){
@@ -39,6 +41,7 @@ struct FeedView:View {
                 story("Music","music.note"){navigate(3)}
                 story(savedOnly ? "All posts":"Saved","bookmark"){savedOnly.toggle()}
             }.padding(.horizontal,22)}
+            if mode==0 && !savedOnly {HomeHub{shortcut=$0}}
             VStack(alignment:.leading,spacing:6){
                 Text(savedOnly ? "Kept close.":mode==1 ? "Our camera roll.":mode==2 ? "Words to keep.":"Our little us.").font(.custom("Manrope-Bold",size:28))
                 Text("A little life together, one moment at a time.").font(.subheadline).foregroundColor(Palette.muted)

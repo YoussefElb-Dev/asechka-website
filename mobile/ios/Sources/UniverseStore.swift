@@ -28,6 +28,11 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     @Published var error:String?
     @Published var bookmarks:Set<String>=[]
     @Published var hearts:[String:String]=[:]
+    @Published var heartDays:[String:[String:Int]]=[:]
+    private var heartReceipts:Set<String>=[]
+    private var inFlightChange:String?
+    private var sealedHearts:Set<String>=[]
+    private var heartFlush:Task<Void,Never>?
     @Published var dailyText=""
     private(set) var storageUnavailable=false
     let vault:Vault
@@ -63,6 +68,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         locked=vault.value("locked",as:Bool.self) ?? false
         unlocked = !locked && vault.read("snapshot:/api/memories") != nil
         pending=vault.value("outbox",as:[PendingChange].self) ?? []
+        sealedHearts=Set(vault.value("heart-sealed",as:[String].self) ?? [])
         idMap=vault.value("id-map",as:[String:String].self) ?? [:]
         restore();loadBookmarks()
         monitor.pathUpdateHandler={ [weak self] path in
@@ -82,7 +88,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard path.hasPrefix("/"),!path.hasPrefix("//"),!path.contains("\\"),let url=URL(string:Self.site+path)else{throw URLError(.badURL)}
         var request=URLRequest(url:url);request.httpMethod=body==nil ? "GET":"POST";request.httpBody=body
         request.setValue("application/json",forHTTPHeaderField:"Accept");request.setValue(Self.site,forHTTPHeaderField:"Origin")
-        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.1.1",forHTTPHeaderField:"User-Agent")
+        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.0",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
         for (endpoint,header) in [("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation")] {
@@ -124,11 +130,14 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     }
     func lock(){locked=true;unlocked=false;try? vault.save("locked",true);cookie="";vault.remove("session")}
     func restore(){
+        heartDays=[:];heartReceipts=[]
         memories=vault.value("snapshot:/api/memories",as:Memories.self) ?? bundledMemories()
         songs=(vault.read("snapshot:/api/music").flatMap{try? JSONDecoder().decode(SongList.self,from:$0)})?.tracks ?? []
         wishes=(vault.read("snapshot:/api/together").flatMap{try? JSONDecoder().decode(WishList.self,from:$0)})?.bucketList ?? []
         if let data=vault.read("snapshot:/api/together"),let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any],let values=json["hearts"] as? [String:[String:Any]] {
             hearts=values.compactMapValues{$0["sentAt"] as? String}
+            heartDays=json["heartDays"] as? [String:[String:Int]] ?? [:]
+            heartReceipts=Set(json["heartReceipts"] as? [String] ?? [])
         }
         if let data=vault.read("snapshot:/api/daily-memory"),let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] {
             let memory=json["memory"] as? [String:Any]
@@ -152,6 +161,22 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         }
         guard !locked else{return};restore();await prefetch()
     }
+    func sendHeart()throws {
+        let from=actor=="asnat" ? "asechka":"me",day=HeartLedger.day()
+        var next=pending,merged=false
+        for index in next.indices.reversed() where next[index].path=="/api/together" && next[index].error==nil && next[index].id != inFlightChange && !sealedHearts.contains(next[index].id) {
+            guard var body=(try? JSONSerialization.jsonObject(with:next[index].body)) as? [String:Any],body["action"] as? String=="sendHeart",body["from"] as? String==from,body["day"] as? String==day,(body["count"] as? Int ?? 1)<1000000 else{continue}
+            body["count"]=(body["count"] as? Int ?? 1)+1
+            next[index].body=try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]);merged=true;break
+        }
+        if !merged {
+            let body:[String:Any]=["action":"sendHeart","from":from,"day":day,"count":1,"operationId":UUID().uuidString.lowercased()]
+            next.append(PendingChange(id:UUID().uuidString,path:"/api/together",body:try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]),createdAt:ISO8601DateFormatter().string(from:Date())))
+        }
+        try vault.save("outbox",next);pending=next;restore();status()
+        heartFlush?.cancel();heartFlush=Task{do{try await Task.sleep(nanoseconds:900_000_000)}catch{return};await sync();restore();status()}
+    }
+
     func enqueue(_ path:String,_ input:[String:Any])throws {
         var body=input
         if body["operationId"]==nil {body["operationId"]=UUID().uuidString.lowercased()}
@@ -165,10 +190,12 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         Task{await sync();restore();status()}
     }
     func sync()async {
-        guard !syncing,online,!cookie.isEmpty,!locked else{return};syncing=true;defer{syncing=false}
+        guard !syncing,online,!cookie.isEmpty,!locked else{return};syncing=true;defer{syncing=false;inFlightChange=nil}
         while let first=pending.first,first.error==nil,!locked {
+            inFlightChange=first.id
             do {
                 var body=(try JSONSerialization.jsonObject(with:first.body)) as? [String:Any] ?? [:]
+                if body["action"] as? String=="sendHeart" {sealedHearts.insert(first.id);try vault.save("heart-sealed",Array(sealedHearts))}
                 for field in ["expectedVersion","expectedId","expectedRevision"] {
                     if var value=body[field] as? String {for _ in 0..<50 {guard let next=idMap[value] else{break};value=next};body[field]=value}
                 }
@@ -186,6 +213,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                 // Persist the server snapshot before dropping the queued operation. Retried writes are idempotent.
                 try vault.write("snapshot:"+first.path,data);try vault.save("id-map",idMap)
                 var next=pending;next.removeAll{$0.id==first.id};try vault.save("outbox",next);pending=next
+                sealedHearts.remove(first.id);try? vault.save("heart-sealed",Array(sealedHearts))
             }catch {
                 if let server=error as? ServerError,(400..<500).contains(server.status),![401,429].contains(server.status),let index=pending.firstIndex(where:{$0.id==first.id}) {
                     pending[index].error=server.message;try? vault.save("outbox",pending)
@@ -198,7 +226,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard let b=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any] else{return}
         if change.path=="/api/together" {
             let action=b["action"] as? String ?? ""
-            if action=="sendHeart" {hearts[b["from"] as? String ?? "me"]=change.createdAt;return}
+            if action=="sendHeart" {HeartLedger.apply(b,to:&heartDays,receipts:heartReceipts,createdAt:change.createdAt);hearts[b["from"] as? String ?? "me"]=change.createdAt;return}
             guard let id=b["id"] as? String else{return}
             if action=="removeItem"{wishes.removeAll{$0.id==id};return}
             if let index=wishes.firstIndex(where:{$0.id==id}) {

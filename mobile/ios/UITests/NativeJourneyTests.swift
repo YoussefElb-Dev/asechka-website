@@ -24,8 +24,8 @@ final class NativeJourneyTests:XCTestCase {
         app.buttons["Share"].tap()
         XCTAssertTrue(app.buttons["Create post"].waitForExistence(timeout:5))
         app.buttons["Home"].firstMatch.tap()
-        app.scrollViews.firstMatch.swipeUp()
         let like=app.buttons["Like post"].firstMatch
+        reveal(like,in:app)
         XCTAssertTrue(like.waitForExistence(timeout:5));like.tap()
         XCTAssertTrue(app.buttons["Unlike post"].firstMatch.waitForExistence(timeout:5))
         app.buttons["Comments"].firstMatch.tap()
@@ -41,6 +41,33 @@ final class NativeJourneyTests:XCTestCase {
         capture("05-iPhone-days")
         app.buttons["Words"].firstMatch.tap()
         capture("06-iPhone-words")
+    }
+    func testHomeShortcutsHeartsAndHiddenHistory() {
+        let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
+        let send=app.buttons["Send a heart to Youssef"].firstMatch
+        XCTAssertTrue(send.waitForExistence(timeout:15));reveal(send,in:app)
+        for _ in 0..<15{send.tap()}
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format:"label CONTAINS %@","Today · you 15")).firstMatch.waitForExistence(timeout:5))
+        capture("12-iPhone-home-hearts")
+        let streak=app.staticTexts.matching(NSPredicate(format:"label BEGINSWITH %@","Heart streak,")).firstMatch
+        XCTAssertTrue(streak.exists);streak.press(forDuration:1.1)
+        XCTAssertTrue(app.navigationBars["Our heart history"].waitForExistence(timeout:5));capture("13-iPhone-heart-history");app.buttons["Done"].tap()
+        for shortcut in ["Secret vocab","Open when…","Tiny victories","Recipes for two","Little things","Our beginning"] {
+            let button=app.buttons[shortcut].firstMatch;reveal(button,in:app);XCTAssertTrue(button.isHittable,shortcut);button.tap()
+            if shortcut=="Secret vocab" {XCTAssertTrue(app.textFields["Find one of our inside jokes…"].waitForExistence(timeout:5));capture("14-iPhone-secret-vocab")}
+            else if shortcut=="Open when…" {XCTAssertTrue(app.buttons["Add a letter"].waitForExistence(timeout:5))}
+            else if shortcut=="Tiny victories" {XCTAssertTrue(app.buttons["Add a victory"].waitForExistence(timeout:5))}
+            else if shortcut=="Recipes for two" {XCTAssertTrue(app.buttons["Add a recipe"].waitForExistence(timeout:5))}
+            else if shortcut=="Little things" {XCTAssertTrue(app.buttons["Add a little thing"].waitForExistence(timeout:5))}
+            else {XCTAssertTrue(app.buttons["Edit our beginning & messages"].waitForExistence(timeout:5));capture("15-iPhone-our-time")}
+            app.buttons["Done"].tap()
+        }
+        app.buttons["Profile and settings"].tap();capture("16-iPhone-settings");app.buttons["Done"].tap()
+    }
+    private func reveal(_ element:XCUIElement,in app:XCUIApplication) {
+        if element.isHittable{return}
+        for _ in 0..<8{app.scrollViews.firstMatch.swipeUp();if element.isHittable{return}}
+        for _ in 0..<8{app.scrollViews.firstMatch.swipeDown();if element.isHittable{return}}
     }
     func testOurLittleBookAndSinceUsAreNativeAndEditableOffline() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()

@@ -51,8 +51,12 @@ final class BookViews {
   }
 
   void show(boolean personal) {
+    show(personal, 0);
+  }
+
+  void show(boolean personal, int initialChapter) {
     this.personal = personal;
-    chapter = 0;
+    chapter = Math.max(0, Math.min(2, initialChapter));
     window = new Dialog(activity);
     LinearLayout outer = u.column();
     outer.setBackgroundColor(Ui.BG);

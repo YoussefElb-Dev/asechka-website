@@ -24,6 +24,138 @@ final class Ui {
     this.c = c;
   }
 
+  Sheet sheet(String title, String subtitle) {
+    return new Sheet(title, subtitle);
+  }
+
+  final class Sheet extends Dialog {
+    final LinearLayout panel, items;
+    boolean closing;
+
+    Sheet(String title, String subtitle) {
+      super(c);
+      requestWindowFeature(Window.FEATURE_NO_TITLE);
+      panel =
+          new LinearLayout(c) {
+            protected void onMeasure(int width, int height) {
+              super.onMeasure(
+                  width,
+                  View.MeasureSpec.makeMeasureSpec(
+                      (int) (c.getResources().getDisplayMetrics().heightPixels * .88f),
+                      View.MeasureSpec.AT_MOST));
+            }
+          };
+      panel.setOrientation(LinearLayout.VERTICAL);
+      panel.setPadding(dp(16), dp(10), dp(16), dp(12));
+      panel.setBackground(shape(BG, 30));
+      panel.setClipToOutline(true);
+      View handle = new View(c);
+      handle.setBackground(shape(0xffc8c8db, 3));
+      LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(35), dp(4));
+      hp.gravity = Gravity.CENTER;
+      hp.bottomMargin = dp(15);
+      panel.addView(handle, hp);
+      LinearLayout heading = row(8);
+      heading.setPadding(dp(8), 0, 0, dp(4));
+      heading.addView(Ui.this.title(title, 23), new LinearLayout.LayoutParams(0, -2, 1));
+      Button close = button("Close", false, this::dismiss);
+      heading.addView(close);
+      panel.addView(heading);
+      if (!subtitle.isEmpty()) {
+        TextView help = text(subtitle, 13, MUTED);
+        help.setPadding(dp(8), dp(5), dp(8), dp(14));
+        panel.addView(help);
+      }
+      items = column();
+      ScrollView scroller = scroll(items);
+      scroller.setFillViewport(false);
+      panel.addView(scroller, new LinearLayout.LayoutParams(-1, -2));
+      setContentView(panel);
+      setCanceledOnTouchOutside(true);
+    }
+
+    Sheet note(String text) {
+      TextView note = Ui.this.text(text, 14, INK);
+      note.setPadding(dp(15), dp(13), dp(15), dp(13));
+      note.setBackground(shape(Color.WHITE, 18));
+      add(items, note, 8);
+      return this;
+    }
+
+    Sheet item(String title, String detail, String icon, boolean destructive, Runnable action) {
+      LinearLayout row = Ui.this.row(13);
+      row.setPadding(dp(14), dp(13), dp(14), dp(13));
+      row.setMinimumHeight(dp(66));
+      TextView symbol = text(icon, 22, destructive ? 0xffa64e6b : PURPLE);
+      symbol.setGravity(Gravity.CENTER);
+      row.addView(symbol, new LinearLayout.LayoutParams(dp(32), dp(35)));
+      LinearLayout copy = column();
+      TextView name = Ui.this.title(title, 15);
+      name.setTextColor(destructive ? 0xffa64e6b : INK);
+      copy.addView(name);
+      if (!detail.isEmpty()) add(copy, text(detail, 12, MUTED), 4);
+      row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
+      row.addView(text("›", 24, MUTED));
+      row.setBackground(
+          new RippleDrawable(ColorStateList.valueOf(0x226b5cb5), shape(Color.WHITE, 20), null));
+      row.setContentDescription(title + (detail.isEmpty() ? "" : ". " + detail));
+      row.setOnClickListener(
+          v -> {
+            dismiss();
+            panel.postDelayed(action, Motion.enabled(c) ? 180 : 0);
+          });
+      add(items, row, 8);
+      return this;
+    }
+
+    public void show() {
+      super.show();
+      Window w = getWindow();
+      if (w == null) return;
+      w.setBackgroundDrawableResource(android.R.color.transparent);
+      w.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+      WindowManager.LayoutParams p = w.getAttributes();
+      p.dimAmount = .32f;
+      p.gravity = Gravity.BOTTOM;
+      p.width = Math.min(c.getResources().getDisplayMetrics().widthPixels, dp(560));
+      p.height = -2;
+      w.setAttributes(p);
+      panel.setOnApplyWindowInsetsListener(
+          (v, insets) -> {
+            int bottom = insets.getSystemWindowInsetBottom();
+            v.setPadding(dp(16), dp(10), dp(16), dp(12) + bottom);
+            return insets;
+          });
+      panel.requestApplyInsets();
+      Motion.install(panel);
+      if (Motion.enabled(c)) {
+        panel.setTranslationY(dp(65));
+        panel.setAlpha(0);
+        panel
+            .animate()
+            .translationY(0)
+            .alpha(1)
+            .setDuration(260)
+            .setInterpolator(Motion.EASE)
+            .start();
+      }
+    }
+
+    public void dismiss() {
+      if (closing) return;
+      closing = true;
+      if (isShowing() && Motion.enabled(c)) {
+        panel
+            .animate()
+            .translationY(dp(55))
+            .alpha(0)
+            .setDuration(170)
+            .withEndAction(() -> Sheet.super.dismiss())
+            .start();
+      } else super.dismiss();
+    }
+  }
+
   int dp(float value) {
     return Math.round(value * c.getResources().getDisplayMetrics().density);
   }

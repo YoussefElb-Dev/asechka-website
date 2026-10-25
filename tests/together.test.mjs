@@ -20,11 +20,13 @@ test('shared plans preserve notes and photos through completion, reopening, and 
   assert.equal(reopened.bucketList[0].photoId,withPhoto.bucketList[0].photoId);assert.equal(reopened.bucketList[0].completedAt,null);
   const removed=change(reopened,{action:'removeItem',id:item.id,expectedRevision:reopened.bucketList[0].revision,operationId:randomUUID()});assert.equal(removed.bucketList.length,0);
 });
-test('hearts retain separate sender timestamps, throttle rapid taps, and tolerate repeat requests',()=>{
+test('hearts retain separate senders, allow rapid taps, and tolerate old retries after later hearts',()=>{
   const input={action:'sendHeart',from:'me',operationId:randomUUID()};
   const saved=change(empty(),input);assert.equal(saved.hearts.asechka,null);assert.equal(saved.hearts.me.id,input.operationId);
   assert.deepEqual(change(saved,input),saved);
-  assert.throws(()=>change(saved,{...input,operationId:randomUUID()}),error=>error.status===429);
+  const spam=change(saved,{...input,operationId:randomUUID(),count:150});
+  assert.equal(spam.heartDays['2026-10-14'].me,151);
+  assert.deepEqual(change(spam,input),spam);
   const reply=change(saved,{action:'sendHeart',from:'asechka',operationId:randomUUID()});assert.equal(reply.hearts.me.id,input.operationId);assert.ok(reply.hearts.asechka.sentAt);
 });
 test('photos accept bounded real JPEGs and reject HTML, remote URLs, oversized and malformed uploads',async()=>{

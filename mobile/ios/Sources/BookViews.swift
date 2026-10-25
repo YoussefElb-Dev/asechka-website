@@ -15,6 +15,7 @@ struct BookView:View {
     @State private var letter:BookEntry?
     @State private var removal:BookEdit?
     @State private var beginning=false
+    init(personal:Bool=false,initialChapter:Int=0){self.personal=personal;_chapter=State(initialValue:max(0,min(2,initialChapter)))}
     private var data:[String:Any]{personal ? universe.keepsakes:universe.journal}
     private var writable:Bool {data["writable"] as? Bool ?? false}
     private var endpoint:String{personal ? "/api/keepsakes":"/api/journal"}

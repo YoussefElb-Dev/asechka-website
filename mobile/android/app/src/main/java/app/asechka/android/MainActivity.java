@@ -26,6 +26,23 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private ApiClient api;
   private Images images;
   private BookViews book;
+  private HomeExtras homeExtras;
+  private final Runnable flushHearts = this::flushHeartQueue;
+
+  private void flushHeartQueue() {
+    socialWrites.execute(
+        () -> {
+          try {
+            api.syncPending();
+          } catch (Exception ignored) {
+          }
+          main.post(
+              () -> {
+                if (homeExtras != null) homeExtras.update();
+              });
+        });
+  }
+
   private final Handler main = new Handler(Looper.getMainLooper());
   private final ExecutorService work = Executors.newFixedThreadPool(4);
   private JSONObject memories, music, together, daily;
@@ -151,6 +168,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   @Override
   protected void onPause() {
     started = false;
+    if (api != null && api.canOpen()) flushHearts.run();
     persistWords();
     super.onPause();
   }
@@ -166,6 +184,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     work.shutdownNow();
     socialWrites.shutdown();
     if (book != null) book.close();
+    if (homeExtras != null) homeExtras.close();
     images.close();
     if (activeDialog != null) activeDialog.dismiss();
     super.onDestroy();
@@ -510,80 +529,62 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void settings(View anchor) {
-    PopupMenu popup = new PopupMenu(this, anchor);
-    popup
-        .getMenu()
-        .add("Saved changes · " + api.store.pending())
-        .setOnMenuItemClickListener(
-            item -> {
-              showOutbox();
-              return true;
-            });
+    Ui.Sheet sheet = u.sheet("Our little settings", person() + " · a space made for the two of us");
+    sheet.item(
+        "Saved changes · " + api.store.pending(),
+        "See what’s waiting to sync",
+        "↻",
+        false,
+        this::showOutbox);
     if (!api.signedIn())
-      popup
-          .getMenu()
-          .add("Reconnect with our code")
-          .setOnMenuItemClickListener(
-              item -> {
-                showLogin();
-                return true;
-              });
-    popup
-        .getMenu()
-        .add("Switch profile · " + person())
-        .setOnMenuItemClickListener(
-            item -> {
-              showIdentity();
-              return true;
-            });
-    popup
-        .getMenu()
-        .add("Our birthdays")
-        .setOnMenuItemClickListener(
-            item -> {
-              new AlertDialog.Builder(this)
-                  .setTitle("Two favorite days")
-                  .setMessage(
-                      "Asnat · August 5\n"
-                          + "Youssef · January 25\n\n"
-                          + "Remembered every year, even offline.")
-                  .setPositiveButton("Lovely ♡", null)
-                  .show();
-              return true;
-            });
-    boolean paused = prefs().getBoolean("motion-paused", false);
-    popup
-        .getMenu()
-        .add(paused ? "Resume gentle animations" : "Pause gentle animations")
-        .setOnMenuItemClickListener(
-            item -> {
-              prefs().edit().putBoolean("motion-paused", !paused).apply();
-              render(true);
-              return true;
-            });
-    boolean haptics = prefs().getBoolean("haptics", true);
-    popup
-        .getMenu()
-        .add(haptics ? "Turn off haptic feedback" : "Turn on haptic feedback")
-        .setOnMenuItemClickListener(
-            item -> {
-              prefs().edit().putBoolean("haptics", !haptics).apply();
-              return true;
-            });
-    popup
-        .getMenu()
-        .add("Lock our little door")
-        .setOnMenuItemClickListener(
-            item -> {
-              new AlertDialog.Builder(this)
-                  .setTitle("Lock our little door?")
-                  .setMessage("You can open it again with our code.")
-                  .setNegativeButton("Keep it open", null)
-                  .setPositiveButton("Lock", (d, w) -> signOut())
-                  .show();
-              return true;
-            });
-    popup.show();
+      sheet.item(
+          "Reconnect with our code", "Bring both phones up to date", "↗", false, this::showLogin);
+    sheet.item("Switch profile · " + person(), "Asnat or Youssef", "♡", false, this::showIdentity);
+    sheet.item(
+        "Our birthdays",
+        "Asnat · August 5   /   Youssef · January 25",
+        "✦",
+        false,
+        () ->
+            new AlertDialog.Builder(this)
+                .setTitle("Two favorite days")
+                .setMessage(
+                    "Asnat · August 5\n"
+                        + "Youssef · January 25\n\n"
+                        + "Remembered every year, even offline.")
+                .setPositiveButton("Lovely ♡", null)
+                .show());
+    boolean paused = prefs().getBoolean("motion-paused", false),
+        haptics = prefs().getBoolean("haptics", true);
+    sheet.item(
+        paused ? "Resume gentle animations" : "Pause gentle animations",
+        "Choose how much things move",
+        "∞",
+        false,
+        () -> {
+          prefs().edit().putBoolean("motion-paused", !paused).apply();
+          render(true);
+        });
+    sheet.item(
+        haptics ? "Turn off haptic feedback" : "Turn on haptic feedback",
+        "A little feeling with every tap",
+        "✧",
+        false,
+        () -> prefs().edit().putBoolean("haptics", !haptics).apply());
+    sheet.item(
+        "Lock our little door",
+        "Open it again with our code",
+        "⌑",
+        true,
+        () ->
+            new AlertDialog.Builder(this)
+                .setTitle("Lock our little door?")
+                .setMessage("Your saved content stays safely on this phone.")
+                .setNegativeButton("Keep it open", null)
+                .setPositiveButton("Lock", (d, w) -> signOut())
+                .show());
+    track(sheet);
+    sheet.show();
   }
 
   private android.content.SharedPreferences prefs() {
@@ -816,18 +817,39 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       quoteCarousel(carousel);
       header.addView(carousel);
     }
+    if (screen == 0 && !savedPosts) {
+      if (homeExtras != null) homeExtras.close();
+      homeExtras =
+          new HomeExtras(
+              this,
+              api,
+              destination -> {
+                if (destination <= 2) book.show(true, destination);
+                else book.show(false, destination == 3 ? 2 : destination == 4 ? 0 : 1);
+              },
+              flushHearts);
+      header.addView(homeExtras.view(), 1);
+    }
     Motion.install(header);
     return header;
   }
 
   private void choosePost() {
-    new AlertDialog.Builder(this)
-        .setTitle("Share a little something")
-        .setItems(
-            new String[] {"Photo · a moment from our day", "Quote · words from the heart"},
-            (d, which) -> createPost(which == 0))
-        .setNegativeButton("Close", null)
-        .show();
+    Ui.Sheet sheet = u.sheet("Share a little something", "A moment, a thought, a little more us.");
+    sheet.item(
+        "Photo · a moment from our day",
+        "Choose a picture and add your words",
+        "＋",
+        false,
+        () -> createPost(true));
+    sheet.item(
+        "Quote · words from the heart",
+        "Write something worth keeping",
+        "❞",
+        false,
+        () -> createPost(false));
+    track(sheet);
+    sheet.show();
   }
 
   private void ourCorner() {
@@ -838,7 +860,15 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     LinearLayout body = content;
     content = previous;
     Dialog dialog = new Dialog(this);
-    dialog.setContentView(u.scroll(body));
+    LinearLayout outer = u.column();
+    outer.setBackgroundColor(Ui.BG);
+    LinearLayout bar = u.row();
+    bar.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(8));
+    bar.addView(u.title("Our corner", 22), new LinearLayout.LayoutParams(0, -2, 1));
+    bar.addView(u.button("Done", false, dialog::dismiss));
+    outer.addView(bar);
+    outer.addView(u.scroll(body), new LinearLayout.LayoutParams(-1, 0, 1));
+    dialog.setContentView(outer);
     track(dialog);
     dialog.show();
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -947,52 +977,49 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   public void more(SocialFeed.Post original, View anchor) {
     SocialFeed.Post post = currentPost(original);
-    PopupMenu popup = new PopupMenu(this, anchor);
-    popup
-        .getMenu()
-        .add("Edit post")
-        .setOnMenuItemClickListener(
-            item -> {
-              memoryEditor = new MemoryEditor(post.kind.equals("photo"), post.value);
-              memoryEditor.show();
-              return true;
-            });
-    popup
-        .getMenu()
-        .add(saved(post) ? "Remove from saved" : "Save post")
-        .setOnMenuItemClickListener(
-            item -> {
-              savePost(post);
-              return true;
-            });
-    popup
-        .getMenu()
-        .add("Delete post")
-        .setOnMenuItemClickListener(
-            item -> {
-              new AlertDialog.Builder(this)
-                  .setTitle("Delete this post?")
-                  .setMessage(
-                      "This removes it from our shared collection on both phones and the website.")
-                  .setNegativeButton("Keep it", null)
-                  .setPositiveButton(
-                      "Delete",
-                      (d, w) ->
-                          queueSocial(
-                              object(
-                                  "action",
-                                  post.kind.equals("photo") ? "removePhoto" : "removeQuote",
-                                  "id",
-                                  post.id,
-                                  "expectedVersion",
-                                  post.value.optString("editVersion"),
-                                  "operationId",
-                                  UUID.randomUUID().toString()),
-                              null))
-                  .show();
-              return true;
-            });
-    popup.show();
+    Ui.Sheet sheet = u.sheet("A little moment", post.name() + "’s " + post.kind);
+    sheet.item(
+        "Edit post",
+        "Update your words or photo details",
+        "✎",
+        false,
+        () -> {
+          memoryEditor = new MemoryEditor(post.kind.equals("photo"), post.value);
+          memoryEditor.show();
+        });
+    sheet.item(
+        saved(post) ? "Remove from saved" : "Save post",
+        "Keep this one close on your phone",
+        "☆",
+        false,
+        () -> savePost(post));
+    sheet.item(
+        "Delete post",
+        "Remove it from our shared collection",
+        "−",
+        true,
+        () ->
+            new AlertDialog.Builder(this)
+                .setTitle("Delete this post?")
+                .setMessage("This removes it on both phones and the website.")
+                .setNegativeButton("Keep it", null)
+                .setPositiveButton(
+                    "Delete",
+                    (d, w) ->
+                        queueSocial(
+                            object(
+                                "action",
+                                post.kind.equals("photo") ? "removePhoto" : "removeQuote",
+                                "id",
+                                post.id,
+                                "expectedVersion",
+                                post.value.optString("editVersion"),
+                                "operationId",
+                                UUID.randomUUID().toString()),
+                            null))
+                .show());
+    track(sheet);
+    sheet.show();
   }
 
   public void comments(SocialFeed.Post original) {
@@ -2486,22 +2513,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               12,
               Ui.MUTED),
           10);
-    Button send =
-        u.button(
-            "♡  Send a heart to " + partner(),
-            true,
-            () ->
-                mutatePlan(
-                    object(
-                        "action",
-                        "sendHeart",
-                        "from",
-                        who,
-                        "operationId",
-                        UUID.randomUUID().toString()),
-                    null,
-                    null));
-    send.setEnabled(writable(together) && !mutating);
+    Button send = u.button("♡  Send a heart to " + partner(), true, null);
+    send.setOnClickListener(
+        v -> {
+          if (homeExtras == null)
+            homeExtras = new HomeExtras(this, api, destination -> book.show(true), flushHearts);
+          homeExtras.send(v);
+        });
+    send.setEnabled(api.canOpen());
     u.add(c, send, 18);
   }
 

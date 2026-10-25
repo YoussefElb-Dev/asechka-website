@@ -357,6 +357,58 @@ final class OfflineStore {
     }
   }
 
+  void tapHeart(String from, String day) throws Exception {
+    synchronized (LOCK) {
+      JSONArray items = queue();
+      for (int i = items.length() - 1; i >= 0; i--) {
+        JSONObject entry = items.getJSONObject(i), b = entry.getJSONObject("body");
+        if (entry.optBoolean("heartBatch")
+            && entry.optString("status").equals("pending")
+            && b.optString("from").equals(from)
+            && b.optString("day").equals(day)
+            && b.optLong("count") < 1000000) {
+          b.put("count", b.optLong("count", 1) + 1);
+          queue(items);
+          return;
+        }
+      }
+      JSONObject entry =
+          enqueue(
+              "/api/together",
+              json(
+                  "action",
+                  "sendHeart",
+                  "from",
+                  from,
+                  "day",
+                  day,
+                  "count",
+                  1,
+                  "operationId",
+                  UUID.randomUUID().toString()));
+      items = queue();
+      for (int i = 0; i < items.length(); i++)
+        if (items.getJSONObject(i).optString("id").equals(entry.optString("id")))
+          items.getJSONObject(i).put("heartBatch", true);
+      queue(items);
+    }
+  }
+
+  void sealHeartBatches() throws Exception {
+    synchronized (LOCK) {
+      JSONArray items = queue();
+      boolean changed = false;
+      for (int i = 0; i < items.length(); i++) {
+        JSONObject entry = items.getJSONObject(i);
+        if (entry.optBoolean("heartBatch")) {
+          entry.remove("heartBatch");
+          changed = true;
+        }
+      }
+      if (changed) queue(items);
+    }
+  }
+
   JSONObject entry(String id) {
     JSONArray items = queue();
     for (int i = 0; i < items.length(); i++)
@@ -529,18 +581,7 @@ final class OfflineStore {
           data.put("tracks", next);
         } else if (path.equals("/api/together")) {
           if (action.equals("sendHeart")) {
-            JSONObject hearts = data.optJSONObject("hearts");
-            if (hearts == null) hearts = new JSONObject();
-            hearts.put(
-                b.getString("from"),
-                json(
-                    "id",
-                    b.getString("operationId"),
-                    "sentAt",
-                    Dates.timestamp(entry.getLong("createdAt")),
-                    "pending",
-                    true));
-            data.put("hearts", hearts);
+            HeartCounts.apply(data, b, entry.getLong("createdAt"));
           } else {
             JSONArray list = data.optJSONArray("bucketList"), next = new JSONArray();
             JSONObject item = null;

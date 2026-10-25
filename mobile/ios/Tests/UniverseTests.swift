@@ -3,6 +3,16 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    func testHeartCountsStreakAndEasternMidnight()throws {
+        var days:[String:[String:Int]]=["2026-10-31":["me":2,"asechka":1],"2026-11-01":["me":15,"asechka":4]]
+        XCTAssertEqual(HeartLedger.streak(days,who:"me",today:"2026-11-02"),2)
+        XCTAssertEqual(HeartLedger.streak(days,who:"both",today:"2026-11-02"),2)
+        XCTAssertEqual(HeartLedger.streak(days,who:"me",today:"2026-11-03"),0)
+        XCTAssertEqual(HeartLedger.day(try XCTUnwrap(BookDates.instant("2026-11-02T04:59:59Z"))),"2026-11-01")
+        let body:[String:Any]=["operationId":"saved","from":"me","day":"2026-11-01","count":80]
+        HeartLedger.apply(body,to:&days,receipts:["saved"],createdAt:"");XCTAssertEqual(days["2026-11-01"]?["me"],15)
+        HeartLedger.apply(body,to:&days,receipts:[],createdAt:"");XCTAssertEqual(days["2026-11-01"]?["me"],95)
+    }
     func testBookProjectionKeepsRecipesPhotosRatingsAndOtherEntries() {
         var book:[String:Any]=["version":1,"recipes":[],"victories":[],"jokes":[]]
         let saved:[String:Any]=["action":"saveRecipe","id":"recipe","operationId":"photo-id","title":"Our meal","ingredients":"Rice\nWater","steps":"Cook together","note":"","tried":true,"ratings":["me":4,"asechka":5],"photo":"data:image/jpeg;base64,test"]

@@ -15,7 +15,7 @@ struct DaysView:View {
             Button("Our little book"){littleBook=true}.primary()
             Button("Since us · letters & little things"){personalBook=true}.primary()
             VStack(alignment:.leading,spacing:14){Text("Thinking of you.").font(.title3.weight(.semibold));Text("A little heart, from \(universe.name) to \(universe.partner).").foregroundColor(Palette.muted)
-                Button{do{try universe.enqueue("/api/together",["action":"sendHeart","from":universe.actor=="asnat" ? "asechka":"me"]);Touch.tap(true)}catch{universe.error=error.localizedDescription}}label:{Label("Send a heart to \(universe.partner)",systemImage:"heart.fill").primary()}
+                Button{do{try universe.sendHeart();Touch.tap(true)}catch{universe.error=error.localizedDescription}}label:{Label("Send a heart to \(universe.partner)",systemImage:"heart.fill").primary()}
                 ForEach(["asechka","me"],id:\.self){who in if let date=universe.hearts[who]{Text("\(who=="asechka" ? "Asnat":"Youssef") sent a heart · \(String(date.prefix(10))) ♡").font(.caption).foregroundColor(Palette.muted)}}
             }.card()
             HStack{Text("Our wish list").font(.title3.weight(.semibold));Spacer();Button{editing=WishSelection(wish:nil)}label:{Image(systemName:"plus").font(.title2).frame(width:44,height:44)}}

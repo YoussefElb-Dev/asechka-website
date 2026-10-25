@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { UUID, photoPath, dailyMemory } from './daily-memory.js';
+import { addHearts, validHeartDay } from './heart-counts.js';
 const repo = 'https://api.github.com/repos/YoussefElb-Dev/asechka-website';
 const SHA = /^[a-f0-9]{40}$/;
 const PHOTO_LIMIT = 320000;
@@ -48,7 +49,9 @@ export function checkedTogetherChange(input){
   if(!input || !actions.includes(input.action) || !UUID.test(input.operationId)) throw new TogetherError('Please try that little change again.',400);
   if(input.action==='sendHeart'){
     if(!['me','asechka'].includes(input.from)) throw new TogetherError('Choose who is sending this little heart.',400);
-    return {action:input.action,operationId:input.operationId,from:input.from};
+    const count=input.count ?? 1;
+    if(!Number.isSafeInteger(count) || count<1 || count>1000000 || input.day!==undefined && !validHeartDay(input.day)) throw new TogetherError('This heart count could not be read. Please try again.',400);
+    return {action:input.action,operationId:input.operationId,from:input.from,count,...(input.day ? {day:input.day}:{})};
   }
   if(!UUID.test(input.id) || !(input.expectedRevision===null || UUID.test(input.expectedRevision))) throw new TogetherError('Choose a plan and try again.',400);
   const change={action:input.action,id:input.id,operationId:input.operationId,expectedRevision:input.expectedRevision};
@@ -71,10 +74,8 @@ export function changeTogether(base,change,now=new Date()){
   checkedTogether(base);
   const data=structuredClone(base), time=now.toISOString();
   if(change.action==='sendHeart'){
-    const last=data.hearts[change.from];
-    if(last?.id===change.operationId) return {data:base,changed:false};
-    if(last && now.getTime()-Date.parse(last.sentAt)<5000) throw new TogetherError('Your little heart is already on its way. Give it a few seconds.',429);
-    data.hearts[change.from]={id:change.operationId,sentAt:time};
+    try {if(!addHearts(data,change,now))return {data:base,changed:false};}
+    catch(error){throw new TogetherError(error.message,error.status || 400);}
   }else{
     const index=data.bucketList.findIndex(item=>item.id===change.id), current=data.bucketList[index];
     if(current?.revision===change.operationId || change.action==='removeItem' && !current) return {data:base,changed:false};
@@ -111,8 +112,10 @@ export class GitHubTogetherStore{
     try{return await response.json();}catch{throw new TogetherError('Our shared connection couldn’t be read. Try again shortly.');}
   }
   async file(path,ref='main'){
-    const file=await this.github(`/contents/${path}?ref=${ref}`);
-    if(file.type!=='file' || file.encoding!=='base64' || typeof file.content!=='string' || file.size>2000000 || !SHA.test(file.sha)) throw new TogetherError('This little memory couldn’t be read. Nothing has been changed.');
+    let file=await this.github(`/contents/${path}?ref=${ref}`);
+    if(file.type!=='file' || file.size>10000000 || !SHA.test(file.sha)) throw new TogetherError('This little memory couldn’t be read. Nothing has been changed.');
+    if(file.encoding==='none')file=await this.github(`/git/blobs/${file.sha}`);
+    if(file.encoding!=='base64' || typeof file.content!=='string') throw new TogetherError('This little memory couldn’t be read. Nothing has been changed.');
     return Buffer.from(file.content,'base64');
   }
   async jsonFile(path,{ref='main',fresh=false}={}){
