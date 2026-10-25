@@ -1171,7 +1171,17 @@ public final class NativeTests extends Instrumentation {
           "Recipes for two",
           "Little things",
           "Our beginning"
-        }) check(text(title) != null, "Home shortcut: " + title);
+        }) {
+      String displayName = title.replaceFirst(" ", "\n");
+      TextView shortcut = text(displayName);
+      check(
+          shortcut != null
+              && shortcut
+                      .getPaint()
+                      .measureText(displayName.substring(displayName.indexOf('\n') + 1))
+                  <= shortcut.getWidth() + 1,
+          "Home shortcut is readable without breaking words: " + title);
+    }
     View send = text("♡  Send a heart");
     check(send != null, "Heart sender is on Home");
     verifyHomeActionLayout();

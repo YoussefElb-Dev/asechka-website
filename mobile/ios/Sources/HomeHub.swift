@@ -55,8 +55,7 @@ struct HomeHub:View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Our heart history")
                 .accessibilityValue("Today · you \(universe.heartDays[HeartLedger.day()]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[HeartLedger.day()]?[other] ?? 0). Heart streak, \(HeartLedger.streak(universe.heartDays,who:from)) days")
-                .accessibilityHint("Tap or hold to see our daily hearts")
-                .simultaneousGesture(LongPressGesture(minimumDuration:0.6,maximumDistance:28).onEnded{_ in Touch.tap();openHistory()})
+                .accessibilityHint("Tap to see our daily hearts")
             HeartSendButton()
         }.padding(.horizontal,12).padding(.vertical,8).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
     }

@@ -155,7 +155,7 @@ final class HomeExtras {
       }
       final int destination = destinations[i];
       LinearLayout tile = u.column();
-      tile.setPadding(u.dp(8), u.dp(8), u.dp(8), u.dp(8));
+      tile.setPadding(u.dp(6), u.dp(8), u.dp(6), u.dp(8));
       tile.setMinimumHeight(u.dp(56));
       tile.setGravity(Gravity.CENTER);
       android.graphics.drawable.GradientDrawable shape = u.shape(Color.WHITE, 18);
@@ -163,12 +163,14 @@ final class HomeExtras {
       tile.setBackground(
           new android.graphics.drawable.RippleDrawable(
               android.content.res.ColorStateList.valueOf(0x196b5cb5), shape, null));
-      LinearLayout heading = u.row(7);
+      LinearLayout heading = u.row(5);
       heading.addView(
           new HomeGlyph(activity, i, accents[i], tints[i]),
           new LinearLayout.LayoutParams(u.dp(26), u.dp(30)));
-      TextView label = u.text(names[i], 13, Ui.INK);
-      label.setTextSize(12.5f);
+      TextView label = u.text(names[i].replaceFirst(" ", "\n"), 13, Ui.INK);
+      label.setTextSize(Build.VERSION.SDK_INT < 26 ? 12f : 12.5f);
+      label.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_SIMPLE);
+      label.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
       Compat.font(label, R.font.dm_sans, 650);
       label.setGravity(Gravity.CENTER_VERTICAL);
       label.setIncludeFontPadding(false);

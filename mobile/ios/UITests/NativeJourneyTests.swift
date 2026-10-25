@@ -60,9 +60,8 @@ final class NativeJourneyTests:XCTestCase {
         let streak=app.buttons["Our heart history"].firstMatch
         XCTAssertTrue(app.buttons.matching(NSPredicate(format:"label == %@ AND value CONTAINS %@","Our heart history","Today · you 15")).firstMatch.waitForExistence(timeout:5))
         capture("12-iPhone-home-hearts")
-        XCTAssertTrue(streak.exists);reveal(streak,in:app);XCTAssertTrue(streak.isHittable);streak.press(forDuration:1.2)
+        XCTAssertTrue(streak.exists);reveal(streak,in:app);XCTAssertTrue(streak.isHittable);streak.tap()
         XCTAssertTrue(app.navigationBars["Our heart history"].waitForExistence(timeout:5));capture("13-iPhone-heart-history");app.buttons["Done"].tap()
-        streak.tap();XCTAssertTrue(app.navigationBars["Our heart history"].waitForExistence(timeout:5));app.buttons["Done"].tap()
         for shortcut in ["Secret vocab","Open when…","Tiny victories","Recipes for two","Little things","Our beginning"] {
             let button=app.buttons[shortcut].firstMatch;reveal(button,in:app);XCTAssertTrue(button.isHittable,shortcut);button.tap()
             if shortcut=="Secret vocab" {XCTAssertTrue(app.textFields["Find one of our inside jokes…"].waitForExistence(timeout:5));capture("14-iPhone-secret-vocab")}
