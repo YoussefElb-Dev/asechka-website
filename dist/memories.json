@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T04:22:47.480Z",
+  "updatedAt": "2026-10-25T01:52:15.030Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -106,7 +106,19 @@
       "createdAt": "2026-10-21T03:39:10.226Z",
       "author": "youssef",
       "text": "If life is a story written by fate, then I hope every chapter has you beside me. I want to love you in ways that time cannot weaken, to hold your hand through moments we haven't even lived yet, and to turn every promise I make into a memory we share. One day, when our faces carry the years and our voices grow softer, I hope you still see the same boy who fell in love with you, only with a heart that has learned to love you a thousand times more. And when the world asks what I made of my life, I hope my greatest answer will always be that I spent it loving you.",
-      "note": "You lwky slept before this buttt it’ll always be there 😘"
+      "note": "You lwky slept before this buttt it’ll always be there 😘",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7e2246e0-9ed4-465f-9603-8f42b1b9a86f",
+            "hash": "6d450c83aa30376bc6a130b7a9b01c253e2c5928830b3660c87c11f31f6e33fd"
+          }
+        ]
+      }
     },
     {
       "id": "8d103168-1d15-4015-8fb8-5a22457758af",
