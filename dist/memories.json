@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T01:52:15.030Z",
+  "updatedAt": "2026-10-25T01:52:17.700Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -384,13 +384,18 @@
       "contentHash": "3e4c3734a1d4951c09ba5d8c371ad688c5d7c7af86d3174c06e4d4a21b9d5e2d",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "f6fbe04d-79cb-4b6b-b764-489572445a3a",
             "hash": "2ab59e0adb55fd1b827a0c9ba3d83ae9f6c68ebd3a614532f715a89f7e127cf4"
+          },
+          {
+            "id": "ca87f267-ca75-4e5f-aa96-2bd3b86c6a04",
+            "hash": "7ddffe319f63c99ed7d7a041d0effdd1b04684907b93b2e12713cd3543c79ef9"
           }
         ]
       }
