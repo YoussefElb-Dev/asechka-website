@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:25.122Z",
+  "updatedAt": "2026-10-26T05:28:27.433Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -55,7 +55,19 @@
     {
       "id": "7516e76a-a39a-46a6-be58-5f2305411fb6",
       "text": "I love thee with a love that shall not die, till the sun grows cold and the stars grow old.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7254bcff-9d06-43d9-887f-632b9e23b6d2",
+            "hash": "aaf47435b873ba2d7e427cd6efcf7a0ce1d410b1c9c8c8053d2212b4ca48c269"
+          }
+        ]
+      }
     },
     {
       "id": "025f4869-6edd-4bc6-bb1f-22ca0c6f2fca",
