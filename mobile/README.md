@@ -62,11 +62,11 @@ The private build workflow also keeps the latest APK, IPA, checksums, build stat
 
 Version 2.1.1 uses our original shadow photo on both platforms. The source and square preview are in `artwork/`. To reproduce every native icon size, install Pillow and run `python mobile/tools/launcher-icons.py` from the repository root. The Android adaptive crop includes the outer area reserved for launcher masking; iPhone and iPad icons are opaque RGB PNGs.
 
-## Private door and connection controls (2.2.5)
+## Connection controls and optional biometrics (2.2.5)
 
-Both native apps require a fresh unlock at launch and whenever you return. The lavender custom number pad masks entries, has delete/clear keys, and offers a keyboard for existing passwords with letters. It uses the existing shared website password, including the saved offline verifier. A foreground-only authorization guard prevents delayed network replies from opening a backgrounded app. Private editors remain underneath the door so drafts survive a return visit.
+Normal launches and return visits open directly using the saved connection. There is no custom number pad or recurring app-password screen. The existing shared website code is only needed for the first connection or an explicit reconnection. Private editors retain their unsaved drafts on return.
 
-After opening with the code, enable biometric unlock in Profile / Our little settings. Android uses a per-use biometric-authenticated Keystore proof (native BiometricPrompt, with fingerprint support on Android 6–8). iOS uses Face ID or Touch ID and a device-only Keychain proof tied to the enrolled biometrics. The password remains available. Adding/replacing biometrics may require enabling this option again. Biometric hardware cannot be verified through all simulator configurations.
+Optional biometric locking is off by default. Enable it in Profile / Our little settings. Android uses the native OS BiometricPrompt (with fingerprint support on Android 6–8); iOS uses native Face ID or Touch ID. Your phone's system screen-lock credentials are the fallback. The app keeps no fingerprint/face data or copy of the phone passcode. When enabled, a separate privacy window covers existing native sheets while authentication runs. Turning off this option restores direct entry. Hardware biometrics need a compatible enrolled device.
 
 The top refresh button and connection status open Refresh now and Reconnect & retry. Rapid hearts coalesce encrypted writes, retain immutable operation IDs once attempted, and avoid rebuilding Android's photo feed for counter-only changes. Temporary repository contention returns a retryable response. An exact, authenticated heart receipt repairs old batches that were changed after partial delivery, resending only the unsaved remainder. A genuinely stale post edit still needs review and no longer prevents independent hearts from syncing.
 

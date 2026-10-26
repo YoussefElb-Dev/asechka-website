@@ -1103,72 +1103,40 @@ public final class NativeTests extends Instrumentation {
   private void gateTests() throws Exception {
     prepareMotionFixture();
     offline(api, true);
-    api.store.rememberCode("123456");
-    check(api.canOpen(), "Cached credentials exist before the new visit");
-    set("appUnlocked", false);
+    check(api.canOpen(), "A cached session is ready");
+    set("biometrics", new BiometricDoor(activity, api.store));
+    api.store.remove("biometric-enabled");
     call("openStart", new Class[] {});
-    check(get("root") == null, "A cached session cannot bypass the cold-start door");
-    CodePad pad = (CodePad) get("loginPad");
     check(
-        pad.password.getTransformationMethod()
-            instanceof android.text.method.PasswordTransformationMethod,
-        "Code is masked");
-    check(!pad.password.getShowSoftInputOnFocus(), "Custom number pad is the default");
-    for (int digit = 0; digit <= 9; digit++) {
-      final int n = digit;
-      View key = null;
-      for (View v : views(pad, View.class))
-        if (("Digit " + n).equals(v.getContentDescription())) key = v;
-      check(
-          key != null && key.getMinimumHeight() >= new Ui(activity).dp(48),
-          "Accessible digit " + n);
-    }
-    ui(
-        () -> {
-          for (int i = 0; i < 3; i++) key(pad, "Digit 1");
-          key(pad, "Delete digit");
-        });
-    check(pad.password.getText().toString().equals("11"), "Delete removes exactly one digit");
-    ui(() -> key(pad, "Clear code"));
-    check(pad.password.length() == 0, "Heart key clears the code");
-    ui(
-        () -> {
-          key(pad, "Digit 9");
-          pad.unlock.performClick();
-        });
-    await(() -> pad.unlock.isEnabled(), "Wrong code finishes validating");
+        get("root") != null && (boolean) get("appUnlocked"),
+        "A saved connection opens straight to Home");
+    check(views(decor(), EditText.class).isEmpty(), "No custom password or number pad on Home");
+    call("onPause", new Class[] {});
+    call("onResume", new Class[] {});
     check(
-        !(boolean) get("appUnlocked") && get("root") == null,
-        "Wrong code never opens saved content");
-    ui(
-        () -> {
-          pad.password.setText("123456");
-          pad.unlock.performClick();
-        });
-    await(
-        () -> get("root") != null && (boolean) get("appUnlocked"), "Correct offline code unlocks");
+        get("entryGate") == null && (boolean) get("appUnlocked"),
+        "Normal return visits have no password screen");
     call("choosePost", new Class[] {});
     Dialog sheet = (Dialog) get("activeDialog");
-    check(sheet != null, "A native sheet is open before leaving");
-    // Drive the Activity lifecycle while keeping the same native dialog and draft objects alive.
+    api.store.write("biometric-enabled", obj("enabled", true));
     call("onPause", new Class[] {});
-    check(
-        !(boolean) get("appUnlocked") && get("entryGate") != null,
-        "Every background visit immediately locks");
-    call("onResume", new Class[] {});
     Dialog gate = (Dialog) get("entryGate");
-    CodePad returnPad = (CodePad) get("loginPad");
     check(
-        gate.isShowing() && sheet.isShowing(),
-        "Door covers existing sheets without dismissing them");
-    screenshot("30-custom-code-door");
-    ui(
-        () -> {
-          returnPad.password.setText("123456");
-          returnPad.unlock.performClick();
-        });
-    await(() -> get("entryGate") == null, "Return visit requires a fresh correct code");
-    check(get("activeDialog") == sheet && sheet.isShowing(), "Original sheet survives unlocking");
+        gate != null && gate.isShowing(),
+        "Only an explicitly enabled biometric lock covers private sheets");
+    check(
+        views(gate.getWindow().getDecorView(), EditText.class).isEmpty(),
+        "Optional biometric lock has no app-password field");
+    check(
+        hasText(gate.getWindow().getDecorView(), "Use phone screen lock"),
+        "System phone credentials remain available");
+    check(sheet.isShowing(), "Private sheets remain intact behind optional biometrics");
+    api.store.remove("biometric-enabled");
+    call("openDoor", new Class[] {});
+    call("onResume", new Class[] {});
+    check(
+        get("activeDialog") == sheet && sheet.isShowing(),
+        "Unlocking preserves the original sheet");
     ui(sheet::dismiss);
     set("activeDialog", null);
     call("connectionMenu", new Class[] {});
@@ -1208,15 +1176,6 @@ public final class NativeTests extends Instrumentation {
         HeartCounts.count(api.cached("/api/together", true), day, "me") == 25,
         "Recovered projection neither drops nor duplicates hearts");
     api.store.remove("outbox");
-  }
-
-  private void key(CodePad pad, String description) {
-    for (View v : views(pad, View.class))
-      if (description.equals(v.getContentDescription())) {
-        v.performClick();
-        return;
-      }
-    throw new AssertionError("Missing keypad control: " + description);
   }
 
   private void verifyHomeActionLayout() throws Exception {

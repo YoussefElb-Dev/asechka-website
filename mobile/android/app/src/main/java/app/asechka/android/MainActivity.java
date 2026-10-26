@@ -77,7 +77,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private boolean appUnlocked;
   private boolean refreshAgain;
   private long accessEpoch;
-  private CodePad loginPad;
+  private boolean biometricBusy;
+  private boolean waitingForPhoneLock;
   private Dialog entryGate;
   private BiometricDoor biometrics;
   private int navigationInset;
@@ -206,7 +207,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   protected void onResume() {
     super.onResume();
     started = true;
-    if (root != null && !appUnlocked) showEntryGate();
+    if (root != null) {
+      if (!biometrics.enabled()) appUnlocked = true;
+      else if (!appUnlocked) {
+        showEntryGate();
+        unlockBiometricGate();
+      }
+    }
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
     if (entryGate != null) entryGate.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
     quoteDue = android.os.SystemClock.uptimeMillis() + 8000;
@@ -218,12 +225,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   protected void onPause() {
     started = false;
     accessEpoch++;
-    appUnlocked = false;
+    appUnlocked = biometrics == null || !biometrics.enabled();
+    biometricBusy = false;
     if (biometrics != null) biometrics.cancel();
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
     if (heartRain != null) heartRain.stop();
-    if (root != null && !isFinishing()) showEntryGate();
-    if (loginPad != null) loginPad.clear();
+    if (root != null && !appUnlocked && !isFinishing()) showEntryGate();
     if (entryGate != null) entryGate.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
     if (api != null && api.canOpen()) flushHearts.run();
     persistWords();
@@ -365,7 +372,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private void openStart() {
     choosingProfile = false;
     applyProfile();
-    if (appUnlocked && api.canOpen()) {
+    if (api.canOpen()) {
+      appUnlocked = !biometrics.enabled();
       restoreSaved();
       showShell();
       refresh(true);
@@ -458,118 +466,194 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     }
     choosingProfile = false;
     root = null;
-    loginPad = new CodePad(this, person());
-    offerBiometrics(loginPad);
-    loginPad.onSubmit(() -> authenticate(loginPad));
     LinearLayout outer = u.column();
-    outer.addView(loginPad, new LinearLayout.LayoutParams(-1, -1));
+    LinearLayout body = u.column();
+    body.setPadding(u.dp(28), u.dp(40), u.dp(28), u.dp(32));
+    body.setGravity(Gravity.CENTER_VERTICAL);
+    Ui.Icon star = new Ui.Icon(this, 6, Ui.PURPLE);
+    star.setBackground(u.shape(Ui.PALE, 24));
+    star.setPadding(u.dp(16), u.dp(16), u.dp(16), u.dp(16));
+    body.addView(star, new LinearLayout.LayoutParams(u.dp(62), u.dp(62)));
+    u.add(body, u.label("OUR LITTLE UNIVERSE"), 28);
+    u.add(body, u.title("Connect our\nlittle space.", 34), 12);
+    u.add(
+        body,
+        u.text(
+            "Connect once with our website code.\nWe’ll keep you signed in on this phone.",
+            16,
+            Ui.MUTED),
+        12);
+    LinearLayout card = u.card(body, android.graphics.Color.WHITE);
+    u.add(card, u.label("OUR LITTLE CODE"), 0);
+    EditText password = u.input("Enter our code", "", 160, false);
+    password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    password.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
+    if (Build.VERSION.SDK_INT >= 26) password.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
+    u.add(card, password, 14);
+    CheckBox show = new CheckBox(this);
+    show.setText("Show code");
+    show.setTextColor(Ui.MUTED);
+    show.setOnCheckedChangeListener(
+        (b, checked) -> {
+          password.setTransformationMethod(
+              checked ? null : android.text.method.PasswordTransformationMethod.getInstance());
+          password.setSelection(password.length());
+        });
+    u.add(card, show, 4);
+    TextView status = u.text("", 13, Ui.MUTED);
+    status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+    Button unlock = u.button("Open our little door  →", true, null);
+    u.add(card, unlock, 12);
+    u.add(card, status, 10);
+    Runnable login =
+        () -> {
+          if (password.length() == 0) {
+            status.setText("Enter our little code first.");
+            return;
+          }
+          hideKeyboard();
+          unlock.setEnabled(false);
+          status.setText("Opening our little door…");
+          String code = password.getText().toString();
+          request(
+              () -> api.login(code),
+              data -> {
+                password.setText("");
+                appUnlocked = true;
+                screen = 0;
+                restoreSaved();
+                showShell();
+                SyncJob.schedule(this);
+                toast("Welcome home, " + person() + " ♡");
+                refresh(true);
+              },
+              error -> {
+                unlock.setEnabled(true);
+                status.setText(message(error));
+              });
+        };
+    unlock.setOnClickListener(v -> login.run());
+    password.setOnEditorActionListener(
+        (v, id, event) -> {
+          if (id == android.view.inputmethod.EditorInfo.IME_ACTION_GO) {
+            login.run();
+            return true;
+          }
+          return false;
+        });
+    u.add(body, u.text("С возвращением, Асечка ♡", 15, Ui.PURPLE), 26);
+    u.add(body, u.text("Made with a whole lot of love. Only for you.", 12, Ui.MUTED), 8);
+    ScrollView loginScroll = u.scroll(body);
+    outer.addView(loginScroll, new LinearLayout.LayoutParams(-1, 0, 1));
     mount(outer);
   }
 
   private void showEntryGate() {
     if (entryGate != null || isFinishing() || isDestroyed()) return;
-    loginPad = new CodePad(this, person());
-    CodePad pad = loginPad;
-    offerBiometrics(pad);
-    pad.onSubmit(() -> authenticate(pad));
+    LinearLayout body = u.column();
+    body.setGravity(Gravity.CENTER);
+    body.setPadding(u.dp(30), u.dp(30), u.dp(30), u.dp(30));
+    body.setBackgroundColor(Ui.BG);
+    TextView heart = u.title("♡", 44);
+    heart.setGravity(Gravity.CENTER);
+    u.add(body, heart, 0);
+    TextView title = u.title("A little moment, just for us.", 25);
+    title.setGravity(Gravity.CENTER);
+    u.add(body, title, 20);
+    u.add(body, u.button("Unlock with biometrics", true, this::unlockBiometricGate), 25);
+    u.add(body, u.button("Use phone screen lock", false, this::confirmPhoneLock), 10);
     Dialog gate = new Dialog(this, android.R.style.Theme_Material_Light_NoActionBar);
     gate.setCancelable(false);
     gate.setCanceledOnTouchOutside(false);
-    gate.setContentView(pad);
+    gate.setContentView(body);
+    entryGate = gate;
+    gate.show();
+    gate.getWindow().setLayout(-1, -1);
     gate.setOnKeyListener(
-        (dialog, key, event) -> {
+        (d, key, event) -> {
           if (key == KeyEvent.KEYCODE_BACK) {
             if (event.getAction() == KeyEvent.ACTION_UP) moveTaskToBack(true);
             return true;
           }
           return false;
         });
-    entryGate = gate;
-    gate.show();
-    Window window = gate.getWindow();
-    window.setLayout(-1, -1);
-    window.setStatusBarColor(Ui.BG);
-    window.setNavigationBarColor(Build.VERSION.SDK_INT < 26 ? Ui.INK : Ui.BG);
-    window
-        .getDecorView()
-        .setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-    window.setSoftInputMode(
-        WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-            | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    Motion.install(pad);
   }
 
-  private void authenticate(CodePad pad) {
-    String code = pad.password.getText().toString();
-    if (code.isEmpty()) {
-      pad.error("Enter our little code first.");
-      return;
-    }
-    final long visit = accessEpoch;
-    pad.busy(true);
-    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-        .hideSoftInputFromWindow(pad.password.getWindowToken(), 0);
-    request(
-        () -> api.login(code),
-        data -> {
-          // A response arriving after Home was pressed cannot reopen the private screen.
-          if (visit != accessEpoch || !started || pad != loginPad) return;
-          openDoor(pad);
-        },
-        error -> {
-          if (visit == accessEpoch && started && pad == loginPad)
-            pad.error(
-                error instanceof ApiClient.ApiError && ((ApiClient.ApiError) error).status == 401
-                    ? "That code needs another little try. ♡"
-                    : message(error));
-        });
-  }
-
-  private void openDoor(CodePad pad) {
+  private void openDoor() {
     appUnlocked = true;
-    pad.clear();
-    loginPad = null;
-    Motion.haptic(pad, true);
+    biometricBusy = false;
     if (entryGate != null) {
       entryGate.dismiss();
       entryGate = null;
-    } else {
-      restoreSaved();
-      showShell();
-      SyncJob.schedule(this);
     }
     refresh(false);
   }
 
-  private void offerBiometrics(CodePad pad) {
-    if (biometrics == null
-        || !biometrics.enabled()
-        || !biometrics.available()
-        || !api.store.hasContent()) return;
-    pad.biometric(
-        () -> {
-          final long visit = accessEpoch;
-          pad.busy(true);
-          biometrics.authenticate(
-              false,
-              (success, message) -> {
-                if (visit != accessEpoch || !started || pad != loginPad) return;
-                if (!success) {
-                  pad.error(message);
-                  return;
-                }
-                request(
-                    () -> {
-                      api.store.unlock();
-                      return new JSONObject();
-                    },
-                    value -> {
-                      if (visit == accessEpoch && started && pad == loginPad) openDoor(pad);
-                    },
-                    error -> pad.error(message(error)));
-              });
+  private void unlockBiometricGate() {
+    if (biometricBusy || waitingForPhoneLock || !started || entryGate == null) return;
+    biometricBusy = true;
+    final long visit = accessEpoch;
+    biometrics.authenticate(
+        false,
+        (success, message) -> {
+          if (visit != accessEpoch || !started) return;
+          biometricBusy = false;
+          if (success) openDoor();
+          else toast("Use your phone screen lock or try biometrics again.");
         });
+  }
+
+  private void confirmPhoneLock() {
+    KeyguardManager manager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+    Intent intent =
+        manager.createConfirmDeviceCredentialIntent(
+            "Our little universe", "Unlock Asechka with your phone’s screen lock.");
+    if (intent == null) {
+      toast("Set up a phone screen lock in Settings first.");
+      return;
+    }
+    waitingForPhoneLock = true;
+    startActivityForResult(intent, 481);
+  }
+
+  private void reconnect() {
+    EditText code = u.input("Our website code", "", 160, false);
+    code.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    AlertDialog dialog =
+        new AlertDialog.Builder(this)
+            .setTitle("Reconnect our space")
+            .setMessage(
+                "Enter our website code to renew this phone’s connection. Your saved content stays"
+                    + " here.")
+            .setView(code)
+            .setPositiveButton("Reconnect", null)
+            .setNegativeButton("Cancel", null)
+            .create();
+    track(dialog);
+    dialog.show();
+    dialog
+        .getButton(AlertDialog.BUTTON_POSITIVE)
+        .setOnClickListener(
+            v -> {
+              String value = code.getText().toString();
+              if (value.isEmpty()) {
+                code.setError("Enter our website code.");
+                return;
+              }
+              dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+              request(
+                  () -> api.login(value),
+                  result -> {
+                    code.setText("");
+                    dialog.dismiss();
+                    api.retryNow();
+                    refresh(true);
+                  },
+                  error -> {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    code.setError(message(error));
+                  });
+            });
   }
 
   private void showShell() {
@@ -638,10 +722,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void settings(View anchor) {
     Ui.Sheet sheet = u.sheet("Our little settings", person() + " · a space made for the two of us");
-    if (biometrics.available())
+    if (biometrics.available() || biometrics.enabled())
       sheet.item(
           biometrics.enabled() ? "Turn off biometric unlock" : "Enable biometric unlock",
-          "Fingerprint or supported face unlock · our code always works",
+          "Optional · fingerprint, face unlock or your phone screen lock",
           "♡",
           false,
           () -> {
@@ -667,7 +751,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         this::showOutbox);
     if (!api.signedIn())
       sheet.item(
-          "Reconnect with our code", "Bring both phones up to date", "↗", false, this::showLogin);
+          "Reconnect with our code", "Bring both phones up to date", "↗", false, this::reconnect);
     sheet.item("Switch profile · " + person(), "Asnat or Youssef", "♡", false, this::showIdentity);
     sheet.item(
         "Our birthdays",
@@ -732,13 +816,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         "Enter our code again and retry saved hearts automatically",
         "♡",
         false,
-        () -> {
-          accessEpoch++;
-          appUnlocked = false;
-          api.retryNow();
-          if (heartRain != null) heartRain.stop();
-          showEntryGate();
-        });
+        this::reconnect);
     sheet.item(
         "Saved changes", "See anything still waiting on this phone", "↓", false, this::showOutbox);
     track(sheet);
@@ -3311,6 +3389,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   protected void onActivityResult(int request, int result, Intent data) {
     super.onActivityResult(request, result, data);
     if (book != null && book.photoResult(request, result, data)) return;
+    if (request == 481) {
+      waitingForPhoneLock = false;
+      if (result == RESULT_OK && entryGate != null) openDoor();
+      return;
+    }
     if (request == 121
         && result == RESULT_OK
         && data != null

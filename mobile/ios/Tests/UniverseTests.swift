@@ -3,13 +3,13 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
-    @MainActor func testForegroundDoorAndRapidHeartsPreserveOfflineData()async throws {
+    @MainActor func testNormalReopenAndRapidHeartsPreserveOfflineData()async throws {
         let universe=UniverseStore(previewFixture:true)
         let photos=universe.memories.posts.count
         universe.requireCode()
-        XCTAssertTrue(universe.requiresCode,"A saved session needs a fresh code on return")
+        XCTAssertFalse(universe.requiresCode,"Normal reopening has no app-password gate")
         await universe.login("wrong")
-        XCTAssertTrue(universe.requiresCode)
+        XCTAssertFalse(universe.requiresCode)
         XCTAssertNotNil(universe.doorError)
         await universe.login("123456")
         XCTAssertFalse(universe.requiresCode)
@@ -21,11 +21,11 @@ final class UniverseTests:XCTestCase {
         XCTAssertEqual(universe.heartDays[HeartLedger.day()]?["asechka"],1000)
         XCTAssertEqual(universe.vault.value("outbox",as:[PendingChange].self)?.count,1)
         universe.requireCode()
-        XCTAssertTrue(universe.requiresCode)
+        XCTAssertFalse(universe.requiresCode)
         XCTAssertEqual(universe.memories.posts.count,photos)
         XCTAssertEqual(universe.pending.count,1,"Relocking keeps every queued heart")
         await universe.forceRefresh()
-        XCTAssertTrue(universe.requiresCode,"Refresh must not bypass the door")
+        XCTAssertFalse(universe.requiresCode,"Refreshing must not introduce an app-password screen")
     }
     func testSharedStreakAndStackingLivesMatchWebsiteFixtures()throws {
         let url=try XCTUnwrap(Bundle(for:Self.self).url(forResource:"heart-streak-cases",withExtension:"json"))

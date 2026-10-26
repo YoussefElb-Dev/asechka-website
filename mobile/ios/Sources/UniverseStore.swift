@@ -15,7 +15,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     static let site="https://asechka-website.vercel.app"
     @Published var actor=UserDefaults.standard.string(forKey:"person") ?? ""
     @Published var unlocked=false
-    @Published private(set) var requiresCode=true
+    @Published private(set) var requiresCode=false
     @Published var doorError:String?
     @Published private(set) var biometricEnabled=false
     private var biometricPrompt=false
@@ -100,13 +100,14 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         biometricEnabled=vault.value("biometric-enabled",as:Bool.self) ?? false
         if preview {
             actor="asnat";unlocked=true;online=false;memories=bundledMemories()
-            requiresCode=ProcessInfo.processInfo.arguments.contains("--preview-lock")
+            requiresCode=false
             let salt=UUID().uuidString;try? vault.save("offline-code",[salt,Self.verifier("123456",salt)])
             try? vault.save("snapshot:/api/memories",memories);restore();journal["writable"]=true;keepsakes["writable"]=true;try? vault.write("snapshot:/api/journal",JSONSerialization.data(withJSONObject:journal));try? vault.write("snapshot:/api/keepsakes",JSONSerialization.data(withJSONObject:keepsakes));status();return
         }
         cookie=vault.value("session",as:String.self) ?? ""
         locked=vault.value("locked",as:Bool.self) ?? false
         unlocked = !locked && vault.read("snapshot:/api/memories") != nil
+        requiresCode=biometricEnabled && unlocked
         pending=vault.value("outbox",as:[PendingChange].self) ?? []
         for index in pending.indices where pending[index].error != nil {
             if let body=(try? JSONSerialization.jsonObject(with:pending[index].body)) as? [String:Any],pending[index].path=="/api/together",body["action"] as? String=="sendHeart"{pending[index].error=nil;sealedHearts.insert(pending[index].id)}
@@ -154,27 +155,28 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         return data
     }
     func requireCode(background:Bool=false){
+        guard biometricEnabled else{if background{accessEpoch += 1};requiresCode=false;return}
         if biometricPrompt && !background{HeartRain.shared.stop();return}
         if background{BiometricAccess.cancel();biometricPrompt=false}
         flushHeartTaps();accessEpoch += 1;requiresCode=true;busy=false;doorError=nil;HeartRain.shared.stop()
     }
     func setBiometrics(_ enabled:Bool)async {
-        if !enabled{BiometricAccess.remove();biometricEnabled=false;try? vault.save("biometric-enabled",false);return}
+        if !enabled{BiometricAccess.remove();biometricEnabled=false;requiresCode=false;try? vault.save("biometric-enabled",false);return}
         guard unlocked,!requiresCode,BiometricAccess.available else{return}
         let visit=accessEpoch;biometricPrompt=true
-        defer{biometricPrompt=false}
+        defer{if visit==accessEpoch{biometricPrompt=false}}
         do{try await BiometricAccess.authenticate(enroll:true);guard visit==accessEpoch else{return};try vault.save("biometric-enabled",true);biometricEnabled=true}
         catch{if visit==accessEpoch{self.error="Biometrics weren’t enabled. Our code still works."}}
     }
     func biometricLogin()async {
-        guard !busy,biometricEnabled,BiometricAccess.available,vault.read("snapshot:/api/memories") != nil else{return}
+        guard !busy,biometricEnabled,requiresCode,vault.read("snapshot:/api/memories") != nil else{return}
         let visit=accessEpoch;biometricPrompt=true;busy=true;doorError=nil
-        defer{biometricPrompt=false;if visit==accessEpoch{busy=false}}
+        defer{if visit==accessEpoch{biometricPrompt=false;busy=false}}
         do{
             try await BiometricAccess.authenticate(enroll:false)
             guard visit==accessEpoch else{return}
             locked=false;try vault.save("locked",false);unlocked=true;requiresCode=false;restore();status();Touch.tap(true);await refresh()
-        }catch{if visit==accessEpoch{doorError="Use our little code, or try \(BiometricAccess.name) again."}}
+        }catch{if visit==accessEpoch{doorError="Try \(BiometricAccess.name) or your phone’s passcode again."}}
     }
     func login(_ code:String)async {
         guard !busy else{return}
@@ -206,7 +208,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         }catch {
             guard visit==accessEpoch else{return}
             if (error as? ServerError)?.status != 401,savedCodeMatches(){await accept()}
-            else{doorError=(error as? ServerError)?.status == 401 ? "That code needs another little try. ♡":error.localizedDescription}
+            else{let message=(error as? ServerError)?.status == 401 ? "That code needs another little try. ♡":error.localizedDescription;doorError=message;if unlocked{self.error=message}}
         }
     }
     static func verifier(_ code:String,_ salt:String)->String {
