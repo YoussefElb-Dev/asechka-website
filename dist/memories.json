@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:27.433Z",
+  "updatedAt": "2026-10-26T05:28:30.090Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -50,7 +50,19 @@
     {
       "id": "32a47506-9773-481b-845f-0d3915ff162d",
       "text": "Whatever our souls are made of, his and mine are the same.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "6bccde04-5923-4ad3-939e-97e4e5f6a653",
+            "hash": "e509154543db7855398a7e1743017eba723d33cd8304f293ac8f532f4b776998"
+          }
+        ]
+      }
     },
     {
       "id": "7516e76a-a39a-46a6-be58-5f2305411fb6",
