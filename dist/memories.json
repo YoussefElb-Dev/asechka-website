@@ -1,11 +1,23 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:44:04.000Z",
+  "updatedAt": "2026-10-26T05:44:06.255Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
       "text": "If my love for you were written across the stars, the universe would run out of sky before I could finish telling you how much you mean to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "532f6705-ac06-4b4d-9912-f93a1010d0d2",
+            "hash": "eba10543e13005ef3e72c5c43f49f5728c0402b4084ca2a8acd2c0c189c7c84b"
+          }
+        ]
+      }
     },
     {
       "id": "89daf40d-4ac0-47ab-b823-562b1f5e3038",
