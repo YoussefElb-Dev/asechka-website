@@ -7,11 +7,11 @@
       "sentAt": "2026-10-26T00:36:56.009Z"
     },
     "asechka": {
-      "id": "086ada0a-d95d-40ab-b528-07bbf2230503",
-      "sentAt": "2026-10-26T05:07:54.502Z"
+      "id": "00e01063-4162-4742-bc15-d8e28e98eb7b",
+      "sentAt": "2026-10-26T05:07:56.568Z"
     }
   },
-  "updatedAt": "2026-10-26T05:07:54.502Z",
+  "updatedAt": "2026-10-26T05:07:56.568Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -23,7 +23,7 @@
     },
     "2026-10-26": {
       "me": 0,
-      "asechka": 64
+      "asechka": 84
     }
   },
   "heartOperations": {
@@ -97,7 +97,8 @@
     "3feffee7-d3f6-4df1-95b1-d664b84ecfdc": "asechka|2|2026-10-25",
     "08c9b04c-d589-43c0-bb9d-630891e74207": "asechka|41|2026-10-26",
     "84290505-e058-4149-8cbf-1345a6faf864": "asechka|13|2026-10-26",
-    "086ada0a-d95d-40ab-b528-07bbf2230503": "asechka|10|2026-10-26"
+    "086ada0a-d95d-40ab-b528-07bbf2230503": "asechka|10|2026-10-26",
+    "00e01063-4162-4742-bc15-d8e28e98eb7b": "asechka|20|2026-10-26"
   },
   "heartStreak": {
     "version": 1,
@@ -119,6 +120,6 @@
     "lastResetOn": null,
     "nextLifeOn": "2026-11-12",
     "todayComplete": true,
-    "asOf": "2026-10-26T05:07:54.502Z"
+    "asOf": "2026-10-26T05:07:56.568Z"
   }
 }
