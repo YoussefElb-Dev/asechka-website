@@ -1,10 +1,68 @@
 {
-  "source": "73c787adbfb71d20f7426259a03c53159728d661",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40276016059",
+  "source": "eeea60b5d499a41ba502ffc728cef9592367bd73",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40277211452",
   "backend": "success",
   "android": "success",
   "iphone": "success",
   "jobs": [
+    {
+      "name": "Android APK",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-java@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run android-actions/setup-android@v3",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run sdkmanager 'platforms;android-36' 'build-tools;36.0.0'",
+          "conclusion": "success"
+        },
+        {
+          "name": "Restore the existing Android signing identity",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build an APK with Android 6 and newer compatibility",
+          "conclusion": "success"
+        },
+        {
+          "name": "Package Android download",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Remove temporary signing material",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-java@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
     {
       "name": "Shared collection tests",
       "conclusion": "success",
@@ -100,74 +158,16 @@
           "conclusion": "success"
         }
       ]
-    },
-    {
-      "name": "Android APK",
-      "conclusion": "success",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/setup-java@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run android-actions/setup-android@v3",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run sdkmanager 'platforms;android-36' 'build-tools;36.0.0'",
-          "conclusion": "success"
-        },
-        {
-          "name": "Restore the existing Android signing identity",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build an APK with Android 6 and newer compatibility",
-          "conclusion": "success"
-        },
-        {
-          "name": "Package Android download",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Remove temporary signing material",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/setup-java@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
     }
   ],
   "files": {
     "Asechka-iPhone.ipa": {
-      "bytes": 9503593,
-      "sha256": "89a33d3f96d1f7a6ad22a51028c25244d646956ee1a6a1850478de45285b2608"
+      "bytes": 9477824,
+      "sha256": "29a9d2d29cb3bda0780970f9f0e1d2bbceb605410a0105c68bf79085907081df"
     },
     "Asechka-Android.apk": {
-      "bytes": 7785905,
-      "sha256": "f8a97cbd596ecd65305301cdadc2cac005c7aa90a0c3b4bea1db50c05f1d4ce3"
+      "bytes": 7783786,
+      "sha256": "5bc46a61ae845ae1090d2bbe8e157bb80d7d1a6e1e752e144149b8154fbfa09c"
     }
   }
 }
