@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:41.472Z",
+  "updatedAt": "2026-10-26T05:28:44.032Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -20,7 +20,19 @@
     {
       "id": "57367682-8d4f-40e5-8c67-70407c6a9280",
       "text": "If every beautiful thing in this world were a word, and every sunset, flower, and star were a verse, the universe would still run out of poetry trying to describe you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "c80db372-a4aa-4069-820b-612cce9e23a7",
+            "hash": "b6cf3fec8eeea642f25cb3e1e6f4bbcb4621b1280e532f92865eb65e3b5b05c1"
+          }
+        ]
+      }
     },
     {
       "id": "eea84b52-7fca-40b0-9982-1eb56f29fc03",
