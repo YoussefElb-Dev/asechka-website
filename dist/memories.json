@@ -1,21 +1,57 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:30:01.811Z",
+  "updatedAt": "2026-10-26T05:44:06.255Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
       "text": "If my love for you were written across the stars, the universe would run out of sky before I could finish telling you how much you mean to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "532f6705-ac06-4b4d-9912-f93a1010d0d2",
+            "hash": "eba10543e13005ef3e72c5c43f49f5728c0402b4084ca2a8acd2c0c189c7c84b"
+          }
+        ]
+      }
     },
     {
       "id": "89daf40d-4ac0-47ab-b823-562b1f5e3038",
       "text": "Even if I traveled across every galaxy and counted every star in the universe, I’d still never find anything as beautiful as you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "74e10fe1-0212-41ad-874f-d65d9ac6e1b6",
+            "hash": "620ecc4f726e7599f3ff5c17b5b3ebf886ad31b3fb4ee148db1d1eeaf9fb84fa"
+          }
+        ]
+      }
     },
     {
       "id": "fbae14e5-f0cf-41db-b5da-8edb94406cad",
       "text": "Diamonds may be the rarest gems, and gold may be the most precious treasure, but no jewel in this world could ever shine as brightly or be worth as much as you are to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "89d973fa-746c-4710-b430-1e9dd4aa4975",
+            "hash": "e9689a2e4ea14d4d1f3066c85bf1ffcca60741724b5eef12cefcf5d7ef518861"
+          }
+        ]
+      }
     },
     {
       "id": "57367682-8d4f-40e5-8c67-70407c6a9280",
