@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:36.451Z",
+  "updatedAt": "2026-10-26T05:28:38.521Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -30,7 +30,19 @@
     {
       "id": "b97a454c-40b0-453e-9242-559e8a46a09d",
       "text": "If beauty could stop time, the world would stand still every time you smiled. And if love could be measured, even eternity wouldn’t be long enough to show you how much you mean to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "ae7dc6e7-415d-4e78-9f38-a4ed225d47ab",
+            "hash": "8ac054b2852271acbd8c15ec52efb2564616718eb6de3bdfec860a1f97a338d8"
+          }
+        ]
+      }
     },
     {
       "id": "42c6c74a-e160-4947-8769-373deb683b01",
