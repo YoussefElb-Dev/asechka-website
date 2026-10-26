@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:34.295Z",
+  "updatedAt": "2026-10-26T05:28:36.451Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -35,7 +35,19 @@
     {
       "id": "42c6c74a-e160-4947-8769-373deb683b01",
       "text": "Somewhere along the way, a piece of my heart became yours, and I hope you keep it forever, because nowhere else could it ever feel more at home.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "cdc523c2-1360-406b-a0bb-6e089333298f",
+            "hash": "6f0d2fdd87d079cae2d1373673e5f896cf996a655a57ba341ebf55ad3f11b745"
+          }
+        ]
+      }
     },
     {
       "id": "4b0eab1e-d43f-487a-adff-57e3ad5201e5",
