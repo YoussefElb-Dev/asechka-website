@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:20.986Z",
+  "updatedAt": "2026-10-26T05:28:23.087Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -66,7 +66,19 @@
       "id": "51ace2c5-4de3-40c4-8ba4-39d557867166",
       "text": "I don’t care what our past holds or how many storms we’ve been through, because our past doesn’t define us. All I know is that my destiny is with you, and every tomorrow is one I want to spend by your side.",
       "date": "2026-10-12",
-      "note": "Look back at this and remember our promise moy meer"
+      "note": "Look back at this and remember our promise moy meer",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "2ce81d43-2526-4544-9677-fd58f97d5555",
+            "hash": "e349f4a6509b44937a0c28b57b726d6f4d33376f6a8ab8c0121f1b857091bbc3"
+          }
+        ]
+      }
     },
     {
       "id": "017269be-6ce5-4107-8139-81b21c761f7a",
