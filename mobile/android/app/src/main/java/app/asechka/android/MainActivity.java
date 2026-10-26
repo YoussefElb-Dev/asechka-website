@@ -550,7 +550,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     pad.biometric(
         () -> {
           final long visit = accessEpoch;
-      pad.busy(true);
+          pad.busy(true);
           biometrics.authenticate(
               false,
               (success, message) -> {

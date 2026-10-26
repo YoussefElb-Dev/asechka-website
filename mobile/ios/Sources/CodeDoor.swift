@@ -35,7 +35,7 @@ struct DoorView:View {
                                 Touch.tap()
                                 if value==10{code=""}else if value==12{if !code.isEmpty{code.removeLast()}}else if code.count<160{code += value==11 ? "0":"\(value)"}
                             }label:{
-                                Group{if value==10{Image(systemName:"heart")}else if value==12{Image(systemName:"delete.left")}else{Text(value==11 ? "0":"\(value)").font(.custom("Manrope-Medium",size:25))}}
+                                Group{if value==10{Image(systemName:"heart")}else if value==12{Image(systemName:"delete.left")}else{Text(value==11 ? "0":"\(value)").font(.custom("Manrope-Regular",size:25))}}
                                     .font(.system(size:22,weight:.light)).frame(maxWidth:.infinity,minHeight:58).background(value==10 ? Palette.lavender:value==12 ? Palette.blue:.white,in:RoundedRectangle(cornerRadius:23))
                             }.accessibilityLabel(value==10 ? "Clear code":value==12 ? "Delete digit":"Digit \(value==11 ? 0:value)")
                         }}.disabled(universe.busy)

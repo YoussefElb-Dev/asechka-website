@@ -110,7 +110,8 @@ final class BiometricDoor {
             Cipher.DECRYPT_MODE,
             keys.getKey(KEY, null),
             new IvParameterSpec(Base64.decode(proof.getString("iv"), Base64.NO_WRAP)));
-      java.util.concurrent.atomic.AtomicBoolean finished = new java.util.concurrent.atomic.AtomicBoolean();
+      java.util.concurrent.atomic.AtomicBoolean finished =
+          new java.util.concurrent.atomic.AtomicBoolean();
       Result completed =
           (success, message) -> {
             if (!finished.compareAndSet(false, true)) return;
