@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:23.087Z",
+  "updatedAt": "2026-10-26T05:28:25.122Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -60,7 +60,19 @@
     {
       "id": "025f4869-6edd-4bc6-bb1f-22ca0c6f2fca",
       "text": "I love you not only for what you are, but for what I am when I am with you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b96ad3c8-0230-4e2f-9025-9517db679a4d",
+            "hash": "148912bf247df8b96e2c5aa7243868324ac742f4a0648f1754f1a27ecfd3cb06"
+          }
+        ]
+      }
     },
     {
       "id": "51ace2c5-4de3-40c4-8ba4-39d557867166",
