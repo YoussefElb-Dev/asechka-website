@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T17:34:33.891Z",
+  "updatedAt": "2026-10-26T05:30:01.811Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -20,69 +20,225 @@
     {
       "id": "57367682-8d4f-40e5-8c67-70407c6a9280",
       "text": "If every beautiful thing in this world were a word, and every sunset, flower, and star were a verse, the universe would still run out of poetry trying to describe you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "c80db372-a4aa-4069-820b-612cce9e23a7",
+            "hash": "b6cf3fec8eeea642f25cb3e1e6f4bbcb4621b1280e532f92865eb65e3b5b05c1"
+          }
+        ]
+      }
     },
     {
       "id": "eea84b52-7fca-40b0-9982-1eb56f29fc03",
       "text": "If the whole world turned against you, I’d stand between you and every storm. If darkness ever found its way to your heart, I’d become your light. And if forever were a promise, I’d spend every lifetime proving that you’ll always have a safe place in my arms and a permanent home in my heart.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "2dd5a98b-7ec9-42f3-9906-8eb8e39f5579",
+            "hash": "20521cbb9d66ef88fe09a7d6e4a197f9a9c4d7afaa0982b65018b05692bcdae8"
+          }
+        ]
+      }
     },
     {
       "id": "b97a454c-40b0-453e-9242-559e8a46a09d",
       "text": "If beauty could stop time, the world would stand still every time you smiled. And if love could be measured, even eternity wouldn’t be long enough to show you how much you mean to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "ae7dc6e7-415d-4e78-9f38-a4ed225d47ab",
+            "hash": "8ac054b2852271acbd8c15ec52efb2564616718eb6de3bdfec860a1f97a338d8"
+          }
+        ]
+      }
     },
     {
       "id": "42c6c74a-e160-4947-8769-373deb683b01",
       "text": "Somewhere along the way, a piece of my heart became yours, and I hope you keep it forever, because nowhere else could it ever feel more at home.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "cdc523c2-1360-406b-a0bb-6e089333298f",
+            "hash": "6f0d2fdd87d079cae2d1373673e5f896cf996a655a57ba341ebf55ad3f11b745"
+          }
+        ]
+      }
     },
     {
       "id": "4b0eab1e-d43f-487a-adff-57e3ad5201e5",
       "text": "You’re the air that fills my lungs, the water that keeps me alive, and the food that gives me strength. You’re not just a part of my life, you’re what makes it worth living.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "828f2595-0830-4d0a-a18e-4e2365beb9b3",
+            "hash": "cac2ea1baa91b3d1f67717d1566a84d4c34cd8a9209350753e52373a9152ad3e"
+          }
+        ]
+      }
     },
     {
       "id": "6d2cf445-6cc6-44ea-88be-277ed346c2af",
       "text": "If you were a book, I’d read you a thousand times, knowing every word by heart, yet never growing tired of turning the pages, because something written as perfectly as you deserves to be loved over and over again.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "226043ca-0db8-4fc7-91d7-75e181ab4441",
+            "hash": "4187dd81c6bfb6f861cf53c4a3b5e2565ade4ffaecfdb8a1c022652ccf7d56b3"
+          }
+        ]
+      }
     },
     {
       "id": "32a47506-9773-481b-845f-0d3915ff162d",
       "text": "Whatever our souls are made of, his and mine are the same.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "6bccde04-5923-4ad3-939e-97e4e5f6a653",
+            "hash": "e509154543db7855398a7e1743017eba723d33cd8304f293ac8f532f4b776998"
+          }
+        ]
+      }
     },
     {
       "id": "7516e76a-a39a-46a6-be58-5f2305411fb6",
       "text": "I love thee with a love that shall not die, till the sun grows cold and the stars grow old.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7254bcff-9d06-43d9-887f-632b9e23b6d2",
+            "hash": "aaf47435b873ba2d7e427cd6efcf7a0ce1d410b1c9c8c8053d2212b4ca48c269"
+          }
+        ]
+      }
     },
     {
       "id": "025f4869-6edd-4bc6-bb1f-22ca0c6f2fca",
       "text": "I love you not only for what you are, but for what I am when I am with you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b96ad3c8-0230-4e2f-9025-9517db679a4d",
+            "hash": "148912bf247df8b96e2c5aa7243868324ac742f4a0648f1754f1a27ecfd3cb06"
+          }
+        ]
+      }
     },
     {
       "id": "51ace2c5-4de3-40c4-8ba4-39d557867166",
       "text": "I don’t care what our past holds or how many storms we’ve been through, because our past doesn’t define us. All I know is that my destiny is with you, and every tomorrow is one I want to spend by your side.",
       "date": "2026-10-12",
-      "note": "Look back at this and remember our promise moy meer"
+      "note": "Look back at this and remember our promise moy meer",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "2ce81d43-2526-4544-9677-fd58f97d5555",
+            "hash": "e349f4a6509b44937a0c28b57b726d6f4d33376f6a8ab8c0121f1b857091bbc3"
+          }
+        ]
+      }
     },
     {
       "id": "017269be-6ce5-4107-8139-81b21c761f7a",
       "text": "If every drop of water in every sea represented a lifetime of loving you, even all the oceans on Earth would not be enough. And if the seas were to dry and the last wave were to kiss the shore, my love would remain, because even the deepest ocean has a bottom, but my love for you knows no end.",
       "date": "2026-10-13",
-      "note": "Forever and ever يا حياتي"
+      "note": "Forever and ever يا حياتي",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "5cbcdbd9-9b50-45f5-b9f7-943918b118d5",
+            "hash": "016493849163f92bf981cf8c843d1c117ee6d70f35b606b31003a5355c4476ac"
+          }
+        ]
+      }
     },
     {
       "id": "341c9a3f-d144-468f-aded-f8411f12586f",
       "text": "If time itself could speak, it would tell you that even eternity is too short for the love I carry for you. For I could live a thousand lifetimes, find you in every single one, and still wish for one more, just to love you a little longer.",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "15b23800-5e39-4589-947b-92b4d8cf13a2",
+            "hash": "2906971632b7707cdec91a725b3b17e910b384bdedfaa62bc1f22e33914393c6"
+          }
+        ]
+      }
     },
     {
       "id": "521b126b-b1fe-4720-84d3-411ef4eafd2a",
       "text": "If the universe gave me the chance to relive every moment of my existence, I would change nothing, for every road I walked, every mistake I made, and every heartbreak I endured eventually led me to you. And I would go through it all a thousand times just to find you again.",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "47d1c1f5-cc55-43a3-8248-3f56dc417bc3",
+            "hash": "7b7f11f0fe36e24ad664b6beb6a6ef99948e582b4ae83e453bb891ac50d9f6e1"
+          }
+        ]
+      }
     },
     {
       "id": "dc9353b2-3909-4366-9f0d-08ee503b44ca",
@@ -192,6 +348,13 @@
           }
         ]
       }
+    },
+    {
+      "id": "71779b1a-3660-47ec-84b8-ea6611fb0919",
+      "date": "2026-10-25",
+      "createdAt": "2026-10-26T05:30:01.811Z",
+      "author": "youssef",
+      "text": "If I could borrow a moment from eternity, I would spend it looking into your eyes, hoping to understand how one person could hold so much beauty within a single soul. And if the heavens ever asked me what love looked like, I would simply whisper your name, for even the greatest poets could never find words worthy of describing what my heart feels for you."
     }
   ],
   "photos": [
