@@ -17,7 +17,7 @@ public final class NativeTests extends Instrumentation {
   private MainActivity activity;
   private ApiClient api;
   private int assertions;
-  private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly;
+  private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly, gateOnly;
   private String upgrade;
 
   @Override
@@ -29,6 +29,7 @@ public final class NativeTests extends Instrumentation {
     socialOnly = "true".equals(args.getString("socialOnly"));
     bookOnly = "true".equals(args.getString("bookOnly"));
     homeOnly = "true".equals(args.getString("homeOnly"));
+    gateOnly = "true".equals(args.getString("gateOnly"));
     upgrade = args.getString("upgrade", "");
     start();
   }
@@ -58,7 +59,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (homeOnly) {
+        if (gateOnly) {
+          gateTests();
+        } else if (homeOnly) {
           sharedStreakTests();
           homeTests();
         } else if (bookOnly) {
@@ -159,7 +162,7 @@ public final class NativeTests extends Instrumentation {
                   .getPackageManager()
                   .getPackageInfo(getTargetContext().getPackageName(), 0)
                   .versionCode
-              == 13,
+              == 14,
           "Updated package version");
     }
   }
@@ -1091,9 +1094,129 @@ public final class NativeTests extends Instrumentation {
                 new Intent(getTargetContext(), MainActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     set("api", api);
+    set("appUnlocked", true);
     set("images", new Images(api));
     call("restoreSaved", new Class[] {});
     call("showShell", new Class[] {});
+  }
+
+  private void gateTests() throws Exception {
+    prepareMotionFixture();
+    offline(api, true);
+    api.store.rememberCode("123456");
+    check(api.canOpen(), "Cached credentials exist before the new visit");
+    set("appUnlocked", false);
+    call("openStart", new Class[] {});
+    check(get("root") == null, "A cached session cannot bypass the cold-start door");
+    CodePad pad = (CodePad) get("loginPad");
+    check(
+        pad.password.getTransformationMethod()
+            instanceof android.text.method.PasswordTransformationMethod,
+        "Code is masked");
+    check(!pad.password.getShowSoftInputOnFocus(), "Custom number pad is the default");
+    for (int digit = 0; digit <= 9; digit++) {
+      final int n = digit;
+      View key = null;
+      for (View v : views(pad, View.class))
+        if (("Digit " + n).equals(v.getContentDescription())) key = v;
+      check(
+          key != null && key.getMinimumHeight() >= new Ui(activity).dp(48),
+          "Accessible digit " + n);
+    }
+    ui(
+        () -> {
+          for (int i = 0; i < 3; i++) key(pad, "Digit 1");
+          key(pad, "Delete digit");
+        });
+    check(pad.password.getText().toString().equals("11"), "Delete removes exactly one digit");
+    ui(() -> key(pad, "Clear code"));
+    check(pad.password.length() == 0, "Heart key clears the code");
+    ui(
+        () -> {
+          key(pad, "Digit 9");
+          pad.unlock.performClick();
+        });
+    await(() -> pad.unlock.isEnabled(), "Wrong code finishes validating");
+    check(
+        !(boolean) get("appUnlocked") && get("root") == null,
+        "Wrong code never opens saved content");
+    ui(
+        () -> {
+          pad.password.setText("123456");
+          pad.unlock.performClick();
+        });
+    await(
+        () -> get("root") != null && (boolean) get("appUnlocked"), "Correct offline code unlocks");
+    call("choosePost", new Class[] {});
+    Dialog sheet = (Dialog) get("activeDialog");
+    check(sheet != null, "A native sheet is open before leaving");
+    // Drive the Activity lifecycle while keeping the same native dialog and draft objects alive.
+    call("onPause", new Class[] {});
+    check(
+        !(boolean) get("appUnlocked") && get("entryGate") != null,
+        "Every background visit immediately locks");
+    call("onResume", new Class[] {});
+    Dialog gate = (Dialog) get("entryGate");
+    CodePad returnPad = (CodePad) get("loginPad");
+    check(
+        gate.isShowing() && sheet.isShowing(),
+        "Door covers existing sheets without dismissing them");
+    screenshot("30-custom-code-door");
+    ui(
+        () -> {
+          returnPad.password.setText("123456");
+          returnPad.unlock.performClick();
+        });
+    await(() -> get("entryGate") == null, "Return visit requires a fresh correct code");
+    check(get("activeDialog") == sheet && sheet.isShowing(), "Original sheet survives unlocking");
+    ui(sheet::dismiss);
+    set("activeDialog", null);
+    call("connectionMenu", new Class[] {});
+    Dialog connection = (Dialog) get("activeDialog");
+    check(
+        hasText(connection.getWindow().getDecorView(), "Refresh now"),
+        "Force refresh is reachable");
+    check(
+        hasText(connection.getWindow().getDecorView(), "Reconnect & retry"),
+        "Reconnection is reachable");
+    ui(connection::dismiss);
+    set("activeDialog", null);
+    // Recover an old heart batch whose first ten taps already reached the server.
+    api.store.remove("outbox");
+    String day = HeartCounts.day(System.currentTimeMillis()), op = UUID.randomUUID().toString();
+    JSONObject entry =
+        api.store.enqueue(
+            "/api/together",
+            obj("action", "sendHeart", "from", "me", "count", 25, "day", day, "operationId", op));
+    api.store.block(entry.getString("id"), "Old batch conflict", 409);
+    api.store.retryHeartConflicts();
+    check(!api.store.conflicts(), "Old heart conflicts automatically become retryable");
+    JSONObject receipt =
+        obj(
+            "heartReceipt",
+            obj("operationId", op, "from", "me", "count", 10, "day", day),
+            "heartDays",
+            obj(day, obj("me", 10)),
+            "hearts",
+            new JSONObject());
+    check(api.store.reconcileHeart(entry, receipt), "Recovery uses an exact server receipt");
+    JSONObject rest = api.store.queue().getJSONObject(0).getJSONObject("body");
+    check(
+        rest.getInt("count") == 15 && !rest.getString("operationId").equals(op),
+        "Only unsaved hearts get a new immutable operation");
+    check(
+        HeartCounts.count(api.cached("/api/together", true), day, "me") == 25,
+        "Recovered projection neither drops nor duplicates hearts");
+    api.store.remove("outbox");
+  }
+
+  private void key(CodePad pad, String description) {
+    for (View v : views(pad, View.class))
+      if (description.equals(v.getContentDescription())) {
+        v.performClick();
+        return;
+      }
+    throw new AssertionError("Missing keypad control: " + description);
   }
 
   private void verifyHomeActionLayout() throws Exception {

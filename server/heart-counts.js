@@ -30,7 +30,9 @@ export function saveSharedStreak(data, now = new Date()) {
   data.heartStreak = streakPolicy(data.heartStreak);
   data.streakStatus = { ...sharedStreak(data, heartDay(now)), asOf: now.toISOString() };
 }
-export function publicTogether(data, now = new Date()) {
+export function publicTogether(data, now = new Date(), operation = '') {
   const {heartOperations,...visible} = data;
-  return {...visible,heartStreak:streakPolicy(data.heartStreak),streakStatus:{...sharedStreak(data,heartDay(now)),asOf:now.toISOString()},heartReceipts:Object.keys(heartOperations || {}).slice(-512)};
+  const receipt=heartOperations?.[operation]?.split('|');
+  const heartReceipt=receipt?.length===3 ? {operationId:operation,from:receipt[0],count:Number(receipt[1]),day:receipt[2]} : null;
+  return {...visible,heartStreak:streakPolicy(data.heartStreak),streakStatus:{...sharedStreak(data,heartDay(now)),asOf:now.toISOString()},heartReceipts:Object.keys(heartOperations || {}).slice(-512),...(operation ? {heartReceipt}:{})};
 }

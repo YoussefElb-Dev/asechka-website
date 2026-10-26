@@ -52,6 +52,8 @@ struct RootView:View {
     @State private var tab=0
     @State private var composer:ComposeRequest?
     @State private var settings=false
+    @State private var connection=false
+    @Namespace private var tabMotion
     @State private var corner=false
     @State private var savedOnly=false
     private let tabs=[("house","Home"),("photo.on.rectangle","Photos"),("quote.bubble","Quotes"),("music.note","Music"),("sparkles","Our days"),("character.bubble","Words")]
@@ -64,39 +66,44 @@ struct RootView:View {
         }
         .font(.custom("DMSans-Regular",size:15)).foregroundColor(Palette.ink)
         .background(Palette.background.ignoresSafeArea())
+        .overlay{if universe.unlocked && universe.requiresCode{Palette.background.ignoresSafeArea().accessibilityHidden(true)}}
+        .accessibilityHidden(universe.unlocked && universe.requiresCode)
+        .background(AppDoorWindow().frame(width:0,height:0))
+        .onChange(of:phase){if $0 != .active{universe.requireCode(background:$0 == .background)}}
         .sheet(item:$composer){request in ComposerView(request:request)}
         .sheet(isPresented:$corner){CornerView()}
         .sheet(isPresented:$settings){SettingsView()}
+        .sheet(isPresented:$connection){ConnectionView()}
         .alert("A little moment",isPresented:Binding(get:{universe.error != nil},set:{if !$0{universe.error=nil}})) {
             Button("OK",role:.cancel){universe.error=nil}
         }message:{Text(universe.error ?? "")}
-        .task {if universe.unlocked {await universe.refresh()}}
+        .task {if universe.unlocked && !universe.requiresCode {await universe.refresh()}}
         .task(id:phase){
             guard phase == .active else{return}
             while !Task.isCancelled {
-                if universe.unlocked{await universe.refreshSharedHearts()}
+                if universe.unlocked && !universe.requiresCode{await universe.refreshSharedHearts()}
                 do{try await Task.sleep(nanoseconds:15_000_000_000)}catch{return}
             }
         }
         .task(id:phase){
             guard phase == .active else{await universe.finishHeartSaves();HeartRain.shared.stop();return}
-            if universe.unlocked {await universe.refresh()}
+            if universe.unlocked && !universe.requiresCode {await universe.refresh()}
             while !Task.isCancelled {
                 do{try await Task.sleep(nanoseconds:60_000_000_000)}catch{return}
-                if universe.unlocked{await universe.refresh()}
+                if universe.unlocked && !universe.requiresCode{await universe.refresh()}
             }
         }
     }
     private var shell:some View {
         VStack(spacing:0){
-            HStack(spacing:12){
-                Image(systemName:"sparkle").foregroundColor(Palette.purple)
+            HStack(spacing:8){
                 Text("asechka.").font(.custom("Manrope-Bold",size:25))
                 Spacer()
                 Button{Touch.tap();composer=ComposeRequest(photo:tab != 2)}label:{Image(systemName:"plus.app").font(.system(size:22)).frame(width:44,height:44)}.accessibilityLabel("Create post")
+                Button{Touch.tap();connection=true}label:{Image(systemName:"arrow.clockwise").font(.system(size:20)).frame(width:44,height:44)}.accessibilityLabel("Refresh and reconnect")
                 Button{Touch.tap();settings=true}label:{Avatar(actor:universe.actor,size:38)}.accessibilityLabel("Profile and settings")
             }.padding(.horizontal,20).padding(.vertical,7)
-            Button{settings=true}label:{HStack(spacing:5){Circle().fill(universe.online ? Palette.purple:Palette.muted).frame(width:5,height:5);Text(universe.message).font(.system(size:11));Spacer()}.foregroundColor(Palette.muted).padding(.horizontal,23).padding(.bottom,9)}
+            Button{connection=true}label:{HStack(spacing:5){Circle().fill(universe.online ? Palette.purple:Palette.muted).frame(width:5,height:5);Text(universe.message).font(.system(size:11));Spacer()}.foregroundColor(Palette.muted).padding(.horizontal,23).padding(.bottom,9)}
             Group{
                 if tab<3 {FeedView(mode:tab,savedOnly:$savedOnly,create:{composer=ComposeRequest(photo:$0)},corner:{corner=true},navigate:{tab=$0})}
                 else if tab==3 {SoundtrackView()}
@@ -108,8 +115,12 @@ struct RootView:View {
         .safeAreaInset(edge:.bottom,spacing:0){
             HStack(spacing:0){ForEach(0..<tabs.count,id:\.self){index in
                 Button{Touch.tap();withAnimation(reduced ? nil:.easeInOut(duration:0.22)){tab=index}}label:{
-                    VStack(spacing:4){Image(systemName:tabs[index].0).font(.system(size:20,weight:tab==index ? .semibold:.regular)).frame(width:40,height:29).background(tab==index ? Palette.lavender:.clear,in:Capsule());Text(tabs[index].1).font(.system(size:9,weight:tab==index ? .semibold:.medium)).lineLimit(1).minimumScaleFactor(0.8)}
-                        .foregroundColor(tab==index ? Palette.purple:Palette.muted).frame(maxWidth:.infinity,minHeight:53)
+                    VStack(spacing:4){
+                        Image(systemName:tabs[index].0).font(.system(size:21,weight:tab==index ? .semibold:.regular)).foregroundColor(tab==index ? .white:Palette.muted).frame(width:46,height:32)
+                            .background{if tab==index{Capsule().fill(Palette.purple).matchedGeometryEffect(id:"active-tab",in:tabMotion)}}
+                        Text(tabs[index].1).font(.system(size:10,weight:tab==index ? .bold:.medium)).lineLimit(1).minimumScaleFactor(0.8)
+                    }
+                        .foregroundColor(tab==index ? Palette.purple:Palette.muted).frame(maxWidth:.infinity,minHeight:59).background(tab==index ? Palette.lavender:.clear,in:RoundedRectangle(cornerRadius:18))
                 }.accessibilityLabel(tabs[index].1).accessibilityAddTraits(tab==index ? .isSelected:[])
             }}.padding(.horizontal,8).padding(.top,7).background(.white.shadow(.drop(color:.black.opacity(0.05),radius:10,y:-3)))
         }
@@ -125,19 +136,5 @@ struct IdentityView:View {
                 Button{Touch.tap(true);universe.choose(actor)}label:{HStack(spacing:14){Avatar(actor:actor,size:52);VStack(alignment:.leading,spacing:4){Text(Post.name(actor)).font(.headline);Text(actor=="asnat" ? "August 5 · our Asechka":"January 25 · made with love").font(.caption).foregroundColor(Palette.muted)};Spacer();Image(systemName:"arrow.right")}.padding(18).background(.white,in:RoundedRectangle(cornerRadius:24))}
             };Spacer();Text("Made with a whole lot of love. ♡").font(.caption).foregroundColor(Palette.muted)
         }.padding(28)
-    }
-}
-struct DoorView:View {
-    @EnvironmentObject private var universe:UniverseStore
-    @State private var code=""
-    var body:some View {
-        ScrollView{VStack(alignment:.leading,spacing:24){
-            Avatar(actor:universe.actor,size:66).padding(.top,65)
-            Text("Welcome home,\n\(universe.name).").font(.custom("Manrope-Bold",size:34))
-            Text("Our photos, our words, our little life. Enter our code to open the door.").foregroundColor(Palette.muted)
-            SecureField("Our little code",text:$code).textContentType(.password).padding(17).background(.white,in:RoundedRectangle(cornerRadius:16)).onSubmit{Task{await universe.login(code)}}
-            Button{Task{await universe.login(code)}}label:{HStack{if universe.busy{ProgressView().tint(.white)};Text(universe.busy ? "Opening…":"Come on in ♡").frame(maxWidth:.infinity)}.primary()}.disabled(universe.busy || code.isEmpty)
-            Button("Switch profile"){universe.choose("")}.foregroundColor(Palette.purple)
-        }.padding(26)}
     }
 }

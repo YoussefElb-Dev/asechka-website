@@ -50,7 +50,7 @@ struct FeedView:View {
                     story("Create","plus"){create(mode != 2)};story("Our corner","heart",action:corner)
                     story("Our days","sparkles"){navigate(4)};story("Music","music.note"){navigate(3)}
                     story(savedOnly ? "All posts":"Saved","bookmark"){savedOnly.toggle()}
-                }.padding(.horizontal,22)}
+                }.padding(.horizontal,22).padding(.vertical,7)}
             }
             if mode==0 && !savedOnly {HomeHub(open:{shortcut=$0},openHistory:{heartHistory=true})}
             if !home {VStack(alignment:.leading,spacing:6){
@@ -58,7 +58,7 @@ struct FeedView:View {
                 Text("A little life together, one moment at a time.").font(.subheadline).foregroundColor(Palette.muted)
                 Button{create(mode != 2)}label:{HStack(spacing:12){Avatar(actor:universe.actor);Text("Something to share, \(universe.name)?").font(.subheadline).foregroundColor(Palette.muted);Spacer();Image(systemName:"plus")}.padding(14).background(.white,in:RoundedRectangle(cornerRadius:22))}.padding(.top,10)
             }.padding(.horizontal,22)}
-        }.padding(.top,home ? 4:12).padding(.bottom,home ? 0:8)
+        }.padding(.top,home ? 10:12).padding(.bottom,home ? 0:8)
     }
     private func story(_ text:String,_ symbol:String,action:@escaping()->Void)->some View {
         Button{Touch.tap();action()}label:{

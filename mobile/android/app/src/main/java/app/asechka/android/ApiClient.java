@@ -29,6 +29,14 @@ public final class ApiClient {
   private final Context context;
   private Boolean onlineOverride;
   private static final Set<String> syncing = new HashSet<>();
+  private static final Map<String, Long> retryAt = new HashMap<>();
+
+  void retryNow() {
+    synchronized (syncing) {
+      retryAt.remove(base);
+    }
+  }
+
   private String cookie = "";
   private long expires;
 
@@ -240,22 +248,59 @@ public final class ApiClient {
   void syncPending() throws Exception {
     if (!connected() || !signedIn() || !store.unlocked()) return;
     synchronized (syncing) {
+      if (System.currentTimeMillis() < (retryAt.containsKey(base) ? retryAt.get(base) : 0)) return;
       if (!syncing.add(base)) return;
     }
     try {
+      store.retryHeartConflicts();
+      int heartBatches = 0;
       while (true) {
         store.sealHeartBatches();
         JSONArray items = store.queue();
         if (items.length() == 0) break;
         if (!store.unlocked() || !signedIn() || Thread.currentThread().isInterrupted()) break;
         JSONObject entry = items.getJSONObject(0);
-        if (!entry.optString("status").equals("pending")) break;
+        if (!entry.optString("status").equals("pending")) {
+          entry = null;
+          for (int i = 1; i < items.length(); i++) {
+            JSONObject candidate = items.getJSONObject(i);
+            if (candidate.optString("status").equals("pending")
+                && candidate.optString("path").equals("/api/together")
+                && candidate.getJSONObject("body").optString("action").equals("sendHeart")) {
+              entry = candidate;
+              break;
+            }
+          }
+          if (entry == null) break;
+        }
         String path = entry.getString("path");
+        boolean heart =
+            path.equals("/api/together")
+                && entry.getJSONObject("body").optString("action").equals("sendHeart");
+        if (heart && heartBatches++ >= 2) break;
         try {
           JSONObject response =
               json(path, "POST", store.mappedBody(entry).toString(), "application/json");
           store.acknowledge(entry, response);
         } catch (ApiError error) {
+          synchronized (syncing) {
+            retryAt.put(base, System.currentTimeMillis() + 5000);
+          }
+          if (heart && error.status == 409) {
+            try {
+              JSONObject receipt =
+                  json(
+                      "/api/together?heartOperation="
+                          + entry.getJSONObject("body").getString("operationId"),
+                      "GET",
+                      null,
+                      null);
+              if (store.reconcileHeart(entry, receipt)) continue;
+            } catch (IOException ignored) {
+            }
+            // A repository race is retried automatically; it must not block every queued change.
+            break;
+          }
           if (error.status == 401
               || error.status == 0
               || error.status >= 500
@@ -267,6 +312,9 @@ public final class ApiClient {
           }
           break;
         } catch (IOException error) {
+          synchronized (syncing) {
+            retryAt.put(base, System.currentTimeMillis() + 5000);
+          }
           break;
         }
       }
@@ -435,7 +483,7 @@ public final class ApiClient {
     connection.setUseCaches(false);
     connection.setRequestProperty("Accept", "application/json");
     connection.setRequestProperty("Cache-Control", "no-store");
-    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.4");
+    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.5");
     connection.setRequestProperty("Origin", base);
     final String sentCookie;
     final String sentSession = prefs.getString("session", "");

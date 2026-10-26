@@ -374,6 +374,11 @@ final class OfflineStore {
   }
 
   void tapHeart(String from, String day) throws Exception {
+    tapHearts(from, day, 1);
+  }
+
+  void tapHearts(String from, String day, int count) throws Exception {
+    if (count < 1 || count > 1000000) throw new IllegalArgumentException("Invalid heart batch");
     synchronized (LOCK) {
       JSONArray items = queue();
       for (int i = items.length() - 1; i >= 0; i--) {
@@ -382,8 +387,8 @@ final class OfflineStore {
             && entry.optString("status").equals("pending")
             && b.optString("from").equals(from)
             && b.optString("day").equals(day)
-            && b.optLong("count") < 1000000) {
-          b.put("count", b.optLong("count", 1) + 1);
+            && b.optLong("count") + count <= 1000000) {
+          b.put("count", b.optLong("count", 1) + count);
           queue(items);
           return;
         }
@@ -399,7 +404,7 @@ final class OfflineStore {
                   "day",
                   day,
                   "count",
-                  1,
+                  count,
                   "operationId",
                   UUID.randomUUID().toString()));
       items = queue();
@@ -422,6 +427,63 @@ final class OfflineStore {
         }
       }
       if (changed) queue(items);
+    }
+  }
+
+  void retryHeartConflicts() throws Exception {
+    synchronized (LOCK) {
+      JSONArray items = queue();
+      boolean changed = false;
+      for (int i = 0; i < items.length(); i++) {
+        JSONObject row = items.getJSONObject(i);
+        if (row.optString("path").equals("/api/together")
+            && row.getJSONObject("body").optString("action").equals("sendHeart")
+            && row.optInt("code") == 409) {
+          row.put("status", "pending");
+          row.remove("error");
+          row.remove("code");
+          row.remove("heartBatch");
+          changed = true;
+        }
+      }
+      if (changed) queue(items);
+    }
+  }
+
+  /** Repair a batch changed by an older app, using the server's exact receipt, never guesses. */
+  boolean reconcileHeart(JSONObject entry, JSONObject response) throws Exception {
+    synchronized (LOCK) {
+      JSONObject body = entry.getJSONObject("body"),
+          receipt = response.optJSONObject("heartReceipt");
+      if (receipt == null
+          || !body.optString("operationId").equals(receipt.optString("operationId"))
+          || !body.optString("from").equals(receipt.optString("from"))
+          || body.has("day") && !body.optString("day").equals(receipt.optString("day"))
+          || receipt.optLong("count") < 1) return false;
+      long remaining = Math.max(0, body.optLong("count", 1) - receipt.getLong("count"));
+      snapshot("/api/together", response);
+      JSONArray items = queue(), next = new JSONArray();
+      for (int i = 0; i < items.length(); i++) {
+        JSONObject row = items.getJSONObject(i);
+        if (!row.optString("id").equals(entry.optString("id"))) {
+          next.put(row);
+          continue;
+        }
+        if (remaining > 0) {
+          JSONObject replacement = copy(row), rest = copy(body);
+          rest.put("operationId", UUID.randomUUID().toString());
+          rest.put("count", remaining);
+          replacement.put("id", UUID.randomUUID().toString());
+          replacement.put("body", rest);
+          replacement.put("status", "pending");
+          replacement.remove("error");
+          replacement.remove("code");
+          replacement.remove("heartBatch");
+          next.put(replacement);
+        }
+      }
+      queue(next);
+      return true;
     }
   }
 

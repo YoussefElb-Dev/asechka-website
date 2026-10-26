@@ -1,6 +1,27 @@
 import XCTest
 
 final class NativeJourneyTests:XCTestCase {
+    func testCustomDoorRelocksAboveUnsavedComposer() {
+        let app=XCUIApplication();app.launchArguments=["--preview-fixture","--preview-lock"];app.launch()
+        XCTAssertTrue(app.buttons["Digit 1"].waitForExistence(timeout:15))
+        capture("30-iPhone-custom-code-door")
+        app.buttons["Digit 9"].tap();app.buttons["Unlock door"].tap()
+        XCTAssertTrue(app.staticTexts["Door status"].waitForExistence(timeout:5))
+        XCTAssertFalse(app.buttons["Create post"].isHittable)
+        let unlock=app.buttons["Unlock door"]
+        XCTAssertTrue(unlock.waitForExistence(timeout:5))
+        for n in 1...6{app.buttons["Digit \(n)"].tap()};unlock.tap()
+        XCTAssertTrue(app.buttons["Create post"].waitForExistence(timeout:8))
+        app.buttons["Quotes"].firstMatch.tap();app.buttons["Create post"].tap()
+        let editor=app.textViews["Quote text"];XCTAssertTrue(editor.waitForExistence(timeout:5));editor.tap();editor.typeText("A draft waiting behind our little door.")
+        XCUIDevice.shared.press(.home);app.activate()
+        XCTAssertTrue(app.buttons["Digit 1"].waitForExistence(timeout:8))
+        XCTAssertFalse(editor.isHittable,"The door covers an already presented private editor")
+        capture("31-iPhone-door-over-composer")
+        for n in 1...6{app.buttons["Digit \(n)"].tap()};app.buttons["Unlock door"].tap()
+        XCTAssertTrue(editor.waitForExistence(timeout:8))
+        XCTAssertEqual(editor.value as? String,"A draft waiting behind our little door.")
+    }
     func testNativeFeedOfflineConversationAndComposer() {
         let app=XCUIApplication()
         app.launchArguments=["--preview-fixture"]

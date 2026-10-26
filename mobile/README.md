@@ -61,3 +61,13 @@ The private build workflow also keeps the latest APK, IPA, checksums, build stat
 ## Photo launcher icon
 
 Version 2.1.1 uses our original shadow photo on both platforms. The source and square preview are in `artwork/`. To reproduce every native icon size, install Pillow and run `python mobile/tools/launcher-icons.py` from the repository root. The Android adaptive crop includes the outer area reserved for launcher masking; iPhone and iPad icons are opaque RGB PNGs.
+
+## Private door and connection controls (2.2.5)
+
+Both native apps require a fresh unlock at launch and whenever you return. The lavender custom number pad masks entries, has delete/clear keys, and offers a keyboard for existing passwords with letters. It uses the existing shared website password, including the saved offline verifier. A foreground-only authorization guard prevents delayed network replies from opening a backgrounded app. Private editors remain underneath the door so drafts survive a return visit.
+
+After opening with the code, enable biometric unlock in Profile / Our little settings. Android uses a per-use biometric-authenticated Keystore proof (native BiometricPrompt, with fingerprint support on Android 6–8). iOS uses Face ID or Touch ID and a device-only Keychain proof tied to the enrolled biometrics. The password remains available. Adding/replacing biometrics may require enabling this option again. Biometric hardware cannot be verified through all simulator configurations.
+
+The top refresh button and connection status open Refresh now and Reconnect & retry. Rapid hearts coalesce encrypted writes, retain immutable operation IDs once attempted, and avoid rebuilding Android's photo feed for counter-only changes. Temporary repository contention returns a retryable response. An exact, authenticated heart receipt repairs old batches that were changed after partial delivery, resending only the unsaved remainder. A genuinely stale post edit still needs review and no longer prevents independent hearts from syncing.
+
+Shortcut rows include space above their outlines; selected navigation tabs use a larger solid purple icon pill and a lavender background.

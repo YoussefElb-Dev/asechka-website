@@ -28,6 +28,12 @@ final class HomeExtras {
   final java.util.concurrent.ExecutorService heartWriter =
       java.util.concurrent.Executors.newSingleThreadExecutor();
   int pendingWrites, shownStreak;
+  private long tapSerial;
+  private boolean updating;
+  private final java.util.concurrent.ConcurrentLinkedQueue<String[]> taps =
+      new java.util.concurrent.ConcurrentLinkedQueue<>();
+  private final java.util.concurrent.atomic.AtomicBoolean writing =
+      new java.util.concurrent.atomic.AtomicBoolean();
   long shownOwn, shownOther;
   String shownDay;
   boolean closed, shownTodayComplete;
@@ -221,34 +227,55 @@ final class HomeExtras {
       rain.emit(anchor);
     }
     pendingWrites++;
+    tapSerial++;
+    taps.add(new String[] {who, day});
+    drainTaps();
+  }
+
+  private void drainTaps() {
+    if (!writing.compareAndSet(false, true)) return;
     heartWriter.execute(
         () -> {
-          Exception failure = null;
-          try {
-            api.store.tapHeart(who, day);
-          } catch (Exception e) {
-            failure = e;
-          }
-          final Exception error = failure;
-          main.post(
-              () -> {
-                pendingWrites--;
-                if (activity.isDestroyed()) return;
-                if (error != null) {
-                  shownOwn = Math.max(0, shownOwn - 1);
-                  renderCounts();
-                  Toast.makeText(
-                          activity,
-                          "Your phone couldn’t save that heart. Please try again.",
-                          Toast.LENGTH_SHORT)
-                      .show();
-                }
-                if (pendingWrites == 0) {
-                  if (!closed) main.postDelayed(settle, 120);
-                  main.removeCallbacks(flush);
-                  main.postDelayed(flush, closed ? 0 : 900);
-                }
-              });
+          do {
+            Map<String, Integer> batches = new LinkedHashMap<>();
+            String[] tap;
+            while ((tap = taps.poll()) != null) {
+              String key = tap[0] + "|" + tap[1];
+              batches.put(key, batches.containsKey(key) ? batches.get(key) + 1 : 1);
+            }
+            int total = 0, failed = 0;
+            for (Map.Entry<String, Integer> batch : batches.entrySet()) {
+              int count = batch.getValue();
+              total += count;
+              String[] parts = batch.getKey().split("\\|");
+              try {
+                api.store.tapHearts(parts[0], parts[1], count);
+              } catch (Exception error) {
+                failed += count;
+              }
+            }
+            final int savedCount = total, failedCount = failed;
+            main.post(
+                () -> {
+                  pendingWrites -= savedCount;
+                  if (activity.isDestroyed()) return;
+                  if (failedCount > 0) {
+                    shownOwn = Math.max(0, shownOwn - failedCount);
+                    renderCounts();
+                    Toast.makeText(
+                            activity,
+                            "Your phone couldn’t save those hearts. Please try again.",
+                            Toast.LENGTH_SHORT)
+                        .show();
+                  }
+                  if (pendingWrites == 0) {
+                    if (!closed) main.postDelayed(settle, 120);
+                    main.removeCallbacks(flush);
+                    main.postDelayed(flush, closed ? 0 : 1200);
+                  }
+                });
+            writing.set(false);
+          } while (!taps.isEmpty() && writing.compareAndSet(false, true));
         });
   }
 
@@ -279,53 +306,62 @@ final class HomeExtras {
   }
 
   void update() {
-    if (counts == null) return;
-    if (pendingWrites == 0) {
-      JSONObject d = data();
-      String today = SharedHeartStreak.today(d, api.connected()),
-          own = from(),
-          other = own.equals("me") ? "asechka" : "me";
-      shownDay = today;
-      shownOwn = HeartCounts.count(d, today, own);
-      shownOther = HeartCounts.count(d, today, other);
-      SharedHeartStreak shared = SharedHeartStreak.calculate(d, today);
-      shownStreak = shared.days;
-      shownLives = shared.lives;
-      shownTodayComplete = shared.todayComplete;
-      renderCounts();
-    }
-    JSONObject keepsakes = null;
-    try {
-      keepsakes = api.cached("/api/keepsakes", !api.connected());
-    } catch (Exception ignored) {
-    }
-    if (keepsakes == null && bundledKeepsakes == null)
-      try {
-        java.io.InputStream in = activity.getAssets().open("default/keepsakes.json");
-        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-        byte[] b = new byte[4096];
-        int n;
-        while ((n = in.read(b)) != -1) out.write(b, 0, n);
-        in.close();
-        bundledKeepsakes = new JSONObject(out.toString("UTF-8"));
-      } catch (Exception ignored) {
-      }
-    if (keepsakes == null) keepsakes = bundledKeepsakes;
-    JSONObject since = keepsakes == null ? null : keepsakes.optJSONObject("since");
-    long start = since == null ? 0 : Dates.instant(since.optString("startedAt"));
-    long seconds = start <= 0 ? 0 : Math.max(0, (System.currentTimeMillis() - start) / 1000);
-    elapsed.setText(
-        String.format(
-            Locale.US,
-            "%d days · %02d:%02d:%02d",
-            seconds / 86400,
-            seconds / 3600 % 24,
-            seconds / 60 % 60,
-            seconds % 60));
-    sinceLabel.setText(
-        start <= 0
-            ? "Set our beginning in Since us"
-            : "Together since " + shortBeginning(start) + " ET");
+    if (counts == null || closed || updating || pendingWrites > 0) return;
+    updating = true;
+    final long serial = tapSerial;
+    heartWriter.execute(
+        () -> {
+          JSONObject d = data();
+          JSONObject keepsakes = null;
+          try {
+            keepsakes = api.cached("/api/keepsakes", !api.connected());
+          } catch (Exception ignored) {
+          }
+          if (keepsakes == null && bundledKeepsakes == null)
+            try {
+              java.io.InputStream in = activity.getAssets().open("default/keepsakes.json");
+              java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+              byte[] b = new byte[4096];
+              int n;
+              while ((n = in.read(b)) != -1) out.write(b, 0, n);
+              in.close();
+              bundledKeepsakes = new JSONObject(out.toString("UTF-8"));
+            } catch (Exception ignored) {
+            }
+          if (keepsakes == null) keepsakes = bundledKeepsakes;
+          final JSONObject savedKeepsakes = keepsakes;
+          main.post(
+              () -> {
+                updating = false;
+                if (closed || counts == null || pendingWrites > 0 || serial != tapSerial) return;
+                String today = SharedHeartStreak.today(d, api.connected()), own = from();
+                shownDay = today;
+                shownOwn = HeartCounts.count(d, today, own);
+                shownOther = HeartCounts.count(d, today, own.equals("me") ? "asechka" : "me");
+                SharedHeartStreak shared = SharedHeartStreak.calculate(d, today);
+                shownStreak = shared.days;
+                shownLives = shared.lives;
+                shownTodayComplete = shared.todayComplete;
+                renderCounts();
+                JSONObject since =
+                    savedKeepsakes == null ? null : savedKeepsakes.optJSONObject("since");
+                long start = since == null ? 0 : Dates.instant(since.optString("startedAt"));
+                long seconds =
+                    start <= 0 ? 0 : Math.max(0, (System.currentTimeMillis() - start) / 1000);
+                elapsed.setText(
+                    String.format(
+                        Locale.US,
+                        "%d days · %02d:%02d:%02d",
+                        seconds / 86400,
+                        seconds / 3600 % 24,
+                        seconds / 60 % 60,
+                        seconds % 60));
+                sinceLabel.setText(
+                    start <= 0
+                        ? "Set our beginning in Since us"
+                        : "Together since " + shortBeginning(start) + " ET");
+              });
+        });
   }
 
   private String shortBeginning(long start) {

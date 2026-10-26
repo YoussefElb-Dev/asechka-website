@@ -3,6 +3,30 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    @MainActor func testForegroundDoorAndRapidHeartsPreserveOfflineData()async throws {
+        let universe=UniverseStore(previewFixture:true)
+        let photos=universe.memories.posts.count
+        universe.requireCode()
+        XCTAssertTrue(universe.requiresCode,"A saved session needs a fresh code on return")
+        await universe.login("wrong")
+        XCTAssertTrue(universe.requiresCode)
+        XCTAssertNotNil(universe.doorError)
+        await universe.login("123456")
+        XCTAssertFalse(universe.requiresCode)
+        for _ in 0..<1000{try universe.sendHeart()}
+        await universe.finishHeartSaves()
+        XCTAssertEqual(universe.pending.count,1,"A burst coalesces into one durable batch")
+        let body=try XCTUnwrap(JSONSerialization.jsonObject(with:universe.pending[0].body) as? [String:Any])
+        XCTAssertEqual(body["count"] as? Int,1000)
+        XCTAssertEqual(universe.heartDays[HeartLedger.day()]?["asechka"],1000)
+        XCTAssertEqual(universe.vault.value("outbox",as:[PendingChange].self)?.count,1)
+        universe.requireCode()
+        XCTAssertTrue(universe.requiresCode)
+        XCTAssertEqual(universe.memories.posts.count,photos)
+        XCTAssertEqual(universe.pending.count,1,"Relocking keeps every queued heart")
+        await universe.forceRefresh()
+        XCTAssertTrue(universe.requiresCode,"Refresh must not bypass the door")
+    }
     func testSharedStreakAndStackingLivesMatchWebsiteFixtures()throws {
         let url=try XCTUnwrap(Bundle(for:Self.self).url(forResource:"heart-streak-cases",withExtension:"json"))
         let cases=try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:url)) as? [[String:Any]])

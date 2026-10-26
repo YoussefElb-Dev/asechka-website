@@ -15,6 +15,11 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     static let site="https://asechka-website.vercel.app"
     @Published var actor=UserDefaults.standard.string(forKey:"person") ?? ""
     @Published var unlocked=false
+    @Published private(set) var requiresCode=true
+    @Published var doorError:String?
+    @Published private(set) var biometricEnabled=false
+    private var biometricPrompt=false
+    private var accessEpoch=0
     @Published var memories=Memories()
     @Published var songs:[Song]=[]
     @Published var wishes:[Wish]=[]
@@ -62,6 +67,9 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     private var inFlightChange:String?
     private var sealedHearts:Set<String>=[]
     private var heartFlush:Task<Void,Never>?
+    private var heartCommit:Task<Void,Never>?
+    private var heartTaps:[String:Int]=[:]
+    private var retryAfter=Date.distantPast
     @Published var dailyText=""
     private(set) var storageUnavailable=false
     let vault:Vault
@@ -75,10 +83,10 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     private var idMap:[String:String]=[:]
     var name:String {Post.name(actor)}
     var partner:String {actor=="asnat" ? "Youssef" : "Asnat"}
-    init() {
+    init(previewFixture:Bool=false) {
         // A storage failure is shown to the user rather than silently falling back to plaintext.
         #if DEBUG
-        let preview=ProcessInfo.processInfo.arguments.contains("--preview-fixture")
+        let preview=previewFixture || ProcessInfo.processInfo.arguments.contains("--preview-fixture")
         #else
         let preview=false
         #endif
@@ -89,15 +97,22 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         config.timeoutIntervalForRequest=60;config.timeoutIntervalForResource=75
         session=URLSession(configuration:config,delegate:NoRedirect(),delegateQueue:nil)
         guard !storageUnavailable else{return}
+        biometricEnabled=vault.value("biometric-enabled",as:Bool.self) ?? false
         if preview {
             actor="asnat";unlocked=true;online=false;memories=bundledMemories()
+            requiresCode=ProcessInfo.processInfo.arguments.contains("--preview-lock")
+            let salt=UUID().uuidString;try? vault.save("offline-code",[salt,Self.verifier("123456",salt)])
             try? vault.save("snapshot:/api/memories",memories);restore();journal["writable"]=true;keepsakes["writable"]=true;try? vault.write("snapshot:/api/journal",JSONSerialization.data(withJSONObject:journal));try? vault.write("snapshot:/api/keepsakes",JSONSerialization.data(withJSONObject:keepsakes));status();return
         }
         cookie=vault.value("session",as:String.self) ?? ""
         locked=vault.value("locked",as:Bool.self) ?? false
         unlocked = !locked && vault.read("snapshot:/api/memories") != nil
         pending=vault.value("outbox",as:[PendingChange].self) ?? []
-        sealedHearts=Set(vault.value("heart-sealed",as:[String].self) ?? [])
+        for index in pending.indices where pending[index].error != nil {
+            if let body=(try? JSONSerialization.jsonObject(with:pending[index].body)) as? [String:Any],pending[index].path=="/api/together",body["action"] as? String=="sendHeart"{pending[index].error=nil;sealedHearts.insert(pending[index].id)}
+        }
+        try? vault.save("outbox",pending)
+        sealedHearts.formUnion(vault.value("heart-sealed",as:[String].self) ?? [])
         idMap=vault.value("id-map",as:[String:String].self) ?? [:]
         restore();loadBookmarks()
         monitor.pathUpdateHandler={ [weak self] path in
@@ -117,7 +132,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard path.hasPrefix("/"),!path.hasPrefix("//"),!path.contains("\\"),let url=URL(string:Self.site+path)else{throw URLError(.badURL)}
         var request=URLRequest(url:url);request.httpMethod=body==nil ? "GET":"POST";request.httpBody=body
         request.setValue("application/json",forHTTPHeaderField:"Accept");request.setValue(Self.site,forHTTPHeaderField:"Origin")
-        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.4",forHTTPHeaderField:"User-Agent")
+        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.5",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
         for (endpoint,header) in [("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation")] {
@@ -138,26 +153,67 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         }
         return data
     }
+    func requireCode(background:Bool=false){
+        if biometricPrompt && !background{HeartRain.shared.stop();return}
+        if background{BiometricAccess.cancel();biometricPrompt=false}
+        flushHeartTaps();accessEpoch += 1;requiresCode=true;busy=false;doorError=nil;HeartRain.shared.stop()
+    }
+    func setBiometrics(_ enabled:Bool)async {
+        if !enabled{BiometricAccess.remove();biometricEnabled=false;try? vault.save("biometric-enabled",false);return}
+        guard unlocked,!requiresCode,BiometricAccess.available else{return}
+        let visit=accessEpoch;biometricPrompt=true
+        defer{biometricPrompt=false}
+        do{try await BiometricAccess.authenticate(enroll:true);guard visit==accessEpoch else{return};try vault.save("biometric-enabled",true);biometricEnabled=true}
+        catch{if visit==accessEpoch{self.error="Biometrics weren’t enabled. Our code still works."}}
+    }
+    func biometricLogin()async {
+        guard !busy,biometricEnabled,BiometricAccess.available,vault.read("snapshot:/api/memories") != nil else{return}
+        let visit=accessEpoch;biometricPrompt=true;busy=true;doorError=nil
+        defer{biometricPrompt=false;if visit==accessEpoch{busy=false}}
+        do{
+            try await BiometricAccess.authenticate(enroll:false)
+            guard visit==accessEpoch else{return}
+            locked=false;try vault.save("locked",false);unlocked=true;requiresCode=false;restore();status();Touch.tap(true);await refresh()
+        }catch{if visit==accessEpoch{doorError="Use our little code, or try \(BiometricAccess.name) again."}}
+    }
     func login(_ code:String)async {
-        busy=true;defer{busy=false}
+        guard !busy else{return}
+        guard !code.isEmpty else{doorError="Enter our little code first.";return}
+        let visit=accessEpoch
+        busy=true;doorError=nil
+        defer{if visit==accessEpoch{busy=false}}
+        func accept()async {
+            guard visit==accessEpoch else{return}
+            locked=false;try? vault.save("locked",false);unlocked=true;requiresCode=false;restore();status();Touch.tap(true)
+            await refresh()
+        }
+        func savedCodeMatches()->Bool {
+            guard let check=vault.value("offline-code",as:[String].self),check.count==2,vault.read("snapshot:/api/memories") != nil else{return false}
+            return Self.verifier(code,check[0])==check[1]
+        }
+        if !online {
+            if savedCodeMatches(){await accept()}
+            else{doorError="Use the code last used on this phone, or connect to open it for the first time."}
+            return
+        }
         do {
             var components=URLComponents();components.queryItems=[URLQueryItem(name:"password",value:code)]
             _=try await request("/api/session",body:Data((components.percentEncodedQuery ?? "").replacingOccurrences(of:"+",with:"%2B").utf8),form:true)
+            guard visit==accessEpoch else{return}
             let salt=UUID().uuidString
             try vault.save("offline-code",[salt,Self.verifier(code,salt)])
-            locked=false;try vault.save("locked",false);unlocked=true;await refresh()
+            await accept()
         }catch {
-            if (error as? ServerError)?.status != 401,let check=vault.value("offline-code",as:[String].self),check.count==2,
-               Self.verifier(code,check[0])==check[1],vault.read("snapshot:/api/memories") != nil {
-                locked=false;try? vault.save("locked",false);unlocked=true;restore();status()
-            }else{self.error=error.localizedDescription}
+            guard visit==accessEpoch else{return}
+            if (error as? ServerError)?.status != 401,savedCodeMatches(){await accept()}
+            else{doorError=(error as? ServerError)?.status == 401 ? "That code needs another little try. ♡":error.localizedDescription}
         }
     }
     static func verifier(_ code:String,_ salt:String)->String {
         // The verifier is itself encrypted by the device-only Keychain key.
         SHA256.hash(data:Data((salt+":"+code).utf8)).map{String(format:"%02x",$0)}.joined()
     }
-    func lock(){locked=true;unlocked=false;try? vault.save("locked",true);cookie="";vault.remove("session")}
+    func lock(){requireCode();locked=true;unlocked=false;try? vault.save("locked",true);cookie="";vault.remove("session")}
     func restore(){
         heartDays=[:];heartReceipts=[];heartStreakPolicy=[:];serverHeartDay="";serverHeartAsOf=nil
         memories=vault.value("snapshot:/api/memories",as:Memories.self) ?? bundledMemories()
@@ -195,29 +251,54 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard !locked else{return};restore();await prefetch()
     }
     func sendHeart()throws {
-        let from=actor=="asnat" ? "asechka":"me",day=HeartLedger.day()
-        var next=pending,merged=false
-        for index in next.indices.reversed() where next[index].path=="/api/together" && next[index].error==nil && next[index].id != inFlightChange && !sealedHearts.contains(next[index].id) {
-            guard var body=(try? JSONSerialization.jsonObject(with:next[index].body)) as? [String:Any],body["action"] as? String=="sendHeart",body["from"] as? String==from,body["day"] as? String==day,(body["count"] as? Int ?? 1)<1000000 else{continue}
-            body["count"]=(body["count"] as? Int ?? 1)+1
-            next[index].body=try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]);merged=true;break
-        }
-        if !merged {
-            let body:[String:Any]=["action":"sendHeart","from":from,"day":day,"count":1,"operationId":UUID().uuidString.lowercased()]
-            next.append(PendingChange(id:UUID().uuidString,path:"/api/together",body:try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]),createdAt:ISO8601DateFormatter().string(from:Date())))
-        }
-        pending=next
-        heartDays[day,default:[:]][from,default:0]+=1
-        hearts[from]=ISO8601DateFormatter().string(from:Date())
-        vault.saveDeferred("outbox",next){[weak self] error in
-            guard let error else{return}
-            Task{@MainActor in self?.error="Your phone couldn’t finish saving those hearts. Please keep the app open and try again. "+error.localizedDescription}
-        }
-        status()
-        heartFlush?.cancel();heartFlush=Task{do{try await Task.sleep(nanoseconds:900_000_000)}catch{return};await sync();restore();status()}
+        let key=(actor=="asnat" ? "asechka":"me")+"|"+HeartLedger.day()
+        heartTaps[key,default:0]+=1
+        guard heartCommit==nil else{return}
+        // The particle starts immediately; save/count updates coalesce without rebuilding the feed per tap.
+        heartCommit=Task{try? await Task.sleep(nanoseconds:80_000_000);guard !Task.isCancelled else{return};flushHeartTaps()}
     }
+    private func flushHeartTaps(){
+        heartCommit?.cancel();heartCommit=nil
+        guard !heartTaps.isEmpty else{return}
+        let taps=heartTaps;heartTaps=[:]
+        var next=pending,days=heartDays,newHearts=hearts
+        do {
+            for (key,count) in taps {
+                let parts=key.split(separator:"|").map(String.init),from=parts[0],day=parts[1]
+                var merged=false
+                for index in next.indices.reversed() where next[index].path=="/api/together" && next[index].error==nil && next[index].id != inFlightChange && !sealedHearts.contains(next[index].id) {
+                    guard var body=(try? JSONSerialization.jsonObject(with:next[index].body)) as? [String:Any],body["action"] as? String=="sendHeart",body["from"] as? String==from,body["day"] as? String==day,(body["count"] as? Int ?? 1)+count<=1000000 else{continue}
+                    body["count"]=(body["count"] as? Int ?? 1)+count;next[index].body=try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]);merged=true;break
+                }
+                if !merged {
+                    let body:[String:Any]=["action":"sendHeart","from":from,"day":day,"count":count,"operationId":UUID().uuidString.lowercased()]
+                    next.append(PendingChange(id:UUID().uuidString,path:"/api/together",body:try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]),createdAt:ISO8601DateFormatter().string(from:Date())))
+                }
+                days[day,default:[:]][from,default:0]+=count;newHearts[from]=ISO8601DateFormatter().string(from:Date())
+            }
+            pending=next;heartDays=days;hearts=newHearts
+            vault.saveDeferred("outbox",next){[weak self] error in
+                guard let error else{return}
+                Task{@MainActor in self?.error="Your phone couldn’t finish saving those hearts. Please keep the app open and try again. "+error.localizedDescription}
+            }
+            status()
+            heartFlush?.cancel();heartFlush=Task{do{try await Task.sleep(nanoseconds:1_200_000_000)}catch{return};heartFlush=nil;await sync();restore();status()}
+        }catch{heartTaps.merge(taps,uniquingKeysWith:+);self.error=error.localizedDescription}
+    }
+    func finishHeartSaves()async {flushHeartTaps();await vault.drain()}
 
-    func finishHeartSaves()async {await vault.drain()}
+    func forceRefresh()async {
+        retryAfter = .distantPast
+        await finishHeartSaves()
+        // Only hearts can be safely retried without a person resolving a stale edit.
+        var next=pending,recovered=false
+        for index in next.indices where next[index].error != nil {
+            guard let body=(try? JSONSerialization.jsonObject(with:next[index].body)) as? [String:Any],next[index].path=="/api/together",body["action"] as? String=="sendHeart" else{continue}
+            next[index].error=nil;recovered=true
+        }
+        if recovered {do{try vault.save("outbox",next);pending=next}catch{self.error=error.localizedDescription}}
+        await refresh()
+    }
 
     func enqueue(_ path:String,_ input:[String:Any])throws {
         var body=input
@@ -232,8 +313,15 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         Task{await sync();restore();status()}
     }
     func sync()async {
-        guard !syncing,online,!cookie.isEmpty,!locked else{return};syncing=true;defer{syncing=false;inFlightChange=nil}
-        while let first=pending.first,first.error==nil,!locked {
+        guard !syncing,online,!cookie.isEmpty,!locked,Date()>=retryAfter else{return};flushHeartTaps();syncing=true;defer{syncing=false;inFlightChange=nil}
+        var batches=0
+        while !locked {
+            guard let first=pending.first?.error==nil ? pending.first:pending.first(where:{change in
+                guard change.error==nil,change.path=="/api/together",let body=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any] else{return false}
+                return body["action"] as? String=="sendHeart"
+            }) else{break}
+            let isHeart=((try? JSONSerialization.jsonObject(with:first.body)) as? [String:Any])?["action"] as? String=="sendHeart"
+            if isHeart{batches += 1;if batches>2{break}}
             inFlightChange=first.id
             do {
                 var body=(try JSONSerialization.jsonObject(with:first.body)) as? [String:Any] ?? [:]
@@ -257,11 +345,33 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                 var next=pending;next.removeAll{$0.id==first.id};try vault.save("outbox",next);pending=next
                 sealedHearts.remove(first.id);try? vault.save("heart-sealed",Array(sealedHearts))
             }catch {
+                retryAfter=Date().addingTimeInterval(5)
+                if isHeart,(error as? ServerError)?.status==409 {
+                    if await reconcileHeart(first){continue}
+                    break
+                }
                 if let server=error as? ServerError,(400..<500).contains(server.status),![401,429].contains(server.status),let index=pending.firstIndex(where:{$0.id==first.id}) {
                     pending[index].error=server.message;try? vault.save("outbox",pending)
                 };break
             }
         }
+    }
+    private func reconcileHeart(_ change:PendingChange)async->Bool {
+        do {
+            guard let body=(try JSONSerialization.jsonObject(with:change.body)) as? [String:Any],let op=body["operationId"] as? String else{return false}
+            let data=try await request("/api/together?heartOperation="+op)
+            guard let response=(try JSONSerialization.jsonObject(with:data)) as? [String:Any],let receipt=response["heartReceipt"] as? [String:Any],receipt["operationId"] as? String==op,receipt["from"] as? String==body["from"] as? String,
+                  body["day"]==nil || body["day"] as? String==receipt["day"] as? String,let accepted=receipt["count"] as? Int,accepted>0 else{return false}
+            let rest=max(0,(body["count"] as? Int ?? 1)-accepted)
+            var next=pending
+            guard let index=next.firstIndex(where:{$0.id==change.id}) else{return true}
+            if rest>0 {
+                var replacement=body;replacement["count"]=rest;replacement["operationId"]=UUID().uuidString.lowercased()
+                next[index]=PendingChange(id:UUID().uuidString,path:change.path,body:try JSONSerialization.data(withJSONObject:replacement,options:[.sortedKeys]),createdAt:change.createdAt)
+            }else{next.remove(at:index)}
+            try saveTogether(data);try vault.save("outbox",next);pending=next
+            sealedHearts.remove(change.id);try? vault.save("heart-sealed",Array(sealedHearts));restore();status();return true
+        }catch{return false}
     }
     func discard(_ change:PendingChange){do{var next=pending;next.removeAll{$0.id==change.id};try vault.save("outbox",next);pending=next;restore();status()}catch{self.error=error.localizedDescription}}
     private func projectOther(_ change:PendingChange){

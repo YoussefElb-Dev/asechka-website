@@ -18,7 +18,11 @@ export function createTogetherAPI({favorites=store,now=()=>new Date()}={}){
         return new Response(photo.bytes,{headers:{...privateHeaders,'Content-Type':photo.type}});
       }
       if(url.pathname!=='/api/together')return json({error:'Not found.'},404);
-      if(request.method==='GET')return json({...publicTogether(await favorites.read({fresh:true}),now()),writable:favorites.writable});
+      if(request.method==='GET'){
+        const operation=url.searchParams.get('heartOperation') || '';
+        if(operation && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(operation))return json({error:'This heart receipt couldn’t be read.'},400);
+        return json({...publicTogether(await favorites.read({fresh:true}),now(),operation),writable:favorites.writable});
+      }
       if(request.method!=='POST')return json({error:'Method not allowed.'},405);
       if(Number(request.headers.get('content-length') || 0)>440000)return json({error:'That picture is a little too big. Choose it again.'},413);
       const body=await request.text();

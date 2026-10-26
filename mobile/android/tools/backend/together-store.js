@@ -180,7 +180,12 @@ export class GitHubTogetherStore{
         await this.github('/git/refs/heads/main','PATCH',{sha:commit.sha,force:false});
         this.cache.clear();
         return update.data;
-      }catch(error){this.cache.clear();if(!(error instanceof TogetherError) || error.status!==409 || attempt===2)throw error;}
+      }catch(error){
+        this.cache.clear();
+        if(!(error instanceof TogetherError) || error.status!==409)throw error;
+        // A moving Git branch is temporary infrastructure contention, not a stale user edit.
+        if(attempt===2)throw new TogetherError('Your change is safe on this phone. We’ll retry the shared save shortly.',503);
+      }
     }
   }
 }

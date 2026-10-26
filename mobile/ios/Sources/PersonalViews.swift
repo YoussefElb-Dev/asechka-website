@@ -12,6 +12,7 @@ struct SettingsView:View {
         NavigationStack{List{
             Section{HStack(spacing:14){Avatar(actor:universe.actor,size:50);VStack(alignment:.leading){Text(universe.name).font(.headline);Text("Our little universe").foregroundColor(Palette.muted)}}}
             Section("Feel a little more"){Toggle("Haptic feedback",isOn:$haptics);Toggle("Pause gentle animations",isOn:$paused)}
+            if BiometricAccess.available{Section("Our little door"){Toggle("Unlock with \(BiometricAccess.name)",isOn:Binding(get:{universe.biometricEnabled},set:{enabled in Task{await universe.setBiometrics(enabled)}}));Text("Our code always works too. The app locks every time you leave.").font(.caption).foregroundColor(Palette.muted)}}
             Section("Our favorite dates"){Label("Asnat · August 5",systemImage:"gift");Label("Youssef · January 25",systemImage:"gift")}
             Section("Saved changes"){
                 if universe.pending.isEmpty{Text("Everything is saved on this phone.").foregroundColor(Palette.muted)}
@@ -22,8 +23,8 @@ struct SettingsView:View {
                     }
                 }}
             }
-            Section{Button("Refresh our universe"){Task{await universe.refresh()}};Button("Reconnect with our code"){reconnect=true};Button("Switch profile"){universe.choose("");dismiss()};Button("Lock our little door",role:.destructive){universe.lock();dismiss()}}
-            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.2.3 · made for us ♡").font(.caption)}
+            Section{Button("Refresh our universe"){Task{await universe.forceRefresh()}};Button("Reconnect with our code"){dismiss();universe.requireCode()};Button("Switch profile"){universe.choose("");dismiss()};Button("Lock our little door",role:.destructive){universe.lock();dismiss()}}
+            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.2.5 · made for us ♡").font(.caption)}
         }.navigationTitle("Our little settings").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}
             .alert("Reconnect",isPresented:$reconnect){SecureField("Our code",text:$code);Button("Open"){Task{await universe.login(code);code=""}};Button("Cancel",role:.cancel){code=""}}
         }

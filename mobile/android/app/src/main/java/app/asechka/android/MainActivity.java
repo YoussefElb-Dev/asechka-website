@@ -50,6 +50,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           main.post(
               () -> {
                 if (homeExtras != null) homeExtras.update();
+                if (appUnlocked) updateConnection("");
               });
         });
   }
@@ -72,6 +73,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private long quoteDue;
   private int screen, memoryTab, filter, epoch, pending, quoteIndex, localHearts, hintIndex;
   private boolean started, refreshing, mutating, quotePaused, choosingProfile;
+  // UI access lasts for this foreground visit only; encrypted sync credentials stay intact.
+  private boolean appUnlocked;
+  private boolean refreshAgain;
+  private long accessEpoch;
+  private CodePad loginPad;
+  private Dialog entryGate;
+  private BiometricDoor biometrics;
   private int navigationInset;
   private volatile boolean prefetching;
   private String connectionMessage = "Opening our little universe…";
@@ -98,7 +106,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private final Runnable poll =
       new Runnable() {
         public void run() {
-          if (started && api.canOpen() && !mutating) refresh(false);
+          if (started && appUnlocked && api.canOpen() && !mutating) refresh(false);
           main.postDelayed(this, REFRESH_INTERVAL);
         }
       };
@@ -106,7 +114,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private final Runnable heartPoll =
       new Runnable() {
         public void run() {
-          if (started && api.canOpen() && api.connected() && !heartRefreshing) {
+          if (started && appUnlocked && api.canOpen() && api.connected() && !heartRefreshing) {
             heartRefreshing = true;
             work.execute(
                 () -> {
@@ -128,7 +136,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private final Runnable clock =
       new Runnable() {
         public void run() {
-          if (started) {
+          if (started && appUnlocked) {
             updateTimer();
             if ((screen == 0 || screen == 5)
                 && !quotePaused
@@ -147,6 +155,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     super.onCreate(state);
     u = new Ui(this);
     api = new ApiClient(this);
+    biometrics = new BiometricDoor(this, api.store);
     images = new Images(api);
     book = new BookViews(this, api, images, work, this::compressPhoto);
     if (state != null) {
@@ -178,7 +187,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))
               main.post(
                   () -> {
-                    if (started && api.canOpen()) refresh(false);
+                    if (started && appUnlocked && api.canOpen()) refresh(false);
                   });
           }
         };
@@ -197,14 +206,25 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   protected void onResume() {
     super.onResume();
     started = true;
+    if (root != null && !appUnlocked) showEntryGate();
+    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+    if (entryGate != null) entryGate.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
     quoteDue = android.os.SystemClock.uptimeMillis() + 8000;
     if (root != null) root.invalidate();
-    if (api != null && api.canOpen() && root != null) refresh(false);
+    if (appUnlocked && api != null && api.canOpen() && root != null) refresh(false);
   }
 
   @Override
   protected void onPause() {
     started = false;
+    accessEpoch++;
+    appUnlocked = false;
+    if (biometrics != null) biometrics.cancel();
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+    if (heartRain != null) heartRain.stop();
+    if (root != null && !isFinishing()) showEntryGate();
+    if (loginPad != null) loginPad.clear();
+    if (entryGate != null) entryGate.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
     if (api != null && api.canOpen()) flushHearts.run();
     persistWords();
     super.onPause();
@@ -212,6 +232,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   @Override
   protected void onDestroy() {
+    accessEpoch++;
+    if (entryGate != null) {
+      entryGate.dismiss();
+      entryGate = null;
+    }
     if (networkCallback != null)
       ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE))
           .unregisterNetworkCallback(networkCallback);
@@ -240,6 +265,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   public void onConfigurationChanged(Configuration config) {
     super.onConfigurationChanged(config);
     u = new Ui(this);
+    if (entryGate != null) return;
     if (activeDialog == null) {
       if (choosingProfile) showIdentity();
       else if (root != null) {
@@ -252,6 +278,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   @Override
   public void onBackPressed() {
+    if (!appUnlocked && !choosingProfile) {
+      moveTaskToBack(true);
+      return;
+    }
     if (choosingProfile && hasProfile()) {
       openStart();
       return;
@@ -335,7 +365,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private void openStart() {
     choosingProfile = false;
     applyProfile();
-    if (api.canOpen()) {
+    if (appUnlocked && api.canOpen()) {
       restoreSaved();
       showShell();
       refresh(true);
@@ -416,91 +446,130 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void showLogin() {
+    accessEpoch++;
+    appUnlocked = false;
+    if (entryGate != null) {
+      entryGate.dismiss();
+      entryGate = null;
+    }
     if (activeDialog != null) {
       activeDialog.dismiss();
       activeDialog = null;
     }
     choosingProfile = false;
     root = null;
+    loginPad = new CodePad(this, person());
+    offerBiometrics(loginPad);
+    loginPad.onSubmit(() -> authenticate(loginPad));
     LinearLayout outer = u.column();
-    LinearLayout body = u.column();
-    body.setPadding(u.dp(28), u.dp(40), u.dp(28), u.dp(32));
-    body.setGravity(Gravity.CENTER_VERTICAL);
-    Ui.Icon star = new Ui.Icon(this, 6, Ui.PURPLE);
-    star.setBackground(u.shape(Ui.PALE, 24));
-    star.setPadding(u.dp(16), u.dp(16), u.dp(16), u.dp(16));
-    body.addView(star, new LinearLayout.LayoutParams(u.dp(62), u.dp(62)));
-    u.add(body, u.label("OUR LITTLE UNIVERSE"), 28);
-    u.add(body, u.title("A little door,\njust for you.", 34), 12);
-    u.add(
-        body,
-        u.text(
-            "A small space for our favorite person,\nand everything we want to keep.",
-            16,
-            Ui.MUTED),
-        12);
-    LinearLayout card = u.card(body, android.graphics.Color.WHITE);
-    u.add(card, u.label("OUR LITTLE CODE"), 0);
-    EditText password = u.input("Enter our code", "", 160, false);
-    password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-    password.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
-    if (Build.VERSION.SDK_INT >= 26) password.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
-    u.add(card, password, 14);
-    CheckBox show = new CheckBox(this);
-    show.setText("Show code");
-    show.setTextColor(Ui.MUTED);
-    show.setOnCheckedChangeListener(
-        (b, checked) -> {
-          password.setTransformationMethod(
-              checked ? null : android.text.method.PasswordTransformationMethod.getInstance());
-          password.setSelection(password.length());
-        });
-    u.add(card, show, 4);
-    TextView status = u.text("", 13, Ui.MUTED);
-    status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-    Button unlock = u.button("Open our little door  →", true, null);
-    u.add(card, unlock, 12);
-    u.add(card, status, 10);
-    Runnable login =
-        () -> {
-          if (password.length() == 0) {
-            status.setText("Enter our little code first.");
-            return;
-          }
-          hideKeyboard();
-          unlock.setEnabled(false);
-          status.setText("Opening our little door…");
-          String code = password.getText().toString();
-          request(
-              () -> api.login(code),
-              data -> {
-                password.setText("");
-                screen = 0;
-                restoreSaved();
-                showShell();
-                SyncJob.schedule(this);
-                toast("Welcome home, " + person() + " ♡");
-                refresh(true);
-              },
-              error -> {
-                unlock.setEnabled(true);
-                status.setText(message(error));
-              });
-        };
-    unlock.setOnClickListener(v -> login.run());
-    password.setOnEditorActionListener(
-        (v, id, event) -> {
-          if (id == android.view.inputmethod.EditorInfo.IME_ACTION_GO) {
-            login.run();
+    outer.addView(loginPad, new LinearLayout.LayoutParams(-1, -1));
+    mount(outer);
+  }
+
+  private void showEntryGate() {
+    if (entryGate != null || isFinishing() || isDestroyed()) return;
+    loginPad = new CodePad(this, person());
+    CodePad pad = loginPad;
+    offerBiometrics(pad);
+    pad.onSubmit(() -> authenticate(pad));
+    Dialog gate = new Dialog(this, android.R.style.Theme_Material_Light_NoActionBar);
+    gate.setCancelable(false);
+    gate.setCanceledOnTouchOutside(false);
+    gate.setContentView(pad);
+    gate.setOnKeyListener(
+        (dialog, key, event) -> {
+          if (key == KeyEvent.KEYCODE_BACK) {
+            if (event.getAction() == KeyEvent.ACTION_UP) moveTaskToBack(true);
             return true;
           }
           return false;
         });
-    u.add(body, u.text("С возвращением, Асечка ♡", 15, Ui.PURPLE), 26);
-    u.add(body, u.text("Made with a whole lot of love. Only for you.", 12, Ui.MUTED), 8);
-    ScrollView loginScroll = u.scroll(body);
-    outer.addView(loginScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-    mount(outer);
+    entryGate = gate;
+    gate.show();
+    Window window = gate.getWindow();
+    window.setLayout(-1, -1);
+    window.setStatusBarColor(Ui.BG);
+    window.setNavigationBarColor(Build.VERSION.SDK_INT < 26 ? Ui.INK : Ui.BG);
+    window
+        .getDecorView()
+        .setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+    window.setSoftInputMode(
+        WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+            | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    Motion.install(pad);
+  }
+
+  private void authenticate(CodePad pad) {
+    String code = pad.password.getText().toString();
+    if (code.isEmpty()) {
+      pad.error("Enter our little code first.");
+      return;
+    }
+    final long visit = accessEpoch;
+    pad.busy(true);
+    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+        .hideSoftInputFromWindow(pad.password.getWindowToken(), 0);
+    request(
+        () -> api.login(code),
+        data -> {
+          // A response arriving after Home was pressed cannot reopen the private screen.
+          if (visit != accessEpoch || !started || pad != loginPad) return;
+          openDoor(pad);
+        },
+        error -> {
+          if (visit == accessEpoch && started && pad == loginPad)
+            pad.error(
+                error instanceof ApiClient.ApiError && ((ApiClient.ApiError) error).status == 401
+                    ? "That code needs another little try. ♡"
+                    : message(error));
+        });
+  }
+
+  private void openDoor(CodePad pad) {
+    appUnlocked = true;
+    pad.clear();
+    loginPad = null;
+    Motion.haptic(pad, true);
+    if (entryGate != null) {
+      entryGate.dismiss();
+      entryGate = null;
+    } else {
+      restoreSaved();
+      showShell();
+      SyncJob.schedule(this);
+    }
+    refresh(false);
+  }
+
+  private void offerBiometrics(CodePad pad) {
+    if (biometrics == null
+        || !biometrics.enabled()
+        || !biometrics.available()
+        || !api.store.hasContent()) return;
+    pad.biometric(
+        () -> {
+          final long visit = accessEpoch;
+      pad.busy(true);
+          biometrics.authenticate(
+              false,
+              (success, message) -> {
+                if (visit != accessEpoch || !started || pad != loginPad) return;
+                if (!success) {
+                  pad.error(message);
+                  return;
+                }
+                request(
+                    () -> {
+                      api.store.unlock();
+                      return new JSONObject();
+                    },
+                    value -> {
+                      if (visit == accessEpoch && started && pad == loginPad) openDoor(pad);
+                    },
+                    error -> pad.error(message(error)));
+              });
+        });
   }
 
   private void showShell() {
@@ -524,7 +593,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         v -> {
           if (motion())
             refresh.animate().rotationBy(360).setDuration(650).setInterpolator(Motion.EASE).start();
-          refresh(true);
+          connectionMenu();
         });
     refresh.setTextSize(24);
     refresh.setPadding(0, 0, 0, 0);
@@ -546,7 +615,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     if (shortScreen) notice.setVisibility(View.GONE);
     notice.setPadding(u.dp(24), u.dp(2), u.dp(24), u.dp(9));
     notice.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-    notice.setOnClickListener(v -> showOutbox());
+    notice.setOnClickListener(v -> connectionMenu());
     root.addView(notice);
     content = u.column();
     content.setPadding(u.dp(22), u.dp(12), u.dp(22), u.dp(26));
@@ -569,6 +638,27 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void settings(View anchor) {
     Ui.Sheet sheet = u.sheet("Our little settings", person() + " · a space made for the two of us");
+    if (biometrics.available())
+      sheet.item(
+          biometrics.enabled() ? "Turn off biometric unlock" : "Enable biometric unlock",
+          "Fingerprint or supported face unlock · our code always works",
+          "♡",
+          false,
+          () -> {
+            if (biometrics.enabled()) {
+              biometrics.disable();
+              toast("Biometric unlock turned off.");
+            } else
+              biometrics.authenticate(
+                  true,
+                  (success, message) -> toast(success ? "Biometric unlock is ready. ♡" : message));
+          });
+    sheet.item(
+        "Refresh & reconnect",
+        "Refresh now, retry saves, or enter our code again",
+        "↻",
+        false,
+        this::connectionMenu);
     sheet.item(
         "Saved changes · " + api.store.pending(),
         "See what’s waiting to sync",
@@ -622,6 +712,35 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                 .setNegativeButton("Keep it open", null)
                 .setPositiveButton("Lock", (d, w) -> signOut())
                 .show());
+    track(sheet);
+    sheet.show();
+  }
+
+  private void connectionMenu() {
+    Ui.Sheet sheet = u.sheet("Our connection", connectionMessage);
+    sheet.item(
+        "Refresh now",
+        "Get the latest photos, quotes, hearts and shared days",
+        "↻",
+        false,
+        () -> {
+          api.retryNow();
+          refresh(true);
+        });
+    sheet.item(
+        "Reconnect & retry",
+        "Enter our code again and retry saved hearts automatically",
+        "♡",
+        false,
+        () -> {
+          accessEpoch++;
+          appUnlocked = false;
+          api.retryNow();
+          if (heartRain != null) heartRain.stop();
+          showEntryGate();
+        });
+    sheet.item(
+        "Saved changes", "See anything still waiting on this phone", "↓", false, this::showOutbox);
     track(sheet);
     sheet.show();
   }
@@ -695,14 +814,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       tab.setBackground(
           new android.graphics.drawable.RippleDrawable(
               android.content.res.ColorStateList.valueOf(0x226b5cb5),
-              null,
-              u.shape(Color.WHITE, 16)));
+              u.shape(selected ? Ui.PALE : Color.WHITE, 20),
+              u.shape(Color.WHITE, 20)));
       FrameLayout iconFrame = new FrameLayout(this);
-      iconFrame.setBackground(u.shape(selected ? Ui.PALE : Color.TRANSPARENT, 18));
+      iconFrame.setBackground(u.shape(selected ? Ui.PRIMARY : Color.TRANSPARENT, 17));
       FrameLayout.LayoutParams iconParams =
           new FrameLayout.LayoutParams(u.dp(23), u.dp(23), Gravity.CENTER);
-      iconFrame.addView(new Ui.Icon(this, i, selected ? Ui.PRIMARY : Ui.MUTED), iconParams);
-      tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(42), u.dp(30)));
+      iconFrame.addView(new Ui.Icon(this, i, selected ? Color.WHITE : Ui.MUTED), iconParams);
+      tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(46), u.dp(34)));
       if (selected && motion()) {
         iconFrame.setScaleX(.8f);
         iconFrame.setScaleY(.8f);
@@ -724,7 +843,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       label.setGravity(Gravity.CENTER);
       Compat.font(label, R.font.dm_sans, selected ? 700 : 500);
       u.add(tab, label, 3);
-      tab.setMinimumHeight(u.dp(compact() ? 48 : 56));
+      tab.setMinimumHeight(u.dp(compact() ? 48 : 60));
       tab.setOnClickListener(v -> select(target));
       bottom.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
     }
@@ -774,11 +893,17 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private View feedHeader() {
     boolean home = screen == 0 && !savedPosts;
     LinearLayout header = u.column();
-    header.setPadding(0, u.dp(8), 0, u.dp(12));
+    header.setPadding(0, u.dp(10), 0, u.dp(12));
+    header.setClipChildren(false);
+    header.setClipToPadding(false);
     HorizontalScrollView stories = new HorizontalScrollView(this);
     stories.setHorizontalScrollBarEnabled(false);
+    stories.setClipChildren(false);
+    stories.setClipToPadding(false);
     LinearLayout row = u.row(14);
-    row.setPadding(u.dp(16), u.dp(2), u.dp(16), u.dp(home ? 8 : 14));
+    row.setPadding(u.dp(16), u.dp(7), u.dp(16), u.dp(home ? 8 : 14));
+    row.setClipChildren(false);
+    row.setClipToPadding(false);
     String[] titles = {"Create", "Our corner", "Our days", "Music", "Saved"};
     String[] symbols = {"＋", "♡", "✦", "♫", "☆"};
     for (int i = 0; i < titles.length; i++) {
@@ -1276,7 +1401,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void refresh(boolean manual) {
-    if (refreshing || mutating || !api.canOpen()) return;
+    if (!appUnlocked || !api.canOpen()) return;
+    if (refreshing || mutating) {
+      if (manual) refreshAgain = true;
+      return;
+    }
+    refreshAgain = false;
     refreshing = true;
     String before = visibleData();
     if (manual && notice != null) notice.setText("Saving the latest content on your phone…");
@@ -1308,6 +1438,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           if (result.has("/api/together")) together = result.optJSONObject("/api/together");
           if (result.has("/api/daily-memory")) daily = result.optJSONObject("/api/daily-memory");
           if (activeConversationRefresh != null) activeConversationRefresh.run();
+          if (homeExtras != null) homeExtras.update();
           updateConnection(result.optString("error", ""));
           String after = visibleData();
           if (root != null && activeDialog == null && screen != 4 && !before.equals(after))
@@ -1328,10 +1459,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                       });
                 });
           }
+          if (refreshAgain && appUnlocked) refresh(true);
         },
         error -> {
           refreshing = false;
           updateConnection(message(error));
+          if (refreshAgain && appUnlocked) refresh(true);
         });
   }
 
@@ -1340,6 +1473,18 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     for (JSONObject item : new JSONObject[] {memories, music, together, daily}) {
       if (item == null) continue;
       JSONObject copy = OfflineStore.copy(item);
+      // Heart counters update their small Home card; they do not rebuild the photo feed.
+      if (item == together)
+        for (String key :
+            new String[] {
+              "heartDays",
+              "hearts",
+              "heartReceipts",
+              "heartReceipt",
+              "heartStreak",
+              "streakStatus",
+              "updatedAt"
+            }) copy.remove(key);
       for (String key : new String[] {"_savedAt", "_offline", "_needsSignIn", "_pending"})
         copy.remove(key);
       value.append(OfflineStore.canonical(copy));
