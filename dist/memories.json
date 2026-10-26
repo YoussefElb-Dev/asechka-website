@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T17:34:33.891Z",
+  "updatedAt": "2026-10-26T05:28:16.405Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -82,7 +82,19 @@
     {
       "id": "521b126b-b1fe-4720-84d3-411ef4eafd2a",
       "text": "If the universe gave me the chance to relive every moment of my existence, I would change nothing, for every road I walked, every mistake I made, and every heartbreak I endured eventually led me to you. And I would go through it all a thousand times just to find you again.",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "47d1c1f5-cc55-43a3-8248-3f56dc417bc3",
+            "hash": "7b7f11f0fe36e24ad664b6beb6a6ef99948e582b4ae83e453bb891ac50d9f6e1"
+          }
+        ]
+      }
     },
     {
       "id": "dc9353b2-3909-4366-9f0d-08ee503b44ca",
