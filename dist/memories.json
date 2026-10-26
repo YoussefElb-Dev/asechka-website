@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:44:06.255Z",
+  "updatedAt": "2026-10-26T18:16:11.296Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -374,13 +374,18 @@
       "text": "If I could gather every beautiful moment life has yet to offer and place them all before me, I would still choose the quietest moment spent beside you. For happiness was never about having the whole world at my feet, but about finding someone whose hand makes even the smallest corner of it feel like paradise.",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "f13143c3-6a12-424d-8e8a-6cc93bee5e51",
             "hash": "5119257450cf6e5b83c756c677833db25bd4ac7d5cbdbda91835b6ce7cebf3a9"
+          },
+          {
+            "id": "ecd40c13-076d-43ee-8e83-714f06296e5c",
+            "hash": "5fe332aeb6e060148f3cfd7aed78ed6ecfb2e73450f66d7d4e9ae63e661fdee7"
           }
         ]
       }
