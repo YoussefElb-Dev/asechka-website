@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:18.594Z",
+  "updatedAt": "2026-10-26T05:28:20.986Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -72,7 +72,19 @@
       "id": "017269be-6ce5-4107-8139-81b21c761f7a",
       "text": "If every drop of water in every sea represented a lifetime of loving you, even all the oceans on Earth would not be enough. And if the seas were to dry and the last wave were to kiss the shore, my love would remain, because even the deepest ocean has a bottom, but my love for you knows no end.",
       "date": "2026-10-13",
-      "note": "Forever and ever يا حياتي"
+      "note": "Forever and ever يا حياتي",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "5cbcdbd9-9b50-45f5-b9f7-943918b118d5",
+            "hash": "016493849163f92bf981cf8c843d1c117ee6d70f35b606b31003a5355c4476ac"
+          }
+        ]
+      }
     },
     {
       "id": "341c9a3f-d144-468f-aded-f8411f12586f",
