@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T18:16:11.296Z",
+  "updatedAt": "2026-10-26T18:16:13.792Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -395,7 +395,19 @@
       "date": "2026-10-25",
       "createdAt": "2026-10-26T05:30:01.811Z",
       "author": "youssef",
-      "text": "If I could borrow a moment from eternity, I would spend it looking into your eyes, hoping to understand how one person could hold so much beauty within a single soul. And if the heavens ever asked me what love looked like, I would simply whisper your name, for even the greatest poets could never find words worthy of describing what my heart feels for you."
+      "text": "If I could borrow a moment from eternity, I would spend it looking into your eyes, hoping to understand how one person could hold so much beauty within a single soul. And if the heavens ever asked me what love looked like, I would simply whisper your name, for even the greatest poets could never find words worthy of describing what my heart feels for you.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0dba9ed0-06f1-4bfe-b199-9f43abf2d174",
+            "hash": "b8e1e05cc15cddee0d594e1dce535d8719e6a2b6b15c31b15e936bde07c0b4f5"
+          }
+        ]
+      }
     }
   ],
   "photos": [
