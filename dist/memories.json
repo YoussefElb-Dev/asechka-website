@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:30:01.811Z",
+  "updatedAt": "2026-10-26T05:44:01.969Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -15,7 +15,19 @@
     {
       "id": "fbae14e5-f0cf-41db-b5da-8edb94406cad",
       "text": "Diamonds may be the rarest gems, and gold may be the most precious treasure, but no jewel in this world could ever shine as brightly or be worth as much as you are to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "89d973fa-746c-4710-b430-1e9dd4aa4975",
+            "hash": "e9689a2e4ea14d4d1f3066c85bf1ffcca60741724b5eef12cefcf5d7ef518861"
+          }
+        ]
+      }
     },
     {
       "id": "57367682-8d4f-40e5-8c67-70407c6a9280",
