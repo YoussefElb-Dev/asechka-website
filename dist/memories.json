@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:28:32.244Z",
+  "updatedAt": "2026-10-26T05:28:34.295Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -40,7 +40,19 @@
     {
       "id": "4b0eab1e-d43f-487a-adff-57e3ad5201e5",
       "text": "You’re the air that fills my lungs, the water that keeps me alive, and the food that gives me strength. You’re not just a part of my life, you’re what makes it worth living.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "828f2595-0830-4d0a-a18e-4e2365beb9b3",
+            "hash": "cac2ea1baa91b3d1f67717d1566a84d4c34cd8a9209350753e52373a9152ad3e"
+          }
+        ]
+      }
     },
     {
       "id": "6d2cf445-6cc6-44ea-88be-277ed346c2af",
