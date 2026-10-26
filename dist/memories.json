@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:44:01.969Z",
+  "updatedAt": "2026-10-26T05:44:04.000Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -10,7 +10,19 @@
     {
       "id": "89daf40d-4ac0-47ab-b823-562b1f5e3038",
       "text": "Even if I traveled across every galaxy and counted every star in the universe, I’d still never find anything as beautiful as you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "74e10fe1-0212-41ad-874f-d65d9ac6e1b6",
+            "hash": "620ecc4f726e7599f3ff5c17b5b3ebf886ad31b3fb4ee148db1d1eeaf9fb84fa"
+          }
+        ]
+      }
     },
     {
       "id": "fbae14e5-f0cf-41db-b5da-8edb94406cad",
