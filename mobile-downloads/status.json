@@ -1,13 +1,13 @@
 {
-  "source": "768522962ac5668f2827e7c543d50ab827c095bf",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40244162099",
+  "source": "1a663dfa57d15e29afbe91aad50eb52e5cd69ab9",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40275845919",
   "backend": "success",
-  "android": "success",
-  "iphone": "success",
+  "android": "cancelled",
+  "iphone": "cancelled",
   "jobs": [
     {
       "name": "iPhone IPA for sideloading",
-      "conclusion": "success",
+      "conclusion": "cancelled",
       "steps": [
         {
           "name": "Set up job",
@@ -27,7 +27,7 @@
         },
         {
           "name": "Test native screens, offline posts, and encrypted storage",
-          "conclusion": "success"
+          "conclusion": "cancelled"
         },
         {
           "name": "Capture native iPhone preview",
@@ -39,77 +39,19 @@
         },
         {
           "name": "Build the iPhone app",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Run actions/upload-artifact@v4",
           "conclusion": "skipped"
         },
         {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
-    },
-    {
-      "name": "Android APK",
-      "conclusion": "success",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/setup-java@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run android-actions/setup-android@v3",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run sdkmanager 'platforms;android-36' 'build-tools;36.0.0'",
-          "conclusion": "success"
-        },
-        {
-          "name": "Restore the existing Android signing identity",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build an APK with Android 6 and newer compatibility",
-          "conclusion": "success"
-        },
-        {
-          "name": "Package Android download",
-          "conclusion": "success"
-        },
-        {
           "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Remove temporary signing material",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/setup-java@v4",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Post Run actions/checkout@v4",
@@ -158,16 +100,65 @@
           "conclusion": "success"
         }
       ]
+    },
+    {
+      "name": "Android APK",
+      "conclusion": "cancelled",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-java@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run android-actions/setup-android@v3",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run sdkmanager 'platforms;android-36' 'build-tools;36.0.0'",
+          "conclusion": "success"
+        },
+        {
+          "name": "Restore the existing Android signing identity",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build an APK with Android 6 and newer compatibility",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Package Android download",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Remove temporary signing material",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-java@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
     }
   ],
-  "files": {
-    "Asechka-iPhone.ipa": {
-      "bytes": 9407087,
-      "sha256": "9c80662cde0eac4c69560bcd2ced73e7dc3bad61e38e8e54f6bccc392cbc8d7d"
-    },
-    "Asechka-Android.apk": {
-      "bytes": 7774659,
-      "sha256": "fd80b72f3970a559a4d10ce704db25b9637d92c47fe1340d65a14f0a70d54395"
-    }
-  }
+  "files": {}
 }
