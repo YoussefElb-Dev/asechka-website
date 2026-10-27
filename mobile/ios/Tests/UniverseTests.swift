@@ -38,6 +38,15 @@ final class UniverseTests:XCTestCase {
         XCTAssertEqual(saved.asnat,128);XCTAssertEqual(saved.youssef,116)
         XCTAssertEqual(saved.ledger,store.heartDays)
     }
+    func testSideloadedWidgetFindsOnlyItsProvisionedSharedGroup()throws {
+        let profile:[String:Any] = ["Entitlements":["com.apple.security.application-groups":["group.TEAM.app.asechka.shared","group.unrelated.other","group.TEAM.app.asechka.shared"]]]
+        let plist=try PropertyListSerialization.data(fromPropertyList:profile,format:.xml,options:0)
+        let signedProfile=Data([48,130,1,0])+plist+Data([0,1,2])
+        XCTAssertEqual(WidgetSnapshot.provisionedGroups(in:signedProfile),["group.TEAM.app.asechka.shared"])
+        XCTAssertEqual(WidgetSnapshot.provisionedGroups(in:Data("not a profile".utf8)),[])
+        let binary=try PropertyListSerialization.data(fromPropertyList:profile,format:.binary,options:0)
+        XCTAssertEqual(WidgetSnapshot.provisionedGroups(in:binary),["group.TEAM.app.asechka.shared"])
+    }
     @MainActor func testMessagesAreLimitedDurableAndCloseOnlyOnce()throws {
         let store=UniverseStore(previewFixture:true)
         for i in 1...3{try store.sendMessage("A little message \(i)")}
