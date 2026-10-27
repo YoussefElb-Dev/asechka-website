@@ -84,10 +84,12 @@ public final class NativeTests extends Instrumentation {
         } else tests();
         result.putString(
             "stream",
-            "PASS: "
-                + assertions
-                + " assertions. Native login, navigation, shared CRUD, conflicts, JPEG upload,"
-                + " music, hearts, translation, copy, zoom, and logout.\n");
+            widgetsOnly
+                ? "PASS: " + assertions + " real widget-host assertions.\n"
+                : "PASS: "
+                    + assertions
+                    + " assertions. Native login, navigation, shared CRUD, conflicts, JPEG upload,"
+                    + " music, hearts, translation, copy, zoom, and logout.\n");
       }
       if (compatOnly)
         result.putString(

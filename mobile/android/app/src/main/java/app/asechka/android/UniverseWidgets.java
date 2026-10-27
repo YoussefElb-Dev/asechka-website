@@ -40,6 +40,7 @@ public class UniverseWidgets extends AppWidgetProvider {
   private static final ExecutorService worker = Executors.newSingleThreadExecutor();
   private static String previous = "";
   private static final AtomicBoolean queued = new AtomicBoolean();
+  private static final AtomicBoolean dirty = new AtomicBoolean();
 
   @Override
   public void onUpdate(Context c, AppWidgetManager manager, int[] ids) {
@@ -78,15 +79,18 @@ public class UniverseWidgets extends AppWidgetProvider {
 
   static void updateAll(Context context) {
     Context c = context.getApplicationContext();
+    dirty.set(true);
     if (!queued.compareAndSet(false, true)) return;
     worker.execute(
         () -> {
+          dirty.set(false);
           try {
             render(c);
           } catch (Exception e) {
             android.util.Log.w("AsechkaWidget", "Widget snapshot unavailable");
           } finally {
             queued.set(false);
+            if (dirty.get()) updateAll(c);
           }
         });
   }
