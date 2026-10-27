@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-27T05:06:57.475Z",
+  "updatedAt": "2026-10-27T19:22:37.780Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -751,21 +751,27 @@
       "createdAt": "2026-10-27T05:06:27.208Z",
       "author": "youssef",
       "src": "assets/photos/2026/10/dc791492-286a-4017-85fe-dc9077da4070.jpg",
-      "caption": "My bby and only mind 🥺",
-      "alt": "My bby and only mind 🥺",
+      "caption": "My bby and only mine 🥺",
+      "alt": "My bby and only mine 🥺",
       "contentHash": "40026b3c7ffe82d28a68f8aecf6c3b6a5b13f8044407b1f5b581ce1f8806c30a",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "a18346ed-8a34-433e-8942-c78694eb7f41",
             "hash": "53636343e762b9c157e754fed7d1b096e2fe82ce6ee81715b778d1a58d099aed"
+          },
+          {
+            "id": "f399c939-590c-4683-a82b-4cc76ae60845",
+            "hash": "0640c7fc66de330d8936de450e425497a798532232ded30bf0bfb59526c27842"
           }
         ]
-      }
+      },
+      "revision": "f9d83f3e-9ad9-45e5-b176-a6cef1abca62"
     },
     {
       "id": "94660cfb-95bc-4fb9-8e31-15e0c67ad5a3",
@@ -778,13 +784,18 @@
       "contentHash": "bd0b6b79012e200e8d7939a1274c41630d8eacdfd831e1d0ca54318390fb4748",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "d5cb54eb-8ec5-4e25-8b2b-c41b3d8d8fb6",
             "hash": "280d3a8dc69a444ee55fa98f288ed1b0a6106ae45cbfb1e04ec24398e9569043"
+          },
+          {
+            "id": "7e74065f-b240-4a03-98a7-ec9a14198e6d",
+            "hash": "0fe2dd472d3a949580aa1af47384d11441295acfd274298e88b4419afd4417ae"
           }
         ]
       }
