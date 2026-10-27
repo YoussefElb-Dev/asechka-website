@@ -1,0 +1,66 @@
+{
+  "tool": "Built-in imagegen",
+  "style": "Soft Orbit · Asechka",
+  "assets": [
+    {
+      "name": "little-message",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A pearl-white open love-letter envelope, softly folded lilac paper emerging, tiny rounded lavender wax seal embossed with a simple heart. Two tiny powder-blue sparkles beside the envelope. This replaces a crude standalone heart at the top center of a message popup. The envelope must be unmistakable.",
+      "file": "little-message.png"
+    },
+    {
+      "name": "send-love",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A single plump lavender heart nested inside one delicate powder-blue orbital ribbon, one tiny soft rose spark. Friendly balanced silhouette, suitable for the send-heart action.",
+      "file": "send-love.png"
+    },
+    {
+      "name": "photo-moments",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A small elegant stack of two rounded pearl-white instant photographs tilted gently in opposite directions, the front photo shows a miniature lavender mountain and powder-blue moon, no text on the photograph.",
+      "file": "photo-moments.png"
+    },
+    {
+      "name": "quote-words",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. Two chunky rounded lavender quotation marks resting on a small curled pearl paper slip, tiny pale-blue orbital dot, compact readable silhouette.",
+      "file": "quote-words.png"
+    },
+    {
+      "name": "our-home",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A small pearl ceramic rounded house with a lilac heart-shaped window and soft powder-blue roof, one tiny star hovering beside it.",
+      "file": "our-home.png"
+    },
+    {
+      "name": "our-music",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A small pearl-white and lavender vinyl record with a gracefully curved music note, one powder-blue orbital dot, readable compact icon.",
+      "file": "our-music.png"
+    },
+    {
+      "name": "our-time",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. An elegant pearl and lavender miniature hourglass with powder-blue translucent glass, tiny rounded lavender grains, soft orbital arc behind it.",
+      "file": "our-time.png"
+    },
+    {
+      "name": "secret-words",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A small open pearl-white book with thick rounded pages and a lavender ribbon bookmark, one soft blue speech bubble floating above, no writing or letters.",
+      "file": "secret-words.png"
+    },
+    {
+      "name": "shared-streak",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A small graceful lavender flame made of two curved petals, a tiny pearl heart at its center, two tiny pale-blue sparks. A warm daily streak emblem without orange or red.",
+      "file": "shared-streak.png"
+    },
+    {
+      "name": "kept-close",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A folded pearl-white ribbon bookmark wrapped by a gentle lavender orbit, a tiny heart on the folded corner. Simple premium saved-moments illustration.",
+      "file": "kept-close.png"
+    },
+    {
+      "name": "little-victories",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A tiny pearl trophy cup with lavender curved handles and a powder-blue star above, rounded tactile matte clay-paper finish, compact balanced silhouette.",
+      "file": "little-victories.png"
+    },
+    {
+      "name": "widget-orbit",
+      "prompt": "Use case: stylized-concept. Production raster asset for Asechka, a private romantic native phone app, Soft Orbit theme. Single isolated centered object on a genuinely transparent background. Sophisticated tiny clay-and-paper illustration with tactile matte surfaces, delicate debossed curves, extremely soft ambient shadow limited to object, gentle dimensionality, premium editorial app art, readable at small size. Colors strictly dusty lavender #6B5CB5, pale lilac #EEEBF8, powder blue #EAF1FC, pearl white, a tiny muted rose accent. Charming but restrained, no glossy plastic, no neon, no dark background, no border, no text, no letters, no watermark, no UI mockup. Generous transparent padding; object occupies 75% of square canvas. A premium wide ambient abstract texture for widget cards: extremely pale lilac and powder-blue softly folded paper, barely visible orbital arcs and a single subtle white pearlescent sphere confined to the extreme bottom right. No center subject. Large empty calm center suitable for dark text. Edge-to-edge opaque square background. Very low contrast, no text, no speckles or noisy texture.",
+      "file": "widget-orbit.png"
+    }
+  ]
+}

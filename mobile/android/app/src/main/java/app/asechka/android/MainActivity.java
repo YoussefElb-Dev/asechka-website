@@ -915,8 +915,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       FrameLayout iconFrame = new FrameLayout(this);
       iconFrame.setBackground(u.shape(selected ? Ui.PRIMARY : Color.TRANSPARENT, 17));
       FrameLayout.LayoutParams iconParams =
-          new FrameLayout.LayoutParams(u.dp(23), u.dp(23), Gravity.CENTER);
-      iconFrame.addView(new Ui.Icon(this, i, selected ? Color.WHITE : Ui.MUTED), iconParams);
+          new FrameLayout.LayoutParams(u.dp(32), u.dp(32), Gravity.CENTER);
+      iconFrame.addView(Artwork.view(this, Artwork.section(i)), iconParams);
       tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(46), u.dp(34)));
       if (selected && motion()) {
         iconFrame.setScaleX(.8f);
@@ -1007,8 +1007,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       final int action = i;
       LinearLayout story = u.column();
       story.setGravity(Gravity.CENTER);
-      TextView circle = u.text(symbols[i], 27, Ui.PURPLE);
-      circle.setGravity(Gravity.CENTER);
+      ImageView circle = Artwork.view(this, Artwork.story(i));
+      circle.setPadding(u.dp(7), u.dp(7), u.dp(7), u.dp(7));
       circle.setBackground(
           new android.graphics.drawable.GradientDrawable(
               android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
@@ -1021,7 +1021,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       TextView label = u.text(titles[i], 11, Ui.INK);
       label.setGravity(Gravity.CENTER);
       if (home) {
-        label.setText(symbols[i] + "  " + titles[i]);
+        label.setText(titles[i]);
+        label.setCompoundDrawablesRelative(
+            Artwork.drawable(this, Artwork.story(i), 24), null, null, null);
+        label.setCompoundDrawablePadding(u.dp(3));
         label.setTextSize(13);
         label.setMinHeight(u.dp(44));
         label.setPadding(u.dp(6), 0, u.dp(6), 0);

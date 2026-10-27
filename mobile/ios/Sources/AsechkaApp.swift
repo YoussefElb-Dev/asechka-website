@@ -103,7 +103,7 @@ struct RootView:View {
                 Text("asechka.").font(.custom("Manrope-Bold",size:25))
                 Spacer()
                 Button{Touch.tap();composer=ComposeRequest(photo:tab != 2)}label:{Image(systemName:"plus.app").font(.system(size:22)).frame(width:44,height:44)}.accessibilityLabel("Create post")
-                Button{Touch.tap();messages=true}label:{Image(systemName:"envelope").font(.system(size:21)).frame(width:44,height:44)}.accessibilityLabel("Messages")
+                Button{Touch.tap();messages=true}label:{Image("little-message").resizable().scaledToFit().frame(width:34,height:34).frame(width:44,height:44)}.accessibilityLabel("Messages")
                 Button{Touch.tap();connection=true}label:{Image(systemName:"arrow.clockwise").font(.system(size:20)).frame(width:44,height:44)}.accessibilityLabel("Refresh and reconnect")
                 Button{Touch.tap();settings=true}label:{Avatar(actor:universe.actor,size:38)}.accessibilityLabel("Profile and settings")
             }.padding(.horizontal,20).padding(.vertical,7)
@@ -120,7 +120,7 @@ struct RootView:View {
             HStack(spacing:0){ForEach(0..<tabs.count,id:\.self){index in
                 Button{Touch.tap();withAnimation(reduced ? nil:.easeInOut(duration:0.22)){tab=index}}label:{
                     VStack(spacing:4){
-                        Image(systemName:tabs[index].0).font(.system(size:21,weight:tab==index ? .semibold:.regular)).foregroundColor(tab==index ? .white:Palette.muted).frame(width:46,height:32)
+                        Image(["our-home","photo-moments","quote-words","our-music","our-time","secret-words"][index]).resizable().scaledToFit().frame(width:32,height:32).frame(width:46,height:32)
                             .background{if tab==index{Capsule().fill(Palette.purple).matchedGeometryEffect(id:"active-tab",in:tabMotion)}}
                         Text(tabs[index].1).font(.system(size:10,weight:tab==index ? .bold:.medium)).lineLimit(1).minimumScaleFactor(0.8)
                     }

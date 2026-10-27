@@ -12,6 +12,7 @@ struct MessageHub:View {
     private var remaining:Int{max(0,3-universe.littleMessages.filter{$0.from==universe.actor && $0.day==HeartLedger.day()}.count)}
     var body:some View {
         NavigationStack{ScrollView{VStack(alignment:.leading,spacing:18){
+            Image("little-message").resizable().scaledToFit().frame(maxWidth:.infinity).frame(height:86).accessibilityHidden(true)
             Label("Just for \(universe.partner)",systemImage:"envelope.badge").font(.custom("Manrope-Bold",size:27))
             Text("\(remaining) of 3 messages left today").font(.subheadline).foregroundColor(Palette.purple)
             Text("A little surprise appears on their screen. Once they close it, only a short note stays in history.").foregroundColor(Palette.muted)
@@ -38,7 +39,7 @@ struct MessageHistory:View {
 struct IncomingMessage:View {
     @EnvironmentObject private var universe:UniverseStore
     let message:LittleMessage
-    var body:some View {ZStack{Color.black.opacity(0.24).ignoresSafeArea();VStack(spacing:18){Image(systemName:"envelope.open.fill").font(.system(size:36)).foregroundColor(Palette.purple);Text("A little message for you").font(.custom("Manrope-Bold",size:25));Text("From \(Post.name(message.from)) · just this once").font(.subheadline).foregroundColor(Palette.muted);ScrollView{Text(message.text ?? "").font(.system(size:21)).lineSpacing(7).frame(maxWidth:.infinity,alignment:.leading).padding(.vertical,12)}.frame(maxHeight:320);Text("Closing keeps only a short note in history. The full message won’t open again.").font(.caption).foregroundColor(Palette.muted);Button{do{try universe.closeMessage(message);Touch.tap(true)}catch{universe.error=error.localizedDescription}}label:{Text("Keep it in my heart ♡").fontWeight(.semibold).frame(maxWidth:.infinity).padding(17).background(Palette.purple,in:Capsule()).foregroundColor(.white)}}.padding(26).background(Palette.background,in:RoundedRectangle(cornerRadius:30)).padding(22).frame(maxWidth:500).shadow(color:.black.opacity(0.1),radius:30)}.tint(Palette.purple)}
+    var body:some View {ZStack{Color.black.opacity(0.24).ignoresSafeArea();VStack(spacing:18){Image("little-message").resizable().scaledToFit().frame(width:112,height:92).accessibilityHidden(true);Text("A little message for you").font(.custom("Manrope-Bold",size:25));Text("From \(Post.name(message.from)) · just this once").font(.subheadline).foregroundColor(Palette.muted);ScrollView{Text(message.text ?? "").font(.system(size:21)).lineSpacing(7).frame(maxWidth:.infinity,alignment:.leading).padding(.vertical,12)}.frame(maxHeight:320);Text("Closing keeps only a short note in history. The full message won’t open again.").font(.caption).foregroundColor(Palette.muted);Button{do{try universe.closeMessage(message);Touch.tap(true)}catch{universe.error=error.localizedDescription}}label:{Text("Keep it in my heart ♡").fontWeight(.semibold).frame(maxWidth:.infinity).padding(17).background(Palette.purple,in:Capsule()).foregroundColor(.white)}}.padding(26).background(Palette.background,in:RoundedRectangle(cornerRadius:30)).padding(22).frame(maxWidth:500).shadow(color:.black.opacity(0.1),radius:30)}.tint(Palette.purple)}
 }
 /// Above sheets and editors, below the optional biometric privacy window.
 struct MessagePopupWindow:UIViewRepresentable {

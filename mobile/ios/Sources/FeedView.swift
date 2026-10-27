@@ -61,9 +61,10 @@ struct FeedView:View {
         }.padding(.top,home ? 10:12).padding(.bottom,home ? 0:8)
     }
     private func story(_ text:String,_ symbol:String,action:@escaping()->Void)->some View {
-        Button{Touch.tap();action()}label:{
-            if home{Label(text,systemImage:symbol).font(.system(size:13,weight:.medium)).padding(.horizontal,6).frame(maxWidth:.infinity,minHeight:44).background(Palette.lavender,in:Capsule())}
-            else{VStack(spacing:8){Image(systemName:symbol).font(.system(size:25,weight:.light)).frame(width:62,height:62).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:70)}
+        let art=symbol=="plus" ? "photo-moments":symbol=="heart" ? "send-love":symbol=="sparkles" ? "shared-streak":symbol=="music.note" ? "our-music":"kept-close"
+        return Button{Touch.tap();action()}label:{
+            if home{HStack(spacing:4){Image(art).resizable().scaledToFit().frame(width:24,height:24);Text(text)}.font(.system(size:13,weight:.medium)).padding(.horizontal,6).frame(maxWidth:.infinity,minHeight:44).background(Palette.lavender,in:Capsule())}
+            else{VStack(spacing:8){Image(art).resizable().scaledToFit().frame(width:45,height:45).frame(width:62,height:62).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:70)}
         }
     }
 }

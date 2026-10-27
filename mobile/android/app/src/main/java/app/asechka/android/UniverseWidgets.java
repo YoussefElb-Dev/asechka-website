@@ -73,7 +73,7 @@ public class UniverseWidgets extends AppWidgetProvider {
   }
 
   static String time(String value) {
-    if(value==null || value.isEmpty() || value.equals("null"))return "No hearts yet";
+    if (value == null || value.isEmpty() || value.equals("null")) return "No hearts yet";
     long instant = Dates.instant(value);
     if (instant <= 0) return "No hearts yet";
     SimpleDateFormat f = new SimpleDateFormat("MMM d · h:mm a", Locale.US);
@@ -122,7 +122,7 @@ public class UniverseWidgets extends AppWidgetProvider {
         keepsakes == null || keepsakes.optJSONObject("since") == null
             ? ""
             : keepsakes.optJSONObject("since").optString("startedAt");
-    long start = since.isEmpty()?0:Dates.instant(since);
+    long start = since.isEmpty() ? 0 : Dates.instant(since);
     long saved = data == null ? 0 : data.optLong("_savedAt");
     StringBuilder identity = new StringBuilder();
     for (Class<?> type : TYPES)
@@ -143,6 +143,21 @@ public class UniverseWidgets extends AppWidgetProvider {
       for (int id :
           preview ? new int[] {kind} : manager.getAppWidgetIds(new ComponentName(c, TYPES[kind]))) {
         RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.universe_widget);
+        v.setImageViewBitmap(
+            R.id.widget_background, Artwork.bitmap(c, R.drawable.art_widget_orbit, true));
+        v.setImageViewBitmap(
+            R.id.widget_art,
+            Artwork.bitmap(
+                c,
+                new int[] {
+                      R.drawable.art_quote_words,
+                      R.drawable.art_send_love,
+                      R.drawable.art_send_love,
+                      R.drawable.art_send_love,
+                      R.drawable.art_our_time,
+                      R.drawable.art_shared_streak
+                    }
+                    [kind]));
         v.setTextViewText(R.id.widget_title, TITLES[kind]);
         v.setTextViewText(R.id.widget_icon, kind == 5 ? "✦" : "♡");
         v.setViewVisibility(R.id.widget_timer, View.GONE);
