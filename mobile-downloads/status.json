@@ -1,13 +1,13 @@
 {
-  "source": "2add2a3e7f6c85aa79a9de16ab2baed93557c17e",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40603419392",
+  "source": "6b9800d0b8218a23e47eccc1b67f3b0a5abb20c4",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40603808165",
   "backend": "success",
-  "android": "cancelled",
+  "android": "success",
   "iphone": "cancelled",
   "jobs": [
     {
       "name": "Android APK",
-      "conclusion": "cancelled",
+      "conclusion": "success",
       "steps": [
         {
           "name": "Set up job",
@@ -162,8 +162,8 @@
   ],
   "files": {
     "Asechka-Android.apk": {
-      "bytes": 8512663,
-      "sha256": "7f26c00e9bfa96c1be8e0b31a951828069763a4d44186852a3f93e5001e91fce"
+      "bytes": 8512699,
+      "sha256": "68a19240662b74c4d1b15c6cf90a2da0d5804b97c2ac13d6dcd732e4e8705899"
     }
   }
 }
