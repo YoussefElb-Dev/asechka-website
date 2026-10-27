@@ -1,0 +1,249 @@
+2026-10-27T05:59:53.8592970Z     t =    15.59s     Find the "Inside jokes" Button
+2026-10-27T05:59:53.8794150Z     t =    15.63s     Check for interrupting elements affecting "Inside jokes" Button
+2026-10-27T05:59:53.9061910Z     t =    15.65s     Synthesize event
+2026-10-27T05:59:54.1988310Z     t =    15.94s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:54.2056860Z     t =    15.94s Checking existence of `"Find one of our inside jokes…" TextField`
+2026-10-27T05:59:54.2247310Z     t =    15.97s Tap "Done" Button
+2026-10-27T05:59:54.2262700Z     t =    15.97s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:54.2269100Z     t =    15.98s     Find the "Done" Button
+2026-10-27T05:59:54.2535410Z     t =    16.00s     Check for interrupting elements affecting "Done" Button
+2026-10-27T05:59:54.2803110Z     t =    16.03s     Synthesize event
+2026-10-27T05:59:54.5760440Z     t =    16.32s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:54.9255780Z     t =    16.67s Tap "Since us · letters & little things" Button
+2026-10-27T05:59:54.9294550Z     t =    16.67s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:54.9295040Z     t =    16.68s     Find the "Since us · letters & little things" Button
+2026-10-27T05:59:54.9486660Z     t =    16.70s     Check for interrupting elements affecting "Since us · letters & little things" Button
+2026-10-27T05:59:54.9688790Z     t =    16.72s     Synthesize event
+2026-10-27T05:59:55.2605990Z     t =    17.01s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:55.6285520Z     t =    17.37s Waiting 5.0s for "September 27, 2026" StaticText to exist
+2026-10-27T05:59:56.6544600Z     t =    18.40s     Checking `Expect predicate `existsNoRetry == 1` for object "September 27, 2026" StaticText`
+2026-10-27T05:59:56.6545740Z     t =    18.40s         Checking existence of `"September 27, 2026" StaticText`
+2026-10-27T05:59:56.6880260Z     t =    18.44s Find the Target Application 'app.asechka.ios'
+2026-10-27T05:59:56.7728970Z     t =    18.52s Added attachment named '09-iPhone-since-us'
+2026-10-27T05:59:56.7737070Z     t =    18.52s Tap "Open when…" Button
+2026-10-27T05:59:56.7737380Z     t =    18.52s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:56.7764180Z     t =    18.52s     Find the "Open when…" Button
+2026-10-27T05:59:56.8030820Z     t =    18.55s     Check for interrupting elements affecting "Open when…" Button
+2026-10-27T05:59:56.8310160Z     t =    18.58s     Synthesize event
+2026-10-27T05:59:57.1254490Z     t =    18.87s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:57.1279950Z     t =    18.88s Find the Target Application 'app.asechka.ios'
+2026-10-27T05:59:57.2198700Z     t =    18.97s Added attachment named '10-iPhone-open-when-letters'
+2026-10-27T05:59:57.2200430Z     t =    18.97s Waiting 5.0s for Button (First Match) to exist
+2026-10-27T05:59:58.2735040Z     t =    20.02s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+2026-10-27T05:59:58.2745400Z     t =    20.02s         Checking existence of `Button (First Match)`
+2026-10-27T05:59:58.3638030Z     t =    20.11s Tap Button (First Match)
+2026-10-27T05:59:58.3744870Z     t =    20.11s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:58.3847750Z     t =    20.11s     Find the Button (First Match)
+2026-10-27T05:59:58.4375970Z     t =    20.19s     Check for interrupting elements affecting "you miss me, Open with love ♡" Button
+2026-10-27T05:59:58.4757220Z     t =    20.22s     Synthesize event
+2026-10-27T05:59:58.7599360Z     t =    20.51s     Wait for app.asechka.ios to idle
+2026-10-27T05:59:59.1571280Z     t =    20.90s Waiting 5.0s for "Keep it close ♡" Button to exist
+2026-10-27T06:00:00.1941410Z     t =    21.94s     Checking `Expect predicate `existsNoRetry == 1` for object "Keep it close ♡" Button`
+2026-10-27T06:00:00.1945390Z     t =    21.94s         Checking existence of `"Keep it close ♡" Button`
+2026-10-27T06:00:00.2508650Z     t =    22.00s Find the Target Application 'app.asechka.ios'
+2026-10-27T06:00:00.3553310Z     t =    22.10s Added attachment named '11-iPhone-letter'
+2026-10-27T06:00:00.3562260Z     t =    22.10s Tear Down
+2026-10-27T06:00:00.6570290Z Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' passed (22.404 seconds).
+2026-10-27T06:00:00.6586720Z Test Suite 'NativeJourneyTests' failed at 2026-10-27 06:00:00.655.
+2026-10-27T06:00:00.6587230Z 	 Executed 6 tests, with 1 failure (0 unexpected) in 131.480 (131.481) seconds
+2026-10-27T06:00:00.6588440Z Test Suite 'AsechkaUITests.xctest' failed at 2026-10-27 06:00:00.656.
+2026-10-27T06:00:00.6589570Z 	 Executed 6 tests, with 1 failure (0 unexpected) in 131.480 (131.482) seconds
+2026-10-27T06:00:00.6589880Z Test Suite 'All tests' failed at 2026-10-27 06:00:00.656.
+2026-10-27T06:00:00.6590230Z 	 Executed 6 tests, with 1 failure (0 unexpected) in 131.480 (131.483) seconds
+2026-10-27T06:00:13.1460690Z 2026-10-27 06:00:13.145 xcodebuild[14013:45327] [MT] IDETestOperationsObserverDebug: 193.467 elapsed -- Testing started completed.
+2026-10-27T06:00:13.1461410Z 2026-10-27 06:00:13.145 xcodebuild[14013:45327] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-27T06:00:13.1462130Z 2026-10-27 06:00:13.145 xcodebuild[14013:45327] [MT] IDETestOperationsObserverDebug: 193.467 sec, +193.467 sec -- end
+2026-10-27T06:00:13.1783430Z 
+2026-10-27T06:00:13.1784790Z Test session results, code coverage, and logs:
+2026-10-27T06:00:13.1785240Z 	/Users/runner/work/asechka-website/asechka-website/mobile/ios/NativeChecks.xcresult
+2026-10-27T06:00:13.1785510Z 
+2026-10-27T06:00:13.1785570Z Failing tests:
+2026-10-27T06:00:13.1785810Z 	NativeJourneyTests.testLittleMessageComposerHistoryAndFastPhotos()
+2026-10-27T06:00:13.1786060Z 
+2026-10-27T06:00:13.1786150Z ** TEST FAILED **
+2026-10-27T06:00:13.1796170Z 
+2026-10-27T06:00:17.4543320Z Testing started
+2026-10-27T06:00:17.5140890Z ##[error]Process completed with exit code 65.
+2026-10-27T06:00:17.5232910Z ##[group]Run mkdir -p preview
+2026-10-27T06:00:17.5233410Z [36;1mmkdir -p preview[0m
+2026-10-27T06:00:17.5233760Z [36;1mxcrun xcresulttool export attachments --path NativeChecks.xcresult --output-path preview/screens[0m
+2026-10-27T06:00:17.5234150Z [36;1mxcrun simctl boot "$IOS_SIMULATOR" || true[0m
+2026-10-27T06:00:17.5234430Z [36;1mxcrun simctl bootstatus "$IOS_SIMULATOR" -b[0m
+2026-10-27T06:00:17.5234800Z [36;1mxcrun simctl install "$IOS_SIMULATOR" build-test/Build/Products/Debug-iphonesimulator/Asechka.app[0m
+2026-10-27T06:00:17.5235370Z [36;1mxcrun simctl terminate "$IOS_SIMULATOR" app.asechka.ios || true[0m
+2026-10-27T06:00:17.5235730Z [36;1mxcrun simctl launch "$IOS_SIMULATOR" app.asechka.ios --preview-fixture[0m
+2026-10-27T06:00:17.5236110Z [36;1msleep 3[0m
+2026-10-27T06:00:17.5236390Z [36;1mxcrun simctl io "$IOS_SIMULATOR" screenshot preview/iPhone-home.png[0m
+2026-10-27T06:00:17.5537520Z shell: /bin/bash -e {0}
+2026-10-27T06:00:17.5537760Z env:
+2026-10-27T06:00:17.5538030Z   IOS_SIMULATOR: DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9
+2026-10-27T06:00:17.5538270Z ##[endgroup]
+2026-10-27T06:00:18.6570790Z Skipped export for UniverseTests/testBookProjectionKeepsRecipesPhotosRatingsAndOtherEntries(): no matching attachments
+2026-10-27T06:00:18.6571890Z 
+2026-10-27T06:00:18.6572140Z Skipped export for UniverseTests/testBothProfilesAndIdempotentComments(): no matching attachments
+2026-10-27T06:00:18.6572460Z 
+2026-10-27T06:00:18.6572690Z Skipped export for UniverseTests/testBundledPhotosDecodeWithoutInternet(): no matching attachments
+2026-10-27T06:00:18.6572990Z 
+2026-10-27T06:00:18.6573280Z Skipped export for UniverseTests/testConversationDateAndKeepsakeEditsPreserveCoupleBeginning(): no matching attachments
+2026-10-27T06:00:18.6573640Z 
+2026-10-27T06:00:18.6573840Z Skipped export for UniverseTests/testDecodingOriginalAndLegacyPosts(): no matching attachments
+2026-10-27T06:00:18.6574250Z 
+2026-10-27T06:00:18.6574580Z Skipped export for UniverseTests/testDeferredHeartSavesKeepOrderWithOtherEdits(): no matching attachments
+2026-10-27T06:00:18.6574960Z 
+2026-10-27T06:00:18.6575320Z Skipped export for UniverseTests/testEncryptedStorageRoundTripAndTamperDetection(): no matching attachments
+2026-10-27T06:00:18.6576130Z 
+2026-10-27T06:00:18.6576350Z Skipped export for UniverseTests/testHeartCountsStreakAndEasternMidnight(): no matching attachments
+2026-10-27T06:00:18.6576810Z 
+2026-10-27T06:00:18.6577040Z Skipped export for UniverseTests/testMessagesAreLimitedDurableAndCloseOnlyOnce(): no matching attachments
+2026-10-27T06:00:18.6577350Z 
+2026-10-27T06:00:18.6577600Z Skipped export for UniverseTests/testNormalReopenAndRapidHeartsPreserveOfflineData(): no matching attachments
+2026-10-27T06:00:18.6578170Z 
+2026-10-27T06:00:18.6579080Z Skipped export for UniverseTests/testOfflinePhotoThenCaptionEditRetainsConversation(): no matching attachments
+2026-10-27T06:00:18.6579460Z 
+2026-10-27T06:00:18.6579750Z Skipped export for UniverseTests/testSharedStreakAndStackingLivesMatchWebsiteFixtures(): no matching attachments
+2026-10-27T06:00:18.6580120Z 
+2026-10-27T06:00:18.6580350Z Skipped export for UniverseTests/testWidgetDayBoundaryAndSnapshotRoundTrip(): no matching attachments
+2026-10-27T06:00:18.6580700Z 
+2026-10-27T06:00:18.6580910Z Exported 6 attachments for: NativeJourneyTests/testHomeShortcutsHeartsAndHiddenHistory():
+2026-10-27T06:00:18.6581460Z File: 72D96314-EEC1-46AE-A66E-F3B63DDD6EE7.png, suggested name: "16-iPhone-settings_0_8E11ED29-9680-4FA3-B24F-E152F31CB171.png"
+2026-10-27T06:00:18.6582100Z File: 4603813B-B7B9-4C9A-BCCE-92C337BFEE87.png, suggested name: "15-iPhone-our-time_0_90928C33-1D23-404E-B5BB-C973D7A17E0B.png"
+2026-10-27T06:00:18.6582840Z File: D2F02F9E-E3B9-4AD7-9812-D822FD2D1239.png, suggested name: "14-iPhone-secret-vocab_0_179483DD-3FB8-4279-A156-FA9166D3F2AD.png"
+2026-10-27T06:00:18.6583480Z File: 55155695-42C1-4DDD-9588-5D35103E116B.png, suggested name: "13-iPhone-heart-history_0_FD6EA929-CDCF-405C-8765-D1B6ABE59003.png"
+2026-10-27T06:00:18.6584690Z File: 7CBF760B-2864-4327-AB81-2E2B7F226109.png, suggested name: "12-iPhone-home-hearts_0_8425EC7E-E348-45FD-876F-4530B416CE64.png"
+2026-10-27T06:00:18.6585510Z File: 3637A113-D4C2-45E0-AB79-CDC418C25822.png, suggested name: "00-iPhone-home-first-glance_0_B28ADE7C-CC45-4C1C-A9E1-2C2D4555758A.png"
+2026-10-27T06:00:18.6586780Z 
+2026-10-27T06:00:18.6587040Z Exported 2 attachments for: NativeJourneyTests/testIncomingEnvelopeClosesToHistoryOnly():
+2026-10-27T06:00:18.6587650Z File: E03F1E5B-8237-459E-B367-612006E6035E.png, suggested name: "226-iPhone-closed-message_0_46299AA4-2265-4361-BBED-74711D2AC094.png"
+2026-10-27T06:00:18.6588300Z File: D290DB06-905F-4176-92DB-B44E09FF5DA8.png, suggested name: "226-iPhone-incoming-art_0_5C72B2C6-FD84-4362-8862-06EBD4BE0835.png"
+2026-10-27T06:00:18.6588650Z 
+2026-10-27T06:00:18.6588870Z Exported 12 attachments for: NativeJourneyTests/testLittleMessageComposerHistoryAndFastPhotos():
+2026-10-27T06:00:18.6589650Z File: B4A40BEB-39C9-49EF-92D9-11914EEE2AC7.png, suggested name: "226-iPhone-message-history_0_BB6F7FBC-5FFF-481E-BA93-7FCBC252C3AD.png"
+2026-10-27T06:00:18.6590220Z File: 08492116-F8B1-4A8C-BB2E-F78873475460, suggested name: "Synthesized Event 2026-10-27 at 05.58.55 AM"
+2026-10-27T06:00:18.6590710Z File: 2D9502DE-92B4-44B5-B202-FF8EE95B2BCA, suggested name: "Synthesized Event 2026-10-27 at 05.58.53 AM"
+2026-10-27T06:00:18.6591190Z File: 6DD6A3CE-1711-4FDD-90E1-9B9047E99AF2, suggested name: "Synthesized Event 2026-10-27 at 05.58.51 AM"
+2026-10-27T06:00:18.6591990Z File: 6ABC5FE9-7F80-465B-87D8-1AD3291596DC.png, suggested name: "226-iPhone-message-composer_0_2935E973-24B4-45AE-87CC-B49C541B1436.png"
+2026-10-27T06:00:18.6592600Z File: 7BE41EB2-3F2F-456C-9BE0-13B6A6C04BB2, suggested name: "Synthesized Event 2026-10-27 at 05.58.51 AM"
+2026-10-27T06:00:18.6593080Z File: 06F94118-814F-4443-827A-F71649BF3B5F, suggested name: "Synthesized Event 2026-10-27 at 05.58.49 AM"
+2026-10-27T06:00:18.6593590Z File: 404555E3-5EB9-4DB2-BD3B-D17EF2487BEF, suggested name: "Synthesized Event 2026-10-27 at 05.58.47 AM"
+2026-10-27T06:00:18.6594090Z File: 71C92A92-8B1E-4E88-B440-F0E736215CE6.mp4, suggested name: "Screen Recording 2026-10-27 at 05.58.42 AM.mp4"
+2026-10-27T06:00:18.6594580Z File: 6EF47D5B-9AA6-4B20-A7E0-E0405FBC934D.txt, suggested name: "Complete Issue Description.txt"
+2026-10-27T06:00:18.6595150Z File: 35F6FC5E-78CF-4816-A0B6-9948AFD33694.txt, suggested name: "App UI hierarchy for app.asechka_0_531A81BB-8A4A-48E2-95A3-A96F8F581B3E.ios"
+2026-10-27T06:00:18.6595720Z File: 86523C54-A634-461F-8903-3A49AAD927AA, suggested name: "UI Snapshot 2026-10-27 at 05.59.01 AM"
+2026-10-27T06:00:18.6596070Z 
+2026-10-27T06:00:18.6596410Z Exported 6 attachments for: NativeJourneyTests/testNativeFeedOfflineConversationAndComposer():
+2026-10-27T06:00:18.6597010Z File: D058B5BC-DE43-47C1-BBB1-0C582F5EBF42.png, suggested name: "06-iPhone-words_0_AF3275E0-B617-4829-865F-C0AFD493D0C0.png"
+2026-10-27T06:00:18.6597910Z File: 0AA67978-343D-4812-84B4-9EC199861EDE.png, suggested name: "05-iPhone-days_0_9F0FDE9E-0354-4C4F-BB50-FF08DFBAE1C4.png"
+2026-10-27T06:00:18.6598660Z File: 52456E5B-F57D-41E2-A15E-F7EA52941B02.png, suggested name: "04-iPhone-comments_0_C6114652-DA28-45F2-9FF4-3C4EE8AC3097.png"
+2026-10-27T06:00:18.6606160Z File: FCEBDC19-D1C7-4A60-ADA7-FF9D74CF907D.png, suggested name: "03-iPhone-composer_0_AB191CA0-47F3-4712-BC78-6EB3915971FD.png"
+2026-10-27T06:00:18.6606800Z File: 16FE55C8-63F9-44CE-9225-F865326C91DF.png, suggested name: "02-iPhone-photos_0_8CB8F8C4-B918-461A-A24C-6D69862ADD74.png"
+2026-10-27T06:00:18.6607450Z File: 8E84CEE6-D60F-4BBD-88E0-68080057271E.png, suggested name: "01-iPhone-home_0_39B4869E-E002-4F87-AFF0-8370AC8C0BDE.png"
+2026-10-27T06:00:18.6607800Z 
+2026-10-27T06:00:18.6608190Z Skipped export for NativeJourneyTests/testNormalReopenHasNoPasswordScreenAndPreservesComposer(): no matching attachments
+2026-10-27T06:00:18.6608590Z 
+2026-10-27T06:00:18.6608930Z Exported 5 attachments for: NativeJourneyTests/testOurLittleBookAndSinceUsAreNativeAndEditableOffline():
+2026-10-27T06:00:18.6609770Z File: B0F628F9-37E9-48DF-B57A-EAEC3FE06485.png, suggested name: "11-iPhone-letter_0_2462D36D-7F55-4EA6-B8C6-A2FFDDCEF9F8.png"
+2026-10-27T06:00:18.6610410Z File: F6DA26FA-7227-427A-8E60-07A2DE274960.png, suggested name: "10-iPhone-open-when-letters_0_9236AF2C-24CB-4EFB-A9B4-CAAADD7BDD91.png"
+2026-10-27T06:00:18.6611040Z File: 91F9F6BB-9A3A-4907-B696-C17197563789.png, suggested name: "09-iPhone-since-us_0_128E0F36-C8C8-42CD-A946-CF7940672C50.png"
+2026-10-27T06:00:18.6611650Z File: F94691EA-0E30-4506-A16A-0B7848D4F5C7.png, suggested name: "08-iPhone-recipe-editor_0_E37E1E98-7313-4748-8415-1E63BA97BF26.png"
+2026-10-27T06:00:18.6612260Z File: FA35ABDB-D0A6-4E87-BC68-25BAA22D3F72.png, suggested name: "07-iPhone-little-book_0_78491D73-8DD5-447A-8E02-D248512C50C6.png"
+2026-10-27T06:00:18.6612610Z 
+2026-10-27T06:00:18.6612930Z Generated manifest file with attachment details: /Users/runner/work/asechka-website/asechka-website/mobile/ios/preview/screens/manifest.json
+2026-10-27T06:00:35.1181650Z Monitoring boot status for iPhone 16 Pro (DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9).
+2026-10-27T06:00:35.1479710Z Device already booted, nothing to do.
+2026-10-27T06:00:35.1625130Z 
+2026-10-27T06:00:43.4868060Z An error was encountered processing the command (domain=NSPOSIXErrorDomain, code=3):
+2026-10-27T06:00:43.4868530Z Simulator device failed to terminate app.asechka.ios.
+2026-10-27T06:00:43.4868830Z found nothing to terminate
+2026-10-27T06:00:43.4869090Z Underlying error (domain=NSPOSIXErrorDomain, code=3):
+2026-10-27T06:00:43.4873120Z 	The request to terminate "app.asechka.ios" failed. found nothing to terminate
+2026-10-27T06:00:43.4873460Z 	found nothing to terminate
+2026-10-27T06:00:44.5165470Z app.asechka.ios: 25670
+2026-10-27T06:00:48.2790460Z Detected file type 'PNG' from extension
+2026-10-27T06:00:48.5360730Z Wrote screenshot to: preview/iPhone-home.png
+2026-10-27T06:00:48.5503150Z ##[group]Run actions/upload-artifact@v4
+2026-10-27T06:00:48.5503450Z with:
+2026-10-27T06:00:48.5503610Z   name: Native-iPhone-previews
+2026-10-27T06:00:48.5503810Z   path: mobile/ios/preview
+2026-10-27T06:00:48.5504290Z   retention-days: 30
+2026-10-27T06:00:48.5504470Z   if-no-files-found: warn
+2026-10-27T06:00:48.5504620Z   compression-level: 6
+2026-10-27T06:00:48.5504760Z   overwrite: false
+2026-10-27T06:00:48.5504890Z   include-hidden-files: false
+2026-10-27T06:00:48.5505050Z env:
+2026-10-27T06:00:48.5505200Z   IOS_SIMULATOR: DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9
+2026-10-27T06:00:48.5505400Z ##[endgroup]
+2026-10-27T06:00:48.8990710Z (node:25911) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-27T06:00:48.8991270Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-27T06:00:48.9078320Z With the provided path, there will be 33 files uploaded
+2026-10-27T06:00:48.9079450Z Artifact name is valid!
+2026-10-27T06:00:48.9079940Z Root directory input is valid!
+2026-10-27T06:00:49.1915190Z Beginning upload of artifact content to blob storage
+2026-10-27T06:00:49.4418880Z (node:25911) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-27T06:00:50.0345540Z Uploaded bytes 8388608
+2026-10-27T06:00:50.1477050Z Uploaded bytes 16777216
+2026-10-27T06:00:50.5243540Z Uploaded bytes 25165824
+2026-10-27T06:00:50.6757660Z Uploaded bytes 31086869
+2026-10-27T06:00:50.7151330Z Finished uploading artifact content to blob storage!
+2026-10-27T06:00:50.7151950Z SHA256 digest of uploaded artifact zip is 2ff8bf483ac59e9a710be667154c9257a3972203e458abcd09f73c9090ae2bce
+2026-10-27T06:00:50.7152440Z Finalizing artifact upload
+2026-10-27T06:00:51.1482390Z Artifact Native-iPhone-previews.zip successfully finalized. Artifact ID 12713448433
+2026-10-27T06:00:51.1484470Z Artifact Native-iPhone-previews has been successfully uploaded! Final size is 31086869 bytes. Artifact ID is 12713448433
+2026-10-27T06:00:51.1491380Z Artifact download URL: https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40457977472/artifacts/12713448433
+2026-10-27T06:00:51.1648240Z ##[group]Run actions/upload-artifact@v4
+2026-10-27T06:00:51.1648460Z with:
+2026-10-27T06:00:51.1648590Z   name: iPhone-build-diagnostics
+2026-10-27T06:00:51.1648900Z   path: mobile/ios/*.log
+mobile/ios/build-test/Logs/Test/*.xcresult
+mobile/ios/NativeChecks.xcresult
+
+2026-10-27T06:00:51.1649230Z   retention-days: 7
+2026-10-27T06:00:51.1649360Z   if-no-files-found: warn
+2026-10-27T06:00:51.1649500Z   compression-level: 6
+2026-10-27T06:00:51.1649630Z   overwrite: false
+2026-10-27T06:00:51.1649770Z   include-hidden-files: false
+2026-10-27T06:00:51.1649910Z env:
+2026-10-27T06:00:51.1650060Z   IOS_SIMULATOR: DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9
+2026-10-27T06:00:51.1650350Z ##[endgroup]
+2026-10-27T06:00:51.3812590Z (node:26283) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-27T06:00:51.3820170Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-27T06:00:51.5236420Z With the provided path, there will be 1265 files uploaded
+2026-10-27T06:00:51.5239280Z Artifact name is valid!
+2026-10-27T06:00:51.5239850Z Root directory input is valid!
+2026-10-27T06:00:51.7850550Z Beginning upload of artifact content to blob storage
+2026-10-27T06:00:52.1285660Z (node:26283) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-27T06:00:52.7145820Z Uploaded bytes 8388608
+2026-10-27T06:00:52.9730130Z Uploaded bytes 16777216
+2026-10-27T06:00:53.1349190Z Uploaded bytes 25165824
+2026-10-27T06:00:53.1397350Z Uploaded bytes 33554432
+2026-10-27T06:00:53.2651330Z Uploaded bytes 41943040
+2026-10-27T06:00:53.5186560Z Uploaded bytes 50331648
+2026-10-27T06:00:54.0449620Z Uploaded bytes 58720256
+2026-10-27T06:00:54.1275790Z Uploaded bytes 67108864
+2026-10-27T06:00:54.3656210Z Uploaded bytes 75497472
+2026-10-27T06:00:54.5599180Z Uploaded bytes 83886080
+2026-10-27T06:00:54.8093800Z Uploaded bytes 92274688
+2026-10-27T06:00:55.1434850Z Uploaded bytes 100663296
+2026-10-27T06:00:55.2587350Z Uploaded bytes 102346331
+2026-10-27T06:00:55.3034120Z Finished uploading artifact content to blob storage!
+2026-10-27T06:00:55.3035640Z SHA256 digest of uploaded artifact zip is f0702eb4ba283356aed43747aebdef26fb9a5ce597a3cb1f08c07de11fa00969
+2026-10-27T06:00:55.3036700Z Finalizing artifact upload
+2026-10-27T06:00:55.7644930Z Artifact iPhone-build-diagnostics.zip successfully finalized. Artifact ID 12713383696
+2026-10-27T06:00:55.7649630Z Artifact iPhone-build-diagnostics has been successfully uploaded! Final size is 102346331 bytes. Artifact ID is 12713383696
+2026-10-27T06:00:55.7656820Z Artifact download URL: https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40457977472/artifacts/12713383696
+2026-10-27T06:00:55.7821190Z Post job cleanup.
+2026-10-27T06:00:55.8801830Z [command]/opt/homebrew/bin/git version
+2026-10-27T06:00:55.8991140Z git version 2.55.0
+2026-10-27T06:00:55.9010370Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/4f8a5daf-893a-4f4e-b564-cde71e9818c1/.gitconfig'
+2026-10-27T06:00:55.9017700Z Temporarily overriding HOME='/Users/runner/work/_temp/4f8a5daf-893a-4f4e-b564-cde71e9818c1' before making global git config changes
+2026-10-27T06:00:55.9018310Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T06:00:55.9022650Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/asechka-website/asechka-website
+2026-10-27T06:00:55.9119820Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T06:00:55.9178890Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T06:00:56.0099980Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T06:00:56.0154230Z http.https://github.com/.extraheader
+2026-10-27T06:00:56.0161860Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-27T06:00:56.0218760Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T06:00:56.1024290Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T06:00:56.1071570Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T06:00:56.1820530Z Cleaning up orphan processes
+2026-10-27T06:01:01.1344920Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
