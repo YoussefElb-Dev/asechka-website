@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-27T19:22:07.000Z",
+  "updatedAt": "2026-10-27T19:22:37.780Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -751,8 +751,8 @@
       "createdAt": "2026-10-27T05:06:27.208Z",
       "author": "youssef",
       "src": "assets/photos/2026/10/dc791492-286a-4017-85fe-dc9077da4070.jpg",
-      "caption": "My bby and only mind 🥺",
-      "alt": "My bby and only mind 🥺",
+      "caption": "My bby and only mine 🥺",
+      "alt": "My bby and only mine 🥺",
       "contentHash": "40026b3c7ffe82d28a68f8aecf6c3b6a5b13f8044407b1f5b581ce1f8806c30a",
       "social": {
         "likes": {
@@ -770,7 +770,8 @@
             "hash": "0640c7fc66de330d8936de450e425497a798532232ded30bf0bfb59526c27842"
           }
         ]
-      }
+      },
+      "revision": "f9d83f3e-9ad9-45e5-b176-a6cef1abca62"
     },
     {
       "id": "94660cfb-95bc-4fb9-8e31-15e0c67ad5a3",
