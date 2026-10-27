@@ -676,7 +676,6 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root.setDescendantFocusability(android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS);
     LinearLayout toolbar = u.row(8);
     toolbar.setPadding(u.dp(20), u.dp(shortScreen ? 4 : 6), u.dp(16), u.dp(shortScreen ? 4 : 6));
-    Ui.Icon sparkle = new Ui.Icon(this, 6, Ui.PURPLE);
     // Keep room for the native message action, including 320dp-wide phones.
     TextView brand = u.title("asechka.", 23);
     toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(shortScreen ? 44 : 54), 1));
@@ -685,7 +684,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     create.setContentDescription("Create a post");
     create.setOnClickListener(v -> choosePost());
     toolbar.addView(create, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
-    SocialFeed.Icon envelope = new SocialFeed.Icon(this, "send");
+    ImageView envelope = Artwork.view(this, R.drawable.art_little_message);
+    envelope.setPadding(u.dp(4), u.dp(7), u.dp(4), u.dp(7));
     envelope.setContentDescription("Messages");
     envelope.setOnClickListener(v -> messages.open());
     toolbar.addView(envelope, new LinearLayout.LayoutParams(u.dp(42), u.dp(48)));
