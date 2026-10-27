@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-27T05:06:55.191Z",
+  "updatedAt": "2026-10-27T05:06:57.475Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -753,7 +753,19 @@
       "src": "assets/photos/2026/10/dc791492-286a-4017-85fe-dc9077da4070.jpg",
       "caption": "My bby and only mind 🥺",
       "alt": "My bby and only mind 🥺",
-      "contentHash": "40026b3c7ffe82d28a68f8aecf6c3b6a5b13f8044407b1f5b581ce1f8806c30a"
+      "contentHash": "40026b3c7ffe82d28a68f8aecf6c3b6a5b13f8044407b1f5b581ce1f8806c30a",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a18346ed-8a34-433e-8942-c78694eb7f41",
+            "hash": "53636343e762b9c157e754fed7d1b096e2fe82ce6ee81715b778d1a58d099aed"
+          }
+        ]
+      }
     },
     {
       "id": "94660cfb-95bc-4fb9-8e31-15e0c67ad5a3",
