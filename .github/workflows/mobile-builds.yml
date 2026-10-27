@@ -208,7 +208,8 @@ jobs:
               if source.is_file(): shutil.copy2(source,root/name)
           for name in ['test.log','build.log']:
               for source in (temp/'iphone-diagnostics').rglob(name): shutil.copy2(source,root/name)
-          for source in (temp/'iphone-previews').rglob('*.png'):
+          for source in (temp/'iphone-previews').rglob('*'):
+              if not source.is_file() or source.suffix not in ['.png','.json']: continue
               target=root/'previews'/source.name
               target.parent.mkdir(exist_ok=True)
               shutil.copy2(source,target)

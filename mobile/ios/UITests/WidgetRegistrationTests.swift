@@ -13,9 +13,15 @@ final class WidgetRegistrationTests: XCTestCase {
 
         XCUIDevice.shared.press(.home)
         let home=XCUIApplication(bundleIdentifier:"com.apple.springboard")
-        let icon=home.icons["Asechka"].firstMatch
-        for _ in 0..<4 { if icon.exists && icon.isHittable { break };home.swipeLeft() }
-        XCTAssertTrue(icon.waitForExistence(timeout:8),home.debugDescription)
+        // Any visible app icon opens Home Screen editing; Asechka may be in App Library.
+        var visibleIcon:XCUIElement?
+        for _ in 0..<20 {
+            visibleIcon=home.icons.allElementsBoundByIndex.first{$0.frame.width>10 && $0.isHittable}
+            if visibleIcon != nil { break }
+            Thread.sleep(forTimeInterval:0.5)
+        }
+        attach(home.screenshot(),"228-iPhone-before-widget-picker")
+        guard let icon=visibleIcon else {XCTFail("No visible Home Screen icon.\n"+home.debugDescription);return}
         icon.press(forDuration:1.5)
         let editHome=home.buttons["Edit Home Screen"]
         XCTAssertTrue(editHome.waitForExistence(timeout:8),home.debugDescription);editHome.tap()
