@@ -1,0 +1,249 @@
+2026-10-27T05:27:27.3455080Z SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
+2026-10-27T05:27:27.3456590Z     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+2026-10-27T05:27:27.3457300Z     
+2026-10-27T05:27:27.3457460Z 
+2026-10-27T05:27:27.3458080Z SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaWidgets (in target 'AsechkaWidgets' from project 'Asechka')
+2026-10-27T05:27:27.3459020Z Failed frontend command:
+2026-10-27T05:27:27.3491150Z /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -emit-module -experimental-skip-non-inlinable-function-bodies-without-types /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift -target arm64-apple-ios16.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -no-color-diagnostics -application-extension -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -D WIDGET_EXTENSION -serialize-debugging-options -const-gather-protocols-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios -resource-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/runner/work/asechka-website/asechka-website/mobile/ios -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources -Xcc -DDEBUG\=1 -module-name AsechkaWidgets -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -emit-module-doc-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftdoc -emit-module-source-info-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftsourceinfo -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-Swift.h -serialize-diagnostics-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-master-emit-module.dia -emit-dependencies-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-master-emit-module.d -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftmodule -emit-abi-descriptor-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.abi.json
+2026-10-27T05:27:27.3513570Z 
+2026-10-27T05:27:27.3513800Z EmitSwiftModule normal arm64 (in target 'AsechkaWidgets' from project 'Asechka')
+2026-10-27T05:27:27.3514190Z     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+2026-10-27T05:27:27.3514510Z     
+2026-10-27T05:27:27.3514980Z /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift:52:8: error: type 'UniverseWidget' does not conform to protocol 'Widget'
+2026-10-27T05:27:27.3515680Z struct UniverseWidget:Widget {
+2026-10-27T05:27:27.3515850Z        ^
+2026-10-27T05:27:27.3516220Z /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift:52:8: note: add stubs for conformance
+2026-10-27T05:27:27.3516690Z struct UniverseWidget:Widget {
+2026-10-27T05:27:27.3516900Z        ^
+2026-10-27T05:27:27.3517200Z SwiftUI.Widget.init:2:28: note: protocol requires initializer 'init()' with type '()'
+2026-10-27T05:27:27.3517570Z @MainActor @preconcurrency init()}
+2026-10-27T05:27:27.3517760Z                            ^
+2026-10-27T05:27:27.3517860Z 
+2026-10-27T05:27:27.3518430Z SwiftCompile normal arm64 Compiling\ WidgetSnapshot.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift (in target 'AsechkaWidgets' from project 'Asechka')
+2026-10-27T05:27:27.3519490Z SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift (in target 'AsechkaWidgets' from project 'Asechka')
+2026-10-27T05:27:27.3520120Z     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+2026-10-27T05:27:27.3520370Z     
+2026-10-27T05:27:27.3520450Z 
+2026-10-27T05:27:27.3754460Z 
+2026-10-27T05:27:27.3754920Z Test session results, code coverage, and logs:
+2026-10-27T05:27:27.3755710Z 	/Users/runner/work/asechka-website/asechka-website/mobile/ios/NativeChecks.xcresult
+2026-10-27T05:27:27.3756060Z 
+2026-10-27T05:27:27.3756120Z Testing failed:
+2026-10-27T05:27:27.3756400Z 	Type 'UniverseWidget' does not conform to protocol 'Widget'
+2026-10-27T05:27:27.3756680Z 	Testing cancelled because the build failed.
+2026-10-27T05:27:27.3756830Z 
+2026-10-27T05:27:27.3756920Z ** TEST FAILED **
+2026-10-27T05:27:27.3757040Z 
+2026-10-27T05:27:27.3757040Z 
+2026-10-27T05:27:27.3757120Z The following build commands failed:
+2026-10-27T05:27:27.3757520Z 	SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaWidgets (in target 'AsechkaWidgets' from project 'Asechka')
+2026-10-27T05:27:27.3758080Z 	EmitSwiftModule normal arm64 (in target 'AsechkaWidgets' from project 'Asechka')
+2026-10-27T05:27:27.3758400Z 	Testing project Asechka with scheme Asechka
+2026-10-27T05:27:27.3758670Z (3 failures)
+2026-10-27T05:27:27.4336970Z ##[error]Process completed with exit code 65.
+2026-10-27T05:27:27.4427050Z ##[group]Run mkdir -p preview
+2026-10-27T05:27:27.4427380Z [36;1mmkdir -p preview[0m
+2026-10-27T05:27:27.4427730Z [36;1mxcrun xcresulttool export attachments --path NativeChecks.xcresult --output-path preview/screens[0m
+2026-10-27T05:27:27.4428150Z [36;1mxcrun simctl boot "$IOS_SIMULATOR" || true[0m
+2026-10-27T05:27:27.4428400Z [36;1mxcrun simctl bootstatus "$IOS_SIMULATOR" -b[0m
+2026-10-27T05:27:27.4428800Z [36;1mxcrun simctl install "$IOS_SIMULATOR" build-test/Build/Products/Debug-iphonesimulator/Asechka.app[0m
+2026-10-27T05:27:27.4429260Z [36;1mxcrun simctl terminate "$IOS_SIMULATOR" app.asechka.ios || true[0m
+2026-10-27T05:27:27.4429640Z [36;1mxcrun simctl launch "$IOS_SIMULATOR" app.asechka.ios --preview-fixture[0m
+2026-10-27T05:27:27.4429940Z [36;1msleep 3[0m
+2026-10-27T05:27:27.4430170Z [36;1mxcrun simctl io "$IOS_SIMULATOR" screenshot preview/iPhone-home.png[0m
+2026-10-27T05:27:27.4744680Z shell: /bin/bash -e {0}
+2026-10-27T05:27:27.4744910Z env:
+2026-10-27T05:27:27.4745150Z   IOS_SIMULATOR: DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9
+2026-10-27T05:27:27.4745390Z ##[endgroup]
+2026-10-27T05:27:28.7541340Z Generated manifest file with attachment details: /Users/runner/work/asechka-website/asechka-website/mobile/ios/preview/screens/manifest.json
+2026-10-27T05:27:43.7783610Z Monitoring boot status for iPhone 16 Pro (DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9).
+2026-10-27T05:27:43.7964960Z [2026-10-27 05:27:43 +0000] Status=2, isTerminal=NO, Elapsed=00:13.
+2026-10-27T05:27:43.8795450Z 	Waiting on Data Migration
+2026-10-27T05:27:43.9594090Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:43.9724990Z 		Migration Elapsed:00:10 seconds
+2026-10-27T05:27:43.9872220Z 
+2026-10-27T05:27:44.8228080Z [2026-10-27 05:27:44 +0000] Status=2, isTerminal=NO, Elapsed=00:14.
+2026-10-27T05:27:44.9045330Z 	Waiting on Data Migration
+2026-10-27T05:27:44.9878110Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:44.9882610Z 		Migration Elapsed:00:11 seconds
+2026-10-27T05:27:45.1367280Z 
+2026-10-27T05:27:45.7716920Z [2026-10-27 05:27:45 +0000] Status=2, isTerminal=NO, Elapsed=00:15.
+2026-10-27T05:27:45.8975480Z 	Waiting on Data Migration
+2026-10-27T05:27:46.0580820Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:46.2090540Z 		Migration Elapsed:00:12 seconds
+2026-10-27T05:27:46.2269980Z 
+2026-10-27T05:27:46.7718400Z [2026-10-27 05:27:46 +0000] Status=2, isTerminal=NO, Elapsed=00:17.
+2026-10-27T05:27:46.7721360Z 	Waiting on Data Migration
+2026-10-27T05:27:46.7894880Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:46.8108610Z 		Migration Elapsed:00:13 seconds
+2026-10-27T05:27:46.8338880Z 
+2026-10-27T05:27:47.6642170Z [2026-10-27 05:27:47 +0000] Status=2, isTerminal=NO, Elapsed=00:17.
+2026-10-27T05:27:47.7311950Z 	Waiting on Data Migration
+2026-10-27T05:27:47.7312670Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:47.7313420Z 		Migration Elapsed:00:14 seconds
+2026-10-27T05:27:47.7313530Z 
+2026-10-27T05:27:48.6594860Z [2026-10-27 05:27:48 +0000] Status=2, isTerminal=NO, Elapsed=00:18.
+2026-10-27T05:27:48.6597330Z 	Waiting on Data Migration
+2026-10-27T05:27:48.6599160Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:48.6599680Z 		Migration Elapsed:00:15 seconds
+2026-10-27T05:27:48.6599910Z 
+2026-10-27T05:27:49.6728240Z [2026-10-27 05:27:49 +0000] Status=2, isTerminal=NO, Elapsed=00:19.
+2026-10-27T05:27:49.6728690Z 	Waiting on Data Migration
+2026-10-27T05:27:49.6729210Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:49.6729650Z 		Migration Elapsed:00:16 seconds
+2026-10-27T05:27:49.6731120Z 
+2026-10-27T05:27:50.6587950Z [2026-10-27 05:27:50 +0000] Status=2, isTerminal=NO, Elapsed=00:20.
+2026-10-27T05:27:50.6591620Z 	Waiting on Data Migration
+2026-10-27T05:27:50.6592130Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:50.6593260Z 		Migration Elapsed:00:17 seconds
+2026-10-27T05:27:50.6595960Z 
+2026-10-27T05:27:51.6572390Z [2026-10-27 05:27:51 +0000] Status=2, isTerminal=NO, Elapsed=00:21.
+2026-10-27T05:27:51.6572850Z 	Waiting on Data Migration
+2026-10-27T05:27:51.6573320Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:51.6573770Z 		Migration Elapsed:00:18 seconds
+2026-10-27T05:27:51.6574140Z 
+2026-10-27T05:27:52.6768160Z [2026-10-27 05:27:52 +0000] Status=2, isTerminal=NO, Elapsed=00:22.
+2026-10-27T05:27:52.6883110Z 	Waiting on Data Migration
+2026-10-27T05:27:52.6984520Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:52.6985090Z 		Migration Elapsed:00:19 seconds
+2026-10-27T05:27:52.7085630Z 
+2026-10-27T05:27:53.7194120Z [2026-10-27 05:27:53 +0000] Status=2, isTerminal=NO, Elapsed=00:23.
+2026-10-27T05:27:53.7296300Z 	Waiting on Data Migration
+2026-10-27T05:27:53.7396300Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:53.7497960Z 		Migration Elapsed:00:20 seconds
+2026-10-27T05:27:53.7597920Z 
+2026-10-27T05:27:54.6554090Z [2026-10-27 05:27:54 +0000] Status=2, isTerminal=NO, Elapsed=00:24.
+2026-10-27T05:27:54.6554850Z 	Waiting on Data Migration
+2026-10-27T05:27:54.6555340Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:54.6556550Z 		Migration Elapsed:00:21 seconds
+2026-10-27T05:27:54.6556760Z 
+2026-10-27T05:27:55.6609440Z [2026-10-27 05:27:55 +0000] Status=2, isTerminal=NO, Elapsed=00:25.
+2026-10-27T05:27:55.6663780Z 	Waiting on Data Migration
+2026-10-27T05:27:55.6665110Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:55.6666500Z 		Migration Elapsed:00:22 seconds
+2026-10-27T05:27:55.6669520Z 
+2026-10-27T05:27:56.6608720Z [2026-10-27 05:27:56 +0000] Status=2, isTerminal=NO, Elapsed=00:26.
+2026-10-27T05:27:56.6609420Z 	Waiting on Data Migration
+2026-10-27T05:27:56.6616940Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:56.6617580Z 		Migration Elapsed:00:23 seconds
+2026-10-27T05:27:56.6617800Z 
+2026-10-27T05:27:57.7631250Z [2026-10-27 05:27:57 +0000] Status=2, isTerminal=NO, Elapsed=00:27.
+2026-10-27T05:27:57.8447280Z 	Waiting on Data Migration
+2026-10-27T05:27:57.8629520Z 		Reason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)
+2026-10-27T05:27:57.8630140Z 		Migration Elapsed:00:24 seconds
+2026-10-27T05:27:57.9440650Z 
+2026-10-27T05:27:59.9314380Z [2026-10-27 05:27:59 +0000] Status=2, isTerminal=NO, Elapsed=00:30.
+2026-10-27T05:27:59.9314830Z 	Waiting on Data Migration
+2026-10-27T05:28:00.0124560Z 		Reason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)
+2026-10-27T05:28:00.0939340Z 		Migration Elapsed:00:25 seconds
+2026-10-27T05:28:00.1749150Z 
+2026-10-27T05:28:00.6712510Z [2026-10-27 05:28:00 +0000] Status=2, isTerminal=NO, Elapsed=00:30.
+2026-10-27T05:28:00.6713570Z 	Waiting on Data Migration
+2026-10-27T05:28:00.6714110Z 		Reason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)
+2026-10-27T05:28:00.6714670Z 		Migration Elapsed:00:26 seconds
+2026-10-27T05:28:00.6714930Z 
+2026-10-27T05:28:01.1717110Z [2026-10-27 05:28:01 +0000] Status=2, isTerminal=NO, Elapsed=00:31.
+2026-10-27T05:28:01.1717930Z 	Waiting on Data Migration
+2026-10-27T05:28:01.2553250Z 		Reason:Running plugin com.apple.preferences.InternationalSupportMigrator (InternationalSupportMigrator.migrator)
+2026-10-27T05:28:01.3342260Z 		Migration Elapsed:00:27 seconds
+2026-10-27T05:28:01.4960760Z 
+2026-10-27T05:28:03.8276990Z [2026-10-27 05:28:03 +0000] Status=2, isTerminal=NO, Elapsed=00:33.
+2026-10-27T05:28:04.0056010Z 	Waiting on Data Migration
+2026-10-27T05:28:04.1804130Z 		Reason:Running plugin com.apple.managedconfiguration.cleanup.migrator (MCCleanup.migrator)
+2026-10-27T05:28:04.2617870Z 		Migration Elapsed:00:28 seconds
+2026-10-27T05:28:04.3445110Z 
+2026-10-27T05:28:04.4241420Z [2026-10-27 05:28:03 +0000] Status=4, isTerminal=NO, Elapsed=00:34.
+2026-10-27T05:28:04.5045620Z 	Waiting on System App
+2026-10-27T05:28:04.5857620Z 
+2026-10-27T05:28:04.6667750Z [2026-10-27 05:28:04 +0000] Status=4, isTerminal=NO, Elapsed=00:34.
+2026-10-27T05:28:04.7478810Z 	Waiting on System App
+2026-10-27T05:28:04.8288040Z 
+2026-10-27T05:28:05.0722590Z [2026-10-27 05:28:04 +0000] Status=4, isTerminal=NO, Elapsed=00:35.
+2026-10-27T05:28:05.0722990Z 	Waiting on System App
+2026-10-27T05:28:05.1571870Z 
+2026-10-27T05:28:06.0620370Z [2026-10-27 05:28:05 +0000] Status=4, isTerminal=NO, Elapsed=00:36.
+2026-10-27T05:28:06.2288660Z 	Waiting on System App
+2026-10-27T05:28:06.2292450Z 
+2026-10-27T05:28:07.4402710Z [2026-10-27 05:28:07 +0000] Status=4294967295, isTerminal=YES, Elapsed=00:37.
+2026-10-27T05:28:07.6015910Z 	Finished
+2026-10-27T05:28:07.6366070Z 
+2026-10-27T05:28:12.8848570Z An error was encountered processing the command (domain=IXErrorDomain, code=13):
+2026-10-27T05:28:12.8993580Z Simulator device failed to install the application.
+2026-10-27T05:28:12.9105340Z Missing bundle ID.
+2026-10-27T05:28:12.9229540Z Underlying error (domain=IXErrorDomain, code=13):
+2026-10-27T05:28:12.9335560Z 	Failed to get bundle ID from /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app
+2026-10-27T05:28:12.9442860Z 	Missing bundle ID.
+2026-10-27T05:28:12.9543650Z ##[error]Process completed with exit code 13.
+2026-10-27T05:28:12.9753310Z ##[group]Run actions/upload-artifact@v4
+2026-10-27T05:28:12.9753530Z with:
+2026-10-27T05:28:12.9753690Z   name: Native-iPhone-previews
+2026-10-27T05:28:12.9753870Z   path: mobile/ios/preview
+2026-10-27T05:28:12.9754100Z   retention-days: 30
+2026-10-27T05:28:12.9754250Z   if-no-files-found: warn
+2026-10-27T05:28:12.9754420Z   compression-level: 6
+2026-10-27T05:28:12.9754570Z   overwrite: false
+2026-10-27T05:28:12.9754950Z   include-hidden-files: false
+2026-10-27T05:28:12.9755110Z env:
+2026-10-27T05:28:12.9755270Z   IOS_SIMULATOR: DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9
+2026-10-27T05:28:12.9755540Z ##[endgroup]
+2026-10-27T05:28:21.9189750Z (node:8075) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-27T05:28:21.9487280Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-27T05:28:22.1367880Z With the provided path, there will be 1 file uploaded
+2026-10-27T05:28:22.1954070Z Artifact name is valid!
+2026-10-27T05:28:22.2073370Z Root directory input is valid!
+2026-10-27T05:28:22.5861240Z (node:8075) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-27T05:28:22.6569810Z Beginning upload of artifact content to blob storage
+2026-10-27T05:28:22.6871760Z Uploaded bytes 162
+2026-10-27T05:28:22.6972670Z Finished uploading artifact content to blob storage!
+2026-10-27T05:28:22.7073040Z SHA256 digest of uploaded artifact zip is d3f3114d159a12638a6fd5faf160a26c96a0f17c8588ed4b7b9304f376ae018e
+2026-10-27T05:28:22.7140520Z Finalizing artifact upload
+2026-10-27T05:28:23.0829410Z Artifact Native-iPhone-previews.zip successfully finalized. Artifact ID 12712311327
+2026-10-27T05:28:23.0830350Z Artifact Native-iPhone-previews has been successfully uploaded! Final size is 162 bytes. Artifact ID is 12712311327
+2026-10-27T05:28:23.0875150Z Artifact download URL: https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40455377211/artifacts/12712311327
+2026-10-27T05:28:23.1020170Z ##[group]Run actions/upload-artifact@v4
+2026-10-27T05:28:23.1020390Z with:
+2026-10-27T05:28:23.1020530Z   name: iPhone-build-diagnostics
+2026-10-27T05:28:23.1020860Z   path: mobile/ios/*.log
+mobile/ios/build-test/Logs/Test/*.xcresult
+mobile/ios/NativeChecks.xcresult
+
+2026-10-27T05:28:23.1021370Z   retention-days: 7
+2026-10-27T05:28:23.1021510Z   if-no-files-found: warn
+2026-10-27T05:28:23.1021790Z   compression-level: 6
+2026-10-27T05:28:23.1021950Z   overwrite: false
+2026-10-27T05:28:23.1022090Z   include-hidden-files: false
+2026-10-27T05:28:23.1022460Z env:
+2026-10-27T05:28:23.1022650Z   IOS_SIMULATOR: DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9
+2026-10-27T05:28:23.1023150Z ##[endgroup]
+2026-10-27T05:28:23.3561670Z (node:8536) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-27T05:28:23.3716510Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-27T05:28:23.8734850Z With the provided path, there will be 19 files uploaded
+2026-10-27T05:28:23.8968320Z Artifact name is valid!
+2026-10-27T05:28:23.9069510Z Root directory input is valid!
+2026-10-27T05:28:23.9399270Z (node:8536) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-27T05:28:24.0411290Z Beginning upload of artifact content to blob storage
+2026-10-27T05:28:24.0755200Z Uploaded bytes 29896
+2026-10-27T05:28:24.0857840Z Finished uploading artifact content to blob storage!
+2026-10-27T05:28:24.0967690Z SHA256 digest of uploaded artifact zip is cf1e8e6a4b536a214527b5d55a19fef50ddc6b699b810fd799f9965b9202bd66
+2026-10-27T05:28:24.1069280Z Finalizing artifact upload
+2026-10-27T05:28:24.4161430Z Artifact iPhone-build-diagnostics.zip successfully finalized. Artifact ID 12712203168
+2026-10-27T05:28:24.4163000Z Artifact iPhone-build-diagnostics has been successfully uploaded! Final size is 29896 bytes. Artifact ID is 12712203168
+2026-10-27T05:28:24.4166120Z Artifact download URL: https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40455377211/artifacts/12712203168
+2026-10-27T05:28:24.4608250Z Post job cleanup.
+2026-10-27T05:28:24.6996410Z [command]/opt/homebrew/bin/git version
+2026-10-27T05:28:24.7303740Z git version 2.55.0
+2026-10-27T05:28:24.7907230Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/d4f79dfb-31f3-415b-8079-071a732c1b4f/.gitconfig'
+2026-10-27T05:28:24.8058330Z Temporarily overriding HOME='/Users/runner/work/_temp/d4f79dfb-31f3-415b-8079-071a732c1b4f' before making global git config changes
+2026-10-27T05:28:24.8059130Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T05:28:24.8164010Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/asechka-website/asechka-website
+2026-10-27T05:28:24.8483170Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T05:28:24.8826060Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T05:28:25.0831400Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T05:28:25.0933510Z http.https://github.com/.extraheader
+2026-10-27T05:28:25.1259530Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-27T05:28:25.1567530Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T05:28:25.3688310Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T05:28:25.3996860Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T05:28:25.6008770Z Cleaning up orphan processes
+2026-10-27T05:28:39.1410700Z Terminate orphan process: pid (6575) (ibtoold)
+2026-10-27T05:28:39.7794480Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

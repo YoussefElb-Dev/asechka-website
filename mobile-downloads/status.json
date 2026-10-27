@@ -1,9 +1,9 @@
 {
-  "source": "eeea60b5d499a41ba502ffc728cef9592367bd73",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40277211452",
+  "source": "d110fd405b9d82c06f546cb35f986f82bd7a09cb",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40455377211",
   "backend": "success",
   "android": "success",
-  "iphone": "success",
+  "iphone": "failure",
   "jobs": [
     {
       "name": "Android APK",
@@ -103,7 +103,7 @@
     },
     {
       "name": "iPhone IPA for sideloading",
-      "conclusion": "success",
+      "conclusion": "failure",
       "steps": [
         {
           "name": "Set up job",
@@ -123,7 +123,7 @@
         },
         {
           "name": "Test native screens, offline posts, and encrypted storage",
-          "conclusion": "success"
+          "conclusion": "failure"
         },
         {
           "name": "Capture native iPhone preview",
@@ -135,19 +135,19 @@
         },
         {
           "name": "Build the iPhone app",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Run actions/upload-artifact@v4",
           "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
         },
         {
           "name": "Post Run actions/checkout@v4",
@@ -161,13 +161,9 @@
     }
   ],
   "files": {
-    "Asechka-iPhone.ipa": {
-      "bytes": 9477824,
-      "sha256": "29a9d2d29cb3bda0780970f9f0e1d2bbceb605410a0105c68bf79085907081df"
-    },
     "Asechka-Android.apk": {
-      "bytes": 7783786,
-      "sha256": "5bc46a61ae845ae1090d2bbe8e157bb80d7d1a6e1e752e144149b8154fbfa09c"
+      "bytes": 7801332,
+      "sha256": "1d132765d2be078723c9afa1c2bc15e72ca9cde6b52afd445fce1af90849842b"
     }
   }
 }
