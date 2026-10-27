@@ -1,13 +1,71 @@
 {
-  "source": "42c55c198d8afcfe3eb94e33206a22d9ea7daadb",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40457468525",
+  "source": "d7cf2d9918b0d30a814f60048565404157b4082c",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40457907579",
   "backend": "success",
-  "android": "success",
-  "iphone": "failure",
+  "android": "cancelled",
+  "iphone": "cancelled",
   "jobs": [
     {
+      "name": "iPhone IPA for sideloading",
+      "conclusion": "cancelled",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Generate the native Xcode project",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build project",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test native screens, offline posts, and encrypted storage",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Capture native iPhone preview",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the iPhone app",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Package IPA for signing by a sideloading tool",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
       "name": "Android APK",
-      "conclusion": "success",
+      "conclusion": "cancelled",
       "steps": [
         {
           "name": "Set up job",
@@ -35,15 +93,15 @@
         },
         {
           "name": "Build an APK with Android 6 and newer compatibility",
-          "conclusion": "success"
+          "conclusion": "cancelled"
         },
         {
           "name": "Package Android download",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Remove temporary signing material",
@@ -100,70 +158,7 @@
           "conclusion": "success"
         }
       ]
-    },
-    {
-      "name": "iPhone IPA for sideloading",
-      "conclusion": "failure",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Generate the native Xcode project",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build project",
-          "conclusion": "success"
-        },
-        {
-          "name": "Test native screens, offline posts, and encrypted storage",
-          "conclusion": "failure"
-        },
-        {
-          "name": "Capture native iPhone preview",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build the iPhone app",
-          "conclusion": "skipped"
-        },
-        {
-          "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "skipped"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "skipped"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
     }
   ],
-  "files": {
-    "Asechka-Android.apk": {
-      "bytes": 20416792,
-      "sha256": "8faf39c8072b95cc4e0bd44c65c8513ad568e83969e259a40507cd4079cdbebf"
-    }
-  }
+  "files": {}
 }
