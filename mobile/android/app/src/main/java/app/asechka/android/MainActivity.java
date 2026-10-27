@@ -917,7 +917,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       iconFrame.setBackground(u.shape(selected ? Ui.PRIMARY : Color.TRANSPARENT, 17));
       FrameLayout.LayoutParams iconParams =
           new FrameLayout.LayoutParams(u.dp(32), u.dp(32), Gravity.CENTER);
-      iconFrame.addView(Artwork.view(this, Artwork.section(i)), iconParams);
+      ImageView navIcon = Artwork.view(this, Artwork.section(i));
+      navIcon.setImageTintList(
+          android.content.res.ColorStateList.valueOf(selected ? Color.WHITE : Ui.PRIMARY));
+      iconFrame.addView(navIcon, iconParams);
       tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(46), u.dp(34)));
       if (selected && motion()) {
         iconFrame.setScaleX(.8f);

@@ -489,7 +489,7 @@ public final class ApiClient {
     connection.setUseCaches(false);
     connection.setRequestProperty("Accept", "application/json");
     connection.setRequestProperty("Cache-Control", "no-store");
-    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.6");
+    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.7");
     connection.setRequestProperty("Origin", base);
     final String sentCookie;
     final String sentSession = prefs.getString("session", "");

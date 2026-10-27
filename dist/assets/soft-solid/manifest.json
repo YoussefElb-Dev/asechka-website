@@ -1,0 +1,114 @@
+{
+  "style": "B - Soft solid",
+  "color": "#6B5CB5",
+  "assets": [
+    {
+      "name": "little-message",
+      "file": "little-message.png",
+      "master": "masters/little-message.svg",
+      "widget": false
+    },
+    {
+      "name": "send-love",
+      "file": "send-love.png",
+      "master": "masters/send-love.svg",
+      "widget": true
+    },
+    {
+      "name": "photo-moments",
+      "file": "photo-moments.png",
+      "master": "masters/photo-moments.svg",
+      "widget": false
+    },
+    {
+      "name": "quote-words",
+      "file": "quote-words.png",
+      "master": "masters/quote-words.svg",
+      "widget": true
+    },
+    {
+      "name": "our-home",
+      "file": "our-home.png",
+      "master": "masters/our-home.svg",
+      "widget": false
+    },
+    {
+      "name": "our-music",
+      "file": "our-music.png",
+      "master": "masters/our-music.svg",
+      "widget": false
+    },
+    {
+      "name": "secret-words",
+      "file": "secret-words.png",
+      "master": "masters/secret-words.svg",
+      "widget": false
+    },
+    {
+      "name": "shared-streak",
+      "file": "shared-streak.png",
+      "master": "masters/shared-streak.svg",
+      "widget": true
+    },
+    {
+      "name": "kept-close",
+      "file": "kept-close.png",
+      "master": "masters/kept-close.svg",
+      "widget": false
+    },
+    {
+      "name": "little-victories",
+      "file": "little-victories.png",
+      "master": "masters/little-victories.svg",
+      "widget": false
+    },
+    {
+      "name": "our-days",
+      "file": "our-days.png",
+      "master": "masters/our-days.svg",
+      "widget": false
+    },
+    {
+      "name": "translate-words",
+      "file": "translate-words.png",
+      "master": "masters/translate-words.svg",
+      "widget": false
+    },
+    {
+      "name": "recipes-two",
+      "file": "recipes-two.png",
+      "master": "masters/recipes-two.svg",
+      "widget": false
+    },
+    {
+      "name": "our-beginning",
+      "file": "our-beginning.png",
+      "master": "masters/our-beginning.svg",
+      "widget": false
+    },
+    {
+      "name": "open-letter",
+      "file": "open-letter.png",
+      "master": "masters/open-letter.svg",
+      "widget": false
+    },
+    {
+      "name": "widget-menu",
+      "file": "widget-menu.png",
+      "master": "masters/widget-menu.svg",
+      "widget": false
+    },
+    {
+      "name": "our-time",
+      "file": "our-time.png",
+      "master": "masters/our-time.svg",
+      "widget": true
+    },
+    {
+      "name": "widget-orbit",
+      "file": "widget-orbit.png",
+      "master": "masters/widget-orbit.svg",
+      "widget": true
+    }
+  ]
+}

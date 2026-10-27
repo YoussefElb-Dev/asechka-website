@@ -155,7 +155,7 @@ final class Messages {
     box.setBackground(ui.shape(Ui.BG, 28));
     ImageView icon = Artwork.view(activity, R.drawable.art_little_message);
     icon.setImageBitmap(Artwork.bitmap(activity, R.drawable.art_little_message, true));
-    LinearLayout.LayoutParams illustration = new LinearLayout.LayoutParams(ui.dp(108), ui.dp(92));
+    LinearLayout.LayoutParams illustration = new LinearLayout.LayoutParams(ui.dp(48), ui.dp(48));
     illustration.gravity = Gravity.CENTER;
     box.addView(icon, illustration);
     ui.add(box, ui.title("A little message for you", 23), 12);
@@ -264,7 +264,7 @@ final class Messages {
     LinearLayout box = ui.column();
     box.setPadding(ui.dp(22), ui.dp(22), ui.dp(22), ui.dp(22));
     box.setBackground(ui.shape(Ui.BG, 26));
-    LinearLayout.LayoutParams heroParams = new LinearLayout.LayoutParams(-1, ui.dp(86));
+    LinearLayout.LayoutParams heroParams = new LinearLayout.LayoutParams(-1, ui.dp(46));
     box.addView(Artwork.view(activity, R.drawable.art_little_message), heroParams);
     box.addView(
         ui.title(

@@ -120,7 +120,7 @@ struct RootView:View {
             HStack(spacing:0){ForEach(0..<tabs.count,id:\.self){index in
                 Button{Touch.tap();withAnimation(reduced ? nil:.easeInOut(duration:0.22)){tab=index}}label:{
                     VStack(spacing:4){
-                        Image(["our-home","photo-moments","quote-words","our-music","our-time","secret-words"][index]).resizable().scaledToFit().frame(width:32,height:32).frame(width:46,height:32)
+                        Image(["our-home","photo-moments","quote-words","our-music","our-days","translate-words"][index]).renderingMode(.template).resizable().scaledToFit().frame(width:32,height:32).frame(width:46,height:32).foregroundColor(tab==index ? .white:Palette.purple)
                             .background{if tab==index{Capsule().fill(Palette.purple).matchedGeometryEffect(id:"active-tab",in:tabMotion)}}
                         Text(tabs[index].1).font(.system(size:10,weight:tab==index ? .bold:.medium)).lineLimit(1).minimumScaleFactor(0.8)
                     }

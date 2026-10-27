@@ -56,8 +56,8 @@ final class Artwork {
           R.drawable.art_our_home,
           R.drawable.art_photo_moments,
           R.drawable.art_our_music,
-          R.drawable.art_our_time,
-          R.drawable.art_secret_words,
+          R.drawable.art_our_days,
+          R.drawable.art_translate_words,
           R.drawable.art_quote_words
         }
         [index];
@@ -66,11 +66,11 @@ final class Artwork {
   static int shortcut(int index) {
     return new int[] {
           R.drawable.art_secret_words,
-          R.drawable.art_little_message,
+          R.drawable.art_open_letter,
           R.drawable.art_little_victories,
-          R.drawable.art_our_home,
+          R.drawable.art_recipes_two,
           R.drawable.art_kept_close,
-          R.drawable.art_our_time
+          R.drawable.art_our_beginning
         }
         [index];
   }
