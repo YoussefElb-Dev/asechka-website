@@ -153,11 +153,9 @@ final class Messages {
     LinearLayout box = ui.column();
     box.setPadding(ui.dp(24), ui.dp(26), ui.dp(24), ui.dp(24));
     box.setBackground(ui.shape(Ui.BG, 28));
-    ImageView icon = Artwork.view(activity, R.drawable.art_little_message);
-    icon.setImageBitmap(Artwork.bitmap(activity, R.drawable.art_little_message, true));
-    LinearLayout.LayoutParams illustration = new LinearLayout.LayoutParams(ui.dp(48), ui.dp(48));
-    illustration.gravity = Gravity.CENTER;
-    box.addView(icon, illustration);
+    TextView icon = ui.text("♡", 42, Ui.PURPLE);
+    icon.setGravity(Gravity.CENTER);
+    box.addView(icon);
     ui.add(box, ui.title("A little message for you", 23), 12);
     ui.add(
         box,
@@ -264,8 +262,6 @@ final class Messages {
     LinearLayout box = ui.column();
     box.setPadding(ui.dp(22), ui.dp(22), ui.dp(22), ui.dp(22));
     box.setBackground(ui.shape(Ui.BG, 26));
-    LinearLayout.LayoutParams heroParams = new LinearLayout.LayoutParams(-1, ui.dp(46));
-    box.addView(Artwork.view(activity, R.drawable.art_little_message), heroParams);
     box.addView(
         ui.title(
             "Just for " + SocialFeed.nameOf(actor.get().equals("asnat") ? "youssef" : "asnat"),

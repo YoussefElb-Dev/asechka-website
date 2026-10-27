@@ -1378,9 +1378,9 @@ public final class NativeTests extends Instrumentation {
 
   private void verifyHomeActionLayout() throws Exception {
     Thread.sleep(150);
-    View createAction = text("Create"),
-        cornerAction = text("Our corner"),
-        savedAction = text("Saved");
+    View createAction = text("＋  Create"),
+        cornerAction = text("♡  Our corner"),
+        savedAction = text("☆  Saved");
     check(
         createAction != null && cornerAction != null && savedAction != null,
         "All three Home actions are visible");

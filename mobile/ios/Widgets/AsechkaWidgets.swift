@@ -38,7 +38,7 @@ struct UniverseWidgetView:View {
     }
     var body:some View {
         VStack(alignment:.leading,spacing:family == .systemSmall ? 7:10){
-            HStack{Text(titles[kind]).font(.system(size:11,weight:.semibold));Spacer();Image(["quote-words","send-love","send-love","send-love","our-time","shared-streak"][kind]).resizable().scaledToFit().frame(width:28,height:28)}.foregroundColor(purple)
+            HStack{Text(titles[kind]).font(.system(size:11,weight:.semibold));Spacer();Image(systemName:kind==5 ? "sparkles":"heart.fill").font(.system(size:13))}.foregroundColor(purple)
             Spacer(minLength:0)
             Text(main).font(.system(size:kind==0 ? family == .systemSmall ? 17:22:kind==2 || kind==3 ? 21:29,weight:kind==0 ? .medium:.bold,design:.rounded)).foregroundColor(ink).lineLimit(kind==0 ? family == .systemSmall ? 4:7:3).minimumScaleFactor(0.65).fixedSize(horizontal:false,vertical:false)
             if kind==4,value.since>0{Text(Date(timeIntervalSince1970:value.since),style:.timer).font(.system(size:19,weight:.semibold,design:.rounded)).monospacedDigit().foregroundColor(purple)}
@@ -46,7 +46,7 @@ struct UniverseWidgetView:View {
             if !extra.isEmpty{Text(extra).font(.system(size:10)).foregroundColor(purple).lineLimit(2).minimumScaleFactor(0.7)}
             Spacer(minLength:0)
             Text(value.saved>0 ? "Saved · "+WidgetSnapshot.stamp(Date(timeIntervalSince1970:value.saved)):"asechka. · tap to open").font(.system(size:9)).foregroundColor(ink.opacity(0.55)).lineLimit(1).minimumScaleFactor(0.65)
-        }.padding(16).frame(maxWidth:.infinity,maxHeight:.infinity,alignment:.leading).background{Image("widget-orbit").resizable().scaledToFill().clipped()}.widgetURL(URL(string:"asechka://home"))
+        }.padding(16).frame(maxWidth:.infinity,maxHeight:.infinity,alignment:.leading).background{LinearGradient(colors:[Color(red:238/255,green:235/255,blue:248/255),Color(red:234/255,green:241/255,blue:252/255)],startPoint:.topLeading,endPoint:.bottomTrailing)}.widgetURL(URL(string:"asechka://home"))
     }
 }
 struct UniverseWidget:Widget {

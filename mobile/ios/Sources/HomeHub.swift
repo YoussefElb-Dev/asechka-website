@@ -38,7 +38,7 @@ struct HomeHub:View {
             sinceCard
             LazyVGrid(columns:Array(repeating:GridItem(.flexible(),spacing:7),count:textSize.isAccessibilitySize ? 2:3),spacing:7){ForEach(routes.indices,id:\.self){index in
                 let route=routes[index]
-                Button{Touch.tap();open(BookRoute(personal:route.3,chapter:route.4))}label:{HStack(spacing:4){Image(["secret-words","open-letter","little-victories","recipes-two","kept-close","our-beginning"][index]).resizable().scaledToFit().frame(width:25,height:25);Text(route.0)}.font(.system(size:12,weight:.medium)).foregroundColor(Palette.purple).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:48).padding(.horizontal,5).background(.white,in:RoundedRectangle(cornerRadius:16,style:.continuous)).overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.09),lineWidth:1))}.accessibilityLabel(route.0).accessibilityHint(route.1)
+                Button{Touch.tap();open(BookRoute(personal:route.3,chapter:route.4))}label:{Label(route.0,systemImage:route.2).font(.system(size:12,weight:.medium)).foregroundColor(Palette.purple).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:48).padding(.horizontal,5).background(.white,in:RoundedRectangle(cornerRadius:16,style:.continuous)).overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.09),lineWidth:1))}.accessibilityLabel(route.0).accessibilityHint(route.1)
             }}
         }.padding(.horizontal,16)
     }

@@ -143,21 +143,6 @@ public class UniverseWidgets extends AppWidgetProvider {
       for (int id :
           preview ? new int[] {kind} : manager.getAppWidgetIds(new ComponentName(c, TYPES[kind]))) {
         RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.universe_widget);
-        v.setImageViewBitmap(
-            R.id.widget_background, Artwork.bitmap(c, R.drawable.art_widget_orbit, true));
-        v.setImageViewBitmap(
-            R.id.widget_art,
-            Artwork.bitmap(
-                c,
-                new int[] {
-                      R.drawable.art_quote_words,
-                      R.drawable.art_send_love,
-                      R.drawable.art_send_love,
-                      R.drawable.art_send_love,
-                      R.drawable.art_our_time,
-                      R.drawable.art_shared_streak
-                    }
-                    [kind]));
         v.setTextViewText(R.id.widget_title, TITLES[kind]);
         v.setTextViewText(R.id.widget_icon, kind == 5 ? "✦" : "♡");
         v.setViewVisibility(R.id.widget_timer, View.GONE);

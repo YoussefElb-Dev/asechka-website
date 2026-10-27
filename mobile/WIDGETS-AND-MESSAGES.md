@@ -1,6 +1,6 @@
 # Little messages and widgets · 2.2.7
 
-Version 2.2.7 uses the selected B · Soft solid logo style: seventeen simple flat symbols and a plain pale-blue widget surface. The same eighteen PNGs are bundled on Android and iPhone. The message logo is compact; selected bottom navigation symbols tint white for contrast. SVG masters and the PNG manifest are in `dist/assets/soft-solid`. Original detailed illustrations remain archived in the source, and are no longer bundled in the apps.
+Version 2.2.7 restores the original native symbols in navigation, shortcuts, heart sending, messages and widgets. The PNG illustration experiments and Soft Solid logo previews remain archived with the source; neither set is bundled in the apps.
 
 Android and iPhone include the same six home-screen widget families: rotating quotes, your lifetime heart total, both lifetime totals with each person's last-sent time, today's hearts, the live together timer, and shared streak/lives. Quotes rotate every six hours using the same selection rule. Dates and daily counters use Eastern time. Add several sizes or several widget types to your home screen.
 

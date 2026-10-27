@@ -115,9 +115,8 @@ final class HomeExtras {
     send.setMinWidth(0);
     send.setMinimumWidth(0);
     send.setPadding(u.dp(14), 0, u.dp(14), 0);
-    android.graphics.drawable.Drawable heartIcon =
-        Artwork.drawable(activity, R.drawable.art_send_love, 28);
-    heartIcon.setBounds(0, 0, u.dp(28), u.dp(28));
+    android.graphics.drawable.Drawable heartIcon = activity.getDrawable(R.drawable.ic_send_heart);
+    heartIcon.setBounds(0, 0, u.dp(18), u.dp(18));
     send.setCompoundDrawablesRelative(heartIcon, null, null, null);
     send.setCompoundDrawablePadding(u.dp(8));
     android.graphics.drawable.GradientDrawable sendSurface = u.shape(Color.WHITE, 24);
@@ -188,7 +187,7 @@ final class HomeExtras {
               android.content.res.ColorStateList.valueOf(0x196b5cb5), shape, null));
       LinearLayout heading = u.row(5);
       heading.addView(
-          Artwork.view(activity, Artwork.shortcut(i)),
+          new HomeGlyph(activity, i, accents[i], tints[i]),
           new LinearLayout.LayoutParams(u.dp(26), u.dp(30)));
       TextView label = u.text(names[i].replaceFirst(" ", "\n"), 13, Ui.INK);
       label.setTextSize(Build.VERSION.SDK_INT < 26 ? 12f : 12.5f);
