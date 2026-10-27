@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T05:44:06.255Z",
+  "updatedAt": "2026-10-27T05:06:57.475Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -374,13 +374,18 @@
       "text": "If I could gather every beautiful moment life has yet to offer and place them all before me, I would still choose the quietest moment spent beside you. For happiness was never about having the whole world at my feet, but about finding someone whose hand makes even the smallest corner of it feel like paradise.",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "f13143c3-6a12-424d-8e8a-6cc93bee5e51",
             "hash": "5119257450cf6e5b83c756c677833db25bd4ac7d5cbdbda91835b6ce7cebf3a9"
+          },
+          {
+            "id": "ecd40c13-076d-43ee-8e83-714f06296e5c",
+            "hash": "5fe332aeb6e060148f3cfd7aed78ed6ecfb2e73450f66d7d4e9ae63e661fdee7"
           }
         ]
       }
@@ -390,7 +395,24 @@
       "date": "2026-10-25",
       "createdAt": "2026-10-26T05:30:01.811Z",
       "author": "youssef",
-      "text": "If I could borrow a moment from eternity, I would spend it looking into your eyes, hoping to understand how one person could hold so much beauty within a single soul. And if the heavens ever asked me what love looked like, I would simply whisper your name, for even the greatest poets could never find words worthy of describing what my heart feels for you."
+      "text": "If I could borrow a moment from eternity, I would spend it looking into your eyes, hoping to understand how one person could hold so much beauty within a single soul. And if the heavens ever asked me what love looked like, I would simply whisper your name, for even the greatest poets could never find words worthy of describing what my heart feels for you.",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0dba9ed0-06f1-4bfe-b199-9f43abf2d174",
+            "hash": "b8e1e05cc15cddee0d594e1dce535d8719e6a2b6b15c31b15e936bde07c0b4f5"
+          },
+          {
+            "id": "b8e519ae-4174-432b-91bd-b5f6d75dde8f",
+            "hash": "2c832fc0a53d322a3859722c3db3171170a4b47380550cc79d265178390eab7b"
+          }
+        ]
+      }
     }
   ],
   "photos": [
@@ -719,6 +741,50 @@
           {
             "id": "ca87f267-ca75-4e5f-aa96-2bd3b86c6a04",
             "hash": "7ddffe319f63c99ed7d7a041d0effdd1b04684907b93b2e12713cd3543c79ef9"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dc791492-286a-4017-85fe-dc9077da4070",
+      "date": "2026-10-25",
+      "createdAt": "2026-10-27T05:06:27.208Z",
+      "author": "youssef",
+      "src": "assets/photos/2026/10/dc791492-286a-4017-85fe-dc9077da4070.jpg",
+      "caption": "My bby and only mind 🥺",
+      "alt": "My bby and only mind 🥺",
+      "contentHash": "40026b3c7ffe82d28a68f8aecf6c3b6a5b13f8044407b1f5b581ce1f8806c30a",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a18346ed-8a34-433e-8942-c78694eb7f41",
+            "hash": "53636343e762b9c157e754fed7d1b096e2fe82ce6ee81715b778d1a58d099aed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "94660cfb-95bc-4fb9-8e31-15e0c67ad5a3",
+      "date": "2026-10-25",
+      "createdAt": "2026-10-27T05:06:39.115Z",
+      "author": "youssef",
+      "src": "assets/photos/2026/10/94660cfb-95bc-4fb9-8e31-15e0c67ad5a3.jpg",
+      "caption": "",
+      "alt": "A picture of us",
+      "contentHash": "bd0b6b79012e200e8d7939a1274c41630d8eacdfd831e1d0ca54318390fb4748",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "d5cb54eb-8ec5-4e25-8b2b-c41b3d8d8fb6",
+            "hash": "280d3a8dc69a444ee55fa98f288ed1b0a6106ae45cbfb1e04ec24398e9569043"
           }
         ]
       }
