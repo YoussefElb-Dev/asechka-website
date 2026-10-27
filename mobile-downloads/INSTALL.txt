@@ -1,0 +1,1 @@
+Native iOS 16+ app. Sign this IPA with your sideloading tool and Apple ID before installation. Includes a WidgetKit extension. Keep the extension and provision the same App Group for both targets for personal widget data. Free Personal Teams may not support App Groups.
