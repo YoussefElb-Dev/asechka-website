@@ -24,7 +24,7 @@ struct WidgetPresentation {
         return quotes[Int(date.timeIntervalSince1970 / 21600) % quotes.count]
     }
     var elapsedDays: Int { max(0, Int((date.timeIntervalSince1970 - value.since) / 86400)) }
-    var clockStart: Date { Date(timeIntervalSince1970: value.since + Double(elapsedDays) * 86400) }
+    var clockStart: Date { Date(timeIntervalSince1970: value.since) }
     var leftLabel: String {
         switch kind {
         case 1: return value.actor == "asnat" ? "Asnat" : "Youssef"

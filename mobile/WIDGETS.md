@@ -11,7 +11,7 @@ Version 2.2.8 includes six matching, horizontal widgets on iPhone and Android: q
 
 Personal widget counts require the app and extension to share the same provisioned App Group, `group.app.asechka.shared`. A sideload signer can remove or change that capability. A different or unsupported group does not grant access to the saved data; the app now reports that instead of silently presenting the in-app preview as proof of a working widget. Account capabilities depend on Apple's provisioning rules. Keeping an extension and granting shared-data access are separate requirements.
 
-The delivered IPA is unsigned. Source changes cannot force a signing tool to retain extensions or add a capability that its provisioning profile does not allow. No paid service or credentials are embedded in the IPA.
+The delivered IPA has preparation signatures that preserve the app's requested shared-data permission; it still requires Apple-ID signing in Sideloadly before installation. Source changes cannot force a signing tool to retain extensions or add a capability that its provisioning profile does not allow. No paid service or credentials are embedded in the IPA.
 
 ## Android
 

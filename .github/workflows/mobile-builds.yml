@@ -112,6 +112,11 @@ jobs:
         run: |
           mkdir -p package/Payload
           cp -R build/Build/Products/Release-iphoneos/Asechka.app package/Payload/
+          # Preserve requested shared-data entitlements for the sideload signer to inspect.
+          # These ad-hoc signatures still require Apple-ID signing before device installation.
+          codesign --force --sign - --entitlements Widgets/Widgets.entitlements package/Payload/Asechka.app/PlugIns/AsechkaWidgets.appex
+          codesign --force --sign - --entitlements Asechka.entitlements package/Payload/Asechka.app
+          codesign --verify --deep --strict package/Payload/Asechka.app
           cd package
           zip -qry Asechka-iPhone.ipa Payload
           python3 ../../tools/verify-ipa.py Asechka-iPhone.ipa
