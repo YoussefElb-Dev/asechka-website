@@ -687,6 +687,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     ImageView envelope = Artwork.view(this, R.drawable.art_little_message);
     envelope.setPadding(u.dp(4), u.dp(7), u.dp(4), u.dp(7));
     envelope.setContentDescription("Messages");
+    envelope.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
     envelope.setOnClickListener(v -> messages.open());
     toolbar.addView(envelope, new LinearLayout.LayoutParams(u.dp(42), u.dp(48)));
     Button refresh = u.button("↻", false, null);
