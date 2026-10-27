@@ -1,88 +1,418 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-17T17:53:44.784Z",
+  "updatedAt": "2026-10-27T05:06:57.475Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
       "text": "If my love for you were written across the stars, the universe would run out of sky before I could finish telling you how much you mean to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "532f6705-ac06-4b4d-9912-f93a1010d0d2",
+            "hash": "eba10543e13005ef3e72c5c43f49f5728c0402b4084ca2a8acd2c0c189c7c84b"
+          }
+        ]
+      }
     },
     {
       "id": "89daf40d-4ac0-47ab-b823-562b1f5e3038",
       "text": "Even if I traveled across every galaxy and counted every star in the universe, I’d still never find anything as beautiful as you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "74e10fe1-0212-41ad-874f-d65d9ac6e1b6",
+            "hash": "620ecc4f726e7599f3ff5c17b5b3ebf886ad31b3fb4ee148db1d1eeaf9fb84fa"
+          }
+        ]
+      }
     },
     {
       "id": "fbae14e5-f0cf-41db-b5da-8edb94406cad",
       "text": "Diamonds may be the rarest gems, and gold may be the most precious treasure, but no jewel in this world could ever shine as brightly or be worth as much as you are to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "89d973fa-746c-4710-b430-1e9dd4aa4975",
+            "hash": "e9689a2e4ea14d4d1f3066c85bf1ffcca60741724b5eef12cefcf5d7ef518861"
+          }
+        ]
+      }
     },
     {
       "id": "57367682-8d4f-40e5-8c67-70407c6a9280",
       "text": "If every beautiful thing in this world were a word, and every sunset, flower, and star were a verse, the universe would still run out of poetry trying to describe you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "c80db372-a4aa-4069-820b-612cce9e23a7",
+            "hash": "b6cf3fec8eeea642f25cb3e1e6f4bbcb4621b1280e532f92865eb65e3b5b05c1"
+          }
+        ]
+      }
     },
     {
       "id": "eea84b52-7fca-40b0-9982-1eb56f29fc03",
       "text": "If the whole world turned against you, I’d stand between you and every storm. If darkness ever found its way to your heart, I’d become your light. And if forever were a promise, I’d spend every lifetime proving that you’ll always have a safe place in my arms and a permanent home in my heart.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "2dd5a98b-7ec9-42f3-9906-8eb8e39f5579",
+            "hash": "20521cbb9d66ef88fe09a7d6e4a197f9a9c4d7afaa0982b65018b05692bcdae8"
+          }
+        ]
+      }
     },
     {
       "id": "b97a454c-40b0-453e-9242-559e8a46a09d",
       "text": "If beauty could stop time, the world would stand still every time you smiled. And if love could be measured, even eternity wouldn’t be long enough to show you how much you mean to me.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "ae7dc6e7-415d-4e78-9f38-a4ed225d47ab",
+            "hash": "8ac054b2852271acbd8c15ec52efb2564616718eb6de3bdfec860a1f97a338d8"
+          }
+        ]
+      }
     },
     {
       "id": "42c6c74a-e160-4947-8769-373deb683b01",
       "text": "Somewhere along the way, a piece of my heart became yours, and I hope you keep it forever, because nowhere else could it ever feel more at home.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "cdc523c2-1360-406b-a0bb-6e089333298f",
+            "hash": "6f0d2fdd87d079cae2d1373673e5f896cf996a655a57ba341ebf55ad3f11b745"
+          }
+        ]
+      }
     },
     {
       "id": "4b0eab1e-d43f-487a-adff-57e3ad5201e5",
       "text": "You’re the air that fills my lungs, the water that keeps me alive, and the food that gives me strength. You’re not just a part of my life, you’re what makes it worth living.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "828f2595-0830-4d0a-a18e-4e2365beb9b3",
+            "hash": "cac2ea1baa91b3d1f67717d1566a84d4c34cd8a9209350753e52373a9152ad3e"
+          }
+        ]
+      }
     },
     {
       "id": "6d2cf445-6cc6-44ea-88be-277ed346c2af",
       "text": "If you were a book, I’d read you a thousand times, knowing every word by heart, yet never growing tired of turning the pages, because something written as perfectly as you deserves to be loved over and over again.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "226043ca-0db8-4fc7-91d7-75e181ab4441",
+            "hash": "4187dd81c6bfb6f861cf53c4a3b5e2565ade4ffaecfdb8a1c022652ccf7d56b3"
+          }
+        ]
+      }
     },
     {
       "id": "32a47506-9773-481b-845f-0d3915ff162d",
       "text": "Whatever our souls are made of, his and mine are the same.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "6bccde04-5923-4ad3-939e-97e4e5f6a653",
+            "hash": "e509154543db7855398a7e1743017eba723d33cd8304f293ac8f532f4b776998"
+          }
+        ]
+      }
     },
     {
       "id": "7516e76a-a39a-46a6-be58-5f2305411fb6",
       "text": "I love thee with a love that shall not die, till the sun grows cold and the stars grow old.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7254bcff-9d06-43d9-887f-632b9e23b6d2",
+            "hash": "aaf47435b873ba2d7e427cd6efcf7a0ce1d410b1c9c8c8053d2212b4ca48c269"
+          }
+        ]
+      }
     },
     {
       "id": "025f4869-6edd-4bc6-bb1f-22ca0c6f2fca",
       "text": "I love you not only for what you are, but for what I am when I am with you.",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b96ad3c8-0230-4e2f-9025-9517db679a4d",
+            "hash": "148912bf247df8b96e2c5aa7243868324ac742f4a0648f1754f1a27ecfd3cb06"
+          }
+        ]
+      }
     },
     {
       "id": "51ace2c5-4de3-40c4-8ba4-39d557867166",
       "text": "I don’t care what our past holds or how many storms we’ve been through, because our past doesn’t define us. All I know is that my destiny is with you, and every tomorrow is one I want to spend by your side.",
       "date": "2026-10-12",
-      "note": "Look back at this and remember our promise moy meer"
+      "note": "Look back at this and remember our promise moy meer",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "2ce81d43-2526-4544-9677-fd58f97d5555",
+            "hash": "e349f4a6509b44937a0c28b57b726d6f4d33376f6a8ab8c0121f1b857091bbc3"
+          }
+        ]
+      }
     },
     {
       "id": "017269be-6ce5-4107-8139-81b21c761f7a",
       "text": "If every drop of water in every sea represented a lifetime of loving you, even all the oceans on Earth would not be enough. And if the seas were to dry and the last wave were to kiss the shore, my love would remain, because even the deepest ocean has a bottom, but my love for you knows no end.",
       "date": "2026-10-13",
-      "note": "Forever and ever يا حياتي"
+      "note": "Forever and ever يا حياتي",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "5cbcdbd9-9b50-45f5-b9f7-943918b118d5",
+            "hash": "016493849163f92bf981cf8c843d1c117ee6d70f35b606b31003a5355c4476ac"
+          }
+        ]
+      }
     },
     {
       "id": "341c9a3f-d144-468f-aded-f8411f12586f",
       "text": "If time itself could speak, it would tell you that even eternity is too short for the love I carry for you. For I could live a thousand lifetimes, find you in every single one, and still wish for one more, just to love you a little longer.",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "15b23800-5e39-4589-947b-92b4d8cf13a2",
+            "hash": "2906971632b7707cdec91a725b3b17e910b384bdedfaa62bc1f22e33914393c6"
+          }
+        ]
+      }
     },
     {
       "id": "521b126b-b1fe-4720-84d3-411ef4eafd2a",
       "text": "If the universe gave me the chance to relive every moment of my existence, I would change nothing, for every road I walked, every mistake I made, and every heartbreak I endured eventually led me to you. And I would go through it all a thousand times just to find you again.",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "47d1c1f5-cc55-43a3-8248-3f56dc417bc3",
+            "hash": "7b7f11f0fe36e24ad664b6beb6a6ef99948e582b4ae83e453bb891ac50d9f6e1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dc9353b2-3909-4366-9f0d-08ee503b44ca",
+      "date": "2026-10-17",
+      "createdAt": "2026-10-19T04:29:08.955Z",
+      "author": "youssef",
+      "text": "One day, when we’re old and our hands have begun to shake, I hope you look at me and realize that the boy who once promised you forever never stopped choosing you. And if my memory ever fades, I pray my heart remembers you, because even if I forget the whole world, I never want to forget the girl who became my entire world.",
+      "note": "Soooo Forever together bby ❤️",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "028d967d-303d-46ab-8289-33ba86d5851d",
+            "hash": "0c5c91b9e3455bf86e6edf68df1f4d901c86dcc12249511321c9710497b27c5d"
+          }
+        ]
+      }
+    },
+    {
+      "id": "2ece931e-ee81-41ae-a3b2-ae2fea5ab5a2",
+      "date": "2026-10-19",
+      "createdAt": "2026-10-20T04:11:12.979Z",
+      "author": "youssef",
+      "text": "If fate were to write the story of my life a thousand times, I would pray that every version leads me to you. I promise to love you through the beauty of our brightest days and the silence of our darkest nights. Let time take our youth, let the seasons change, and let the world become unrecognizable, but may the love between us remain untouched. And when our hands grow weak and our final sunset approaches, I hope we look into each other’s eyes and realize that forever was never just a promise we made, but a life we built, a love we protected, and a dream we never stopped living.",
+      "note": "I’ll keep every promise, I want you and only you bby",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "07bfa340-7cc8-4951-ac19-ae8b0c66dc63",
+            "hash": "16f835063e436053dd25b1aff34bb06df1c050f31b774138ebb9f1bcb61335cc"
+          }
+        ]
+      }
+    },
+    {
+      "id": "a26a97ba-1f6e-41a0-b549-95e7222d52d8",
+      "date": "2026-10-20",
+      "createdAt": "2026-10-21T03:39:10.226Z",
+      "author": "youssef",
+      "text": "If life is a story written by fate, then I hope every chapter has you beside me. I want to love you in ways that time cannot weaken, to hold your hand through moments we haven't even lived yet, and to turn every promise I make into a memory we share. One day, when our faces carry the years and our voices grow softer, I hope you still see the same boy who fell in love with you, only with a heart that has learned to love you a thousand times more. And when the world asks what I made of my life, I hope my greatest answer will always be that I spent it loving you.",
+      "note": "You lwky slept before this buttt it’ll always be there 😘",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7e2246e0-9ed4-465f-9603-8f42b1b9a86f",
+            "hash": "6d450c83aa30376bc6a130b7a9b01c253e2c5928830b3660c87c11f31f6e33fd"
+          },
+          {
+            "id": "215eeefc-5e73-4047-afd8-cfb26d66df3d",
+            "hash": "2d3a897b596ac813a215ac742b8fe90b9e16de35ceb2cfda1765b0e2576553c6"
+          }
+        ]
+      }
+    },
+    {
+      "id": "8d103168-1d15-4015-8fb8-5a22457758af",
+      "date": "2026-10-21",
+      "createdAt": "2026-10-22T02:51:44.110Z",
+      "author": "youssef",
+      "text": "If my heart were a garden, every flower would bloom in your name, and if my soul were a poem, every verse would whisper of you. For I have seen the beauty of sunsets and the wonder of stars, yet nothing has ever moved me quite like the simple miracle of your existence. And should the world one day forget our names, I hope the winds still carry the story of a boy who loved a girl so deeply that even eternity seemed too short to love her enough.",
+      "note": "I do mean it every time ❤️",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "5da0a2d5-9489-4d2b-9fd7-336233650108",
+            "hash": "d7ea83d35f861fb248fc2fabb747dca7a8069d72b26e230d65a6e4be1da3b79c"
+          },
+          {
+            "id": "5446be16-9319-4a72-9b4a-23208d61fdbc",
+            "hash": "b5f74dc19e49aae93fe12ed98d370b42a56d70cc93beac7d0b341bb572c51499"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f371151a-9e3b-492c-8333-d9b67ddafd76",
+      "date": "2026-10-24",
+      "createdAt": "2026-10-25T04:41:41.320Z",
+      "author": "youssef",
+      "text": "If I could gather every beautiful moment life has yet to offer and place them all before me, I would still choose the quietest moment spent beside you. For happiness was never about having the whole world at my feet, but about finding someone whose hand makes even the smallest corner of it feel like paradise.",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "f13143c3-6a12-424d-8e8a-6cc93bee5e51",
+            "hash": "5119257450cf6e5b83c756c677833db25bd4ac7d5cbdbda91835b6ce7cebf3a9"
+          },
+          {
+            "id": "ecd40c13-076d-43ee-8e83-714f06296e5c",
+            "hash": "5fe332aeb6e060148f3cfd7aed78ed6ecfb2e73450f66d7d4e9ae63e661fdee7"
+          }
+        ]
+      }
+    },
+    {
+      "id": "71779b1a-3660-47ec-84b8-ea6611fb0919",
+      "date": "2026-10-25",
+      "createdAt": "2026-10-26T05:30:01.811Z",
+      "author": "youssef",
+      "text": "If I could borrow a moment from eternity, I would spend it looking into your eyes, hoping to understand how one person could hold so much beauty within a single soul. And if the heavens ever asked me what love looked like, I would simply whisper your name, for even the greatest poets could never find words worthy of describing what my heart feels for you.",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0dba9ed0-06f1-4bfe-b199-9f43abf2d174",
+            "hash": "b8e1e05cc15cddee0d594e1dce535d8719e6a2b6b15c31b15e936bde07c0b4f5"
+          },
+          {
+            "id": "b8e519ae-4174-432b-91bd-b5f6d75dde8f",
+            "hash": "2c832fc0a53d322a3859722c3db3171170a4b47380550cc79d265178390eab7b"
+          }
+        ]
+      }
     }
   ],
   "photos": [
@@ -90,79 +420,374 @@
       "id": "9a085af2-e61c-4673-8186-9007ae966211",
       "src": "assets/photos/2026/10/9a085af2-e61c-4673-8186-9007ae966211.jpg",
       "caption": "Look at this cutie js like you",
-      "date": "2026-10-12"
+      "date": "2026-10-12",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "916adb83-5b6a-42ca-a8e1-c1eb50624599",
+            "hash": "eed7c93b6d6f66d281905164413a175833db28f297d3085861dce98432da5214"
+          }
+        ]
+      }
     },
     {
       "id": "c1d3bcfc-4ff4-4bff-8cda-13128f60864b",
       "src": "assets/photos/2026/10/c1d3bcfc-4ff4-4bff-8cda-13128f60864b.jpg",
       "caption": "omggggg",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0d66c7f7-03c0-4a5d-b545-d03e9a7118ce",
+            "hash": "c11815f57a8f938ea60b10e5c45c8c1a3ca9999cc31e7f8d1387be7eebf67fcd"
+          },
+          {
+            "id": "b4561ec1-88c4-4cd2-bc36-ec05b1446b5a",
+            "hash": "a11841c79bb942143efb9f1ac198444e79721099a2572b544097f7b731f2eaeb"
+          }
+        ]
+      }
     },
     {
       "id": "19db02b0-45b1-4a7b-824b-85959b328803",
       "src": "assets/photos/2026/10/19db02b0-45b1-4a7b-824b-85959b328803.jpg",
       "caption": "First ever plushieeee (I adore it)",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "0422a853-0ab4-4716-a194-1ce2de7ae105",
+            "hash": "ecfa26059f534238320282a0efcbf296b9efa66f6a96d0bb72df8c81ba632949"
+          },
+          {
+            "id": "e032648b-cfa6-464f-9060-259cf5ec3799",
+            "hash": "ddd5e4b2e2eb864a8035f0dbc06ea36523b2f7690fe02afe111647c980509013"
+          }
+        ]
+      }
     },
     {
       "id": "e17b9d16-42bf-421a-a87b-080f2342b939",
       "src": "assets/photos/2026/10/e17b9d16-42bf-421a-a87b-080f2342b939.jpg",
       "caption": "Is this considered a professional photo sesh",
-      "date": "2026-10-13"
+      "date": "2026-10-13",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "fd11c9fa-7f93-4ad7-8466-e6fe440b1333",
+            "hash": "3d8604357967fe4c1913716c0dd2e7aebc392c71a74028b46bb33a92a52a10d3"
+          },
+          {
+            "id": "9d26f750-81cd-4530-b921-c4eaa36a5a9d",
+            "hash": "90ae756590cd40ba8b6d1ceca3eb66cc4105f02440e81647735f251a9f26c691"
+          }
+        ]
+      }
     },
     {
       "id": "b13d93e1-f6ec-461b-99d7-bc3f8fc0ffbd",
       "src": "assets/photos/2026/10/b13d93e1-f6ec-461b-99d7-bc3f8fc0ffbd.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "6b5fecb5-7e26-4825-b41d-c344a2e4929c",
+            "hash": "ece34665049b5cfc7da8c56bdfa233bcaa627f95f58326e1906c1e684c658ed5"
+          },
+          {
+            "id": "1fd3d474-8a27-4e6b-9cb8-2e5e1e053d6d",
+            "hash": "d707933c865e6c3a8474f43309383a91200945f1299b8bd015f9f7a1399a2839"
+          },
+          {
+            "id": "f055a293-1b9a-42bd-b8dc-e7a0ab0661e9",
+            "hash": "e504e983ce1d69bac6b9e0be087d844ebb6320e3e6719624e3f7905fae5a5b27"
+          },
+          {
+            "id": "34b0ed0c-e531-4ff9-a9ce-cc2e73722e4e",
+            "hash": "e6512d4717ed7ecacad06c1aa1317df2b3e64282d79c78977f9019f3ab8775c6"
+          }
+        ]
+      }
     },
     {
       "id": "8f1a3eb5-950c-486d-a9ef-c3b104881bd5",
       "src": "assets/photos/2026/10/8f1a3eb5-950c-486d-a9ef-c3b104881bd5.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "32f0f046-f45e-47f3-95f6-ff924a0fd416",
+            "hash": "23d594ea77bb0243c15997fdeba38fe84c0e783179d95d6acd7a0992fda4832c"
+          },
+          {
+            "id": "a4e721a3-d8da-43dd-865f-231e7b3fcba2",
+            "hash": "ff34ff1e920c800b58468aa05bc9f61877c84a912aa95fb13210fedd5f43ee29"
+          }
+        ]
+      }
     },
     {
       "id": "63675850-bece-463e-b004-5967b738099e",
       "src": "assets/photos/2026/10/63675850-bece-463e-b004-5967b738099e.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a56ff3eb-80fd-4ed7-b835-1ff62ca2343f",
+            "hash": "f5f35c763dd7ae5635304e622199e771ddd5b0529d70b0569fd6690d81b6f47a"
+          },
+          {
+            "id": "bae0fb9a-ca01-4887-af12-56c911f1aad1",
+            "hash": "d8ac28ab67e023ff41bb6dcec3d94de67cb93f7fc8d4f433a4ffa0f18579b369"
+          }
+        ]
+      }
     },
     {
       "id": "51122d40-4ee7-4700-9642-fcd3d212acc0",
       "src": "assets/photos/2026/10/51122d40-4ee7-4700-9642-fcd3d212acc0.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "7afde50c-00e3-4b4b-abd6-d2258064240d",
+            "hash": "f40c5aec995f299b542b834c99b14fa2707d4a310efb62882a5d5d9f79df7e55"
+          },
+          {
+            "id": "aa5b05f2-142e-4d2d-9763-6e2e5c714709",
+            "hash": "04f09b94195ba7fe0e97e0482416b4249e87b2760d709891cc9ad57e22e23089"
+          }
+        ]
+      }
     },
     {
       "id": "133d4111-79d5-4db5-bbb5-18aac0998f14",
       "src": "assets/photos/2026/10/133d4111-79d5-4db5-bbb5-18aac0998f14.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "f536549e-29e9-4d85-aa70-89b3b1fb473e",
+            "hash": "dd55845d3196909ec4374fc63cdf9b58d01773e17527f54b6ce191f342a5c7cf"
+          },
+          {
+            "id": "4d0e0630-cc00-440b-aef7-43ea3be88e37",
+            "hash": "5fb6b637943c5aabdd04bb0afd69399dd20949a2bfbf08bfdcc3db3d93e4c901"
+          }
+        ]
+      }
     },
     {
       "id": "2cf1667d-d03f-4970-8837-8d464f8d244f",
       "src": "assets/photos/2026/10/2cf1667d-d03f-4970-8837-8d464f8d244f.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "83a0a75c-b5b3-4e7f-ac8d-7ab70889329c",
+            "hash": "b34377bf31edb89e10d35f9a268014854424b870b540a4259c051b51da20255e"
+          },
+          {
+            "id": "8e3ccb39-facf-4925-9287-1342d7192813",
+            "hash": "04adb39d893e14aaafd126a832a743116e4229fd0bd2b53071e1a9a0d54175da"
+          }
+        ]
+      }
     },
     {
       "id": "bbe78df8-1332-411e-a6da-d99baf41fcbe",
       "src": "assets/photos/2026/10/bbe78df8-1332-411e-a6da-d99baf41fcbe.jpg",
       "caption": "",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "4548b273-42a0-41f1-b025-6245dbab5fb1",
+            "hash": "1c9b79deead56cda529c396f281f95e54d69be0e76450890edc3c738c7316832"
+          },
+          {
+            "id": "ea90655e-77a2-4f61-9af6-e96fdec33d51",
+            "hash": "172dc30456d3c33ffb4324911ea114550c31d74e48cf0b50eef1441566e3b554"
+          }
+        ]
+      }
     },
     {
       "id": "f8bd5c6b-388b-40fe-87c7-0bbfbc3e6248",
       "src": "assets/photos/2026/10/f8bd5c6b-388b-40fe-87c7-0bbfbc3e6248.jpg",
       "caption": "look at MY GF",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "e43c992d-4bb3-4060-b074-d7fa1715c842",
+            "hash": "f2226e70fdd8bcf33a18c6f1b62d54fdf195c6c6c0471e435fdb05bb7db43c33"
+          },
+          {
+            "id": "840196d5-425e-4063-8b6c-39af17c021a9",
+            "hash": "f3ce59b60ab3853f0eec370ef6688fb2ad2356b36e03d1bd61ab6029fb43c374"
+          }
+        ]
+      }
     },
     {
       "id": "9f1d47be-4e82-4a7c-b36e-3747729b47c5",
       "src": "assets/photos/2026/10/9f1d47be-4e82-4a7c-b36e-3747729b47c5.jpg",
       "caption": "Right after WE busted our ahhh",
-      "date": "2026-10-17"
+      "date": "2026-10-17",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "772cdee4-bd09-4c0a-a0a9-42e02641216c",
+            "hash": "457ca137e24928ac7a7af14290014d41575b9074bb65bd2da0e520875112b284"
+          },
+          {
+            "id": "11ae8825-abe4-4f97-8b99-5cc41773def4",
+            "hash": "ef135e24f8d506348e634f948427323f9cd7bc5cd10d4f12560fc460ecd61845"
+          }
+        ]
+      }
+    },
+    {
+      "id": "72e1acc4-95fe-4de9-9bdb-2ec725c8738e",
+      "date": "2026-10-20",
+      "createdAt": "2026-10-21T23:22:13.201Z",
+      "author": "youssef",
+      "src": "assets/photos/2026/10/72e1acc4-95fe-4de9-9bdb-2ec725c8738e.jpg",
+      "caption": "Sonion actually didn’t clip us and your so adorable like always urghhh I love you and I miss you 💕 😘",
+      "alt": "Sonion actually didn’t clip us and your so adorable like always urghhh I love you and I miss you 💕 😘",
+      "contentHash": "3e4c3734a1d4951c09ba5d8c371ad688c5d7c7af86d3174c06e4d4a21b9d5e2d",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "f6fbe04d-79cb-4b6b-b764-489572445a3a",
+            "hash": "2ab59e0adb55fd1b827a0c9ba3d83ae9f6c68ebd3a614532f715a89f7e127cf4"
+          },
+          {
+            "id": "ca87f267-ca75-4e5f-aa96-2bd3b86c6a04",
+            "hash": "7ddffe319f63c99ed7d7a041d0effdd1b04684907b93b2e12713cd3543c79ef9"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dc791492-286a-4017-85fe-dc9077da4070",
+      "date": "2026-10-25",
+      "createdAt": "2026-10-27T05:06:27.208Z",
+      "author": "youssef",
+      "src": "assets/photos/2026/10/dc791492-286a-4017-85fe-dc9077da4070.jpg",
+      "caption": "My bby and only mind 🥺",
+      "alt": "My bby and only mind 🥺",
+      "contentHash": "40026b3c7ffe82d28a68f8aecf6c3b6a5b13f8044407b1f5b581ce1f8806c30a",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a18346ed-8a34-433e-8942-c78694eb7f41",
+            "hash": "53636343e762b9c157e754fed7d1b096e2fe82ce6ee81715b778d1a58d099aed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "94660cfb-95bc-4fb9-8e31-15e0c67ad5a3",
+      "date": "2026-10-25",
+      "createdAt": "2026-10-27T05:06:39.115Z",
+      "author": "youssef",
+      "src": "assets/photos/2026/10/94660cfb-95bc-4fb9-8e31-15e0c67ad5a3.jpg",
+      "caption": "",
+      "alt": "A picture of us",
+      "contentHash": "bd0b6b79012e200e8d7939a1274c41630d8eacdfd831e1d0ca54318390fb4748",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "d5cb54eb-8ec5-4e25-8b2b-c41b3d8d8fb6",
+            "hash": "280d3a8dc69a444ee55fa98f288ed1b0a6106ae45cbfb1e04ec24398e9569043"
+          }
+        ]
+      }
     }
   ]
 }

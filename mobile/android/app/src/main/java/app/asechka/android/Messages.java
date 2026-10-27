@@ -7,17 +7,24 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.*;
 import org.json.*;
 
 /**
  * Durable close receipts are written before a letter disappears. Full text has no history action.
  */
 final class Messages {
+  interface Actor {
+    String get();
+  }
+
+  interface Visible {
+    boolean getAsBoolean();
+  }
+
   private final Activity activity;
   private final ApiClient api;
-  private final Supplier<String> actor;
-  private final BooleanSupplier visible;
+  private final Actor actor;
+  private final Visible visible;
   private final Ui ui;
   private final Handler main = new Handler(Looper.getMainLooper());
   private final ExecutorService worker = Executors.newSingleThreadExecutor();
@@ -25,7 +32,7 @@ final class Messages {
   private String showing = "";
   private boolean checking;
 
-  Messages(Activity activity, ApiClient api, Supplier<String> actor, BooleanSupplier visible) {
+  Messages(Activity activity, ApiClient api, Actor actor, Visible visible) {
     this.activity = activity;
     this.api = api;
     this.actor = actor;
@@ -163,7 +170,7 @@ final class Messages {
     LinearLayout textBox = ui.column();
     textBox.addView(text);
     ScrollView scroll = ui.scroll(textBox);
-    LinearLayout.LayoutParams body = new LinearLayout.LayoutParams(-1, -2);
+    LinearLayout.LayoutParams body = new LinearLayout.LayoutParams(-1, 0, 1);
     body.topMargin = ui.dp(22);
     box.addView(scroll, body);
     ui.add(
@@ -181,9 +188,6 @@ final class Messages {
           worker.execute(
               () -> {
                 try {
-                  JSONObject closed = dismissed();
-                  closed.put(id, true);
-                  api.store.write("closed-messages", closed);
                   api.store.enqueue(
                       "/api/together",
                       OfflineStore.json(
@@ -195,6 +199,9 @@ final class Messages {
                           actor.get(),
                           "operationId",
                           UUID.randomUUID().toString()));
+                  JSONObject closed = dismissed();
+                  closed.put(id, true);
+                  api.store.write("closed-messages", closed);
                   main.post(
                       () -> {
                         if (incoming != null) incoming.dismiss();
@@ -226,7 +233,8 @@ final class Messages {
         .setLayout(
             Math.min(
                 ui.dp(440), activity.getResources().getDisplayMetrics().widthPixels - ui.dp(32)),
-            -2);
+            Math.min(
+                ui.dp(680), activity.getResources().getDisplayMetrics().heightPixels - ui.dp(80)));
     Motion.enter(box, 1);
   }
 

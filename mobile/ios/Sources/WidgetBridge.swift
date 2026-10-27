@@ -17,7 +17,7 @@ import WidgetKit
         // Reload only for meaningful changes; never spend WidgetKit's budget on every tap.
         let encoder=JSONEncoder();encoder.outputFormatting=[.sortedKeys]
         guard let comparison=try? encoder.encode(value),comparison != previous else{return};previous=comparison;value.saved=Date().timeIntervalSince1970
-        if let data=try? encoder.encode(value){do{try data.write(to:url,options:.atomic);if Date().timeIntervalSince(lastReload)>=30{lastReload=Date();WidgetCenter.shared.reloadAllTimelines()}else if reload==nil{reload=Task{try? await Task.sleep(nanoseconds:30_000_000_000);lastReload=Date();WidgetCenter.shared.reloadAllTimelines();reload=nil}}}catch{}}
+        if let data=try? encoder.encode(value){do{try data.write(to:url,options:.atomic);if Date().timeIntervalSince(lastReload)>=30{lastReload=Date();WidgetCenter.shared.reloadAllTimelines()}else if reload==nil{reload=Task{do{try await Task.sleep(nanoseconds:30_000_000_000)}catch{return};lastReload=Date();WidgetCenter.shared.reloadAllTimelines();reload=nil}}}catch{}}
     }
     static func clear(){reload?.cancel();reload=nil;if let url=FileManager.default.containerURL(forSecurityApplicationGroupIdentifier:WidgetSnapshot.group)?.appendingPathComponent("widgets.json"){try? FileManager.default.removeItem(at:url)};previous=nil;WidgetCenter.shared.reloadAllTimelines()}
 }
