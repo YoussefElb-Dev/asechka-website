@@ -1,6 +1,13 @@
 import XCTest
 
 final class NativeJourneyTests:XCTestCase {
+    func testIncomingEnvelopeClosesToHistoryOnly() {
+        let app=XCUIApplication();app.launchArguments=["--preview-fixture","--incoming-message"];app.launch()
+        let close=app.buttons["Keep it in my heart ♡"]
+        XCTAssertTrue(close.waitForExistence(timeout:15));capture("226-iPhone-incoming-art");close.tap()
+        XCTAssertFalse(close.waitForExistence(timeout:2));app.buttons["Messages"].tap();app.buttons["Message history"].tap()
+        XCTAssertTrue(app.staticTexts["Kept in our hearts"].waitForExistence(timeout:5));capture("226-iPhone-closed-message")
+    }
     func testLittleMessageComposerHistoryAndFastPhotos() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         XCTAssertTrue(app.buttons["Messages"].waitForExistence(timeout:15));app.buttons["Messages"].tap()

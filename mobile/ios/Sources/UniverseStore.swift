@@ -117,6 +117,12 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
             actor="asnat";unlocked=true;online=false;memories=bundledMemories()
             requiresCode=false
             let salt=UUID().uuidString;try? vault.save("offline-code",[salt,Self.verifier("123456",salt)])
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--incoming-message") {
+                let letter:[String:Any]=["id":UUID().uuidString.lowercased(),"from":"youssef","to":"asnat","text":"A little love from Youssef, right here with you. Every ordinary moment is a little brighter because it is ours.","preview":"A little love from Youssef, right here with you. Every ordinary…","day":HeartLedger.day(),"createdAt":ISO8601DateFormatter().string(from:Date()),"closedAt":NSNull()]
+                if let data=try? JSONSerialization.data(withJSONObject:["version":1,"bucketList":[],"hearts":["me":NSNull(),"asechka":NSNull()],"messages":[letter]]){try? vault.write("snapshot:/api/together",data)}
+            }
+            #endif
             try? vault.save("snapshot:/api/memories",memories);restore();journal["writable"]=true;keepsakes["writable"]=true;try? vault.write("snapshot:/api/journal",JSONSerialization.data(withJSONObject:journal));try? vault.write("snapshot:/api/keepsakes",JSONSerialization.data(withJSONObject:keepsakes));status();return
         }
         cookie=vault.value("session",as:String.self) ?? ""

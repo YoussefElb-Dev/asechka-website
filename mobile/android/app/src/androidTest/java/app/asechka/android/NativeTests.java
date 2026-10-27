@@ -405,6 +405,10 @@ public final class NativeTests extends Instrumentation {
     check(bitmap != null, "Screenshot " + name);
     File dir = new File(getTargetContext().getExternalFilesDir(null), "qa");
     dir.mkdirs();
+    if (!dir.canWrite()) {
+      dir = new File(getTargetContext().getFilesDir(), "qa");
+      dir.mkdirs();
+    }
     try (FileOutputStream out = new FileOutputStream(new File(dir, name + ".png"))) {
       bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
     }
@@ -1374,9 +1378,9 @@ public final class NativeTests extends Instrumentation {
 
   private void verifyHomeActionLayout() throws Exception {
     Thread.sleep(150);
-    View createAction = text("＋  Create"),
-        cornerAction = text("♡  Our corner"),
-        savedAction = text("☆  Saved");
+    View createAction = text("Create"),
+        cornerAction = text("Our corner"),
+        savedAction = text("Saved");
     check(
         createAction != null && cornerAction != null && savedAction != null,
         "All three Home actions are visible");
