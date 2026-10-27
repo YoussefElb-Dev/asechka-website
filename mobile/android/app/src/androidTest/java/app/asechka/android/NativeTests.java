@@ -1226,6 +1226,38 @@ public final class NativeTests extends Instrumentation {
               check(view.getWidth() > view.getHeight(), "Every hosted widget is horizontal");
           });
       screenshot("228-android-real-widgets");
+      Bundle compact = new Bundle();
+      compact.putInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
+      manager.updateAppWidgetOptions(bothHearts.getAppWidgetId(), compact);
+      await(
+          () ->
+              ((TextView) bothHearts.findViewById(R.id.widget_main)).getTextSize()
+                  < 22 * getTargetContext().getResources().getDisplayMetrics().scaledDensity,
+          "Rotating to a shorter Home Screen requests the compact horizontal layout");
+      ui(
+          () -> {
+            android.view.ViewGroup.LayoutParams size = bothHearts.getLayoutParams();
+            size.height =
+                Math.round(110 * getTargetContext().getResources().getDisplayMetrics().density);
+            bothHearts.setLayoutParams(size);
+          });
+      Thread.sleep(300);
+      ui(
+          () -> {
+            View left = bothHearts.findViewById(R.id.widget_detail),
+                footer = bothHearts.findViewById(R.id.widget_updated);
+            int[] a = new int[2], b = new int[2];
+            left.getLocationOnScreen(a);
+            footer.getLocationOnScreen(b);
+            check(
+                a[1] + left.getHeight() <= b[1],
+                "Compact timestamps do not overlap the saved footer");
+            TextView right = bothHearts.findViewById(R.id.widget_secondary);
+            check(
+                "116 ♡".contentEquals(right.getText()),
+                "Rotation retains the second person's counter");
+          });
+      screenshot("228-android-compact-widget");
       ledger.getJSONObject(today).put("asechka", 129);
       widgetApi.store.snapshot(
           "/api/together", obj("heartDays", ledger, "hearts", new JSONObject()));

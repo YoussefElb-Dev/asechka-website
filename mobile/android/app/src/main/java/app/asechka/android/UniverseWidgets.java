@@ -169,7 +169,16 @@ public class UniverseWidgets extends AppWidgetProvider {
     for (int kind = 0; kind < TYPES.length; kind++)
       for (int id :
           preview ? new int[] {kind} : manager.getAppWidgetIds(new ComponentName(c, TYPES[kind]))) {
-        RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.universe_widget);
+        boolean compact =
+            !preview
+                && manager
+                        .getAppWidgetOptions(id)
+                        .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 164)
+                    < 130;
+        RemoteViews v =
+            new RemoteViews(
+                c.getPackageName(),
+                compact ? R.layout.universe_widget_compact : R.layout.universe_widget);
         v.setTextViewText(R.id.widget_title, TITLES[kind]);
         v.setTextViewText(R.id.widget_icon, kind == 5 ? "✦" : "♡");
         v.setViewVisibility(R.id.widget_timer, View.GONE);
@@ -265,12 +274,15 @@ public class UniverseWidgets extends AppWidgetProvider {
         v.setTextViewTextSize(
             R.id.widget_main,
             android.util.TypedValue.COMPLEX_UNIT_SP,
-            kind == 0 || data == null ? 18 : primary.length() > 9 ? 20 : 26);
+            compact
+                ? kind == 0 ? 16 : 20
+                : kind == 0 || data == null ? 18 : primary.length() > 9 ? 20 : 26);
         v.setTextViewTextSize(
             R.id.widget_secondary,
             android.util.TypedValue.COMPLEX_UNIT_SP,
-            kind == 1 ? 16 : secondary.length() > 9 ? 20 : 26);
-        v.setInt(R.id.widget_main, "setMaxLines", kind == 0 ? 3 : data == null ? 2 : 1);
+            compact ? 16 : kind == 1 ? 16 : secondary.length() > 9 ? 20 : 26);
+        v.setInt(
+            R.id.widget_main, "setMaxLines", kind == 0 ? compact ? 2 : 3 : data == null ? 2 : 1);
         v.setInt(R.id.widget_secondary, "setMaxLines", kind == 1 ? 2 : 1);
         v.setViewVisibility(R.id.widget_detail, detail.isEmpty() ? View.GONE : View.VISIBLE);
         v.setTextViewText(R.id.widget_detail, detail);

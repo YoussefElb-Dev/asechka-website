@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_surface" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="10dp" android:background="@drawable/widget_surface">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView android:id="@+id/widget_title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Hearts, from us both" android:textColor="#6B5CB5" android:textSize="9sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end"/>
+        <TextView android:id="@+id/widget_icon" android:layout_width="20dp" android:layout_height="wrap_content" android:text="♡" android:textColor="#6B5CB5" android:textSize="15sp" android:gravity="end"/>
+    </LinearLayout>
+    <LinearLayout android:id="@+id/widget_pair" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="3dp" android:layout_marginBottom="3dp">
+        <LinearLayout android:id="@+id/widget_left" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/widget_left_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Asnat" android:textColor="#6B5CB5" android:textSize="9sp" android:maxLines="1"/>
+            <TextView android:id="@+id/widget_main" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="♡" android:textColor="#263451" android:textSize="20sp" android:textStyle="bold" android:fontFamily="sans-serif-medium" android:ellipsize="end" android:maxLines="1" android:layout_marginTop="2dp"/>
+            <TextView android:id="@+id/widget_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Our saved moments" android:textColor="#646F8B" android:textSize="8sp" android:maxLines="1" android:ellipsize="end" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+        <TextView android:id="@+id/widget_divider" android:layout_width="1dp" android:layout_height="40dp" android:background="#286B5CB5" android:layout_marginLeft="14dp" android:layout_marginRight="14dp" android:importantForAccessibility="no"/>
+        <LinearLayout android:id="@+id/widget_right" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/widget_right_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Youssef" android:textColor="#6B5CB5" android:textSize="9sp" android:maxLines="1"/>
+            <TextView android:id="@+id/widget_secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="♡" android:textColor="#263451" android:textSize="20sp" android:textStyle="bold" android:fontFamily="sans-serif-medium" android:maxLines="1" android:ellipsize="end" android:layout_marginTop="2dp"/>
+            <Chronometer android:id="@+id/widget_timer" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#263451" android:textSize="18sp" android:textStyle="bold" android:fontFamily="monospace" android:visibility="gone" android:layout_marginTop="2dp"/>
+            <TextView android:id="@+id/widget_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Our saved moments" android:textColor="#646F8B" android:textSize="8sp" android:maxLines="1" android:ellipsize="end" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:id="@+id/widget_updated" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="asechka. · tap to connect" android:textColor="#7B8399" android:textSize="9sp" android:maxLines="1" android:ellipsize="end"/>
+</LinearLayout>
