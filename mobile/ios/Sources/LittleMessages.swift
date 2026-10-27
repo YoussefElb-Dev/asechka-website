@@ -21,7 +21,7 @@ struct MessageHub:View {
             Button{do{try universe.sendMessage(text);text="";Touch.tap(true);dismiss()}catch{universe.error=error.localizedDescription}}label:{Label(universe.online ? "Send a little love":"Save to send when online",systemImage:"paperplane.fill").frame(maxWidth:.infinity).padding(17).background(Palette.purple,in:Capsule()).foregroundColor(.white)}.disabled(text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || remaining==0)
             NavigationLink{WidgetGallery()}label:{Label("Our home-screen widgets",systemImage:"square.grid.2x2").frame(maxWidth:.infinity).padding(16).background(Palette.blue,in:Capsule())}
             Button{history=true}label:{Label("Message history",systemImage:"clock.arrow.circlepath").frame(maxWidth:.infinity).padding(16).background(Palette.lavender,in:Capsule())}
-        }.padding(24)}.background(Palette.background).navigationTitle("Little messages").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}
+        }.padding(24)}.background(Palette.background).navigationTitle("Little messages").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}
         .onAppear{text=universe.vault.value("message-draft:"+universe.actor,as:String.self) ?? ""}
         .sheet(isPresented:$history){MessageHistory()}
     }

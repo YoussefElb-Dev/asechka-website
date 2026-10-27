@@ -1252,14 +1252,31 @@ public final class NativeTests extends Instrumentation {
               rendered.findViewById(R.id.widget_timer) instanceof Chronometer,
               "Widget has native live timer");
         });
-    JSONObject gallery = OfflineStore.copy(api.get("/memories.json"));
-    JSONArray photos = gallery.getJSONArray("photos");
-    JSONObject sample = photos.getJSONObject(0);
-    for (int i = 0; i < 40; i++) {
-      JSONObject p = OfflineStore.copy(sample);
-      p.put("id", UUID.randomUUID().toString());
-      photos.put(p);
-    }
+    api.get("/api/keepsakes");
+    java.util.List<RemoteViews> previews = UniverseWidgets.previews(getTargetContext(), api);
+    check(previews.size() == 6, "Six real widget snapshots render");
+    ui(
+        () -> {
+          for (RemoteViews preview : previews) {
+            View rendered = preview.apply(getTargetContext(), null);
+            check(
+                ((TextView) rendered.findViewById(R.id.widget_main)).getText().length() > 0,
+                "Widget includes real readable information");
+          }
+        });
+    ui(messages::widgets);
+    Thread.sleep(700);
+    screenshot("226-widgets");
+    ui(
+        () ->
+            getUiAutomation()
+                .performGlobalAction(
+                    android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK));
+    ((java.net.HttpURLConnection)
+            new java.net.URL("http://127.0.0.1:4777/__gallery").openConnection())
+        .getInputStream()
+        .close();
+    JSONObject gallery = api.get("/memories.json");
     set("memories", gallery);
     call("select", new Class[] {int.class}, 1);
     SocialFeed feed = (SocialFeed) get("feed");
@@ -1269,8 +1286,7 @@ public final class NativeTests extends Instrumentation {
       ui(() -> feed.fling(-16000));
       Thread.sleep(120);
     }
-    Thread.sleep(700);
-    ui(() -> feed.setSelection(0));
+    ui(() -> feed.fling(-18000));
     await(
         () -> feed.getFirstVisiblePosition() == 0,
         "Photo feed returns to top after rapid reversing flings");

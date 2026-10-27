@@ -73,6 +73,7 @@ public class UniverseWidgets extends AppWidgetProvider {
   }
 
   static String time(String value) {
+    if(value==null || value.isEmpty() || value.equals("null"))return "No hearts yet";
     long instant = Dates.instant(value);
     if (instant <= 0) return "No hearts yet";
     SimpleDateFormat f = new SimpleDateFormat("MMM d · h:mm a", Locale.US);
@@ -81,12 +82,21 @@ public class UniverseWidgets extends AppWidgetProvider {
   }
 
   private static void render(Context c) throws Exception {
+    build(c, new ApiClient(c), false);
+  }
+
+  static java.util.List<RemoteViews> previews(Context c, ApiClient api) throws Exception {
+    return build(c, api, true);
+  }
+
+  private static java.util.List<RemoteViews> build(Context c, ApiClient api, boolean preview)
+      throws Exception {
+    java.util.List<RemoteViews> result = new java.util.ArrayList<>();
     AppWidgetManager manager = AppWidgetManager.getInstance(c);
     boolean installed = false;
     for (Class<?> type : TYPES)
       if (manager.getAppWidgetIds(new ComponentName(c, type)).length > 0) installed = true;
-    if (!installed) return;
-    ApiClient api = new ApiClient(c);
+    if (!installed && !preview) return result;
     JSONObject data = api.canOpen() ? api.cached("/api/together", true) : null;
     JSONObject memories = api.canOpen() ? api.cached("/memories.json", true) : null;
     JSONObject keepsakes = api.canOpen() ? api.cached("/api/keepsakes", true) : null;
@@ -112,7 +122,7 @@ public class UniverseWidgets extends AppWidgetProvider {
         keepsakes == null || keepsakes.optJSONObject("since") == null
             ? ""
             : keepsakes.optJSONObject("since").optString("startedAt");
-    long start = Dates.instant(since);
+    long start = since.isEmpty()?0:Dates.instant(since);
     long saved = data == null ? 0 : data.optLong("_savedAt");
     StringBuilder identity = new StringBuilder();
     for (Class<?> type : TYPES)
@@ -127,10 +137,11 @@ public class UniverseWidgets extends AppWidgetProvider {
             + (memories == null ? "" : memories.optJSONArray("quotes"))
             + System.currentTimeMillis() / 21600000L
             + identity.toString();
-    if (previous.equals(fingerprint)) return;
-    previous = fingerprint;
+    if (!preview && previous.equals(fingerprint)) return result;
+    if (!preview) previous = fingerprint;
     for (int kind = 0; kind < TYPES.length; kind++)
-      for (int id : manager.getAppWidgetIds(new ComponentName(c, TYPES[kind]))) {
+      for (int id :
+          preview ? new int[] {kind} : manager.getAppWidgetIds(new ComponentName(c, TYPES[kind]))) {
         RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.universe_widget);
         v.setTextViewText(R.id.widget_title, TITLES[kind]);
         v.setTextViewText(R.id.widget_icon, kind == 5 ? "✦" : "♡");
@@ -221,7 +232,9 @@ public class UniverseWidgets extends AppWidgetProvider {
                 100 + kind,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
-        manager.updateAppWidget(id, v);
+        if (preview) result.add(v);
+        else manager.updateAppWidget(id, v);
       }
+    return result;
   }
 }

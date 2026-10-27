@@ -253,6 +253,7 @@ final class Messages {
         "≡",
         false,
         this::history);
+    sheet.item("Our home-screen widgets", "Six little windows into us", "✦", false, this::widgets);
     sheet.show();
   }
 
@@ -354,6 +355,43 @@ final class Messages {
     dialog.show();
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     dialog.getWindow().setLayout(-1, -2);
+  }
+
+  void widgets() {
+    worker.execute(
+        () -> {
+          try {
+            java.util.List<RemoteViews> previews = UniverseWidgets.previews(activity, api);
+            main.post(
+                () -> {
+                  Dialog dialog = new Dialog(activity);
+                  LinearLayout box = ui.column();
+                  box.setPadding(ui.dp(22), ui.dp(22), ui.dp(22), ui.dp(22));
+                  box.setBackgroundColor(Ui.BG);
+                  box.addView(ui.title("Our home-screen widgets", 24));
+                  ui.add(
+                      box,
+                      ui.text(
+                          "Long-press your Home Screen, choose Widgets, then find Asechka. Add any"
+                              + " of these six little windows. Tap a widget to open the app and"
+                              + " sync.",
+                          14,
+                          Ui.MUTED),
+                      14);
+                  for (RemoteViews preview : previews) {
+                    View card = preview.apply(activity, box);
+                    LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, ui.dp(230));
+                    p.topMargin = ui.dp(16);
+                    box.addView(card, p);
+                  }
+                  ui.add(box, ui.button("Done", false, dialog::dismiss), 20);
+                  dialog.setContentView(ui.scroll(box));
+                  dialog.show();
+                  dialog.getWindow().setLayout(-1, -1);
+                });
+          } catch (Exception ignored) {
+          }
+        });
   }
 
   void history() {

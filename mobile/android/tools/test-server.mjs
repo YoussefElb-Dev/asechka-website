@@ -42,6 +42,7 @@ createServer(async(req,res)=>{
     let response;
     if(path==='/__reset'){journal={version:1,victories:[],recipes:[],jokes:[]};keepsakes=structuredClone(originalKeepsakes);music={version:1,tracks:[]};together={version:1,bucketList:[],hearts:{me:null,asechka:null}};memories.quotes=[structuredClone(originalQuote)];memories.photos=[structuredClone(originalPhoto)];photos.clear();response=json({ok:true});}
     else if(path==='/__add-memory'){memories.quotes.push({id:id(),text:'A new little thought from the website.',date:'2026-10-17',note:''});response=json({ok:true});}
+    else if(path==='/__gallery'){for(let i=0;i<40;i++)memories.photos.push({...originalPhoto,id:id(),caption:`Fixture gallery ${i+1}`});response=json({ok:true});}
     else if(path==='/api/journal')response=await journalAPI(request);
     else if(path==='/api/keepsakes')response=await keepsakesAPI(request);
     else if(path==='/api/memories')response=await memoriesAPI(request);
