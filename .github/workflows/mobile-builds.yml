@@ -114,8 +114,9 @@ jobs:
           cp -R build/Build/Products/Release-iphoneos/Asechka.app package/Payload/
           cd package
           zip -qry Asechka-iPhone.ipa Payload
+          python3 ../../tools/verify-ipa.py Asechka-iPhone.ipa
           shasum -a 256 Asechka-iPhone.ipa > Asechka-iPhone.ipa.sha256
-          printf '%s\n' 'Native iOS 16+ app. Sign this IPA with your sideloading tool and Apple ID before installation. Includes a WidgetKit extension. Keep the extension and provision the same App Group for both targets for personal widget data. Free Personal Teams may not support App Groups.' > INSTALL.txt
+          printf '%s\n' 'Native iOS 16+ app. In Sideloadly leave Remove App Extensions (Plug-ins) UNCHECKED and keep AsechkaWidgets. Sign both app and extension. Install using the same Apple ID/bundle ID, then open Asechka once before searching Add Widget. Messages > Our home-screen widgets now reports missing extensions or shared data. Both targets need the same provisioned App Group (group.app.asechka.shared) for personal counts. Signing capabilities depend on your Apple account/profile.' > INSTALL.txt
       - uses: actions/upload-artifact@v4
         with:
           name: Asechka-iPhone-IPA

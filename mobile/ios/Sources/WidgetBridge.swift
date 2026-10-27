@@ -2,11 +2,20 @@ import Foundation
 import WidgetKit
 
 @MainActor enum WidgetBridge {
+    static var extensionPresent:Bool {
+        guard let folder=Bundle.main.builtInPlugInsURL,let urls=try? FileManager.default.contentsOfDirectory(at:folder,includingPropertiesForKeys:nil)else{return false}
+        return urls.contains { url in
+            guard url.pathExtension=="appex",let bundle=Bundle(url:url),let extensionInfo=bundle.object(forInfoDictionaryKey:"NSExtension") as? [String:Any]else{return false}
+            return extensionInfo["NSExtensionPointIdentifier"] as? String == "com.apple.widgetkit-extension"
+        }
+    }
+    static var sharedDataAvailable:Bool { WidgetSnapshot.storageURL != nil }
+    static func refresh(_ store:UniverseStore){save(store);WidgetCenter.shared.reloadAllTimelines()}
     private static var previous:Data?
     private static var lastReload=Date.distantPast
     private static var reload:Task<Void,Never>?
     static func save(_ store:UniverseStore){
-        guard store.unlocked,let url=FileManager.default.containerURL(forSecurityApplicationGroupIdentifier:WidgetSnapshot.group)?.appendingPathComponent("widgets.json")else{return}
+        guard store.unlocked,let url=WidgetSnapshot.storageURL else{return}
         var value=WidgetSnapshot();value.actor=store.actor;value.quotes=store.memories.quotes.compactMap(\.text)
         value.asnat=store.heartDays.values.reduce(0){$0+($1["asechka"] ?? 0)};value.youssef=store.heartDays.values.reduce(0){$0+($1["me"] ?? 0)}
         value.day=HeartLedger.day();value.todayAsnat=store.heartDays[value.day]?["asechka"] ?? 0;value.todayYoussef=store.heartDays[value.day]?["me"] ?? 0

@@ -18,6 +18,7 @@ public final class NativeTests extends Instrumentation {
   private ApiClient api;
   private int assertions;
   private boolean featuresOnly;
+  private boolean widgetsOnly;
   private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly, gateOnly;
   private String upgrade;
 
@@ -25,6 +26,7 @@ public final class NativeTests extends Instrumentation {
   public void onCreate(Bundle args) {
     super.onCreate(args);
     featuresOnly = "true".equals(args.getString("featuresOnly"));
+    widgetsOnly = "true".equals(args.getString("widgetsOnly"));
     convert = "true".equals(args.getString("convert"));
     motionOnly = "true".equals(args.getString("motionOnly"));
     compatOnly = "true".equals(args.getString("compatOnly"));
@@ -61,7 +63,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (featuresOnly) {
+        if (widgetsOnly) {
+          widgetTests();
+        } else if (featuresOnly) {
           featureTests();
         } else if (gateOnly) {
           gateTests();
@@ -166,7 +170,7 @@ public final class NativeTests extends Instrumentation {
                   .getPackageManager()
                   .getPackageInfo(getTargetContext().getPackageName(), 0)
                   .versionCode
-              == 16,
+              == 17,
           "Updated package version");
     }
   }
@@ -1107,6 +1111,136 @@ public final class NativeTests extends Instrumentation {
     call("restoreSaved", new Class[] {});
     set("messages", null);
     call("showShell", new Class[] {});
+  }
+
+  private void widgetTests() throws Exception {
+    prepareMotionFixture();
+    // Local snapshots only: no session or network request is made to the personal website.
+    ApiClient widgetApi = new ApiClient(getTargetContext());
+    widgetApi.store.rememberCode("isolated-widget-fixture");
+    String today = HeartCounts.day(System.currentTimeMillis());
+    JSONObject ledger = obj(today, obj("asechka", 128, "me", 116));
+    widgetApi.store.snapshot("/api/together", obj("heartDays", ledger, "hearts", new JSONObject()));
+    widgetApi.store.snapshot(
+        "/memories.json",
+        obj(
+            "quotes",
+            new JSONArray()
+                .put(obj("text", "Every ordinary day feels a little brighter with you."))));
+    widgetApi.store.snapshot(
+        "/api/keepsakes", obj("since", obj("startedAt", "2026-10-16T19:41:00Z")));
+    android.appwidget.AppWidgetManager manager =
+        android.appwidget.AppWidgetManager.getInstance(getTargetContext());
+    ArrayList<android.appwidget.AppWidgetProviderInfo> providers = new ArrayList<>();
+    for (android.appwidget.AppWidgetProviderInfo info : manager.getInstalledProviders()) {
+      if (!info.provider.getPackageName().equals(getTargetContext().getPackageName())) continue;
+      providers.add(info);
+      check(info.minWidth > info.minHeight, "Widget has a horizontal default size: " + info.label);
+      if (Build.VERSION.SDK_INT >= 31)
+        check(
+            info.targetCellWidth == 4 && info.targetCellHeight == 2,
+            "Widget requests a wide 4-by-2 footprint");
+    }
+    check(providers.size() == 6, "All six real widget providers are registered");
+    try (android.os.ParcelFileDescriptor command =
+        getUiAutomation()
+            .executeShellCommand("appwidget grantbind --package app.asechka.android --user 0")) {
+      try (FileInputStream input = new FileInputStream(command.getFileDescriptor())) {
+        while (input.read() != -1) {}
+      }
+    }
+    android.appwidget.AppWidgetHost host =
+        new android.appwidget.AppWidgetHost(getTargetContext(), 228);
+    ArrayList<android.appwidget.AppWidgetHostView> hosted = new ArrayList<>();
+    ui(host::startListening);
+    try {
+      for (android.appwidget.AppWidgetProviderInfo provider : providers) {
+        int id = host.allocateAppWidgetId();
+        Bundle options = new Bundle();
+        options.putInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 300);
+        options.putInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 360);
+        options.putInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 140);
+        options.putInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 164);
+        check(
+            manager.bindAppWidgetIdIfAllowed(id, provider.provider, options),
+            "Widget can be bound by a real launcher host: " + provider.label);
+        ui(() -> hosted.add(host.createView(activity, id, provider)));
+      }
+      UniverseWidgets.updateAll(getTargetContext());
+      await(
+          () ->
+              hosted.stream()
+                  .allMatch(view -> view.findViewById(R.id.widget_main) instanceof TextView),
+          "Real widget host receives all six RemoteViews");
+      android.appwidget.AppWidgetHostView both = null;
+      for (android.appwidget.AppWidgetHostView view : hosted) {
+        if (view.getAppWidgetInfo().provider.getClassName().endsWith("$BothHearts")) both = view;
+      }
+      final android.appwidget.AppWidgetHostView bothHearts = both;
+      check(bothHearts != null, "Both-hearts widget is hosted");
+      await(
+          () ->
+              "128 ♡"
+                  .contentEquals(((TextView) bothHearts.findViewById(R.id.widget_main)).getText()),
+          "Launcher widget reads the persisted Asnat total");
+      check(
+          "116 ♡"
+              .contentEquals(((TextView) bothHearts.findViewById(R.id.widget_secondary)).getText()),
+          "Launcher widget reads Youssef independently");
+      ui(
+          () -> {
+            Dialog dialog = new Dialog(activity);
+            LinearLayout column = new LinearLayout(activity);
+            column.setOrientation(LinearLayout.VERTICAL);
+            column.setPadding(20, 20, 20, 20);
+            for (android.appwidget.AppWidgetHostView view : hosted) {
+              LinearLayout.LayoutParams size =
+                  new LinearLayout.LayoutParams(
+                      -1,
+                      Math.round(
+                          164 * getTargetContext().getResources().getDisplayMetrics().density));
+              size.bottomMargin = 20;
+              column.addView(view, size);
+            }
+            ScrollView scroll = new ScrollView(activity);
+            scroll.addView(column);
+            dialog.setContentView(scroll);
+            dialog.show();
+            dialog.getWindow().setLayout(-1, -1);
+          });
+      Thread.sleep(600);
+      ui(
+          () -> {
+            TextView left = bothHearts.findViewById(R.id.widget_main),
+                right = bothHearts.findViewById(R.id.widget_secondary);
+            int[] a = new int[2], b = new int[2];
+            left.getLocationOnScreen(a);
+            right.getLocationOnScreen(b);
+            check(
+                b[0] > a[0] + left.getWidth(),
+                "The two totals appear side by side, never as a stacked string");
+            check(Math.abs(a[1] - b[1]) < 4, "Both totals align on the same horizontal row");
+            for (android.appwidget.AppWidgetHostView view : hosted)
+              check(view.getWidth() > view.getHeight(), "Every hosted widget is horizontal");
+          });
+      screenshot("228-android-real-widgets");
+      ledger.getJSONObject(today).put("asechka", 129);
+      widgetApi.store.snapshot(
+          "/api/together", obj("heartDays", ledger, "hearts", new JSONObject()));
+      UniverseWidgets.updateAll(getTargetContext());
+      await(
+          () ->
+              "129 ♡"
+                  .contentEquals(((TextView) bothHearts.findViewById(R.id.widget_main)).getText()),
+          "An offline persisted change reaches the actual widget host");
+    } finally {
+      ui(host::stopListening);
+      host.deleteHost();
+      widgetApi.store.remove("data:/api/together");
+      widgetApi.store.remove("data:/memories.json");
+      widgetApi.store.remove("data:/api/keepsakes");
+      widgetApi.store.lock();
+    }
   }
 
   private void featureTests() throws Exception {

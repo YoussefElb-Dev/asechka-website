@@ -44,13 +44,36 @@ public class UniverseWidgets extends AppWidgetProvider {
   @Override
   public void onUpdate(Context c, AppWidgetManager manager, int[] ids) {
     SyncJob.schedule(c);
-    updateAll(c);
+    refreshFromReceiver(c);
   }
 
   @Override
   public void onEnabled(Context c) {
     SyncJob.schedule(c);
-    updateAll(c);
+    refreshFromReceiver(c);
+  }
+
+  @Override
+  public void onAppWidgetOptionsChanged(
+      Context c, AppWidgetManager manager, int id, Bundle options) {
+    refreshFromReceiver(c);
+  }
+
+  private void refreshFromReceiver(Context context) {
+    // Keep the receiver alive until the encrypted offline snapshot reaches the launcher.
+    PendingResult pending = goAsync();
+    Context c = context.getApplicationContext();
+    worker.execute(
+        () -> {
+          try {
+            previous = "";
+            render(c);
+          } catch (Exception error) {
+            android.util.Log.w("AsechkaWidget", "Widget snapshot unavailable");
+          } finally {
+            if (pending != null) pending.finish();
+          }
+        });
   }
 
   static void updateAll(Context context) {
@@ -146,9 +169,19 @@ public class UniverseWidgets extends AppWidgetProvider {
         v.setTextViewText(R.id.widget_title, TITLES[kind]);
         v.setTextViewText(R.id.widget_icon, kind == 5 ? "✦" : "♡");
         v.setViewVisibility(R.id.widget_timer, View.GONE);
+        v.setViewVisibility(R.id.widget_secondary, View.VISIBLE);
+        v.setViewVisibility(
+            R.id.widget_right, data == null || kind == 0 ? View.GONE : View.VISIBLE);
+        v.setViewVisibility(
+            R.id.widget_divider, data == null || kind == 0 ? View.GONE : View.VISIBLE);
+        v.setViewVisibility(
+            R.id.widget_left_label, data == null || kind == 0 ? View.GONE : View.VISIBLE);
         String primary = "Open Asechka ♡",
             detail = "Connect once to fill our little widget",
-            extra = "";
+            extra = "",
+            secondary = "",
+            leftLabel = "",
+            rightLabel = "";
         if (data != null) {
           if (kind == 0) {
             JSONArray quotes = memories == null ? null : memories.optJSONArray("quotes");
@@ -162,61 +195,80 @@ public class UniverseWidgets extends AppWidgetProvider {
                           : String.valueOf(raw))
                       + "”";
             } else primary = "A little life, a lot of love.";
-            detail = "A different little thought every six hours";
+            detail = "";
           }
           if (kind == 1) {
             boolean a = actor.equals("asnat");
             primary = number(a ? asnat : youssef) + " ♡";
-            detail = SocialFeed.nameOf(actor) + " · all hearts sent";
+            leftLabel = SocialFeed.nameOf(actor);
+            detail = "all hearts sent";
             JSONObject last = hearts == null ? null : hearts.optJSONObject(a ? "asechka" : "me");
-            extra = "Last · " + time(last == null ? "" : last.optString("sentAt"));
+            rightLabel = "Last sent";
+            secondary = time(last == null ? "" : last.optString("sentAt"));
+            extra = "a little love, kept close";
           }
           if (kind == 2) {
-            primary = "Asnat  " + number(asnat) + " ♡\nYoussef  " + number(youssef) + " ♡";
+            leftLabel = "Asnat";
+            rightLabel = "Youssef";
+            primary = number(asnat) + " ♡";
+            secondary = number(youssef) + " ♡";
             JSONObject a = hearts == null ? null : hearts.optJSONObject("asechka"),
                 y = hearts == null ? null : hearts.optJSONObject("me");
-            detail = "Asnat · " + time(a == null ? "" : a.optString("sentAt"));
-            extra = "Youssef · " + time(y == null ? "" : y.optString("sentAt"));
+            detail = time(a == null ? "" : a.optString("sentAt"));
+            extra = time(y == null ? "" : y.optString("sentAt"));
           }
           if (kind == 3) {
-            primary =
-                "Asnat  "
-                    + number(daily == null ? 0 : daily.optLong("asechka"))
-                    + " ♡\nYoussef  "
-                    + number(daily == null ? 0 : daily.optLong("me"))
-                    + " ♡";
-            detail = today + " · Eastern time";
-            extra = "Every little tap counts";
+            leftLabel = "Asnat";
+            rightLabel = "Youssef";
+            primary = number(daily == null ? 0 : daily.optLong("asechka")) + " ♡";
+            secondary = number(daily == null ? 0 : daily.optLong("me")) + " ♡";
+            detail = "hearts today";
+            extra = "hearts today · ET";
           }
           if (kind == 4) {
+            leftLabel = "Together";
+            rightLabel = "And counting";
             primary =
                 start > 0
                     ? number(Math.max(0, (System.currentTimeMillis() - start) / 86400000L))
-                        + " days ♡"
-                    : "Our beginning, kept close";
-            detail = start > 0 ? "Since " + time(since) : "Set our beginning in the app";
+                    : "—";
+            secondary = "Set our beginning";
+            detail = "days of us";
             if (start > 0) {
               v.setViewVisibility(R.id.widget_timer, View.VISIBLE);
+              v.setViewVisibility(R.id.widget_secondary, View.GONE);
               v.setChronometer(
                   R.id.widget_timer,
                   SystemClock.elapsedRealtime() - (System.currentTimeMillis() - start),
                   "%s",
                   true);
             }
-            extra = "A little more us, every second";
+            extra = "hours · minutes · seconds";
           }
           if (kind == 5) {
-            primary = number(streak.days) + " days ✦";
-            detail = number(streak.lives) + (streak.lives == 1 ? " saved life" : " saved lives");
+            leftLabel = "Our streak";
+            rightLabel = "Saved lives";
+            primary = number(streak.days);
+            secondary = number(streak.lives) + " ✦";
+            detail = "days together";
             extra = streak.todayComplete ? "Today is covered ♡" : "Send a heart to cover today";
           }
         }
         v.setTextViewText(R.id.widget_main, primary);
+        v.setTextViewText(R.id.widget_secondary, secondary);
+        v.setTextViewText(R.id.widget_left_label, leftLabel);
+        v.setTextViewText(R.id.widget_right_label, rightLabel);
         v.setTextViewTextSize(
             R.id.widget_main,
             android.util.TypedValue.COMPLEX_UNIT_SP,
-            kind == 0 ? 18 : kind == 2 || kind == 3 ? 20 : 28);
-        v.setInt(R.id.widget_main, "setMaxLines", kind == 0 ? 7 : 3);
+            kind == 0 || data == null ? 18 : primary.length() > 9 ? 20 : 26);
+        v.setTextViewTextSize(
+            R.id.widget_secondary,
+            android.util.TypedValue.COMPLEX_UNIT_SP,
+            kind == 1 ? 16 : secondary.length() > 9 ? 20 : 26);
+        v.setInt(R.id.widget_main, "setMaxLines", kind == 0 ? 3 : data == null ? 2 : 1);
+        v.setInt(R.id.widget_secondary, "setMaxLines", kind == 1 ? 2 : 1);
+        v.setViewVisibility(R.id.widget_detail, detail.isEmpty() ? View.GONE : View.VISIBLE);
         v.setTextViewText(R.id.widget_detail, detail);
         v.setTextViewText(R.id.widget_extra, extra);
         v.setTextViewText(

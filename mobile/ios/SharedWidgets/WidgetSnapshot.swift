@@ -11,8 +11,16 @@ struct WidgetSnapshot:Codable {
     var ledger:[String:[String:Int]]=[:]
     var policyStarted="2026-10-12";var policySeed="2026-10-25";var seedDays=13
     var since:Double=0;var saved:Double=0;var day=""
+    static var storageURL:URL? { FileManager.default.containerURL(forSecurityApplicationGroupIdentifier:group)?.appendingPathComponent("widgets.json") }
+    static var preview:Self {
+        var v=Self();v.quotes=["Every ordinary day feels a little brighter with you."];v.asnat=128;v.youssef=116
+        v.lastAsnat="2026-10-27T17:20:00Z";v.lastYoussef="2026-10-27T17:24:00Z"
+        v.ledger=[SharedHeartStreak.day(Date()):["asechka":12,"me":8]]
+        v.since=Date().addingTimeInterval(-12*86400-3*3600-24*60).timeIntervalSince1970
+        v.saved=Date().timeIntervalSince1970;return v
+    }
     static func load()->Self {
-        guard let url=FileManager.default.containerURL(forSecurityApplicationGroupIdentifier:group)?.appendingPathComponent("widgets.json"),let data=try? Data(contentsOf:url),let value=try? JSONDecoder().decode(Self.self,from:data)else{return Self()};return value
+        guard let url=storageURL,let data=try? Data(contentsOf:url),let value=try? JSONDecoder().decode(Self.self,from:data)else{return Self()};return value
     }
     static func time(_ value:String)->String {
         let iso=ISO8601DateFormatter();iso.formatOptions=[.withInternetDateTime,.withFractionalSeconds]

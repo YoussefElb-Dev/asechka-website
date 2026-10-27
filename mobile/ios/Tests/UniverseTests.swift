@@ -3,6 +3,41 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    @MainActor func testWidgetExtensionIsActuallyEmbedded()throws {
+        XCTAssertTrue(WidgetBridge.extensionPresent,"The installed app must retain its actual WidgetKit extension, not just gallery previews")
+        let plugins=try XCTUnwrap(Bundle.main.builtInPlugInsURL)
+        let urls=try FileManager.default.contentsOfDirectory(at:plugins,includingPropertiesForKeys:nil)
+        let widget=try XCTUnwrap(urls.first{$0.lastPathComponent=="AsechkaWidgets.appex"})
+        let bundle=try XCTUnwrap(Bundle(url:widget))
+        XCTAssertEqual(bundle.object(forInfoDictionaryKey:"CFBundleVersion") as? String,Bundle.main.object(forInfoDictionaryKey:"CFBundleVersion") as? String)
+        XCTAssertNotNil(bundle.executableURL)
+    }
+    func testHorizontalWidgetColumnsUseTheSameSavedCountersAndDay()throws {
+        var v=WidgetSnapshot();v.saved=1;v.asnat=128;v.youssef=116;v.actor="youssef"
+        v.ledger=["2026-10-27":["asechka":12,"me":8]];v.quotes=["First little thought","Second little thought"]
+        let before=try XCTUnwrap(BookDates.instant("2026-10-28T03:59:59Z"))
+        let totals=WidgetPresentation(kind:2,date:before,snapshot:v)
+        XCTAssertEqual(totals.leftLabel,"Asnat");XCTAssertEqual(totals.leftValue,"128 ♡")
+        XCTAssertEqual(totals.rightLabel,"Youssef");XCTAssertEqual(totals.rightValue,"116 ♡")
+        let today=WidgetPresentation(kind:3,date:before,snapshot:v)
+        XCTAssertEqual(today.leftValue,"12 ♡");XCTAssertEqual(today.rightValue,"8 ♡")
+        let tomorrow=WidgetPresentation(kind:3,date:before.addingTimeInterval(1),snapshot:v)
+        XCTAssertEqual(tomorrow.leftValue,"0 ♡");XCTAssertEqual(tomorrow.rightValue,"0 ♡")
+        XCTAssertEqual(WidgetPresentation(kind:1,date:before,snapshot:v).leftLabel,"Youssef")
+        let quote=WidgetPresentation(kind:0,date:before,snapshot:v)
+        XCTAssertNotEqual(quote.quote,WidgetPresentation(kind:0,date:before.addingTimeInterval(21600),snapshot:v).quote)
+        XCTAssertEqual(WidgetPresentation.titles.count,6)
+    }
+    @MainActor func testAppWritesARealSharedWidgetSnapshot()throws {
+        let store=UniverseStore(previewFixture:true)
+        store.heartDays=[HeartLedger.day():["asechka":128,"me":116]]
+        XCTAssertNotNil(WidgetSnapshot.storageURL,"The app and widget targets must both retain the App Group entitlement")
+        WidgetBridge.refresh(store)
+        let saved=WidgetSnapshot.load()
+        XCTAssertGreaterThan(saved.saved,0)
+        XCTAssertEqual(saved.asnat,128);XCTAssertEqual(saved.youssef,116)
+        XCTAssertEqual(saved.ledger,store.heartDays)
+    }
     @MainActor func testMessagesAreLimitedDurableAndCloseOnlyOnce()throws {
         let store=UniverseStore(previewFixture:true)
         for i in 1...3{try store.sendMessage("A little message \(i)")}

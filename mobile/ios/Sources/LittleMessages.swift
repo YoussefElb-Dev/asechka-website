@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import WidgetKit
 
 struct LittleMessage:Codable,Identifiable,Equatable {
     var id:String;var from:String;var to:String;var text:String?;var preview:String;var day:String;var createdAt:String;var closedAt:String?;var pending:Bool?
@@ -58,8 +59,18 @@ struct MessagePopupWindow:UIViewRepresentable {
 
 struct WidgetGallery:View {
     @EnvironmentObject private var universe:UniverseStore
-    var body:some View {ScrollView{VStack(spacing:16){Text("Long-press your Home Screen, choose Add Widget, then find Asechka. Widgets show saved information; open the app to sync. Shared iPhone data requires App Group support when signing.").font(.subheadline).foregroundColor(Palette.muted)
-        ForEach(0..<6,id:\.self){kind in UniverseWidgetView(entry:UniverseEntry(date:Date(),value:snapshot),kind:kind).frame(height:210).clipShape(RoundedRectangle(cornerRadius:28))}
-    }.padding(22)}.background(Palette.background).navigationTitle("Our widgets")}
+    @State private var refreshed=false
+    var body:some View {ScrollView{VStack(alignment:.leading,spacing:16){
+        Text("Long-press your Home Screen, choose Edit → Add Widget, then search for Asechka. Choose any of our six wide widgets.").font(.subheadline).foregroundColor(Palette.muted)
+        VStack(alignment:.leading,spacing:10){
+            Label(WidgetBridge.extensionPresent ? "Widget extension included":"Widget extension missing",systemImage:WidgetBridge.extensionPresent ? "checkmark.circle":"exclamationmark.circle").font(.subheadline.weight(.semibold)).accessibilityIdentifier("widget-extension-status")
+            if !WidgetBridge.extensionPresent{Text("In Sideloadly, leave Remove App Extensions (Plug-ins) unchecked, then reinstall this IPA using the same Apple ID.").font(.caption)}
+            Label(WidgetBridge.sharedDataAvailable ? "Shared widget data connected":"Shared widget data unavailable",systemImage:WidgetBridge.sharedDataAvailable ? "checkmark.circle":"exclamationmark.circle").font(.subheadline).accessibilityIdentifier("widget-data-status")
+            if !WidgetBridge.sharedDataAvailable{Text("The app and widget need the same provisioned App Group to share your saved counts. A signing tool may remove or change that permission. Without it, personal counts cannot appear in widgets.").font(.caption).foregroundColor(Palette.muted)}
+            Button{WidgetBridge.refresh(universe);refreshed=true;Touch.tap()}label:{Label(refreshed ? "Widgets refreshed":"Refresh widgets",systemImage:"arrow.clockwise")}.accessibilityIdentifier("refresh-widgets")
+        }.card()
+        ForEach(0..<6,id:\.self){kind in UniverseWidgetView(entry:UniverseEntry(date:Date(),value:snapshot),kind:kind).frame(height:164).background(Palette.gradient).clipShape(RoundedRectangle(cornerRadius:24)).accessibilityIdentifier("widget-preview-\(kind)")}
+        Text("Saved content works offline. The together timer runs live; other updates follow the phone’s widget schedule. Open Asechka to sync new content.").font(.caption).foregroundColor(Palette.muted)
+    }.padding(22)}.background(Palette.background).navigationTitle("Our widgets").task{WidgetBridge.refresh(universe)}}
     private var snapshot:WidgetSnapshot{var v=WidgetSnapshot();v.actor=universe.actor;v.quotes=universe.memories.quotes.compactMap(\.text);v.ledger=universe.heartDays;v.asnat=universe.heartDays.values.reduce(0){$0+($1["asechka"] ?? 0)};v.youssef=universe.heartDays.values.reduce(0){$0+($1["me"] ?? 0)};v.lastAsnat=universe.hearts["asechka"] ?? "";v.lastYoussef=universe.hearts["me"] ?? "";v.since=BookDates.instant((universe.keepsakes["since"] as? [String:Any])?["startedAt"] as? String ?? "")?.timeIntervalSince1970 ?? 0;v.saved=Date().timeIntervalSince1970;return v}
 }

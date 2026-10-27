@@ -380,7 +380,7 @@ final class Messages {
                       14);
                   for (RemoteViews preview : previews) {
                     View card = preview.apply(activity, box);
-                    LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, ui.dp(230));
+                    LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, ui.dp(164));
                     p.topMargin = ui.dp(16);
                     box.addView(card, p);
                   }

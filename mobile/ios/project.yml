@@ -6,8 +6,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '2.2.7'
-    CURRENT_PROJECT_VERSION: '16'
+    MARKETING_VERSION: '2.2.8'
+    CURRENT_PROJECT_VERSION: '17'
     TARGETED_DEVICE_FAMILY: '1,2'
     CODE_SIGNING_ALLOWED: NO
 targets:
@@ -41,7 +41,6 @@ targets:
       - path: Widgets
         excludes: [Info.plist, Widgets.entitlements]
       - path: SharedWidgets
-      - path: Widgets/AsechkaWidgets.swift
       - path: Sources/SharedHeartStreak.swift
     settings:
       base:
