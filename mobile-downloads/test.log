@@ -47,19 +47,19 @@ ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --version --output-format xml1
 
-Build description signature: 4b165338d2646219cd4a7875d0eaabc1
-Build description path: /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/XCBuildData/4b165338d2646219cd4a7875d0eaabc1.xcbuilddata
+Build description signature: 21b5ade1061582419898ae3fa94a4ad4
+Build description path: /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/XCBuildData/21b5ade1061582419898ae3fa94a4ad4.xcbuilddata
 ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache
 
-CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
-    builtin-create-build-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products
-
 CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
     builtin-create-build-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex
+
+CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
+    builtin-create-build-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products
 
 CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
@@ -72,22 +72,6 @@ CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/i
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka-3739e29b6552f3bd49e0e90c2d5d4295-VFS-iphonesimulator/all-product-headers.yaml
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka-3739e29b6552f3bd49e0e90c2d5d4295-VFS-iphonesimulator/all-product-headers.yaml
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.hmap (in target 'AsechkaTests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.hmap
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist (in target 'AsechkaTests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.hmap (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.hmap
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_const_extract_protocols.json (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -108,6 +92,14 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.hmap (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.hmap
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyStaticMetadataFileList (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -213,6 +205,10 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-non-framework-target-headers.hmap
 
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist
+
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json
@@ -232,6 +228,10 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-OutputFileMap.json (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.hmap (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.hmap
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.DependencyStaticMetadataFileList (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -289,13 +289,13 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.hmap
 
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyStaticMetadataFileList (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyStaticMetadataFileList
-
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyStaticMetadataFileList (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyStaticMetadataFileList
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-project-headers.hmap (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -373,13 +373,13 @@ ProcessProductPackaging /Users/runner/work/asechka-website/asechka-website/mobil
     
     builtin-productPackagingUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/Widgets.entitlements -entitlements -format xml -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex-Simulated.xcent
 
-ProcessProductPackagingDER /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent.der (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /usr/bin/derq query -f xml -i /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent.der --raw
-
 ProcessProductPackagingDER /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex-Simulated.xcent /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex-Simulated.xcent.der (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /usr/bin/derq query -f xml -i /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex-Simulated.xcent -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex-Simulated.xcent.der --raw
+
+ProcessProductPackagingDER /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent.der (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /usr/bin/derq query -f xml -i /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent.der --raw
 
 Ld /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/__preview.dylib normal (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -398,25 +398,9 @@ SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaWidgets (in target 'A
 EmitSwiftModule normal arm64 (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift:52:8: error: type 'UniverseWidget' does not conform to protocol 'Widget'
-struct UniverseWidget:Widget {
-       ^
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift:52:8: note: add stubs for conformance
-struct UniverseWidget:Widget {
-       ^
-SwiftUI.Widget.init:2:28: note: protocol requires initializer 'init()' with type '()'
-@MainActor @preconcurrency init()}
-                           ^
 
-Failed frontend command:
-/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -emit-module -experimental-skip-non-inlinable-function-bodies-without-types /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift -target arm64-apple-ios16.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -no-color-diagnostics -application-extension -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -D WIDGET_EXTENSION -serialize-debugging-options -const-gather-protocols-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios -resource-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/runner/work/asechka-website/asechka-website/mobile/ios -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources -Xcc -DDEBUG\=1 -module-name AsechkaWidgets -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -emit-module-doc-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftdoc -emit-module-source-info-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftsourceinfo -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-Swift.h -serialize-diagnostics-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-master-emit-module.dia -emit-dependencies-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-master-emit-module.d -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftmodule -emit-abi-descriptor-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.abi.json
 SwiftCompile normal arm64 Compiling\ WidgetSnapshot.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift (in target 'AsechkaWidgets' from project 'Asechka')
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 Compiling\ AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
@@ -426,19 +410,208 @@ SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mob
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
+SwiftCompile normal arm64 Compiling\ AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for AsechkaWidgets (in target 'AsechkaWidgets' from project 'Asechka')
+
+SwiftDriver\ Compilation\ Requirements AsechkaWidgets normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaWidgets -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftFileList -DDEBUG -DWIDGET_EXTENSION -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -application-extension -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
+
+SwiftMergeGeneratedHeaders /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/AsechkaWidgets-Swift.h /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-Swift.h (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-Swift.h -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/AsechkaWidgets-Swift.h
+
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftmodule (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftmodule /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/arm64-apple-ios-simulator.swiftmodule
+
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftdoc (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/arm64-apple-ios-simulator.swiftdoc
+
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.abi.json (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.abi.json /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftsourceinfo (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftsourceinfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+ProcessProductPackaging /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.entitlements /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app.xcent (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+    Entitlements:
+    
+    {
+}
+    
+    builtin-productPackagingUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.entitlements -entitlements -format xml -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app.xcent
+
+ProcessProductPackaging /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.entitlements /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "FAKETEAMID.app.asechka.ios";
+    "com.apple.security.application-groups" =     (
+        "group.app.asechka.shared"
+    );
+}
+    
+    builtin-productPackagingUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.entitlements -entitlements -format xml -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent
+
+ProcessProductPackagingDER /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app.xcent /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app.xcent.der (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /usr/bin/derq query -f xml -i /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app.xcent -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app.xcent.der --raw
+
+ProcessProductPackagingDER /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent.der (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /usr/bin/derq query -f xml -i /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.app-Simulated.xcent.der --raw
+
+MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_output/thinned (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_output/thinned
+
+MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_output/unthinned (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_output/unthinned
+
+GenerateAssetSymbols /Users/runner/work/asechka-website/asechka-website/mobile/ios/Resources/Assets.xcassets (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool /Users/runner/work/asechka-website/asechka-website/mobile/ios/Resources/Assets.xcassets --compile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_dependencies --output-partial-info-plist /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_generated_info.plist --app-icon AppIcon --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 16.0 --platform iphonesimulator --bundle-identifier app.asechka.ios --generate-swift-asset-symbol-extensions NO --generate-swift-asset-symbols /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+CompileAssetCatalogVariant thinned /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app /Users/runner/work/asechka-website/asechka-website/mobile/ios/Resources/Assets.xcassets (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool /Users/runner/work/asechka-website/asechka-website/mobile/ios/Resources/Assets.xcassets --compile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --compress-pngs --enable-on-demand-resources YES --filter-for-thinning-device-configuration iPhone17,1 --filter-for-device-os-version 18.5 --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 16.0 --platform iphonesimulator
+
+SwiftDriver Asechka normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Asechka -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ Asechka (in target 'Asechka' from project 'Asechka')
+EmitSwiftModule normal arm64 (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 Compiling\ AsechkaApp.swift,\ AsechkaWidgets.swift,\ BiometricAccess.swift,\ BookModels.swift,\ BookViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BiometricAccess.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift (in target 'Asechka' from project 'Asechka')
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BiometricAccess.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling SharedHeartStreak.swift (in target 'AsechkaWidgets' from project 'Asechka')
+
+SwiftCompile normal arm64 Compiling\ PersonalViews.swift,\ SharedHeartStreak.swift,\ SharedViews.swift,\ UniverseStore.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/PersonalViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/UniverseStore.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/PersonalViews.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedViews.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/UniverseStore.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling WidgetSnapshot.swift (in target 'AsechkaWidgets' from project 'Asechka')
+
+SwiftCompile normal arm64 Compiling\ HomeHub.swift,\ LetterCelebration.swift,\ LittleMessages.swift,\ Models.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+Failed frontend command:
+/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BiometricAccess.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/CodeDoor.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ConnectionView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HeartRain.swift -primary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift -primary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift -primary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift -primary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/PersonalViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/UniverseStore.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Vault.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/WidgetBridge.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/GeneratedAssetSymbols.swift -supplementary-output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/supplementaryOutputs-3 -target arm64-apple-ios16.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios -resource-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/runner/work/asechka-website/asechka-website/mobile/ios -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources -Xcc -DDEBUG\=1 -module-name Asechka -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/HomeHub.o -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/LetterCelebration.o -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/LittleMessages.o -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Models.o -index-unit-output-path /Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/HomeHub.o -index-unit-output-path /Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/LetterCelebration.o -index-unit-output-path /Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/LittleMessages.o -index-unit-output-path /Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Models.o -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -index-system-modules
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:66:1: error: expected '}' in struct
+
+^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:7:24: note: to match this opening '{'
+struct MessageHub:View {
+                       ^
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:66:1: error: expected '}' in struct
+
+^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:7:24: note: to match this opening '{'
+struct MessageHub:View {
+                       ^
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:66:1: error: expected '}' in struct
+
+^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:7:24: note: to match this opening '{'
+struct MessageHub:View {
+                       ^
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:66:1: error: expected '}' in struct
+
+^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift:7:24: note: to match this opening '{'
+struct MessageHub:View {
+                       ^
+
+SwiftDriverJobDiscovery normal arm64 Compiling AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
+
+SwiftDriver\ Compilation AsechkaWidgets normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-Swift-Compilation -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaWidgets -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftFileList -DDEBUG -DWIDGET_EXTENSION -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -application-extension -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
+
 
 Test session results, code coverage, and logs:
 	/Users/runner/work/asechka-website/asechka-website/mobile/ios/NativeChecks.xcresult
 
 Testing failed:
-	Type 'UniverseWidget' does not conform to protocol 'Widget'
+	Expected '}' in struct
 	Testing cancelled because the build failed.
 
 ** TEST FAILED **
 
 
 The following build commands failed:
-	EmitSwiftModule normal arm64 (in target 'AsechkaWidgets' from project 'Asechka')
-	SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaWidgets (in target 'AsechkaWidgets' from project 'Asechka')
+	SwiftCompile normal arm64 Compiling\ HomeHub.swift,\ LetterCelebration.swift,\ LittleMessages.swift,\ Models.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+	SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift (in target 'Asechka' from project 'Asechka')
+	SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift (in target 'Asechka' from project 'Asechka')
+	SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift (in target 'Asechka' from project 'Asechka')
+	SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
 	Testing project Asechka with scheme Asechka
-(3 failures)
+(6 failures)
