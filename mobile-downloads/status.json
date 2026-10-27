@@ -1,51 +1,13 @@
 {
-  "source": "3dbe9cd8f8b5d12cf74d8ee29a74f040657fd4c0",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40458737815",
+  "source": "bf0bd5f101c9672294f55181f9335536eefcc249",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40561666068",
   "backend": "success",
   "android": "success",
-  "iphone": "success",
+  "iphone": "cancelled",
   "jobs": [
     {
-      "name": "Shared collection tests",
-      "conclusion": "success",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/setup-node@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run node --test tests/*.test.mjs",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/setup-node@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
-    },
-    {
       "name": "iPhone IPA for sideloading",
-      "conclusion": "success",
+      "conclusion": "cancelled",
       "steps": [
         {
           "name": "Set up job",
@@ -65,7 +27,7 @@
         },
         {
           "name": "Test native screens, offline posts, and encrypted storage",
-          "conclusion": "success"
+          "conclusion": "cancelled"
         },
         {
           "name": "Capture native iPhone preview",
@@ -77,15 +39,15 @@
         },
         {
           "name": "Build the iPhone app",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
+          "conclusion": "skipped"
         },
         {
           "name": "Run actions/upload-artifact@v4",
@@ -158,16 +120,50 @@
           "conclusion": "success"
         }
       ]
+    },
+    {
+      "name": "Shared collection tests",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node --test tests/*.test.mjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
     }
   ],
   "files": {
-    "Asechka-iPhone.ipa": {
-      "bytes": 24250033,
-      "sha256": "79ddcede5f75957c8a51d24165d16ca1b030bd759a0004dedf640abdc7435692"
-    },
     "Asechka-Android.apk": {
-      "bytes": 20416871,
-      "sha256": "cdd3ff2e8c6ddcff322070a8815a98651d4b43aadb58c1f5e10161641eb2eefe"
+      "bytes": 8590138,
+      "sha256": "322f6daca04822b06c3a36d0968e17d7b3428f07c20b038907ec5c2c9c7c3924"
     }
   }
 }
