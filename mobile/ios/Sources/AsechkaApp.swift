@@ -51,6 +51,7 @@ struct RootView:View {
     @Environment(\.accessibilityReduceMotion) private var reduced
     @State private var tab=0
     @State private var composer:ComposeRequest?
+    @State private var messages=false
     @State private var settings=false
     @State private var connection=false
     @Namespace private var tabMotion
@@ -69,6 +70,8 @@ struct RootView:View {
         .overlay{if universe.unlocked && universe.requiresCode{Palette.background.ignoresSafeArea().accessibilityHidden(true)}}
         .accessibilityHidden(universe.unlocked && universe.requiresCode)
         .background(AppDoorWindow().frame(width:0,height:0))
+        .background(MessagePopupWindow().frame(width:0,height:0))
+        .sheet(isPresented:$messages){MessageHub()}
         .onChange(of:phase){if $0 != .active{universe.requireCode(background:$0 == .background)}}
         .sheet(item:$composer){request in ComposerView(request:request)}
         .sheet(isPresented:$corner){CornerView()}
@@ -82,7 +85,7 @@ struct RootView:View {
             guard phase == .active else{return}
             while !Task.isCancelled {
                 if universe.unlocked && !universe.requiresCode{await universe.refreshSharedHearts()}
-                do{try await Task.sleep(nanoseconds:15_000_000_000)}catch{return}
+                do{try await Task.sleep(nanoseconds:5_000_000_000)}catch{return}
             }
         }
         .task(id:phase){
@@ -100,6 +103,7 @@ struct RootView:View {
                 Text("asechka.").font(.custom("Manrope-Bold",size:25))
                 Spacer()
                 Button{Touch.tap();composer=ComposeRequest(photo:tab != 2)}label:{Image(systemName:"plus.app").font(.system(size:22)).frame(width:44,height:44)}.accessibilityLabel("Create post")
+                Button{Touch.tap();messages=true}label:{Image(systemName:"envelope").font(.system(size:21)).frame(width:44,height:44)}.accessibilityLabel("Messages")
                 Button{Touch.tap();connection=true}label:{Image(systemName:"arrow.clockwise").font(.system(size:20)).frame(width:44,height:44)}.accessibilityLabel("Refresh and reconnect")
                 Button{Touch.tap();settings=true}label:{Avatar(actor:universe.actor,size:38)}.accessibilityLabel("Profile and settings")
             }.padding(.horizontal,20).padding(.vertical,7)

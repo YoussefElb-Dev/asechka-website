@@ -1,0 +1,15 @@
+# Little messages and widgets · 2.2.6
+
+Android and iPhone include the same six home-screen widget families: rotating quotes, your lifetime heart total, both lifetime totals with each person's last-sent time, today's hearts, the live together timer, and shared streak/lives. Quotes rotate every six hours using the same selection rule. Dates and daily counters use Eastern time. Add several sizes or several widget types to your home screen.
+
+Widgets use saved data and remain readable offline. Android also refreshes through the system's scheduled background job. iPhone widgets read an App Group snapshot when the app syncs; WidgetKit controls when updated snapshots appear. Neither platform guarantees minute-by-minute background network updates. The together timer uses the operating system's native timer and can tick without network access. A “Saved” timestamp distinguishes cached information from live content.
+
+The IPA embeds `AsechkaWidgets.appex`. Both app and extension require the `group.app.asechka.shared` App Group entitlement for sharing widget data. Sideloading must preserve/sign the extension and provision the same App Group for both targets. A free Personal Team may not support App Groups; in that case the main app works, while widgets cannot receive personal snapshots. Widgets display an honest setup state instead of invented counts. No website passwords, session cookies, or private message bodies are written into the shared widget container.
+
+Use the envelope in the main toolbar to compose or view history. Each person has three messages per Eastern calendar day, enforced by the shared backend across all devices. Offline sends wait in encrypted storage; the server applies the limit on the day of delivery. A limit rejection stays in Saved changes for review and cannot silently send tomorrow.
+
+Incoming messages appear automatically while the recipient uses the app (foreground checks approximately every five seconds), or after reopening and syncing. They overlay other app screens without discarding drafts. They are in-app surprises, not operating-system push notifications. After the recipient explicitly closes one, a durable receipt hides it immediately, including offline; syncing then removes the full body from the current shared data. History shows only a short excerpt and status. Offline devices learn a closure on their next connection; simultaneous disconnected devices cannot enforce a global one-view rule until they reconnect. The private repository's version history is not a secure-erasure system.
+
+The photo feed reuses decoded image memory, remembers aspect ratios, suspends decorative panning during active Android scrolling, and defers incoming list updates until scrolling stops. Existing photos and new additions still fit their own aspect ratio.
+
+Android continues to support API 23+ with the original update-signing certificate. iPhone remains iOS 16+ and requires sideload signing. Normal app reopening has no password screen; optional biometric locking remains available.

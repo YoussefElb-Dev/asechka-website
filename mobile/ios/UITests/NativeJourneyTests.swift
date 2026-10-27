@@ -1,6 +1,18 @@
 import XCTest
 
 final class NativeJourneyTests:XCTestCase {
+    func testLittleMessageComposerHistoryAndFastPhotos() {
+        let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
+        XCTAssertTrue(app.buttons["Messages"].waitForExistence(timeout:15));app.buttons["Messages"].tap()
+        XCTAssertTrue(app.textViews["Your little message"].waitForExistence(timeout:5));app.textViews["Your little message"].tap();app.textViews["Your little message"].typeText("A little love, saved offline.")
+        capture("226-iPhone-message-composer");app.buttons["Save to send when online"].tap()
+        XCTAssertTrue(app.buttons["Messages"].waitForExistence(timeout:5));app.buttons["Messages"].tap();app.buttons["Message history"].tap()
+        XCTAssertTrue(app.staticTexts["A little love, saved offline."].waitForExistence(timeout:5));capture("226-iPhone-message-history")
+        app.buttons["Done"].firstMatch.tap();app.buttons["Done"].firstMatch.tap();app.buttons["Photos"].firstMatch.tap()
+        for _ in 0..<5{app.swipeUp(velocity:.fast);app.swipeDown(velocity:.fast)}
+        XCTAssertTrue(app.buttons["Create post"].exists);capture("226-iPhone-photos")
+    }
+
     func testNormalReopenHasNoPasswordScreenAndPreservesComposer() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         XCTAssertTrue(app.buttons["Create post"].waitForExistence(timeout:15))

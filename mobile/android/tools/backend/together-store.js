@@ -1,3 +1,4 @@
+import { messageChange } from './messages.js';
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { UUID, photoPath, dailyMemory } from './daily-memory.js';
@@ -45,8 +46,12 @@ export function checkedPhoto(value){
   return bytes;
 }
 export function checkedTogetherChange(input){
-  const actions=['saveItem','toggleItem','removeItem','sendHeart'];
+  const actions=['saveItem','toggleItem','removeItem','sendHeart','sendMessage','closeMessage'];
   if(!input || !actions.includes(input.action) || !UUID.test(input.operationId)) throw new TogetherError('Please try that little change again.',400);
+  if(['sendMessage','closeMessage'].includes(input.action)){
+    if(!['asnat','youssef'].includes(input.actor) || input.action==='closeMessage' && !UUID.test(input.id)) throw new TogetherError('Choose a message and profile first.',400);
+    return {action:input.action,operationId:input.operationId,actor:input.actor,id:input.id,text:input.text};
+  }
   if(input.action==='sendHeart'){
     if(!['me','asechka'].includes(input.from)) throw new TogetherError('Choose who is sending this little heart.',400);
     const count=input.count ?? 1;
@@ -73,7 +78,10 @@ export function checkedTogetherChange(input){
 export function changeTogether(base,change,now=new Date()){
   checkedTogether(base);
   const data=structuredClone(base), time=now.toISOString();
-  if(change.action==='sendHeart'){
+  if(['sendMessage','closeMessage'].includes(change.action)){
+    try{if(!messageChange(data,change,now))return {data:base,changed:false};}
+    catch(error){throw new TogetherError(error.message,error.status || 400);}
+  }else if(change.action==='sendHeart'){
     try {if(!addHearts(data,change,now))return {data:base,changed:false};}
     catch(error){throw new TogetherError(error.message,error.status || 400);}
   }else{

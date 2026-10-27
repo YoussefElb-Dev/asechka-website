@@ -3,6 +3,25 @@ import CryptoKit
 @testable import Asechka
 
 final class UniverseTests:XCTestCase {
+    @MainActor func testMessagesAreLimitedDurableAndCloseOnlyOnce()throws {
+        let store=UniverseStore(previewFixture:true)
+        for i in 1...3{try store.sendMessage("A little message \(i)")}
+        XCTAssertThrowsError(try store.sendMessage("A fourth"))
+        XCTAssertEqual(store.littleMessages.count,3);XCTAssertEqual(store.pending.count,3)
+        let first=try XCTUnwrap(store.littleMessages.first);store.choose("youssef")
+        XCTAssertEqual(store.incomingMessage?.id,first.id)
+        try store.closeMessage(first);XCTAssertNotEqual(store.incomingMessage?.id,first.id)
+        store.restore();XCTAssertNil(store.littleMessages.first{$0.id==first.id}?.text)
+        XCTAssertTrue(store.vault.value("closed-messages",as:[String].self)?.contains(first.id)==true)
+        XCTAssertEqual(store.pending.count,4)
+    }
+    func testWidgetDayBoundaryAndSnapshotRoundTrip()throws {
+        var value=WidgetSnapshot();value.actor="youssef";value.asnat=45;value.youssef=98;value.ledger=["2026-10-27":["me":2,"asechka":4]]
+        let decoded=try JSONDecoder().decode(WidgetSnapshot.self,from:JSONEncoder().encode(value));XCTAssertEqual(decoded.asnat,45);XCTAssertEqual(decoded.ledger,value.ledger)
+        XCTAssertEqual(SharedHeartStreak.day(try XCTUnwrap(BookDates.instant("2026-10-28T03:59:59Z"))),"2026-10-27")
+        XCTAssertEqual(SharedHeartStreak.day(try XCTUnwrap(BookDates.instant("2026-10-28T04:00:00Z"))),"2026-10-28")
+    }
+
     @MainActor func testNormalReopenAndRapidHeartsPreserveOfflineData()async throws {
         let universe=UniverseStore(previewFixture:true)
         let photos=universe.memories.posts.count

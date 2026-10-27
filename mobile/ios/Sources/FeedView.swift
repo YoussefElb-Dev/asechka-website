@@ -67,6 +67,10 @@ struct FeedView:View {
         }
     }
 }
+final class PhotoMemory {
+    static let shared=NSCache<NSString,UIImage>()
+    static func configure(){shared.totalCostLimit=48*1024*1024;shared.countLimit=50}
+}
 struct CachedPhoto:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.accessibilityReduceMotion) private var reduced
@@ -88,9 +92,9 @@ struct CachedPhoto:View {
             else if loading {ProgressView().tint(Palette.purple)}
             else {VStack(spacing:10){Image(systemName:"photo").font(.title);Text("Connect to finish saving this picture").font(.caption).multilineTextAlignment(.center)}.foregroundColor(Palette.muted).padding()}
         }.clipped()
-        .task(id:source){bitmap=nil;loading=true;if let data=await universe.image(source){
+        .task(id:source){PhotoMemory.configure();if let cached=PhotoMemory.shared.object(forKey:source as NSString){bitmap=cached;loading=false;return};bitmap=nil;loading=true;if let data=await universe.image(source){
             let image=await Task.detached(priority:.userInitiated){Self.thumbnail(data)}.value
-            withAnimation(reduced ? nil:.easeIn(duration:0.3)){bitmap=image}
+            guard !Task.isCancelled else{return};if let image{PhotoMemory.shared.setObject(image,forKey:source as NSString,cost:Int(image.size.width*image.size.height*4))};withAnimation(reduced ? nil:.easeIn(duration:0.22)){bitmap=image}
         };loading=false}
         .onAppear{if !reduced && !paused{withAnimation(.easeInOut(duration:8).repeatForever(autoreverses:true)){drift=true}}}
         .onDisappear{drift=false}

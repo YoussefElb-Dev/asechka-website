@@ -70,6 +70,21 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     private var heartCommit:Task<Void,Never>?
     private var heartTaps:[String:Int]=[:]
     private var retryAfter=Date.distantPast
+    @Published var littleMessages:[LittleMessage]=[]
+    var incomingMessage:LittleMessage? {
+        let closed=Set(vault.value("closed-messages",as:[String].self) ?? [])
+        return littleMessages.first{$0.to==actor && $0.closedAt==nil && $0.text != nil && !closed.contains($0.id)}
+    }
+    func sendMessage(_ text:String)throws {
+        let value=text.trimmingCharacters(in:.whitespacesAndNewlines)
+        guard !value.isEmpty,value.count<=1000 else{throw ServerError(message:"Write a little message, up to 1,000 characters.",status:400)}
+        guard littleMessages.filter({$0.from==actor && $0.day==HeartLedger.day()}).count<3 else{throw ServerError(message:"Your three messages are sent. More at midnight Eastern. ♡",status:429)}
+        try enqueue("/api/together",["action":"sendMessage","actor":actor,"text":value]);vault.remove("message-draft:"+actor)
+    }
+    func closeMessage(_ message:LittleMessage)throws {
+        try enqueue("/api/together",["action":"closeMessage","actor":actor,"id":message.id])
+        var closed=Set(vault.value("closed-messages",as:[String].self) ?? []);closed.insert(message.id);try vault.save("closed-messages",Array(closed))
+    }
     @Published var dailyText=""
     private(set) var storageUnavailable=false
     let vault:Vault
@@ -133,7 +148,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard path.hasPrefix("/"),!path.hasPrefix("//"),!path.contains("\\"),let url=URL(string:Self.site+path)else{throw URLError(.badURL)}
         var request=URLRequest(url:url);request.httpMethod=body==nil ? "GET":"POST";request.httpBody=body
         request.setValue("application/json",forHTTPHeaderField:"Accept");request.setValue(Self.site,forHTTPHeaderField:"Origin")
-        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.5",forHTTPHeaderField:"User-Agent")
+        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.6",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
         for (endpoint,header) in [("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation")] {
@@ -215,13 +230,15 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         // The verifier is itself encrypted by the device-only Keychain key.
         SHA256.hash(data:Data((salt+":"+code).utf8)).map{String(format:"%02x",$0)}.joined()
     }
-    func lock(){requireCode();locked=true;unlocked=false;try? vault.save("locked",true);cookie="";vault.remove("session")}
+    func lock(){WidgetBridge.clear();requireCode();locked=true;unlocked=false;try? vault.save("locked",true);cookie="";vault.remove("session")}
     func restore(){
+        littleMessages=[]
         heartDays=[:];heartReceipts=[];heartStreakPolicy=[:];serverHeartDay="";serverHeartAsOf=nil
         memories=vault.value("snapshot:/api/memories",as:Memories.self) ?? bundledMemories()
         songs=(vault.read("snapshot:/api/music").flatMap{try? JSONDecoder().decode(SongList.self,from:$0)})?.tracks ?? []
         wishes=(vault.read("snapshot:/api/together").flatMap{try? JSONDecoder().decode(WishList.self,from:$0)})?.bucketList ?? []
         if let data=vault.read("snapshot:/api/together"),let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] {
+            if let raw=json["messages"],let encoded=try? JSONSerialization.data(withJSONObject:raw){littleMessages=(try? JSONDecoder().decode([LittleMessage].self,from:encoded)) ?? []}
             let values=json["hearts"] as? [String:Any] ?? [:]
             heartStreakPolicy=json["heartStreak"] as? [String:Any] ?? [:]
             serverHeartDay=(json["streakStatus"] as? [String:Any])?["today"] as? String ?? ""
@@ -236,7 +253,8 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         }
         journal=restoreBook("/api/journal","journal");keepsakes=restoreBook("/api/keepsakes","keepsakes")
         translations=vault.value("translations:"+actor,as:[Translation].self) ?? []
-        for change in pending {Projection.apply(change,to:&memories);projectOther(change)}
+        for change in pending {if change.error != nil,let body=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any],body["action"] as? String=="sendMessage"{continue};Projection.apply(change,to:&memories);projectOther(change)}
+        WidgetBridge.save(self)
     }
     private func bundledMemories()->Memories {
         guard let url=Bundle.main.url(forResource:"memories",withExtension:"json",subdirectory:"default"),let data=try? Data(contentsOf:url)else{return Memories()}
@@ -320,7 +338,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         while !locked {
             guard let first=pending.first?.error==nil ? pending.first:pending.first(where:{change in
                 guard change.error==nil,change.path=="/api/together",let body=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any] else{return false}
-                return body["action"] as? String=="sendHeart"
+                return ["sendHeart","sendMessage","closeMessage"].contains(body["action"] as? String ?? "")
             }) else{break}
             let isHeart=((try? JSONSerialization.jsonObject(with:first.body)) as? [String:Any])?["action"] as? String=="sendHeart"
             if isHeart{batches += 1;if batches>2{break}}
@@ -352,6 +370,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                     if await reconcileHeart(first){continue}
                     break
                 }
+                if let server=error as? ServerError,server.status==429,let body=(try? JSONSerialization.jsonObject(with:first.body)) as? [String:Any],body["action"] as? String=="sendMessage",let index=pending.firstIndex(where:{$0.id==first.id}){pending[index].error=server.message;try? vault.save("outbox",pending);continue}
                 if let server=error as? ServerError,(400..<500).contains(server.status),![401,429].contains(server.status),let index=pending.firstIndex(where:{$0.id==first.id}) {
                     pending[index].error=server.message;try? vault.save("outbox",pending)
                 };break
@@ -380,6 +399,11 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard let b=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any] else{return}
         if change.path=="/api/together" {
             let action=b["action"] as? String ?? ""
+            if action=="sendMessage",let id=b["operationId"] as? String,!littleMessages.contains(where:{$0.id==id}) {
+                let text=b["text"] as? String ?? "",from=b["actor"] as? String ?? actor
+                littleMessages.append(LittleMessage(id:id,from:from,to:from=="asnat" ? "youssef":"asnat",text:text,preview:String(text.split(whereSeparator:{$0.isWhitespace}).joined(separator:" ").prefix(60))+(text.count>60 ? "…":""),day:HeartLedger.day(BookDates.instant(change.createdAt) ?? Date()),createdAt:change.createdAt,pending:true));return
+            }
+            if action=="closeMessage"{if let index=littleMessages.firstIndex(where:{$0.id==b["id"] as? String}){littleMessages[index].text=nil;littleMessages[index].closedAt=change.createdAt};return}
             if action=="sendHeart" {HeartLedger.apply(b,to:&heartDays,receipts:heartReceipts,createdAt:change.createdAt);hearts[b["from"] as? String ?? "me"]=change.createdAt;return}
             guard let id=b["id"] as? String else{return}
             if action=="removeItem"{wishes.removeAll{$0.id==id};return}

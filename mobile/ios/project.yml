@@ -6,8 +6,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '2.2.5'
-    CURRENT_PROJECT_VERSION: '14'
+    MARKETING_VERSION: '2.2.6'
+    CURRENT_PROJECT_VERSION: '15'
     TARGETED_DEVICE_FAMILY: '1,2'
     CODE_SIGNING_ALLOWED: NO
 targets:
@@ -15,19 +15,43 @@ targets:
     type: application
     platform: iOS
     sources:
+      - path: SharedWidgets
+      - path: Widgets/AsechkaWidgets.swift
       - path: Sources
       - path: Resources/default
         type: folder
         buildPhase: resources
       - path: Resources/Fonts
       - path: Resources/Assets.xcassets
+    dependencies:
+      - target: AsechkaWidgets
+        embed: true
     settings:
       base:
+        CODE_SIGN_ENTITLEMENTS: Asechka.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: app.asechka.ios
         INFOPLIST_FILE: Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: NO
         SUPPORTS_MACCATALYST: NO
+  AsechkaWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets
+        excludes: [Info.plist, Widgets.entitlements]
+      - path: SharedWidgets
+      - path: Widgets/AsechkaWidgets.swift
+      - path: Sources/SharedHeartStreak.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.asechka.ios.widgets
+        INFOPLIST_FILE: Widgets/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Widgets/Widgets.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) WIDGET_EXTENSION"
   AsechkaTests:
     type: bundle.unit-test
     platform: iOS

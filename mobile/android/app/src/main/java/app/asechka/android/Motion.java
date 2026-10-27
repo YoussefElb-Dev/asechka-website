@@ -244,6 +244,24 @@ final class Motion {
 
   /** A slow pan inside the image's clipping bounds, not a layout animation. */
   static final class LivingImage extends ImageView {
+    boolean scrolling;
+    private float aspect = 4f / 3f;
+
+    void aspect(float next) {
+      if (next > 0 && Math.abs(next - aspect) > .001f) {
+        aspect = next;
+        requestLayout();
+      }
+    }
+
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec) {
+      int width = MeasureSpec.getSize(widthSpec);
+      if (width > 0) {
+        setMeasuredDimension(width, resolveSize(Math.round(width / aspect), heightSpec));
+      } else super.onMeasure(widthSpec, heightSpec);
+    }
+
     private final Rect visible = new Rect();
     private final long phase = (long) (Math.random() * 12000);
 
@@ -254,7 +272,8 @@ final class Motion {
     @Override
     protected void onDraw(Canvas canvas) {
       boolean moving =
-          getDrawable() instanceof android.graphics.drawable.BitmapDrawable
+          !scrolling
+              && getDrawable() instanceof android.graphics.drawable.BitmapDrawable
               && hasWindowFocus()
               && isShown()
               && enabled(getContext())

@@ -17,12 +17,14 @@ public final class NativeTests extends Instrumentation {
   private MainActivity activity;
   private ApiClient api;
   private int assertions;
+  private boolean featuresOnly;
   private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly, gateOnly;
   private String upgrade;
 
   @Override
   public void onCreate(Bundle args) {
     super.onCreate(args);
+    featuresOnly = "true".equals(args.getString("featuresOnly"));
     convert = "true".equals(args.getString("convert"));
     motionOnly = "true".equals(args.getString("motionOnly"));
     compatOnly = "true".equals(args.getString("compatOnly"));
@@ -59,7 +61,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (gateOnly) {
+        if (featuresOnly) {
+          featureTests();
+        } else if (gateOnly) {
           gateTests();
         } else if (homeOnly) {
           sharedStreakTests();
@@ -162,7 +166,7 @@ public final class NativeTests extends Instrumentation {
                   .getPackageManager()
                   .getPackageInfo(getTargetContext().getPackageName(), 0)
                   .versionCode
-              == 14,
+              == 15,
           "Updated package version");
     }
   }
@@ -1097,7 +1101,181 @@ public final class NativeTests extends Instrumentation {
     set("appUnlocked", true);
     set("images", new Images(api));
     call("restoreSaved", new Class[] {});
+    set("messages", null);
     call("showShell", new Class[] {});
+  }
+
+  private void featureTests() throws Exception {
+    prepareMotionFixture();
+    JSONObject first =
+        api.post(
+            "/api/together",
+            obj(
+                "action",
+                "sendMessage",
+                "actor",
+                "asnat",
+                "text",
+                "A special little fixture message, long enough to leave just a short preview after"
+                    + " closing.",
+                "operationId",
+                UUID.randomUUID().toString()));
+    JSONArray list = first.getJSONArray("messages");
+    check(list.length() == 1, "First message shared");
+    String id = list.getJSONObject(0).getString("id");
+    api.post(
+        "/api/together",
+        obj(
+            "action",
+            "sendMessage",
+            "actor",
+            "asnat",
+            "text",
+            "Two",
+            "operationId",
+            UUID.randomUUID().toString()));
+    api.post(
+        "/api/together",
+        obj(
+            "action",
+            "sendMessage",
+            "actor",
+            "asnat",
+            "text",
+            "Three",
+            "operationId",
+            UUID.randomUUID().toString()));
+    check(
+        api.get("/api/together").getJSONArray("messages").length() == 3,
+        "Three per-person messages accepted");
+    try {
+      api.post(
+          "/api/together",
+          obj(
+              "action",
+              "sendMessage",
+              "actor",
+              "asnat",
+              "text",
+              "Four",
+              "operationId",
+              UUID.randomUUID().toString()));
+      throw new AssertionError("Fourth accepted");
+    } catch (ApiClient.ApiError expected) {
+      check(expected.status == 429, "Fourth blocked by shared daily limit");
+    }
+    check(
+        api.get("/api/together").getJSONArray("messages").length() == 3,
+        "Rejected message is not projected as delivered");
+    api.store.remove("outbox");
+    call("chooseProfile", new Class[] {String.class}, "youssef");
+    Messages messages = (Messages) get("messages");
+    ui(messages::check);
+    await(
+        () -> {
+          Field f = Messages.class.getDeclaredField("incoming");
+          f.setAccessible(true);
+          return f.get(messages) != null;
+        },
+        "Incoming overlay appears");
+    Field incoming = Messages.class.getDeclaredField("incoming");
+    incoming.setAccessible(true);
+    Dialog dialog = (Dialog) incoming.get(messages);
+    check(
+        views(dialog.getWindow().getDecorView(), android.webkit.WebView.class).isEmpty(),
+        "Incoming message is native");
+    screenshot("226-message");
+    ui(() -> clickIn(dialog, "Keep it in my heart ♡"));
+    await(
+        () -> api.store.read("closed-messages") != null,
+        "Close receipt durable before disappearance");
+    Thread.sleep(500);
+    api.syncPending();
+    JSONObject closed = api.get("/api/together").getJSONArray("messages").getJSONObject(0);
+    check(!closed.has("text") && !closed.isNull("closedAt"), "Shared close destroys full text");
+    check(closed.getString("preview").length() <= 61, "History only a small note");
+    ui(messages::suspend);
+    offline(api, true);
+    String queued = UUID.randomUUID().toString();
+    api.post(
+        "/api/together",
+        obj(
+            "action",
+            "sendMessage",
+            "actor",
+            "youssef",
+            "text",
+            "Offline delivery",
+            "operationId",
+            queued));
+    ApiClient reopened = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
+    offline(reopened, true);
+    boolean foundQueued = false;
+    JSONArray durable = reopened.store.queue();
+    for (int i = 0; i < durable.length(); i++)
+      if (queued.equals(durable.getJSONObject(i).getJSONObject("body").optString("operationId")))
+        foundQueued = true;
+    check(foundQueued, "Offline message survives reopening");
+    offline(api, false);
+    api.retryNow();
+    api.syncPending();
+    await(() -> api.store.queue().length() == 0, "Offline message sends exactly once");
+    for (int i = 0; i < 3; i++) {
+      JSONObject m = api.get("/api/together").getJSONArray("messages").getJSONObject(i);
+      if (m.isNull("closedAt"))
+        api.post(
+            "/api/together",
+            obj(
+                "action",
+                "closeMessage",
+                "actor",
+                "youssef",
+                "id",
+                m.optString("id"),
+                "operationId",
+                UUID.randomUUID().toString()));
+    }
+    ui(messages::suspend);
+    android.appwidget.AppWidgetManager manager =
+        android.appwidget.AppWidgetManager.getInstance(getTargetContext());
+    int found = 0;
+    for (android.appwidget.AppWidgetProviderInfo info : manager.getInstalledProviders())
+      if (info.provider.getPackageName().equals("app.asechka.android")) found++;
+    check(found == 6, "All six native widget families registered");
+    ui(
+        () -> {
+          android.widget.RemoteViews views =
+              new android.widget.RemoteViews(
+                  getTargetContext().getPackageName(), R.layout.universe_widget);
+          View rendered = views.apply(getTargetContext(), null);
+          check(
+              rendered.findViewById(R.id.widget_timer) instanceof Chronometer,
+              "Widget has native live timer");
+        });
+    JSONObject gallery = OfflineStore.copy(api.get("/memories.json"));
+    JSONArray photos = gallery.getJSONArray("photos");
+    JSONObject sample = photos.getJSONObject(0);
+    for (int i = 0; i < 40; i++) {
+      JSONObject p = OfflineStore.copy(sample);
+      p.put("id", UUID.randomUUID().toString());
+      photos.put(p);
+    }
+    set("memories", gallery);
+    call("select", new Class[] {int.class}, 1);
+    SocialFeed feed = (SocialFeed) get("feed");
+    for (int i = 0; i < 6; i++) {
+      ui(() -> feed.fling(16000));
+      Thread.sleep(120);
+      ui(() -> feed.fling(-16000));
+      Thread.sleep(120);
+    }
+    Thread.sleep(700);
+    ui(() -> feed.setSelection(0));
+    await(
+        () -> feed.getFirstVisiblePosition() == 0,
+        "Photo feed returns to top after rapid reversing flings");
+    check(feed.getAdapter().getCount() > 35, "Large gallery remains intact");
+    screenshot("226-photos-after-fling");
   }
 
   private void gateTests() throws Exception {

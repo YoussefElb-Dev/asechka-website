@@ -89,6 +89,8 @@ final class SocialFeed extends ListView {
   private final FeedAdapter adapter;
   private final ArrayList<Post> posts = new ArrayList<>();
   private boolean onlySaved;
+  private int scrollState;
+  private JSONObject delayedData;
   private TextView empty;
   private float pullStart;
   private boolean pulling;
@@ -119,11 +121,33 @@ final class SocialFeed extends ListView {
         view -> {
           if (view.getTag() instanceof Holder) {
             Holder holder = (Holder) view.getTag();
+            holder.photo.setTag(null);
             holder.photo.setImageDrawable(null);
             holder.quoteBackdrop.setImageDrawable(null);
             holder.backdropSource = "";
             holder.source = "";
           }
+        });
+    setOnScrollListener(
+        new AbsListView.OnScrollListener() {
+          public void onScrollStateChanged(AbsListView view, int state) {
+            scrollState = state;
+            if (state == SCROLL_STATE_IDLE && delayedData != null) {
+              JSONObject latest = delayedData;
+              delayedData = null;
+              post(() -> submit(latest, true));
+            }
+            for (int i = 0; i < getChildCount(); i++) {
+              View child = getChildAt(i);
+              if (child.getTag() instanceof Holder) {
+                Holder h = (Holder) child.getTag();
+                ((Motion.LivingImage) h.photo).scrolling = state != SCROLL_STATE_IDLE;
+                h.photo.invalidate();
+              }
+            }
+          }
+
+          public void onScroll(AbsListView view, int first, int visible, int total) {}
         });
     setOnTouchListener(
         (view, event) -> {
@@ -149,6 +173,10 @@ final class SocialFeed extends ListView {
   }
 
   void submit(JSONObject data, boolean keep) {
+    if (keep && scrollState != AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+      delayedData = data;
+      return;
+    }
     int position = getFirstVisiblePosition();
     int top = getChildCount() == 0 ? 0 : getChildAt(0).getTop();
     String anchor =
@@ -428,6 +456,8 @@ final class SocialFeed extends ListView {
     }
 
     void bind(Post next) {
+      ((Motion.LivingImage) photo).scrolling =
+          scrollState != AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
       if (item == null || !item.key().equals(next.key())) {
         expanded = false;
         caption.setMaxLines(4);

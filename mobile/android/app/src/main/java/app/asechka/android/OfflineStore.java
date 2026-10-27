@@ -638,6 +638,7 @@ final class OfflineStore {
           continue;
         JSONObject b = entry.getJSONObject("body");
         String action = b.optString("action");
+        if (action.equals("sendMessage") && !entry.optString("status").equals("pending")) continue;
         if (path.equals("/api/journal") || path.equals("/api/keepsakes")) {
           BookProjection.apply(data, b, entry.getLong("createdAt"));
         } else if (path.equals("/memories.json")) {
@@ -658,7 +659,9 @@ final class OfflineStore {
           }
           data.put("tracks", next);
         } else if (path.equals("/api/together")) {
-          if (action.equals("sendHeart")) {
+          if (action.equals("sendMessage") || action.equals("closeMessage")) {
+            Messages.project(data, b, entry.getLong("createdAt"));
+          } else if (action.equals("sendHeart")) {
             HeartCounts.apply(data, b, entry.getLong("createdAt"));
           } else {
             JSONArray list = data.optJSONArray("bucketList"), next = new JSONArray();

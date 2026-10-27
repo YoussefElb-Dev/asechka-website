@@ -7,7 +7,7 @@ struct SharedHeartStreak {
     var today="", nextLifeOn="", lastResetOn:String?
     var protectedDays:[String]=[]
     private static var calendar:Calendar {var c=Calendar(identifier:.gregorian);c.timeZone=TimeZone(secondsFromGMT:0)!;return c}
-    private static func date(_ day:String)->Date {BookDates.instant(day+"T12:00:00Z")!}
+    private static func date(_ day:String)->Date {ISO8601DateFormatter().date(from:day+"T12:00:00Z")!}
     private static func iso(_ date:Date)->String {
         let c=calendar.dateComponents([.year,.month,.day],from:date)
         return String(format:"%04d-%02d-%02d",c.year!,c.month!,c.day!)
@@ -23,7 +23,8 @@ struct SharedHeartStreak {
         let a=calendar.dateComponents([.year,.month],from:date(start)),b=calendar.dateComponents([.year,.month],from:date(day))
         return max(0,1+(b.year!-a.year!)*12+b.month!-a.month!-(day<anniversary(start,day) ? 1:0))
     }
-    static func calculate(_ heartDays:[String:[String:Int]],policy:[String:Any]=[:],today:String=HeartLedger.day())->SharedHeartStreak {
+    static func day(_ date:Date=Date())->String{let f=DateFormatter();f.locale=Locale(identifier:"en_US_POSIX");f.timeZone=TimeZone(identifier:"America/New_York");f.dateFormat="yyyy-MM-dd";return f.string(from:date)}
+    static func calculate(_ heartDays:[String:[String:Int]],policy:[String:Any]=[:],today:String=SharedHeartStreak.day())->SharedHeartStreak {
         let start=policy["startedOn"] as? String ?? "2026-10-12",seed=policy["seededThrough"] as? String ?? "2026-10-25"
         var r=SharedHeartStreak();r.today=today;r.days=policy["seedDays"] as? Int ?? 13;r.lives=earned(start,seed)
         func sent(_ day:String)->Bool {(heartDays[day]?["me"] ?? 0)>0 || (heartDays[day]?["asechka"] ?? 0)>0}

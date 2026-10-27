@@ -53,6 +53,7 @@ public final class SyncJob extends JobService {
                 if (stopped.get()) return;
                 api.get(path);
               }
+              UniverseWidgets.updateAll(this);
               retry = api.prefetchMedia() > 0;
             }
           } catch (Exception error) {

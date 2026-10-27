@@ -266,7 +266,8 @@ public final class ApiClient {
             JSONObject candidate = items.getJSONObject(i);
             if (candidate.optString("status").equals("pending")
                 && candidate.optString("path").equals("/api/together")
-                && candidate.getJSONObject("body").optString("action").equals("sendHeart")) {
+                && java.util.Arrays.asList("sendHeart", "sendMessage", "closeMessage")
+                    .contains(candidate.getJSONObject("body").optString("action"))) {
               entry = candidate;
               break;
             }
@@ -300,6 +301,11 @@ public final class ApiClient {
             }
             // A repository race is retried automatically; it must not block every queued change.
             break;
+          }
+          if (error.status == 429
+              && entry.getJSONObject("body").optString("action").equals("sendMessage")) {
+            store.block(entry.getString("id"), error.getMessage(), 429);
+            continue;
           }
           if (error.status == 401
               || error.status == 0
@@ -483,7 +489,7 @@ public final class ApiClient {
     connection.setUseCaches(false);
     connection.setRequestProperty("Accept", "application/json");
     connection.setRequestProperty("Cache-Control", "no-store");
-    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.5");
+    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.6");
     connection.setRequestProperty("Origin", base);
     final String sentCookie;
     final String sentSession = prefs.getString("session", "");

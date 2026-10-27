@@ -111,6 +111,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           main.postDelayed(this, REFRESH_INTERVAL);
         }
       };
+  private Messages messages;
   private boolean heartRefreshing;
   private final Runnable heartPoll =
       new Runnable() {
@@ -128,10 +129,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                       () -> {
                         heartRefreshing = false;
                         if (homeExtras != null) homeExtras.update();
+                        if (messages != null) messages.check();
+                        UniverseWidgets.updateAll(MainActivity.this);
                       });
                 });
           }
-          main.postDelayed(this, 15000);
+          main.postDelayed(this, 5000);
         }
       };
   private final Runnable clock =
@@ -224,6 +227,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   @Override
   protected void onPause() {
     started = false;
+    if (messages != null) messages.suspend();
     accessEpoch++;
     appUnlocked = biometrics == null || !biometrics.enabled();
     biometricBusy = false;
@@ -239,6 +243,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   @Override
   protected void onDestroy() {
+    if (messages != null) messages.close();
     accessEpoch++;
     if (entryGate != null) {
       entryGate.dismiss();
@@ -381,6 +386,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void chooseProfile(String id) {
+    if (messages != null) messages.suspend();
     epoch++;
     refreshing = false;
     mutating = false;
@@ -658,13 +664,20 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void showShell() {
     boolean shortScreen = getResources().getConfiguration().screenHeightDp < 700;
+    if (messages == null)
+      messages =
+          new Messages(
+              this,
+              api,
+              () -> actor(),
+              () -> started && appUnlocked && hasProfile() && !isFinishing() && !isDestroyed());
     root = u.column();
     root.setFocusableInTouchMode(true);
     root.setDescendantFocusability(android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS);
     LinearLayout toolbar = u.row(8);
     toolbar.setPadding(u.dp(20), u.dp(shortScreen ? 4 : 6), u.dp(16), u.dp(shortScreen ? 4 : 6));
     Ui.Icon sparkle = new Ui.Icon(this, 6, Ui.PURPLE);
-    toolbar.addView(sparkle, new LinearLayout.LayoutParams(u.dp(23), u.dp(23)));
+    // Keep room for the native message action, including 320dp-wide phones.
     TextView brand = u.title("asechka.", 23);
     toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(shortScreen ? 44 : 54), 1));
     brand.setGravity(Gravity.CENTER_VERTICAL);
@@ -672,6 +685,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     create.setContentDescription("Create a post");
     create.setOnClickListener(v -> choosePost());
     toolbar.addView(create, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
+    SocialFeed.Icon envelope = new SocialFeed.Icon(this, "send");
+    envelope.setContentDescription("Messages");
+    envelope.setOnClickListener(v -> messages.open());
+    toolbar.addView(envelope, new LinearLayout.LayoutParams(u.dp(42), u.dp(48)));
     Button refresh = u.button("↻", false, null);
     refresh.setOnClickListener(
         v -> {
@@ -835,6 +852,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     epoch++;
     api.clearSession();
     api.store.lock();
+    UniverseWidgets.updateAll(this);
     SyncJob.cancel(this);
     images.clear();
     memories = music = together = daily = translations = null;
@@ -1094,6 +1112,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void choosePost() {
     Ui.Sheet sheet = u.sheet("Share a little something", "A moment, a thought, a little more us.");
+    sheet.item(
+        "Message · just for " + (actor().equals("asnat") ? "Youssef" : "Asnat"),
+        "Three little messages each day",
+        "♡",
+        false,
+        () -> messages.compose());
     sheet.item(
         "Photo · a moment from our day",
         "Choose a picture and add your words",
@@ -1515,6 +1539,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           if (result.has("/api/music")) music = result.optJSONObject("/api/music");
           if (result.has("/api/together")) together = result.optJSONObject("/api/together");
           if (result.has("/api/daily-memory")) daily = result.optJSONObject("/api/daily-memory");
+          if (messages != null) messages.check();
+          UniverseWidgets.updateAll(this);
           if (activeConversationRefresh != null) activeConversationRefresh.run();
           if (homeExtras != null) homeExtras.update();
           updateConnection(result.optString("error", ""));
@@ -1555,6 +1581,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       if (item == together)
         for (String key :
             new String[] {
+              "messages",
               "heartDays",
               "hearts",
               "heartReceipts",

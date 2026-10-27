@@ -36,6 +36,7 @@ final class Images {
           return value.getAllocationByteCount();
         }
       };
+  private final Map<String, Float> aspects = new HashMap<>();
   private volatile int epoch;
 
   Images(ApiClient api) {
@@ -60,9 +61,13 @@ final class Images {
     }
     String key = url + (target instanceof Ui.ZoomImage ? "#full" : "#preview");
     target.setTag(key);
+    if (target instanceof Motion.LivingImage)
+      ((Motion.LivingImage) target).aspect(aspects.containsKey(key) ? aspects.get(key) : 4f / 3f);
     Bitmap stored = cache.get(key);
     if (stored != null) {
-      show(target, stored, key);
+      if (target instanceof Motion.LivingImage)
+        ((Motion.LivingImage) target).aspect((float) stored.getWidth() / stored.getHeight());
+      target.setImageBitmap(stored);
       return;
     }
     if (!(target.getDrawable() instanceof BitmapDrawable)
@@ -84,6 +89,25 @@ final class Images {
         () -> {
           Bitmap decoded = null;
           try {
+            java.util.concurrent.atomic.AtomicBoolean needed =
+                new java.util.concurrent.atomic.AtomicBoolean();
+            java.util.concurrent.CountDownLatch checked =
+                new java.util.concurrent.CountDownLatch(1);
+            main.post(
+                () -> {
+                  List<WeakReference<ImageView>> refs = waiting.get(key);
+                  if (refs != null)
+                    for (WeakReference<ImageView> ref : refs) {
+                      ImageView view = ref.get();
+                      if (view != null && key.equals(view.getTag())) {
+                        needed.set(true);
+                        break;
+                      }
+                    }
+                  checked.countDown();
+                });
+            checked.await();
+            if (!needed.get()) throw new java.io.IOException("Recycled image");
             byte[] bytes = api.image(url);
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
@@ -109,11 +133,17 @@ final class Images {
                 if (generation != epoch) return;
                 List<WeakReference<ImageView>> targets = waiting.remove(key);
                 if (targets == null) return;
-                if (result != null) cache.put(key, result);
+                if (result != null) {
+                  cache.put(key, result);
+                  aspects.put(key, (float) result.getWidth() / result.getHeight());
+                }
                 for (WeakReference<ImageView> ref : targets) {
                   ImageView image = ref.get();
                   if (image == null || !key.equals(image.getTag())) continue;
                   if (result != null) {
+                    if (image instanceof Motion.LivingImage)
+                      ((Motion.LivingImage) image)
+                          .aspect((float) result.getWidth() / result.getHeight());
                     show(image, result, key);
                   } else {
                     image.setImageDrawable(new Placeholder("Picture unavailable · tap to retry"));
