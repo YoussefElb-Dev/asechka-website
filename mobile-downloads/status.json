@@ -1,13 +1,13 @@
 {
-  "source": "3a225f9e41cdd83b868c332af2b3f89f0d58c191",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40457307868",
+  "source": "42c55c198d8afcfe3eb94e33206a22d9ea7daadb",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40457468525",
   "backend": "success",
-  "android": "cancelled",
-  "iphone": "cancelled",
+  "android": "success",
+  "iphone": "failure",
   "jobs": [
     {
       "name": "Android APK",
-      "conclusion": "cancelled",
+      "conclusion": "success",
       "steps": [
         {
           "name": "Set up job",
@@ -103,7 +103,7 @@
     },
     {
       "name": "iPhone IPA for sideloading",
-      "conclusion": "cancelled",
+      "conclusion": "failure",
       "steps": [
         {
           "name": "Set up job",
@@ -163,7 +163,7 @@
   "files": {
     "Asechka-Android.apk": {
       "bytes": 20416792,
-      "sha256": "b5609a217c21bc06df9653b28a97dc6ba46844b37d7387e8134292a915e1dd51"
+      "sha256": "8faf39c8072b95cc4e0bd44c65c8513ad568e83969e259a40507cd4079cdbebf"
     }
   }
 }

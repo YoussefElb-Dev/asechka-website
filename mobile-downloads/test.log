@@ -47,19 +47,19 @@ ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: 7c898fcf883a91811c606826b11f42a0
-Build description path: /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/XCBuildData/7c898fcf883a91811c606826b11f42a0.xcbuilddata
+Build description signature: a4754d7e833def3b7317585ab02a7f2e
+Build description path: /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/XCBuildData/a4754d7e833def3b7317585ab02a7f2e.xcbuilddata
 ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache
 
-CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
-    builtin-create-build-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex
-
 CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
     builtin-create-build-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products
+
+CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
+    builtin-create-build-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex
 
 CreateBuildDirectory /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios/Asechka.xcodeproj
@@ -77,13 +77,9 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.hmap
 
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist (in target 'AsechkaWidgets' from project 'Asechka')
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftConstValuesFileList (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist
-
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftConstValuesFileList
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_const_extract_protocols.json (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -93,25 +89,29 @@ WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftFileList
 
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftConstValuesFileList (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftConstValuesFileList
-
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.LinkFileList (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/Entitlements-Simulated.plist
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyStaticMetadataFileList (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyStaticMetadataFileList
 
-WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyMetadataFileList (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyMetadataFileList
-
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-project-headers.hmap (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-project-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyMetadataFileList (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    write-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyMetadataFileList
 
 WriteAuxiliaryFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-own-target-headers.hmap (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -341,23 +341,13 @@ MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/B
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns
 
-MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app
-
 MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Frameworks (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Frameworks
 
-ProcessProductPackaging /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/Widgets.entitlements /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent (in target 'AsechkaWidgets' from project 'Asechka')
+MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-    Entitlements:
-    
-    {
-}
-    
-    builtin-productPackagingUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/Widgets.entitlements -entitlements -format xml -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent
+    /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app
 
 ProcessProductPackaging /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/Widgets.entitlements /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex-Simulated.xcent (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -372,6 +362,16 @@ ProcessProductPackaging /Users/runner/work/asechka-website/asechka-website/mobil
 }
     
     builtin-productPackagingUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/Widgets.entitlements -entitlements -format xml -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex-Simulated.xcent
+
+ProcessProductPackaging /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/Widgets.entitlements /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+    Entitlements:
+    
+    {
+}
+    
+    builtin-productPackagingUtility /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/Widgets.entitlements -entitlements -format xml -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent
 
 ProcessProductPackagingDER /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.appex.xcent.der (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -414,25 +414,26 @@ SwiftDriver AsechkaWidgets normal arm64 com.apple.xcode.tools.swift.compiler (in
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaWidgets -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftFileList -DDEBUG -DWIDGET_EXTENSION -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -application-extension -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
-SwiftCompile normal arm64 Compiling\ AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
 SwiftCompile normal arm64 Compiling\ WidgetSnapshot.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift (in target 'AsechkaWidgets' from project 'Asechka')
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/SharedWidgets/WidgetSnapshot.swift (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
-SwiftCompile normal arm64 Compiling\ SharedHeartStreak.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift (in target 'AsechkaWidgets' from project 'Asechka')
+SwiftCompile normal arm64 Compiling\ AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
 
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift (in target 'AsechkaWidgets' from project 'Asechka')
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
 SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaWidgets (in target 'AsechkaWidgets' from project 'Asechka')
 
 EmitSwiftModule normal arm64 (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 Compiling\ SharedHeartStreak.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift (in target 'AsechkaWidgets' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/SharedHeartStreak.swift (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
@@ -559,59 +560,6 @@ EmitSwiftModule normal arm64 (in target 'Asechka' from project 'Asechka')
     static func preparePhoto(_ data:Data)throws->Data {
                 ^
 
-SwiftCompile normal arm64 Compiling\ HomeHub.swift,\ LetterCelebration.swift,\ LittleMessages.swift,\ Models.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftDriverJobDiscovery normal arm64 Compiling AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
-
-SwiftCompile normal arm64 Compiling\ AsechkaApp.swift,\ AsechkaWidgets.swift,\ BiometricAccess.swift,\ BookModels.swift,\ BookViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BiometricAccess.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift (in target 'Asechka' from project 'Asechka')
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BiometricAccess.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift (in target 'Asechka' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift:113:270: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
-        .task(id:picker){guard let picker else{return};preparing=true;defer{preparing=false};do{guard let bytes=try await picker.loadTransferable(type:Data.self),bytes.count<25_000_000 else{throw URLError(.dataLengthExceedsMaximum)};draft.photo=try await Task.detached{try ComposerView.preparePhoto(bytes)}.value;draft.removePhoto=false}catch{universe.error=error.localizedDescription}}
-                                                                                                                                                                                                                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                                                                                                                                                                                                                                                                 await 
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift:113:274: note: calls to static method 'preparePhoto' from outside of its actor context are implicitly asynchronous
-        .task(id:picker){guard let picker else{return};preparing=true;defer{preparing=false};do{guard let bytes=try await picker.loadTransferable(type:Data.self),bytes.count<25_000_000 else{throw URLError(.dataLengthExceedsMaximum)};draft.photo=try await Task.detached{try ComposerView.preparePhoto(bytes)}.value;draft.removePhoto=false}catch{universe.error=error.localizedDescription}}
-                                                                                                                                                                                                                                                                                 ^
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:74:17: note: main actor isolation inferred from conformance to protocol 'View'
-    static func preparePhoto(_ data:Data)throws->Data {
-                ^
-
-SwiftDriverJobDiscovery normal arm64 Compiling GeneratedAssetSymbols.swift (in target 'AsechkaWidgets' from project 'Asechka')
-
 SwiftCompile normal arm64 Compiling\ CodeDoor.swift,\ ComposerView.swift,\ ConnectionView.swift,\ FeedView.swift,\ HeartRain.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/CodeDoor.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ConnectionView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/FeedView.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HeartRain.swift (in target 'Asechka' from project 'Asechka')
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/CodeDoor.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -660,6 +608,60 @@ SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mob
                 ^
 
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HeartRain.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling AsechkaWidgets.swift (in target 'AsechkaWidgets' from project 'Asechka')
+
+SwiftCompile normal arm64 Compiling\ AsechkaApp.swift,\ AsechkaWidgets.swift,\ BiometricAccess.swift,\ BookModels.swift,\ BookViews.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BiometricAccess.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/AsechkaApp.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Widgets/AsechkaWidgets.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BiometricAccess.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookModels.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift:113:270: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+        .task(id:picker){guard let picker else{return};preparing=true;defer{preparing=false};do{guard let bytes=try await picker.loadTransferable(type:Data.self),bytes.count<25_000_000 else{throw URLError(.dataLengthExceedsMaximum)};draft.photo=try await Task.detached{try ComposerView.preparePhoto(bytes)}.value;draft.removePhoto=false}catch{universe.error=error.localizedDescription}}
+                                                                                                                                                                                                                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                                                                                                                                                                                                                 await 
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/BookViews.swift:113:274: note: calls to static method 'preparePhoto' from outside of its actor context are implicitly asynchronous
+        .task(id:picker){guard let picker else{return};preparing=true;defer{preparing=false};do{guard let bytes=try await picker.loadTransferable(type:Data.self),bytes.count<25_000_000 else{throw URLError(.dataLengthExceedsMaximum)};draft.photo=try await Task.detached{try ComposerView.preparePhoto(bytes)}.value;draft.removePhoto=false}catch{universe.error=error.localizedDescription}}
+                                                                                                                                                                                                                                                                                 ^
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/ComposerView.swift:74:17: note: main actor isolation inferred from conformance to protocol 'View'
+    static func preparePhoto(_ data:Data)throws->Data {
+                ^
+
+SwiftDriverJobDiscovery normal arm64 Compiling GeneratedAssetSymbols.swift (in target 'AsechkaWidgets' from project 'Asechka')
+
+SwiftCompile normal arm64 Compiling\ HomeHub.swift,\ LetterCelebration.swift,\ LittleMessages.swift,\ Models.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/HomeHub.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LetterCelebration.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/LittleMessages.swift (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Sources/Models.swift (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
@@ -765,10 +767,14 @@ Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Bu
 ExtractAppIntentsMetadata (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name AsechkaWidgets --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.ios.widgets --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/AsechkaWidgets --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/Objects-normal/arm64/AsechkaWidgets.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-27 05:47:54.679 appintentsmetadataprocessor[4183:17010] Starting appintentsmetadataprocessor export
-2026-10-27 05:47:54.715 appintentsmetadataprocessor[4183:17010] Extracted no relevant App Intents symbols, skipping writing output
+2026-10-27 05:51:03.535 appintentsmetadataprocessor[21907:63076] Starting appintentsmetadataprocessor export
+2026-10-27 05:51:03.575 appintentsmetadataprocessor[21907:63076] Extracted no relevant App Intents symbols, skipping writing output
 
-SwiftDriverJobDiscovery normal arm64 Compiling Vault.swift, WidgetBridge.swift, WidgetSnapshot.swift, GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
+AppIntentsSSUTraining (in target 'AsechkaWidgets' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/ssu --bundle-id app.asechka.ios.widgets --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyMetadataFileList --archive-ssu-assets
+2026-10-27 05:51:03.607 appintentsnltrainingprocessor[21908:63081] Parsing options for appintentsnltrainingprocessor
+2026-10-27 05:51:03.607 appintentsnltrainingprocessor[21908:63081] No AppShortcuts found - Skipping.
 
 ProcessProductPackaging "" /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.xctest-Simulated.xcent (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -797,41 +803,18 @@ SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mob
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
-SwiftDriver AsechkaUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaUITests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
-
-AppIntentsSSUTraining (in target 'AsechkaWidgets' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/ssu --bundle-id app.asechka.ios.widgets --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaWidgets.build/AsechkaWidgets.DependencyMetadataFileList --archive-ssu-assets
-2026-10-27 05:47:54.742 appintentsnltrainingprocessor[4186:17016] Parsing options for appintentsnltrainingprocessor
-2026-10-27 05:47:54.742 appintentsnltrainingprocessor[4186:17016] No AppShortcuts found - Skipping.
-
-SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaUITests (in target 'AsechkaUITests' from project 'Asechka')
-
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftCompile normal arm64 Compiling\ NativeJourneyTests.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
-SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    
-
-SwiftDriverJobDiscovery normal arm64 Compiling AsechkaApp.swift, AsechkaWidgets.swift, BiometricAccess.swift, BookModels.swift, BookViews.swift (in target 'Asechka' from project 'Asechka')
-
 SwiftCompile normal arm64 Compiling\ UniverseTests.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/Tests/UniverseTests.swift (in target 'AsechkaTests' from project 'Asechka')
 SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/Tests/UniverseTests.swift (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
 
-SwiftDriverJobDiscovery normal arm64 Compiling CodeDoor.swift, ComposerView.swift, ConnectionView.swift, FeedView.swift, HeartRain.swift (in target 'Asechka' from project 'Asechka')
+SwiftDriverJobDiscovery normal arm64 Compiling Vault.swift, WidgetBridge.swift, WidgetSnapshot.swift, GeneratedAssetSymbols.swift (in target 'Asechka' from project 'Asechka')
 
-SwiftDriverJobDiscovery normal arm64 Compiling PersonalViews.swift, SharedHeartStreak.swift, SharedViews.swift, UniverseStore.swift (in target 'Asechka' from project 'Asechka')
+SwiftDriverJobDiscovery normal arm64 Compiling AsechkaApp.swift, AsechkaWidgets.swift, BiometricAccess.swift, BookModels.swift, BookViews.swift (in target 'Asechka' from project 'Asechka')
 
-SwiftDriver\ Compilation Asechka normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Asechka' from project 'Asechka')
+SwiftDriver AsechkaUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-Swift-Compilation -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Asechka -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
+    builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaUITests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
 CodeSign /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/AsechkaWidgets.debug.dylib (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -840,12 +823,32 @@ CodeSign /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-tes
     
     /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/AsechkaWidgets.debug.dylib
 
+SwiftEmitModule normal arm64 Emitting\ module\ for\ AsechkaUITests (in target 'AsechkaUITests' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling CodeDoor.swift, ComposerView.swift, ConnectionView.swift, FeedView.swift, HeartRain.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftCompile normal arm64 Compiling\ NativeJourneyTests.swift /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
+
+SwiftCompile normal arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift (in target 'AsechkaUITests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    
+
 CodeSign /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/__preview.dylib (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     
     Signing Identity:     "Sign to Run Locally"
     
     /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex/__preview.dylib
+
+SwiftDriverJobDiscovery normal arm64 Compiling PersonalViews.swift, SharedHeartStreak.swift, SharedViews.swift, UniverseStore.swift (in target 'Asechka' from project 'Asechka')
+
+SwiftDriver\ Compilation Asechka normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Asechka' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-Swift-Compilation -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Asechka -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
 CodeSign /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaWidgets.appex (in target 'AsechkaWidgets' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -950,8 +953,8 @@ ProcessInfoPlistFile /Users/runner/work/asechka-website/asechka-website/mobile/i
 ExtractAppIntentsMetadata (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Asechka --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.ios --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Asechka --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Objects-normal/arm64/Asechka.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-27 05:47:55.836 appintentsmetadataprocessor[4202:17139] Starting appintentsmetadataprocessor export
-2026-10-27 05:47:55.865 appintentsmetadataprocessor[4202:17139] Extracted no relevant App Intents symbols, skipping writing output
+2026-10-27 05:51:04.711 appintentsmetadataprocessor[21925:63209] Starting appintentsmetadataprocessor export
+2026-10-27 05:51:04.744 appintentsmetadataprocessor[21925:63209] Extracted no relevant App Intents symbols, skipping writing output
 
 CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -960,8 +963,8 @@ CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/buil
 AppIntentsSSUTraining (in target 'Asechka' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/ssu --bundle-id app.asechka.ios --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/Asechka.build/Asechka.DependencyMetadataFileList --archive-ssu-assets
-2026-10-27 05:47:55.921 appintentsnltrainingprocessor[4203:17143] Parsing options for appintentsnltrainingprocessor
-2026-10-27 05:47:55.921 appintentsnltrainingprocessor[4203:17143] No AppShortcuts found - Skipping.
+2026-10-27 05:51:04.805 appintentsnltrainingprocessor[21927:63216] Parsing options for appintentsnltrainingprocessor
+2026-10-27 05:51:04.805 appintentsnltrainingprocessor[21927:63216] No AppShortcuts found - Skipping.
 
 ProcessInfoPlistFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Info.plist /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/empty-AsechkaTests.plist (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -1003,6 +1006,10 @@ SwiftDriver\ Compilation\ Requirements AsechkaTests normal arm64 com.apple.xcode
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-Swift-Compilation-Requirements -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AsechkaTests -Onone -enforce-exclusivity\=checked @/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList -DDEBUG -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Index.noindex/DataStore -swift-version 5 -I /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j5 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/SDKStatCaches.noindex/iphonesimulator18.5-22F76-96ae0914227b19deccb34b33ba7b5dea.sdkstatcache -output-file-map /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-generated-files.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-own-target-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests-project-headers.hmap -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h -working-directory /Users/runner/work/asechka-website/asechka-website/mobile/ios -experimental-emit-module-separately -disable-cmo
 
+SwiftMergeGeneratedHeaders /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h (in target 'AsechkaTests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h
+
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftmodule (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftmodule /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule
@@ -1010,10 +1017,6 @@ Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Bu
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftdoc (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.swiftdoc /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc
-
-SwiftMergeGeneratedHeaders /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h (in target 'AsechkaTests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests-Swift.h -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/DerivedSources/AsechkaTests-Swift.h
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaTests.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.abi.json (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -1046,14 +1049,14 @@ CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/buil
 ExtractAppIntentsMetadata (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name AsechkaTests --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.AsechkaTests --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/AsechkaTests --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/Objects-normal/arm64/AsechkaTests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-27 05:47:57.913 appintentsmetadataprocessor[4210:17208] Starting appintentsmetadataprocessor export
-2026-10-27 05:47:57.943 appintentsmetadataprocessor[4210:17208] Extracted no relevant App Intents symbols, skipping writing output
+2026-10-27 05:51:06.953 appintentsmetadataprocessor[21933:63322] Starting appintentsmetadataprocessor export
+2026-10-27 05:51:06.983 appintentsmetadataprocessor[21933:63322] Extracted no relevant App Intents symbols, skipping writing output
 
 AppIntentsSSUTraining (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/ssu --bundle-id app.asechka.AsechkaTests --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaTests.build/AsechkaTests.DependencyMetadataFileList --archive-ssu-assets
-2026-10-27 05:47:57.955 appintentsnltrainingprocessor[4211:17212] Parsing options for appintentsnltrainingprocessor
-2026-10-27 05:47:57.956 appintentsnltrainingprocessor[4211:17212] No AppShortcuts found - Skipping.
+2026-10-27 05:51:06.996 appintentsnltrainingprocessor[21934:63326] Parsing options for appintentsnltrainingprocessor
+2026-10-27 05:51:06.997 appintentsnltrainingprocessor[21934:63326] No AppShortcuts found - Skipping.
 
 CodeSign /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app/PlugIns/AsechkaTests.xctest (in target 'AsechkaTests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -1115,21 +1118,25 @@ Ld /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Buil
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios16.0-simulator -bundle -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -O0 -L/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -L/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk/Developer/Library/Frameworks -filelist /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.LinkFileList -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -dead_strip -Xlinker -object_path_lto -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.swiftmodule -framework XCTest -lXCTestSwiftSupport -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __entitlements -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.xctest-Simulated.xcent -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __ents_der -Xlinker /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.xctest-Simulated.xcent.der -Xlinker -no_adhoc_codesign -o /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/AsechkaUITests
 
+ExtractAppIntentsMetadata (in target 'AsechkaUITests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name AsechkaUITests --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.AsechkaUITests --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/AsechkaUITests --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-10-27 05:51:07.941 appintentsmetadataprocessor[21946:63381] Starting appintentsmetadataprocessor export
+2026-10-27 05:51:07.942 appintentsmetadataprocessor[21946:63381] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
 CopySwiftLibs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/AsechkaUITests --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Frameworks --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/PlugIns --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/SystemExtensions --scan-folder /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Extensions --platform iphonesimulator --toolchain /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
 
-ExtractAppIntentsMetadata (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name AsechkaUITests --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 16.0 --bundle-identifier app.asechka.AsechkaUITests --output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest --target-triple arm64-apple-ios16.0-simulator --binary-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/AsechkaUITests --dependency-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests_dependency_info.dat --stringsdata-file /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftFileList --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/Objects-normal/arm64/AsechkaUITests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-27 05:47:58.890 appintentsmetadataprocessor[4226:17274] Starting appintentsmetadataprocessor export
-2026-10-27 05:47:58.891 appintentsmetadataprocessor[4226:17274] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
-
 AppIntentsSSUTraining (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Info.plist --temp-dir-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/ssu --bundle-id app.asechka.AsechkaUITests --product-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest --extracted-metadata-path /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest/Metadata.appintents --metadata-file-list /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Intermediates.noindex/Asechka.build/Debug-iphonesimulator/AsechkaUITests.build/AsechkaUITests.DependencyMetadataFileList --archive-ssu-assets
-2026-10-27 05:47:58.904 appintentsnltrainingprocessor[4227:17278] Parsing options for appintentsnltrainingprocessor
-2026-10-27 05:47:58.904 appintentsnltrainingprocessor[4227:17278] No AppShortcuts found - Skipping.
+2026-10-27 05:51:07.954 appintentsnltrainingprocessor[21947:63382] Parsing options for appintentsnltrainingprocessor
+2026-10-27 05:51:07.954 appintentsnltrainingprocessor[21947:63382] No AppShortcuts found - Skipping.
+
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PkgInfo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo (in target 'AsechkaUITests' from project 'Asechka')
+    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app
 
 CopyPlistFile /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Info.plist /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -1139,21 +1146,17 @@ MkDir /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/B
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /bin/mkdir -p /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app
 
-Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PkgInfo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo (in target 'AsechkaUITests' from project 'Asechka')
+Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/libXCTestSwiftSupport.dylib /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app
-
-CopyAndPreserveArchs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner (in target 'AsechkaUITests' from project 'Asechka')
-    cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/XCTRunner -output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner -extract arm64
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/XCUnit.framework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks
 
-Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/libXCTestSwiftSupport.dylib /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib (in target 'AsechkaUITests' from project 'Asechka')
+CopyAndPreserveArchs /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/XCTRunner -output /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/AsechkaUITests-Runner -extract arm64
 
 Copy /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/Frameworks/XCUIAutomation.framework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework (in target 'AsechkaUITests' from project 'Asechka')
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
@@ -1202,13 +1205,13 @@ Touch /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/B
     cd /Users/runner/work/asechka-website/asechka-website/mobile/ios
     /usr/bin/touch -c /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/AsechkaUITests-Runner.app/PlugIns/AsechkaUITests.xctest
 
-2026-10-27 05:48:27.379 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde5eb40:cb96f42dbde5eb40: Finished with error: App installation failed: Unable to Install “Asechka”
+2026-10-27 05:51:38.351 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a3432f40:fe955ea8a3432f40: Finished with error: App installation failed: Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.GGvKQV/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.LWvRhQ/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 User Info: {
-    DVTErrorCreationDateKey = "2026-10-27 05:48:27 +0000";
+    DVTErrorCreationDateKey = "2026-10-27 05:51:38 +0000";
     IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
     SimCallingSelector = "installApplication:withOptions:error:";
 }
@@ -1217,9 +1220,9 @@ Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.GGvKQV/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.LWvRhQ/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 --
-Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.GGvKQV/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.LWvRhQ/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 Domain: MIInstallerErrorDomain
 Code: 52
 User Info: {
@@ -1229,7 +1232,7 @@ User Info: {
 }
 --
 
-2026-10-27 05:48:27.380 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde5eb40:cb96f42dbde5eb40: com.apple.dt.IDERunOperationWorkerFinished {
+2026-10-27 05:51:38.351 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a3432f40:fe955ea8a3432f40: com.apple.dt.IDERunOperationWorkerFinished {
     "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
     "device_model" = "iPhone17,1";
     "device_osBuild" = "18.5 (22F77)";
@@ -1241,7 +1244,7 @@ User Info: {
     "launchSession_schemeCommand" = Test;
     "launchSession_state" = 1;
     "launchSession_targetArch" = arm64;
-    "operation_duration_ms" = 18968;
+    "operation_duration_ms" = 21001;
     "operation_errorCode" = 1;
     "operation_errorDomain" = IXUserPresentableErrorDomain;
     "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
@@ -1293,22 +1296,23 @@ User Info: {
 
 *** If you believe this error represents a bug, please attach the result bundle at /Users/runner/work/asechka-website/asechka-website/mobile/ios/NativeChecks.xcresult
 
-2026-10-27 05:48:34.094800+0000 AsechkaUITests-Runner[5736:23137] [Default] Running tests...
-Test Suite 'All tests' started at 2026-10-27 05:48:44.700.
-Test Suite 'AsechkaUITests.xctest' started at 2026-10-27 05:48:44.700.
-Test Suite 'NativeJourneyTests' started at 2026-10-27 05:48:44.700.
+2026-10-27 05:51:44.445593+0000 AsechkaUITests-Runner[22696:66960] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'All tests' started at 2026-10-27 05:52:01.102.
+Test Suite 'AsechkaUITests.xctest' started at 2026-10-27 05:52:01.102.
+Test Suite 'NativeJourneyTests' started at 2026-10-27 05:52:01.102.
 Test Case '-[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory]' started.
-    t =     0.00s Start Test at 2026-10-27 05:48:44.701
-    t =     0.49s Set Up
-    t =     0.50s Open app.asechka.ios
-    t =     0.50s     Launch app.asechka.ios
-2026-10-27 05:48:46.274 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde3bd00:cb96f42dbde3bd00: Finished with error: App installation failed: Unable to Install “Asechka”
+    t =     0.00s Start Test at 2026-10-27 05:52:01.103
+    t =     0.30s Set Up
+    t =     0.34s Open app.asechka.ios
+    t =     0.37s     Launch app.asechka.ios
+2026-10-27 05:52:02.209 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a3413000:fe955ea8a3413000: Finished with error: App installation failed: Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.mnDrTY/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.WN7bcR/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 User Info: {
-    DVTErrorCreationDateKey = "2026-10-27 05:48:46 +0000";
+    DVTErrorCreationDateKey = "2026-10-27 05:52:02 +0000";
     IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
     SimCallingSelector = "installApplication:withOptions:error:";
 }
@@ -1317,9 +1321,9 @@ Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.mnDrTY/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.WN7bcR/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 --
-Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.mnDrTY/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.WN7bcR/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 Domain: MIInstallerErrorDomain
 Code: 52
 User Info: {
@@ -1329,7 +1333,7 @@ User Info: {
 }
 --
 
-2026-10-27 05:48:46.275 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde3bd00:cb96f42dbde3bd00: com.apple.dt.IDERunOperationWorkerFinished {
+2026-10-27 05:52:02.210 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a3413000:fe955ea8a3413000: com.apple.dt.IDERunOperationWorkerFinished {
     "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
     "device_model" = "iPhone17,1";
     "device_osBuild" = "18.5 (22F77)";
@@ -1341,7 +1345,7 @@ User Info: {
     "launchSession_schemeCommand" = Test;
     "launchSession_state" = 1;
     "launchSession_targetArch" = arm64;
-    "operation_duration_ms" = 516;
+    "operation_duration_ms" = 325;
     "operation_errorCode" = 1;
     "operation_errorDomain" = IXUserPresentableErrorDomain;
     "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
@@ -1388,115 +1392,115 @@ User Info: {
     "sdk_osVersion" = "18.5";
     "sdk_variant" = iphonesimulator;
 }
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:70: error: -[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000d04870 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.mnDrTY/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.mnDrTY/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.mnDrTY/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
-    t =     3.61s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory]' failed (3.823 seconds).
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:77: error: -[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000ca3d80 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.WN7bcR/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.WN7bcR/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.WN7bcR/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
+    t =     2.52s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testHomeShortcutsHeartsAndHiddenHistory]' failed (3.006 seconds).
+Test Case '-[AsechkaUITests.NativeJourneyTests testIncomingEnvelopeClosesToHistoryOnly]' started.
+    t =     0.00s Start Test at 2026-10-27 05:52:04.109
+    t =     0.03s Set Up
+    t =     0.03s         Open app.asechka.ios
+    t =     0.04s             Launch app.asechka.ios
+2026-10-27 05:52:04.517 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a34672c0:fe955ea8a34672c0: Finished with error: App installation failed: Unable to Install “Asechka”
+Domain: IXUserPresentableErrorDomain
+Code: 1
+Failure Reason: Please try again later.
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.iGaAex/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+User Info: {
+    DVTErrorCreationDateKey = "2026-10-27 05:52:04 +0000";
+    IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
+    SimCallingSelector = "installApplication:withOptions:error:";
+}
+--
+Unable to Install “Asechka”
+Domain: IXUserPresentableErrorDomain
+Code: 1
+Failure Reason: Please try again later.
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.iGaAex/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+--
+Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.iGaAex/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Domain: MIInstallerErrorDomain
+Code: 52
+User Info: {
+    FunctionName = "-[MIAppExtensionBundle validateBundleMetadataWithError:]";
+    LegacyErrorString = MissingBundleNameString;
+    SourceFileLine = 287;
+}
+--
+
+2026-10-27 05:52:04.518 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a34672c0:fe955ea8a34672c0: com.apple.dt.IDERunOperationWorkerFinished {
+    "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
+    "device_model" = "iPhone17,1";
+    "device_osBuild" = "18.5 (22F77)";
+    "device_platform" = "com.apple.platform.iphonesimulator";
+    "device_thinningType" = "iPhone17,1";
+    "dvt_coredevice_version" = "506.7";
+    "dvt_coresimulator_version" = "1051.17.8";
+    "dvt_mobiledevice_version" = "1818.13.1";
+    "launchSession_schemeCommand" = Test;
+    "launchSession_state" = 1;
+    "launchSession_targetArch" = arm64;
+    "operation_duration_ms" = 285;
+    "operation_errorCode" = 1;
+    "operation_errorDomain" = IXUserPresentableErrorDomain;
+    "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
+    "operation_name" = IDERunOperationWorkerGroup;
+    "param_debugger_attachToExtensions" = 0;
+    "param_debugger_attachToXPC" = 0;
+    "param_debugger_type" = 1;
+    "param_destination_isProxy" = 0;
+    "param_destination_platform" = "com.apple.platform.iphonesimulator";
+    "param_diag_113575882_enable" = 0;
+    "param_diag_MainThreadChecker_stopOnIssue" = 0;
+    "param_diag_MallocStackLogging_enableDuringAttach" = 0;
+    "param_diag_MallocStackLogging_enableForXPC" = 0;
+    "param_diag_allowLocationSimulation" = 0;
+    "param_diag_checker_tpc_enable" = 0;
+    "param_diag_gpu_frameCapture_enable" = 3;
+    "param_diag_gpu_shaderValidation_enable" = 0;
+    "param_diag_gpu_validation_enable" = 1;
+    "param_diag_guardMalloc_enable" = 0;
+    "param_diag_memoryGraphOnResourceException" = 0;
+    "param_diag_mtc_enable" = 0;
+    "param_diag_queueDebugging_enable" = 1;
+    "param_diag_runtimeProfile_generate" = 0;
+    "param_diag_sanitizer_asan_enable" = 0;
+    "param_diag_sanitizer_tsan_enable" = 0;
+    "param_diag_sanitizer_tsan_stopOnIssue" = 0;
+    "param_diag_sanitizer_ubsan_enable" = 0;
+    "param_diag_sanitizer_ubsan_stopOnIssue" = 0;
+    "param_diag_showNonLocalizedStrings" = 0;
+    "param_diag_viewDebugging_enabled" = 0;
+    "param_diag_viewDebugging_insertDylibOnLaunch" = 0;
+    "param_install_style" = 2;
+    "param_launcher_UID" = 2;
+    "param_launcher_allowDeviceSensorReplayData" = 0;
+    "param_launcher_kind" = 0;
+    "param_launcher_style" = 0;
+    "param_launcher_substyle" = 0;
+    "param_runnable_appExtensionHostRunMode" = 0;
+    "param_structuredConsoleMode" = 0;
+    "param_testing_launchedForTesting" = 1;
+    "param_testing_suppressSimulatorApp" = 1;
+    "param_testing_usingCLI" = 0;
+    "sdk_canonicalName" = "iphonesimulator18.5";
+    "sdk_osVersion" = "18.5";
+    "sdk_variant" = iphonesimulator;
+}
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:5: error: -[AsechkaUITests.NativeJourneyTests testIncomingEnvelopeClosesToHistoryOnly] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000ca3d80 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.iGaAex/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.iGaAex/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.iGaAex/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
+    t =     0.52s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testIncomingEnvelopeClosesToHistoryOnly]' failed (0.902 seconds).
 Test Case '-[AsechkaUITests.NativeJourneyTests testLittleMessageComposerHistoryAndFastPhotos]' started.
-    t =     0.00s Start Test at 2026-10-27 05:48:48.523
-    t =     0.05s Set Up
-    t =     0.05s         Open app.asechka.ios
-    t =     0.05s             Launch app.asechka.ios
-2026-10-27 05:48:49.876 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde6ab80:cb96f42dbde6ab80: Finished with error: App installation failed: Unable to Install “Asechka”
-Domain: IXUserPresentableErrorDomain
-Code: 1
-Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.1but12/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
-User Info: {
-    DVTErrorCreationDateKey = "2026-10-27 05:48:49 +0000";
-    IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
-    SimCallingSelector = "installApplication:withOptions:error:";
-}
---
-Unable to Install “Asechka”
-Domain: IXUserPresentableErrorDomain
-Code: 1
-Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.1but12/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
---
-Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.1but12/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
-Domain: MIInstallerErrorDomain
-Code: 52
-User Info: {
-    FunctionName = "-[MIAppExtensionBundle validateBundleMetadataWithError:]";
-    LegacyErrorString = MissingBundleNameString;
-    SourceFileLine = 287;
-}
---
-
-2026-10-27 05:48:49.877 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde6ab80:cb96f42dbde6ab80: com.apple.dt.IDERunOperationWorkerFinished {
-    "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
-    "device_model" = "iPhone17,1";
-    "device_osBuild" = "18.5 (22F77)";
-    "device_platform" = "com.apple.platform.iphonesimulator";
-    "device_thinningType" = "iPhone17,1";
-    "dvt_coredevice_version" = "506.7";
-    "dvt_coresimulator_version" = "1051.17.8";
-    "dvt_mobiledevice_version" = "1818.13.1";
-    "launchSession_schemeCommand" = Test;
-    "launchSession_state" = 1;
-    "launchSession_targetArch" = arm64;
-    "operation_duration_ms" = 403;
-    "operation_errorCode" = 1;
-    "operation_errorDomain" = IXUserPresentableErrorDomain;
-    "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
-    "operation_name" = IDERunOperationWorkerGroup;
-    "param_debugger_attachToExtensions" = 0;
-    "param_debugger_attachToXPC" = 0;
-    "param_debugger_type" = 1;
-    "param_destination_isProxy" = 0;
-    "param_destination_platform" = "com.apple.platform.iphonesimulator";
-    "param_diag_113575882_enable" = 0;
-    "param_diag_MainThreadChecker_stopOnIssue" = 0;
-    "param_diag_MallocStackLogging_enableDuringAttach" = 0;
-    "param_diag_MallocStackLogging_enableForXPC" = 0;
-    "param_diag_allowLocationSimulation" = 0;
-    "param_diag_checker_tpc_enable" = 0;
-    "param_diag_gpu_frameCapture_enable" = 3;
-    "param_diag_gpu_shaderValidation_enable" = 0;
-    "param_diag_gpu_validation_enable" = 1;
-    "param_diag_guardMalloc_enable" = 0;
-    "param_diag_memoryGraphOnResourceException" = 0;
-    "param_diag_mtc_enable" = 0;
-    "param_diag_queueDebugging_enable" = 1;
-    "param_diag_runtimeProfile_generate" = 0;
-    "param_diag_sanitizer_asan_enable" = 0;
-    "param_diag_sanitizer_tsan_enable" = 0;
-    "param_diag_sanitizer_tsan_stopOnIssue" = 0;
-    "param_diag_sanitizer_ubsan_enable" = 0;
-    "param_diag_sanitizer_ubsan_stopOnIssue" = 0;
-    "param_diag_showNonLocalizedStrings" = 0;
-    "param_diag_viewDebugging_enabled" = 0;
-    "param_diag_viewDebugging_insertDylibOnLaunch" = 0;
-    "param_install_style" = 2;
-    "param_launcher_UID" = 2;
-    "param_launcher_allowDeviceSensorReplayData" = 0;
-    "param_launcher_kind" = 0;
-    "param_launcher_style" = 0;
-    "param_launcher_substyle" = 0;
-    "param_runnable_appExtensionHostRunMode" = 0;
-    "param_structuredConsoleMode" = 0;
-    "param_testing_launchedForTesting" = 1;
-    "param_testing_suppressSimulatorApp" = 1;
-    "param_testing_usingCLI" = 0;
-    "sdk_canonicalName" = "iphonesimulator18.5";
-    "sdk_osVersion" = "18.5";
-    "sdk_variant" = iphonesimulator;
-}
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:5: error: -[AsechkaUITests.NativeJourneyTests testLittleMessageComposerHistoryAndFastPhotos] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000d04870 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.1but12/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.1but12/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.1but12/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
-    t =     1.55s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testLittleMessageComposerHistoryAndFastPhotos]' failed (2.456 seconds).
-Test Case '-[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer]' started.
-    t =     0.00s Start Test at 2026-10-27 05:48:50.979
+    t =     0.00s Start Test at 2026-10-27 05:52:05.011
     t =     0.03s Set Up
     t =     0.03s                 Open app.asechka.ios
     t =     0.03s                     Launch app.asechka.ios
-2026-10-27 05:48:51.211 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde44c80:cb96f42dbde44c80: Finished with error: App installation failed: Unable to Install “Asechka”
+2026-10-27 05:52:05.256 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a37ce740:fe955ea8a37ce740: Finished with error: App installation failed: Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.Ay0dCb/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.n6wre2/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 User Info: {
-    DVTErrorCreationDateKey = "2026-10-27 05:48:51 +0000";
+    DVTErrorCreationDateKey = "2026-10-27 05:52:05 +0000";
     IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
     SimCallingSelector = "installApplication:withOptions:error:";
 }
@@ -1505,9 +1509,9 @@ Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.Ay0dCb/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.n6wre2/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 --
-Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.Ay0dCb/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.n6wre2/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 Domain: MIInstallerErrorDomain
 Code: 52
 User Info: {
@@ -1517,7 +1521,7 @@ User Info: {
 }
 --
 
-2026-10-27 05:48:51.211 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde44c80:cb96f42dbde44c80: com.apple.dt.IDERunOperationWorkerFinished {
+2026-10-27 05:52:05.257 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a37ce740:fe955ea8a37ce740: com.apple.dt.IDERunOperationWorkerFinished {
     "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
     "device_model" = "iPhone17,1";
     "device_osBuild" = "18.5 (22F77)";
@@ -1529,7 +1533,7 @@ User Info: {
     "launchSession_schemeCommand" = Test;
     "launchSession_state" = 1;
     "launchSession_targetArch" = arm64;
-    "operation_duration_ms" = 197;
+    "operation_duration_ms" = 176;
     "operation_errorCode" = 1;
     "operation_errorDomain" = IXUserPresentableErrorDomain;
     "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
@@ -1576,115 +1580,115 @@ User Info: {
     "sdk_osVersion" = "18.5";
     "sdk_variant" = iphonesimulator;
 }
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:31: error: -[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000d04870 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.Ay0dCb/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.Ay0dCb/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.Ay0dCb/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:12: error: -[AsechkaUITests.NativeJourneyTests testLittleMessageComposerHistoryAndFastPhotos] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000ca3d80 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.n6wre2/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.n6wre2/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.n6wre2/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
+    t =     0.28s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testLittleMessageComposerHistoryAndFastPhotos]' failed (0.501 seconds).
+Test Case '-[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer]' started.
+    t =     0.00s Start Test at 2026-10-27 05:52:05.512
+    t =     0.02s Set Up
+    t =     0.02s                         Open app.asechka.ios
+    t =     0.03s                             Launch app.asechka.ios
+2026-10-27 05:52:05.720 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a3466f00:fe955ea8a3466f00: Finished with error: App installation failed: Unable to Install “Asechka”
+Domain: IXUserPresentableErrorDomain
+Code: 1
+Failure Reason: Please try again later.
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.M5edo3/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+User Info: {
+    DVTErrorCreationDateKey = "2026-10-27 05:52:05 +0000";
+    IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
+    SimCallingSelector = "installApplication:withOptions:error:";
+}
+--
+Unable to Install “Asechka”
+Domain: IXUserPresentableErrorDomain
+Code: 1
+Failure Reason: Please try again later.
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.M5edo3/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+--
+Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.M5edo3/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Domain: MIInstallerErrorDomain
+Code: 52
+User Info: {
+    FunctionName = "-[MIAppExtensionBundle validateBundleMetadataWithError:]";
+    LegacyErrorString = MissingBundleNameString;
+    SourceFileLine = 287;
+}
+--
+
+2026-10-27 05:52:05.720 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a3466f00:fe955ea8a3466f00: com.apple.dt.IDERunOperationWorkerFinished {
+    "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
+    "device_model" = "iPhone17,1";
+    "device_osBuild" = "18.5 (22F77)";
+    "device_platform" = "com.apple.platform.iphonesimulator";
+    "device_thinningType" = "iPhone17,1";
+    "dvt_coredevice_version" = "506.7";
+    "dvt_coresimulator_version" = "1051.17.8";
+    "dvt_mobiledevice_version" = "1818.13.1";
+    "launchSession_schemeCommand" = Test;
+    "launchSession_state" = 1;
+    "launchSession_targetArch" = arm64;
+    "operation_duration_ms" = 177;
+    "operation_errorCode" = 1;
+    "operation_errorDomain" = IXUserPresentableErrorDomain;
+    "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
+    "operation_name" = IDERunOperationWorkerGroup;
+    "param_debugger_attachToExtensions" = 0;
+    "param_debugger_attachToXPC" = 0;
+    "param_debugger_type" = 1;
+    "param_destination_isProxy" = 0;
+    "param_destination_platform" = "com.apple.platform.iphonesimulator";
+    "param_diag_113575882_enable" = 0;
+    "param_diag_MainThreadChecker_stopOnIssue" = 0;
+    "param_diag_MallocStackLogging_enableDuringAttach" = 0;
+    "param_diag_MallocStackLogging_enableForXPC" = 0;
+    "param_diag_allowLocationSimulation" = 0;
+    "param_diag_checker_tpc_enable" = 0;
+    "param_diag_gpu_frameCapture_enable" = 3;
+    "param_diag_gpu_shaderValidation_enable" = 0;
+    "param_diag_gpu_validation_enable" = 1;
+    "param_diag_guardMalloc_enable" = 0;
+    "param_diag_memoryGraphOnResourceException" = 0;
+    "param_diag_mtc_enable" = 0;
+    "param_diag_queueDebugging_enable" = 1;
+    "param_diag_runtimeProfile_generate" = 0;
+    "param_diag_sanitizer_asan_enable" = 0;
+    "param_diag_sanitizer_tsan_enable" = 0;
+    "param_diag_sanitizer_tsan_stopOnIssue" = 0;
+    "param_diag_sanitizer_ubsan_enable" = 0;
+    "param_diag_sanitizer_ubsan_stopOnIssue" = 0;
+    "param_diag_showNonLocalizedStrings" = 0;
+    "param_diag_viewDebugging_enabled" = 0;
+    "param_diag_viewDebugging_insertDylibOnLaunch" = 0;
+    "param_install_style" = 2;
+    "param_launcher_UID" = 2;
+    "param_launcher_allowDeviceSensorReplayData" = 0;
+    "param_launcher_kind" = 0;
+    "param_launcher_style" = 0;
+    "param_launcher_substyle" = 0;
+    "param_runnable_appExtensionHostRunMode" = 0;
+    "param_structuredConsoleMode" = 0;
+    "param_testing_launchedForTesting" = 1;
+    "param_testing_suppressSimulatorApp" = 1;
+    "param_testing_usingCLI" = 0;
+    "sdk_canonicalName" = "iphonesimulator18.5";
+    "sdk_osVersion" = "18.5";
+    "sdk_variant" = iphonesimulator;
+}
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:38: error: -[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000ca3d80 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.M5edo3/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.M5edo3/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.M5edo3/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
     t =     0.25s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer]' failed (2.558 seconds).
+Test Case '-[AsechkaUITests.NativeJourneyTests testNativeFeedOfflineConversationAndComposer]' failed (0.673 seconds).
 Test Case '-[AsechkaUITests.NativeJourneyTests testNormalReopenHasNoPasswordScreenAndPreservesComposer]' started.
-    t =     0.00s Start Test at 2026-10-27 05:48:53.538
-    t =     0.12s Set Up
-    t =     0.12s                         Open app.asechka.ios
-    t =     0.12s                             Launch app.asechka.ios
-2026-10-27 05:48:53.996 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde73480:cb96f42dbde73480: Finished with error: App installation failed: Unable to Install “Asechka”
-Domain: IXUserPresentableErrorDomain
-Code: 1
-Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.IEJGmh/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
-User Info: {
-    DVTErrorCreationDateKey = "2026-10-27 05:48:53 +0000";
-    IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
-    SimCallingSelector = "installApplication:withOptions:error:";
-}
---
-Unable to Install “Asechka”
-Domain: IXUserPresentableErrorDomain
-Code: 1
-Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.IEJGmh/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
---
-Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.IEJGmh/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
-Domain: MIInstallerErrorDomain
-Code: 52
-User Info: {
-    FunctionName = "-[MIAppExtensionBundle validateBundleMetadataWithError:]";
-    LegacyErrorString = MissingBundleNameString;
-    SourceFileLine = 287;
-}
---
-
-2026-10-27 05:48:53.996 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde73480:cb96f42dbde73480: com.apple.dt.IDERunOperationWorkerFinished {
-    "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
-    "device_model" = "iPhone17,1";
-    "device_osBuild" = "18.5 (22F77)";
-    "device_platform" = "com.apple.platform.iphonesimulator";
-    "device_thinningType" = "iPhone17,1";
-    "dvt_coredevice_version" = "506.7";
-    "dvt_coresimulator_version" = "1051.17.8";
-    "dvt_mobiledevice_version" = "1818.13.1";
-    "launchSession_schemeCommand" = Test;
-    "launchSession_state" = 1;
-    "launchSession_targetArch" = arm64;
-    "operation_duration_ms" = 183;
-    "operation_errorCode" = 1;
-    "operation_errorDomain" = IXUserPresentableErrorDomain;
-    "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
-    "operation_name" = IDERunOperationWorkerGroup;
-    "param_debugger_attachToExtensions" = 0;
-    "param_debugger_attachToXPC" = 0;
-    "param_debugger_type" = 1;
-    "param_destination_isProxy" = 0;
-    "param_destination_platform" = "com.apple.platform.iphonesimulator";
-    "param_diag_113575882_enable" = 0;
-    "param_diag_MainThreadChecker_stopOnIssue" = 0;
-    "param_diag_MallocStackLogging_enableDuringAttach" = 0;
-    "param_diag_MallocStackLogging_enableForXPC" = 0;
-    "param_diag_allowLocationSimulation" = 0;
-    "param_diag_checker_tpc_enable" = 0;
-    "param_diag_gpu_frameCapture_enable" = 3;
-    "param_diag_gpu_shaderValidation_enable" = 0;
-    "param_diag_gpu_validation_enable" = 1;
-    "param_diag_guardMalloc_enable" = 0;
-    "param_diag_memoryGraphOnResourceException" = 0;
-    "param_diag_mtc_enable" = 0;
-    "param_diag_queueDebugging_enable" = 1;
-    "param_diag_runtimeProfile_generate" = 0;
-    "param_diag_sanitizer_asan_enable" = 0;
-    "param_diag_sanitizer_tsan_enable" = 0;
-    "param_diag_sanitizer_tsan_stopOnIssue" = 0;
-    "param_diag_sanitizer_ubsan_enable" = 0;
-    "param_diag_sanitizer_ubsan_stopOnIssue" = 0;
-    "param_diag_showNonLocalizedStrings" = 0;
-    "param_diag_viewDebugging_enabled" = 0;
-    "param_diag_viewDebugging_insertDylibOnLaunch" = 0;
-    "param_install_style" = 2;
-    "param_launcher_UID" = 2;
-    "param_launcher_allowDeviceSensorReplayData" = 0;
-    "param_launcher_kind" = 0;
-    "param_launcher_style" = 0;
-    "param_launcher_substyle" = 0;
-    "param_runnable_appExtensionHostRunMode" = 0;
-    "param_structuredConsoleMode" = 0;
-    "param_testing_launchedForTesting" = 1;
-    "param_testing_suppressSimulatorApp" = 1;
-    "param_testing_usingCLI" = 0;
-    "sdk_canonicalName" = "iphonesimulator18.5";
-    "sdk_osVersion" = "18.5";
-    "sdk_variant" = iphonesimulator;
-}
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:17: error: -[AsechkaUITests.NativeJourneyTests testNormalReopenHasNoPasswordScreenAndPreservesComposer] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000d04870 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.IEJGmh/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.IEJGmh/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.IEJGmh/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
-    t =     0.47s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testNormalReopenHasNoPasswordScreenAndPreservesComposer]' failed (1.615 seconds).
-Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' started.
-    t =     0.00s Start Test at 2026-10-27 05:48:55.152
+    t =     0.00s Start Test at 2026-10-27 05:52:06.186
     t =     0.03s Set Up
     t =     0.03s                                 Open app.asechka.ios
     t =     0.03s                                     Launch app.asechka.ios
-2026-10-27 05:48:55.402 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde71000:cb96f42dbde71000: Finished with error: App installation failed: Unable to Install “Asechka”
+2026-10-27 05:52:06.474 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a343f400:fe955ea8a343f400: Finished with error: App installation failed: Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.0Tv4Tc/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.nYZsOE/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 User Info: {
-    DVTErrorCreationDateKey = "2026-10-27 05:48:55 +0000";
+    DVTErrorCreationDateKey = "2026-10-27 05:52:06 +0000";
     IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
     SimCallingSelector = "installApplication:withOptions:error:";
 }
@@ -1693,9 +1697,9 @@ Unable to Install “Asechka”
 Domain: IXUserPresentableErrorDomain
 Code: 1
 Failure Reason: Please try again later.
-Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.0Tv4Tc/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.nYZsOE/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 --
-Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.0Tv4Tc/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.nYZsOE/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
 Domain: MIInstallerErrorDomain
 Code: 52
 User Info: {
@@ -1705,7 +1709,7 @@ User Info: {
 }
 --
 
-2026-10-27 05:48:55.402 xcodebuild[3782:15288] [MT] IDELaunchReport: cb96f42dbde71000:cb96f42dbde71000: com.apple.dt.IDERunOperationWorkerFinished {
+2026-10-27 05:52:06.475 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a343f400:fe955ea8a343f400: com.apple.dt.IDERunOperationWorkerFinished {
     "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
     "device_model" = "iPhone17,1";
     "device_osBuild" = "18.5 (22F77)";
@@ -1717,7 +1721,7 @@ User Info: {
     "launchSession_schemeCommand" = Test;
     "launchSession_state" = 1;
     "launchSession_targetArch" = arm64;
-    "operation_duration_ms" = 218;
+    "operation_duration_ms" = 222;
     "operation_errorCode" = 1;
     "operation_errorDomain" = IXUserPresentableErrorDomain;
     "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
@@ -1764,28 +1768,123 @@ User Info: {
     "sdk_osVersion" = "18.5";
     "sdk_variant" = iphonesimulator;
 }
-/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:114: error: -[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000d04870 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.0Tv4Tc/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.0Tv4Tc/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.0Tv4Tc/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
-    t =     0.45s Tear Down
-Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' failed (0.526 seconds).
-Test Suite 'NativeJourneyTests' failed at 2026-10-27 05:48:55.679.
-	 Executed 5 tests, with 5 failures (0 unexpected) in 10.977 (10.978) seconds
-Test Suite 'AsechkaUITests.xctest' failed at 2026-10-27 05:48:55.679.
-	 Executed 5 tests, with 5 failures (0 unexpected) in 10.977 (10.979) seconds
-Test Suite 'All tests' failed at 2026-10-27 05:48:55.679.
-	 Executed 5 tests, with 5 failures (0 unexpected) in 10.977 (10.980) seconds
-2026-10-27 05:49:17.072 xcodebuild[3782:15288] [MT] IDETestOperationsObserverDebug: 78.108 elapsed -- Testing started completed.
-2026-10-27 05:49:17.072 xcodebuild[3782:15288] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
-2026-10-27 05:49:17.072 xcodebuild[3782:15288] [MT] IDETestOperationsObserverDebug: 78.108 sec, +78.108 sec -- end
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:24: error: -[AsechkaUITests.NativeJourneyTests testNormalReopenHasNoPasswordScreenAndPreservesComposer] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000ca3d80 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.nYZsOE/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.nYZsOE/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.nYZsOE/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
+    t =     0.49s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testNormalReopenHasNoPasswordScreenAndPreservesComposer]' failed (0.642 seconds).
+Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' started.
+    t =     0.00s Start Test at 2026-10-27 05:52:06.828
+    t =     0.03s Set Up
+    t =     0.03s                                         Open app.asechka.ios
+    t =     0.03s                                             Launch app.asechka.ios
+2026-10-27 05:52:07.180 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a343ff80:fe955ea8a343ff80: Finished with error: App installation failed: Unable to Install “Asechka”
+Domain: IXUserPresentableErrorDomain
+Code: 1
+Failure Reason: Please try again later.
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.5HbeCt/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+User Info: {
+    DVTErrorCreationDateKey = "2026-10-27 05:52:07 +0000";
+    IDERunOperationFailingWorker = IDELaunchiPhoneSimulatorLauncher;
+    SimCallingSelector = "installApplication:withOptions:error:";
+}
+--
+Unable to Install “Asechka”
+Domain: IXUserPresentableErrorDomain
+Code: 1
+Failure Reason: Please try again later.
+Recovery Suggestion: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.5HbeCt/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+--
+Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.5HbeCt/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist
+Domain: MIInstallerErrorDomain
+Code: 52
+User Info: {
+    FunctionName = "-[MIAppExtensionBundle validateBundleMetadataWithError:]";
+    LegacyErrorString = MissingBundleNameString;
+    SourceFileLine = 287;
+}
+--
+
+2026-10-27 05:52:07.180 xcodebuild[20885:60178] [MT] IDELaunchReport: fe955ea8a343ff80:fe955ea8a343ff80: com.apple.dt.IDERunOperationWorkerFinished {
+    "device_identifier" = "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9";
+    "device_model" = "iPhone17,1";
+    "device_osBuild" = "18.5 (22F77)";
+    "device_platform" = "com.apple.platform.iphonesimulator";
+    "device_thinningType" = "iPhone17,1";
+    "dvt_coredevice_version" = "506.7";
+    "dvt_coresimulator_version" = "1051.17.8";
+    "dvt_mobiledevice_version" = "1818.13.1";
+    "launchSession_schemeCommand" = Test;
+    "launchSession_state" = 1;
+    "launchSession_targetArch" = arm64;
+    "operation_duration_ms" = 269;
+    "operation_errorCode" = 1;
+    "operation_errorDomain" = IXUserPresentableErrorDomain;
+    "operation_errorWorker" = IDELaunchiPhoneSimulatorLauncher;
+    "operation_name" = IDERunOperationWorkerGroup;
+    "param_debugger_attachToExtensions" = 0;
+    "param_debugger_attachToXPC" = 0;
+    "param_debugger_type" = 1;
+    "param_destination_isProxy" = 0;
+    "param_destination_platform" = "com.apple.platform.iphonesimulator";
+    "param_diag_113575882_enable" = 0;
+    "param_diag_MainThreadChecker_stopOnIssue" = 0;
+    "param_diag_MallocStackLogging_enableDuringAttach" = 0;
+    "param_diag_MallocStackLogging_enableForXPC" = 0;
+    "param_diag_allowLocationSimulation" = 0;
+    "param_diag_checker_tpc_enable" = 0;
+    "param_diag_gpu_frameCapture_enable" = 3;
+    "param_diag_gpu_shaderValidation_enable" = 0;
+    "param_diag_gpu_validation_enable" = 1;
+    "param_diag_guardMalloc_enable" = 0;
+    "param_diag_memoryGraphOnResourceException" = 0;
+    "param_diag_mtc_enable" = 0;
+    "param_diag_queueDebugging_enable" = 1;
+    "param_diag_runtimeProfile_generate" = 0;
+    "param_diag_sanitizer_asan_enable" = 0;
+    "param_diag_sanitizer_tsan_enable" = 0;
+    "param_diag_sanitizer_tsan_stopOnIssue" = 0;
+    "param_diag_sanitizer_ubsan_enable" = 0;
+    "param_diag_sanitizer_ubsan_stopOnIssue" = 0;
+    "param_diag_showNonLocalizedStrings" = 0;
+    "param_diag_viewDebugging_enabled" = 0;
+    "param_diag_viewDebugging_insertDylibOnLaunch" = 0;
+    "param_install_style" = 2;
+    "param_launcher_UID" = 2;
+    "param_launcher_allowDeviceSensorReplayData" = 0;
+    "param_launcher_kind" = 0;
+    "param_launcher_style" = 0;
+    "param_launcher_substyle" = 0;
+    "param_runnable_appExtensionHostRunMode" = 0;
+    "param_structuredConsoleMode" = 0;
+    "param_testing_launchedForTesting" = 1;
+    "param_testing_suppressSimulatorApp" = 1;
+    "param_testing_usingCLI" = 0;
+    "sdk_canonicalName" = "iphonesimulator18.5";
+    "sdk_osVersion" = "18.5";
+    "sdk_variant" = iphonesimulator;
+}
+/Users/runner/work/asechka-website/asechka-website/mobile/ios/UITests/NativeJourneyTests.swift:121: error: -[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline] : Failed to get launch progress for <XCUIApplicationImpl: 0x600000ca3d80 app.asechka.ios at /Users/runner/work/asechka-website/asechka-website/mobile/ios/build-test/Build/Products/Debug-iphonesimulator/Asechka.app>: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.5HbeCt/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.5HbeCt/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.5HbeCt/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))
+    t =     0.50s Tear Down
+Test Case '-[AsechkaUITests.NativeJourneyTests testOurLittleBookAndSinceUsAreNativeAndEditableOffline]' failed (0.837 seconds).
+Test Suite 'NativeJourneyTests' failed at 2026-10-27 05:52:07.665.
+	 Executed 6 tests, with 6 failures (0 unexpected) in 6.561 (6.562) seconds
+Test Suite 'AsechkaUITests.xctest' failed at 2026-10-27 05:52:07.665.
+	 Executed 6 tests, with 6 failures (0 unexpected) in 6.561 (6.563) seconds
+Test Suite 'All tests' failed at 2026-10-27 05:52:07.666.
+	 Executed 6 tests, with 6 failures (0 unexpected) in 6.561 (6.564) seconds
+2026-10-27 05:52:29.637 xcodebuild[20885:60178] [MT] IDETestOperationsObserverDebug: 81.617 elapsed -- Testing started completed.
+2026-10-27 05:52:29.637 xcodebuild[20885:60178] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-27 05:52:29.637 xcodebuild[20885:60178] [MT] IDETestOperationsObserverDebug: 81.617 sec, +81.617 sec -- end
 
 Test session results, code coverage, and logs:
 	/Users/runner/work/asechka-website/asechka-website/mobile/ios/NativeChecks.xcresult
 
 Testing failed:
 	App installation failed: Unable to Install “Asechka”
-	Asechka encountered an error (Failed to install or launch the test runner. (Underlying Error: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.GGvKQV/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.GGvKQV/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.GGvKQV/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))))
+	Asechka encountered an error (Failed to install or launch the test runner. (Underlying Error: App installation failed: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.LWvRhQ/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Unable to Install “Asechka”. Please try again later. Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.LWvRhQ/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist. (Underlying Error: Appex bundle at /Users/runner/Library/Developer/CoreSimulator/Devices/DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9/data/Library/Caches/com.apple.mobile.installd.staging/temp.LWvRhQ/extracted/Asechka.app/PlugIns/AsechkaWidgets.appex with ID app.asechka.ios.widgets does not have a CFBundleName key with a non-zero length string value in its Info.plist))))
 
 Failing tests:
 	NativeJourneyTests.testHomeShortcutsHeartsAndHiddenHistory()
+	NativeJourneyTests.testIncomingEnvelopeClosesToHistoryOnly()
 	NativeJourneyTests.testLittleMessageComposerHistoryAndFastPhotos()
 	NativeJourneyTests.testNativeFeedOfflineConversationAndComposer()
 	NativeJourneyTests.testNormalReopenHasNoPasswordScreenAndPreservesComposer()
