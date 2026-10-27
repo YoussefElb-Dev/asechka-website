@@ -51,6 +51,8 @@ struct UniverseWidgetView:View {
 }
 struct UniverseWidget:Widget {
     let kind:Int
+    init(){kind=0}
+    init(kind:Int){self.kind=kind}
     private let names=["Words to keep","Your little hearts","Hearts, from us both","A little love today","Our time together","Our shared streak"]
     var body:some WidgetConfiguration {StaticConfiguration(kind:"asechka.widget.\(kind)",provider:UniverseProvider()){entry in
         if #available(iOSApplicationExtension 17.0,*){UniverseWidgetView(entry:entry,kind:kind).containerBackground(for:.widget){Color(red:238/255,green:235/255,blue:248/255)}}else{UniverseWidgetView(entry:entry,kind:kind)}
