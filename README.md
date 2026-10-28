@@ -4,6 +4,8 @@ The original powder-blue and lavender website for Asnat: a letter, a mysterious 
 
 Live site: https://asechka-website.vercel.app
 
+Repository visibility also controls the privacy of the saved collections. This repository contains photos, quotes, messages, and their history. If it is public, those tracked files and earlier revisions are publicly readable through GitHub even though the website still requires its shared code. Hosting secrets and signing keys belong only in environment variables or GitHub Secrets.
+
 ## Keep quotes and pictures from the website
 
 After unlocking the site, use **Add a quote** or **Add a picture** on the home page or in the full Quotes and Pictures collections. Quotes support multiple lines, a date, and an optional note. Pictures support a caption and a date; choose a JPG, PNG, or WebP up to 25 MB and the browser prepares a smaller JPEG without EXIF metadata before uploading.
