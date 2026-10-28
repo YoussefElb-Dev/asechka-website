@@ -1,6 +1,6 @@
 {
-  "source": "550ca0b00da8885cd1aa3b65d4e3f411abf4ebc5",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40605691262",
+  "source": "1c3087134475aa2b651a90e5024703e4e335d2e5",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40606754006",
   "backend": "success",
   "android": "success",
   "iphone": "failure",
@@ -163,7 +163,7 @@
   "files": {
     "Asechka-Android.apk": {
       "bytes": 8514217,
-      "sha256": "27760ed765d3a6b2133f6db223ed4c9c32fec0a7b861b1a1e0fa6710a997dba4"
+      "sha256": "630a04d934abb403a4224e3b51ccce1eb0a4153ecf5363e87abd777b4597f0d4"
     }
   }
 }
