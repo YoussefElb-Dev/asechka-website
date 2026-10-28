@@ -47,9 +47,11 @@ final class WidgetRegistrationTests: XCTestCase {
         // The final picker button has a leading space in its accessibility label.
         guard let add=visible(home.buttons.matching(NSPredicate(format:"label CONTAINS %@","Add Widget"))) else {XCTFail(home.debugDescription);return}
         add.tap()
-        XCUIDevice.shared.press(.home)
-        // Home Screen widgets expose their full card as one accessible element.
-        guard let words=visible(home.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@","Words to keep"))) else {XCTFail(home.debugDescription);return}
+        let done=home.buttons["Done"]
+        XCTAssertTrue(done.waitForExistence(timeout:10),home.debugDescription);done.tap()
+        // SpringBoard exposes the installed card as an app-named icon with value Widget,
+        // rather than exposing the SwiftUI text inside the remote widget process.
+        guard let words=visible(home.icons.matching(NSPredicate(format:"label == %@ AND value == %@","Asechka","Widget"))) else {XCTFail(home.debugDescription);return}
         XCTAssertGreaterThan(words.frame.width,words.frame.height)
         attach(home.screenshot(),"228-iPhone-home-screen-widget")
         words.tap()
