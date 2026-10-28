@@ -34,7 +34,9 @@ final class WidgetRegistrationTests: XCTestCase {
             let add=home.buttons["Add"].firstMatch
             XCTAssertTrue(add.waitForExistence(timeout:5),home.debugDescription);add.tap()
         }
-        let search=home.searchFields.firstMatch
+        // SpringBoard retains an off-screen App Library search field in its hierarchy.
+        // Match the widget picker's own field so typing cannot jump to that hidden field.
+        let search=home.searchFields["Search Widgets"]
         XCTAssertTrue(search.waitForExistence(timeout:10),home.debugDescription)
         search.tap();search.typeText("Asechka")
         let result=home.staticTexts["Asechka"].firstMatch
