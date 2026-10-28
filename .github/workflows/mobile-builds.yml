@@ -89,6 +89,10 @@ jobs:
       - name: Build project
         working-directory: mobile/ios
         run: xcodegen generate
+      - name: Check renamed widget sharing profiles
+        run: |
+          swiftc mobile/ios/SharedWidgets/WidgetSnapshot.swift mobile/ios/Sources/SharedHeartStreak.swift mobile/tools/WidgetProfileChecks.swift -o "$RUNNER_TEMP/widget-profile-checks"
+          "$RUNNER_TEMP/widget-profile-checks"
       - name: Test native screens, offline posts, and encrypted storage
         if: ${{ inputs.full_checks }}
         working-directory: mobile/ios
