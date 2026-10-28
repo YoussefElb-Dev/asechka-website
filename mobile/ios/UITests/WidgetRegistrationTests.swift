@@ -38,9 +38,16 @@ final class WidgetRegistrationTests: XCTestCase {
         // Match the widget picker's own field so typing cannot jump to that hidden field.
         let search=home.searchFields["Search Widgets"]
         XCTAssertTrue(search.waitForExistence(timeout:10),home.debugDescription)
-        search.tap();search.typeText("Asechka")
-        let result=home.staticTexts["Asechka"].firstMatch
-        XCTAssertTrue(result.waitForExistence(timeout:10),"The widget extension must be registered in the system picker.\n"+home.debugDescription)
+        search.tap()
+        dismissKeyboardIntroduction(home)
+        search.typeText("Asechka")
+        // A fresh simulator can index an installed extension after the picker opens.
+        // Refresh the search while waiting, and keep a real registration assertion.
+        guard let result=registeredWidget(in:home,search:search) else {
+            attach(home.screenshot(),"228-iPhone-widget-registration-failure")
+            XCTFail("The widget extension must be registered in the system picker.\n"+home.debugDescription)
+            return
+        }
         result.tap()
         XCTAssertTrue(home.staticTexts["Words to keep"].firstMatch.waitForExistence(timeout:10),home.debugDescription)
         attach(home.screenshot(),"228-iPhone-system-widget-picker")
@@ -56,6 +63,24 @@ final class WidgetRegistrationTests: XCTestCase {
         attach(home.screenshot(),"228-iPhone-home-screen-widget")
         words.tap()
         XCTAssertTrue(app.wait(for:.runningForeground,timeout:10),"Tapping the real widget opens the app")
+    }
+    private func dismissKeyboardIntroduction(_ home:XCUIApplication) {
+        let introduction=home.buttons["Continue"]
+        if introduction.exists && introduction.isHittable {introduction.tap()}
+    }
+    private func registeredWidget(in home:XCUIApplication,search:XCUIElement)->XCUIElement? {
+        let deadline=Date().addingTimeInterval(60)
+        repeat {
+            dismissKeyboardIntroduction(home)
+            let result=home.staticTexts["Asechka"].firstMatch
+            if result.waitForExistence(timeout:5) && result.isHittable {return result}
+            let clear=search.buttons["Clear text"]
+            if clear.exists && clear.isHittable {
+                clear.tap()
+                search.typeText("Asechka")
+            }
+        }while Date()<deadline
+        return nil
     }
     private func visible(_ query:XCUIElementQuery)->XCUIElement? {
         let deadline=Date().addingTimeInterval(10)

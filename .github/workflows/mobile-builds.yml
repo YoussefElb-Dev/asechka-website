@@ -1,9 +1,17 @@
 name: Native Android and iPhone apps
+# Builds are manual to avoid spending private-repository minutes on each edit.
 on:
   workflow_dispatch:
-  push:
-    branches: [main, codex/little-us]
-    paths: ['mobile/**', '.github/workflows/mobile-builds.yml', 'server/**', 'tests/**']
+    inputs:
+      platform:
+        description: 'Files to generate (choose only the platform that needs rebuilding)'
+        type: choice
+        options: [iphone, android, both]
+        default: iphone
+      full_checks:
+        description: 'Run backend and full iPhone simulator checks (uses extra runner time)'
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -11,6 +19,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   backend:
+    if: ${{ inputs.full_checks }}
+    timeout-minutes: 5
     name: Shared collection tests
     runs-on: ubuntu-latest
     steps:
@@ -21,6 +31,8 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: node --test tests/*.test.mjs
   android:
+    if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
+    timeout-minutes: 15
     name: Android APK
     runs-on: ubuntu-latest
     steps:
@@ -65,9 +77,10 @@ jobs:
         if: always()
         run: rm -f "$RUNNER_TEMP/asechka-release.jks"
   iphone:
+    if: ${{ inputs.platform == 'iphone' || inputs.platform == 'both' }}
     name: iPhone IPA for sideloading
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Generate the native Xcode project
@@ -77,19 +90,26 @@ jobs:
         working-directory: mobile/ios
         run: xcodegen generate
       - name: Test native screens, offline posts, and encrypted storage
+        if: ${{ inputs.full_checks }}
         working-directory: mobile/ios
         run: |
           DEVICE=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(v["udid"] for values in d["devices"].values() for v in values if "iPhone" in v["name"]))')
           echo "IOS_SIMULATOR=$DEVICE" >> "$GITHUB_ENV"
-          xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -parallel-testing-enabled NO -derivedDataPath build-test -resultBundlePath NativeChecks.xcresult CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test 2>&1 | tee test.log
+          xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 -maximum-test-execution-time-allowance 180 -derivedDataPath build-test -resultBundlePath NativeChecks.xcresult CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test 2>&1 | tee test.log
         shell: bash --noprofile --norc -e -o pipefail {0}
       - name: Capture native iPhone preview
-        if: always()
+        if: ${{ always() && inputs.full_checks && env.IOS_SIMULATOR != '' }}
         continue-on-error: true
         working-directory: mobile/ios
         run: |
           mkdir -p preview
           xcrun xcresulttool export attachments --path NativeChecks.xcresult --output-path preview/screens
+          # Keep useful screenshots and their names, without storing test recordings.
+          python3 - <<'PY'
+          from pathlib import Path
+          for p in Path('preview/screens').rglob('*'):
+              if p.is_file() and p.suffix not in ['.png','.json']: p.unlink()
+          PY
           xcrun simctl boot "$IOS_SIMULATOR" || true
           xcrun simctl bootstatus "$IOS_SIMULATOR" -b
           xcrun simctl install "$IOS_SIMULATOR" build-test/Build/Products/Debug-iphonesimulator/Asechka.app
@@ -98,11 +118,11 @@ jobs:
           sleep 3
           xcrun simctl io "$IOS_SIMULATOR" screenshot preview/iPhone-home.png
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && inputs.full_checks }}
         with:
           name: Native-iPhone-previews
           path: mobile/ios/preview
-          retention-days: 30
+          retention-days: 3
       - name: Build the iPhone app
         working-directory: mobile/ios
         run: xcodebuild -project Asechka.xcodeproj -scheme Asechka -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log
@@ -134,93 +154,5 @@ jobs:
         if: failure()
         with:
           name: iPhone-build-diagnostics
-          path: |
-            mobile/ios/*.log
-            mobile/ios/build-test/Logs/Test/*.xcresult
-            mobile/ios/NativeChecks.xcresult
-          retention-days: 7
-  delivery:
-    name: Keep private build downloads
-    needs: [backend, android, iphone]
-    if: always()
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      actions: read
-    steps:
-      - uses: actions/checkout@v4
-      - name: Keep actionable build diagnostics
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const jobs = await github.rest.actions.listJobsForWorkflowRun({...context.repo, run_id: context.runId});
-            const summary = jobs.data.jobs.filter(j => j.name !== 'Keep private build downloads').map(j => ({name:j.name,conclusion:j.conclusion,steps:j.steps.map(s=>({name:s.name,conclusion:s.conclusion}))}));
-            fs.writeFileSync(process.env.RUNNER_TEMP+'/build-jobs.json',JSON.stringify(summary,null,2));
-            for (const job of jobs.data.jobs.filter(j=>j.conclusion==='failure')) {
-              try {
-                const response=await fetch(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/actions/jobs/${job.id}/logs`,{headers:{Authorization:'Bearer '+process.env.BUILD_LOG_TOKEN,Accept:'application/vnd.github+json'},redirect:'manual'});
-                const location=response.headers.get('location');
-                const logs=location ? await (await fetch(location)).text() : await response.text();
-                fs.writeFileSync(process.env.RUNNER_TEMP+`/job-${job.id}.log`,logs.split('\n').slice(-250).join('\n'));
-              } catch (error) { core.warning('Job log not yet available.'); }
-            }
-        env:
-          BUILD_LOG_TOKEN: ${{ github.token }}
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          pattern: Asechka-*-*
-          path: ${{ runner.temp }}/mobile-downloads
-          merge-multiple: true
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: iPhone-build-diagnostics
-          path: ${{ runner.temp }}/iphone-diagnostics
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: Native-iPhone-previews
-          path: ${{ runner.temp }}/iphone-previews
-      - name: Save downloads and build status in the private repository
-        env:
-          SOURCE_SHA: ${{ github.sha }}
-          BUILD_RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          BACKEND_RESULT: ${{ needs.backend.result }}
-          ANDROID_RESULT: ${{ needs.android.result }}
-          IPHONE_RESULT: ${{ needs.iphone.result }}
-        run: |
-          if git ls-remote --exit-code --heads origin codex/mobile-delivery >/dev/null; then
-            git fetch origin codex/mobile-delivery
-            git checkout -B codex/mobile-delivery FETCH_HEAD
-          else
-            git checkout -b codex/mobile-delivery
-          fi
-          mkdir -p mobile-downloads
-          find mobile-downloads -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-          python3 - <<'PY'
-          import os,json,pathlib,shutil,hashlib
-          root=pathlib.Path('mobile-downloads')
-          temp=pathlib.Path(os.environ['RUNNER_TEMP'])
-          for name in ['Asechka-Android.apk','Asechka-Android.apk.sha256','Asechka-iPhone.ipa','Asechka-iPhone.ipa.sha256','INSTALL.txt']:
-              source=temp/'mobile-downloads'/name
-              if source.is_file(): shutil.copy2(source,root/name)
-          for name in ['test.log','build.log']:
-              for source in (temp/'iphone-diagnostics').rglob(name): shutil.copy2(source,root/name)
-          for source in (temp/'iphone-previews').rglob('*'):
-              if not source.is_file() or source.suffix not in ['.png','.json']: continue
-              target=root/'previews'/source.name
-              target.parent.mkdir(exist_ok=True)
-              shutil.copy2(source,target)
-          status={'source':os.environ['SOURCE_SHA'],'run':os.environ['BUILD_RUN'],'backend':os.environ['BACKEND_RESULT'],'android':os.environ['ANDROID_RESULT'],'iphone':os.environ['IPHONE_RESULT']}
-          if (temp/'build-jobs.json').is_file(): status['jobs']=json.loads((temp/'build-jobs.json').read_text())
-          for source in temp.glob('job-*.log'): shutil.copy2(source,root/source.name)
-          status['files']={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in root.iterdir() if p.suffix in ['.apk','.ipa']}
-          (root/'status.json').write_text(json.dumps(status,indent=2)+'\n')
-          PY
-          git config user.name 'Asechka app builds'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -f -- mobile-downloads
-          git commit -m "Keep native build downloads for ${SOURCE_SHA:0:7}" || git diff --cached --quiet
-          git push origin HEAD:refs/heads/codex/mobile-delivery
+          path: mobile/ios/*.log
+          retention-days: 3
