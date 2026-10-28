@@ -44,14 +44,24 @@ final class WidgetRegistrationTests: XCTestCase {
         result.tap()
         XCTAssertTrue(home.staticTexts["Words to keep"].firstMatch.waitForExistence(timeout:10),home.debugDescription)
         attach(home.screenshot(),"228-iPhone-system-widget-picker")
-        let add=home.buttons["Add Widget"].firstMatch
-        XCTAssertTrue(add.waitForExistence(timeout:5),home.debugDescription);add.tap()
+        // The final picker button has a leading space in its accessibility label.
+        guard let add=visible(home.buttons.matching(NSPredicate(format:"label CONTAINS %@","Add Widget"))) else {XCTFail(home.debugDescription);return}
+        add.tap()
         XCUIDevice.shared.press(.home)
-        let words=home.staticTexts["Words to keep"].firstMatch
-        XCTAssertTrue(words.waitForExistence(timeout:10),home.debugDescription)
+        // Home Screen widgets expose their full card as one accessible element.
+        guard let words=visible(home.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@","Words to keep"))) else {XCTFail(home.debugDescription);return}
+        XCTAssertGreaterThan(words.frame.width,words.frame.height)
         attach(home.screenshot(),"228-iPhone-home-screen-widget")
         words.tap()
         XCTAssertTrue(app.wait(for:.runningForeground,timeout:10),"Tapping the real widget opens the app")
+    }
+    private func visible(_ query:XCUIElementQuery)->XCUIElement? {
+        let deadline=Date().addingTimeInterval(10)
+        repeat {
+            if let element=query.allElementsBoundByIndex.first(where:{$0.isHittable}) {return element}
+            Thread.sleep(forTimeInterval:0.25)
+        }while Date()<deadline
+        return nil
     }
     private func attach(_ screenshot:XCUIScreenshot,_ name:String) {
         let attachment=XCTAttachment(screenshot:screenshot);attachment.name=name;attachment.lifetime = .keepAlways;add(attachment)
