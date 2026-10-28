@@ -5,55 +5,55 @@
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "F5DBC15C-C547-41CD-94EB-D1A48A9E07B3.png",
+        "exportedFileName" : "8D590EAB-9545-4448-B198-587E9BD34EA3.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "16-iPhone-settings_0_DD04364A-9979-4DFA-A548-2983D21B88F4.png",
-        "timestamp" : 1793146204.19
+        "suggestedHumanReadableName" : "16-iPhone-settings_0_F1FEEF03-123E-4980-9410-53855F51AB3D.png",
+        "timestamp" : 1793146722.535
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "CF85F564-A2A5-41F7-A806-AB369116DA6B.png",
+        "exportedFileName" : "8B6544FC-68A8-4B79-A11C-3AD4B698DE6C.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "15-iPhone-our-time_0_8421E115-F2B5-4008-8F71-9254F1649041.png",
-        "timestamp" : 1793146202.822
+        "suggestedHumanReadableName" : "15-iPhone-our-time_0_4675D3B0-4A38-44EC-B385-2D4327616DA5.png",
+        "timestamp" : 1793146721.148
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "788BE8CE-7801-46AD-B3E2-8DC402405B55.png",
+        "exportedFileName" : "E3CAD432-40DA-4C00-994D-ADFFDBFA8654.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "14-iPhone-secret-vocab_0_CBA2094C-F5C5-4415-B429-7B034FCA8852.png",
-        "timestamp" : 1793146186.911
+        "suggestedHumanReadableName" : "14-iPhone-secret-vocab_0_FE8CBCEC-472F-4203-A0A2-1D8C2FA2BBD6.png",
+        "timestamp" : 1793146705.867
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "3B768B25-D908-4000-BBE0-5C9990892263.png",
+        "exportedFileName" : "A10993B0-D575-4CD0-BDA6-411A1D67A688.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "13-iPhone-heart-history_0_4064CD03-E7AD-46B8-98E5-AD4F05CEE623.png",
-        "timestamp" : 1793146183.772
+        "suggestedHumanReadableName" : "13-iPhone-heart-history_0_3EB0CA26-5E6E-459C-95F2-0D7BB3EDFDC1.png",
+        "timestamp" : 1793146702.627
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "1EBC2415-077F-4A8C-843D-0DF9E2FE2C6C.png",
+        "exportedFileName" : "6F8AE05F-A34F-498F-9698-546607FC2CCC.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "12-iPhone-home-hearts_0_860C7036-60B8-4D82-AA8B-85ADDB741366.png",
-        "timestamp" : 1793146181.71
+        "suggestedHumanReadableName" : "12-iPhone-home-hearts_0_A1903C62-70B0-4F9A-AC73-C68FDE08BF60.png",
+        "timestamp" : 1793146699.819
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "D3124A2D-3768-415C-AF70-B2A93638FEC5.png",
+        "exportedFileName" : "9A54071C-F7FA-4BC6-A88A-1BCC5D23AD12.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "00-iPhone-home-first-glance_0_600408AC-5200-482E-A743-170106EBE3CE.png",
-        "timestamp" : 1793146173.273
+        "suggestedHumanReadableName" : "00-iPhone-home-first-glance_0_6308328B-8C18-46B8-BD38-D4023FD47F61.png",
+        "timestamp" : 1793146691.174
       }
     ],
     "testIdentifier" : "NativeJourneyTests/testHomeShortcutsHeartsAndHiddenHistory()",
@@ -65,19 +65,19 @@
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "97EF48E1-C028-4A60-8798-31EF59C2BC2D.png",
+        "exportedFileName" : "DC7653D4-9B04-4675-ABC9-5DC3EEEDC2A3.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "226-iPhone-closed-message_0_96D0D1CB-D8BE-4AF1-B1F8-391F576455B1.png",
-        "timestamp" : 1793146215.945
+        "suggestedHumanReadableName" : "226-iPhone-closed-message_0_DC5E904C-1138-4219-8AA1-846DC64156B9.png",
+        "timestamp" : 1793146733.966
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "10C00EB1-ABA9-47AC-9E43-FFBCCC5C0F4E.png",
+        "exportedFileName" : "DB1593E6-3039-46B3-B7B6-81D84D497368.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "226-iPhone-incoming-art_0_31E22621-E937-459C-8845-99BB9E2F0FD4.png",
-        "timestamp" : 1793146210.302
+        "suggestedHumanReadableName" : "226-iPhone-incoming-art_0_4A899293-E372-4820-91F3-BA578C146562.png",
+        "timestamp" : 1793146728.554
       }
     ],
     "testIdentifier" : "NativeJourneyTests/testIncomingEnvelopeClosesToHistoryOnly()",
@@ -89,37 +89,37 @@
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "9A4DB49D-72F6-49E7-9387-2C7800F6A64B.png",
+        "exportedFileName" : "B3471D1D-F5C7-48AA-A21F-D4DE6A4C43AD.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "226-iPhone-photos_0_476873BD-1795-41E3-9402-F935E394EE3A.png",
-        "timestamp" : 1793146262.035
+        "suggestedHumanReadableName" : "226-iPhone-photos_0_2A5A37F2-19DD-47D1-87EF-06A3857F0E32.png",
+        "timestamp" : 1793146779.218
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "97B65D70-8BAB-48F9-988B-631216CD0BC8.png",
+        "exportedFileName" : "34E81621-E90B-42FC-8DA5-453D641971EA.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "226-iPhone-widgets_0_E93EB73B-72C7-4FCE-A28A-BF0F24E0C83C.png",
-        "timestamp" : 1793146233.897
+        "suggestedHumanReadableName" : "226-iPhone-widgets_0_8BC07B31-E88C-4ED9-8B0B-F60998FAF3E2.png",
+        "timestamp" : 1793146750.651
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "5C6564D4-441B-4CD4-8DB6-8170BFCFCC7D.png",
+        "exportedFileName" : "D2D6AF99-09AA-4D5F-9CE6-07B28F56EA37.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "226-iPhone-message-history_0_55B1DE20-B76B-432B-8D05-EEA5D8F2D750.png",
-        "timestamp" : 1793146230.901
+        "suggestedHumanReadableName" : "226-iPhone-message-history_0_37987836-D2AB-43B7-83DE-4B4ED72AB744.png",
+        "timestamp" : 1793146748.225
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "F9D0D8FE-E896-4D9D-8499-C89B96A39689.png",
+        "exportedFileName" : "995E86B3-F127-4399-8581-8DBA3CD554C1.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "226-iPhone-message-composer_0_5E1ECD10-4896-4167-977C-1269D8A0055C.png",
-        "timestamp" : 1793146225.969
+        "suggestedHumanReadableName" : "226-iPhone-message-composer_0_05C72266-54A6-4955-9C6E-162377436E28.png",
+        "timestamp" : 1793146743.518
       }
     ],
     "testIdentifier" : "NativeJourneyTests/testLittleMessageComposerHistoryAndFastPhotos()",
@@ -131,55 +131,55 @@
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "115696C8-6B09-4F6D-8F33-3C68E7E69E42.png",
+        "exportedFileName" : "7FBE4E81-478C-41C3-B0B3-A91031957CFD.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "06-iPhone-words_0_D279E604-F112-4A13-AF22-3407AFB40899.png",
-        "timestamp" : 1793146286.153
+        "suggestedHumanReadableName" : "06-iPhone-words_0_2AA687A0-8887-4CC5-B633-03EF4E7CC767.png",
+        "timestamp" : 1793146803.185
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "CBCD859D-0C54-4FDD-B0CC-C8FB5398DB13.png",
+        "exportedFileName" : "05A22DED-7186-4070-9F0E-1C5D2434EB13.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "05-iPhone-days_0_C5899122-1484-4F50-AAAF-7F56707D288D.png",
-        "timestamp" : 1793146285.727
+        "suggestedHumanReadableName" : "05-iPhone-days_0_97C69CF7-5C9D-4346-BCC5-3EC6E6F40691.png",
+        "timestamp" : 1793146802.741
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "F17C250C-F6C2-4E36-A897-16ACD2D932A9.png",
+        "exportedFileName" : "4E362B53-F022-44B2-BF7D-18B9D4DB9080.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "04-iPhone-comments_0_4065EF30-D77F-40AB-AC3E-AB8503C673FA.png",
-        "timestamp" : 1793146283.462
+        "suggestedHumanReadableName" : "04-iPhone-comments_0_86B3C72B-01D2-4EB2-BE35-AB56DDB0A9E2.png",
+        "timestamp" : 1793146800.358
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "679DD232-5D7D-4F07-9DC4-BF3152BF08B2.png",
+        "exportedFileName" : "09F0857D-7314-4866-A275-2297EED6B70E.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "03-iPhone-composer_0_D872FBC2-A124-4237-A1BF-4F0D589CE4E8.png",
-        "timestamp" : 1793146273.213
+        "suggestedHumanReadableName" : "03-iPhone-composer_0_C51D01A5-FAB4-482A-B8B9-C28E8B88277E.png",
+        "timestamp" : 1793146789.978
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "ECA4053D-94D6-418B-A6BF-EEB24E8655CB.png",
+        "exportedFileName" : "C3B321C9-C12F-402B-9F67-697634CBA0C3.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "02-iPhone-photos_0_155D1A26-2355-4699-A65C-036A0BBAE3AC.png",
-        "timestamp" : 1793146268.889
+        "suggestedHumanReadableName" : "02-iPhone-photos_0_515E7B86-44A5-4126-81B1-1BD0A868AF26.png",
+        "timestamp" : 1793146786.048
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "D34151D2-DC48-4FD5-8157-66606B2BA70C.png",
+        "exportedFileName" : "103F8068-FF8E-43A7-AEAE-FBD66D6C4E5C.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "01-iPhone-home_0_E7BD22B8-5385-4272-B62A-1B6EBC32C0F6.png",
-        "timestamp" : 1793146267.203
+        "suggestedHumanReadableName" : "01-iPhone-home_0_877E727D-2E95-4D20-A0D2-CCCA982F95BD.png",
+        "timestamp" : 1793146784.365
       }
     ],
     "testIdentifier" : "NativeJourneyTests/testNativeFeedOfflineConversationAndComposer()",
@@ -191,46 +191,46 @@
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "A33AE41D-6B64-460F-9440-99E3EF69452E.png",
+        "exportedFileName" : "063F0E26-CD95-4436-8F4B-9F56BA3205F2.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "11-iPhone-letter_0_A5F8D801-0036-4771-BD50-CE4DFA3606C1.png",
-        "timestamp" : 1793146319.228
+        "suggestedHumanReadableName" : "11-iPhone-letter_0_5F26287B-0EE0-4F75-A852-9DDBC58C87EB.png",
+        "timestamp" : 1793146836.599
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "00DD0FD3-78D9-4C06-AA45-7CFE8E034A0B.png",
+        "exportedFileName" : "287678D2-0DC2-4A4C-A2E9-2983F065B214.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "10-iPhone-open-when-letters_0_B0FC37B3-91DB-4320-976B-54DCFE04CC72.png",
-        "timestamp" : 1793146316.1
+        "suggestedHumanReadableName" : "10-iPhone-open-when-letters_0_6E6C4D5E-B8D4-437E-894F-3E9D48ABC57A.png",
+        "timestamp" : 1793146833.527
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "DC861F4D-A8BA-4CF1-91DC-03449E00D0FD.png",
+        "exportedFileName" : "7306CF1D-A815-419D-A5FF-8919F35FCDB4.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "09-iPhone-since-us_0_46005A16-DA59-4C0C-9016-78D4FFCD1074.png",
-        "timestamp" : 1793146315.658
+        "suggestedHumanReadableName" : "09-iPhone-since-us_0_F6E820D7-7B46-4634-B5C4-0B27049F162C.png",
+        "timestamp" : 1793146833.071
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "FB45C635-94F1-49A3-85A7-3711C665265F.png",
+        "exportedFileName" : "079945EB-66BB-44AB-B2F0-C04BA0C53112.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "08-iPhone-recipe-editor_0_CDD1C8D4-298A-412B-9DCE-EB9949568366.png",
-        "timestamp" : 1793146311.947
+        "suggestedHumanReadableName" : "08-iPhone-recipe-editor_0_6E466959-3334-4622-964C-B6F1A3B65127.png",
+        "timestamp" : 1793146829.261
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "20158DC5-00FB-450F-8BD0-B4AC0F6046B7.png",
+        "exportedFileName" : "867BC99C-BF96-4B62-BC28-84E6CA27FC3A.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "07-iPhone-little-book_0_F1984158-9321-4CCF-9493-E815D4AFBEF8.png",
-        "timestamp" : 1793146309.601
+        "suggestedHumanReadableName" : "07-iPhone-little-book_0_7C32AB38-0209-49FB-AB7F-6A8E289086E6.png",
+        "timestamp" : 1793146826.911
       }
     ],
     "testIdentifier" : "NativeJourneyTests/testOurLittleBookAndSinceUsAreNativeAndEditableOffline()",
@@ -242,250 +242,205 @@
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "D5C50BB1-82EB-4ECB-BD8A-A1D2BFF3BAC6.txt",
+        "exportedFileName" : "A3D5582D-3800-47EB-A363-5FE085A9699E",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "App UI hierarchy for com.apple_0_91FE4B1B-5B68-4112-8AE7-C217490E304B.springboard",
-        "timestamp" : 1793146346.968
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.59 AM",
+        "timestamp" : 1793146859.517
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "3806B84D-280D-4636-ABBD-03DB4236EE8C",
+        "exportedFileName" : "AEDBE8F7-3017-4862-AAE7-2F043887022C",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.26 AM",
-        "timestamp" : 1793146346.968
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.59 AM",
+        "timestamp" : 1793146859.834
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "BE849831-B7CB-4377-AE4A-77BE49A2D58E.txt",
+        "exportedFileName" : "C6AAE627-C2F6-4365-AF47-156F3129A85B.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Debug description for `\"Add Widget\" Button`_0_EAE290CE-AD62-451C-A8A4-52D58F7758E4.txt",
-        "timestamp" : 1793146346.707
+        "suggestedHumanReadableName" : "228-iPhone-system-widget-picker_0_F847665E-E4A8-43B7-BC15-5264D53EFBC7.png",
+        "timestamp" : 1793146859.308
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "9C6B18DE-B97F-45E0-A661-424F79D86CE3.txt",
+        "exportedFileName" : "5C39E146-4667-45C8-A0F0-32C9E049100E",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Debug description for `\"Add Widget\" Button`_0_FE037F3C-27B7-4046-976F-4AF8AE5DCB25.txt",
-        "timestamp" : 1793146345.799
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.56 AM",
+        "timestamp" : 1793146856.803
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "2BA2DDB8-41B4-4ECC-B8B5-93CB614040A2.txt",
+        "exportedFileName" : "4D7CB104-8A97-4239-B48F-BA6C39A68EB8",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Debug description for `\"Add Widget\" Button`_0_E8F15ABA-6C98-4093-A4CF-8829369E970C.txt",
-        "timestamp" : 1793146344.759
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.57 AM",
+        "timestamp" : 1793146857.371
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "81A6357C-8E5C-497E-A172-38B58A4EBBC6.txt",
+        "exportedFileName" : "83AAA19D-72EA-45F1-81DF-91EB3E4CD902",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Debug description for `\"Add Widget\" Button`_0_301A2B99-2795-411B-A326-2590BBFDBCBE.txt",
-        "timestamp" : 1793146343.761
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.54 AM",
+        "timestamp" : 1793146854.996
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "5B0D46DF-4C93-4228-A391-DEC3F2DD3D01.txt",
+        "exportedFileName" : "D219E7B0-A282-408E-9871-6473E11CB29B",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Debug description for `\"Add Widget\" Button`_0_ED344D53-781C-4D08-9F77-72446228752D.txt",
-        "timestamp" : 1793146342.771
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.55 AM",
+        "timestamp" : 1793146855.316
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "AA21028B-B511-440C-A0B0-A65459022751.png",
+        "exportedFileName" : "A4040707-ABAB-42FE-936B-7ED455C2490E",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "228-iPhone-system-widget-picker_0_3B76404D-E8CF-471A-BC29-BE1ED310CCE1.png",
-        "timestamp" : 1793146341.544
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.54 AM",
+        "timestamp" : 1793146854.04
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "EB6B5FFE-05C9-4A92-8691-C2596EC6DB5A",
+        "exportedFileName" : "F2E04406-FE61-4805-85FB-AB8B6F9EB1A2",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.19 AM",
-        "timestamp" : 1793146339.158
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.54 AM",
+        "timestamp" : 1793146854.404
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "DD735741-CFE4-4C5F-B7B3-433CBD4F4E26",
+        "exportedFileName" : "D176AFC2-06AA-4C6A-AF25-B9AF8DEA49C3",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.19 AM",
-        "timestamp" : 1793146339.692
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.52 AM",
+        "timestamp" : 1793146852.158
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "F5B30DCE-2DA8-4B8F-807B-411BF2056ADD",
+        "exportedFileName" : "B4848E51-31D2-45F5-8A0E-8FDA63EB873A",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.17 AM",
-        "timestamp" : 1793146337.342
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.52 AM",
+        "timestamp" : 1793146852.456
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "E0A399E6-A2CA-49FB-BF20-35664BFCF0DC",
+        "exportedFileName" : "9E5AE169-90FA-45EA-A48B-2C6D110648C2",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.17 AM",
-        "timestamp" : 1793146337.658
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.50 AM",
+        "timestamp" : 1793146850.457
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "1ED8C5A3-CCA6-4B0E-99B0-9D52B02A7C43",
+        "exportedFileName" : "CE31DBE2-1BA1-44DF-9045-1BB35D919806",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.16 AM",
-        "timestamp" : 1793146336.399
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.50 AM",
+        "timestamp" : 1793146850.749
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "A9133CA2-9922-48FF-8612-491E363596BD",
+        "exportedFileName" : "27AF171B-F1E4-4075-9499-34F397311367",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.16 AM",
-        "timestamp" : 1793146336.752
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.48 AM",
+        "timestamp" : 1793146848.769
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "DD45922F-EB54-4771-AF9E-C0388E453B56",
+        "exportedFileName" : "52915BE5-157C-4FC6-A18B-6FBB52743CD2",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.14 AM",
-        "timestamp" : 1793146334.547
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.49 AM",
+        "timestamp" : 1793146849.063
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "A0C7DEEB-A556-4453-B451-837A6740AA75",
+        "exportedFileName" : "2EE6BF62-DE60-4294-B9C1-37761164DFFF",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.14 AM",
-        "timestamp" : 1793146334.842
+        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.20.45 AM",
+        "timestamp" : 1793146845.861
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "05A690C5-DE6E-4FC0-A51C-EA44B7A6D83B",
+        "exportedFileName" : "66BC77CB-72F5-447B-A3EE-FC28E3E0EC79",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.12 AM",
-        "timestamp" : 1793146332.915
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.47 AM",
+        "timestamp" : 1793146847.582
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "18FAA81B-49B3-4A1D-856D-F68B12E80DC0",
+        "exportedFileName" : "E16E8DBE-3351-46EA-B7E6-64E223D209A1.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.13 AM",
-        "timestamp" : 1793146333.202
+        "suggestedHumanReadableName" : "228-iPhone-before-widget-picker_0_987ADD76-9AA1-4951-837A-B26241CA3731.png",
+        "timestamp" : 1793146845.779
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "5F6CE45C-1274-491D-8D7C-B74512C20496",
+        "exportedFileName" : "066F8ED0-26A3-469F-80AB-F0C132C0F5B8.png",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.11 AM",
-        "timestamp" : 1793146331.231
+        "suggestedHumanReadableName" : "228-iPhone-horizontal-widgets_0_10F9177C-A236-4047-A049-376CA148DF87.png",
+        "timestamp" : 1793146844.39
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "0C089C07-742D-4BCE-91BE-3111181D1C7F",
+        "exportedFileName" : "33E2771B-8EB4-4015-93B4-DA83A916EAD8",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.11 AM",
-        "timestamp" : 1793146331.519
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.42 AM",
+        "timestamp" : 1793146842.655
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "C7688DFD-FD85-4AE6-A922-6EC24242296F",
+        "exportedFileName" : "DFBEA2E3-1423-4C45-89AB-A7BBD0AFCF5F",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "UI Snapshot 2026-10-28 at 12.12.08 AM",
-        "timestamp" : 1793146328.312
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.20.41 AM",
+        "timestamp" : 1793146841.795
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "C375F6CF-771A-451F-97D2-ADE687D6F17F",
+        "exportedFileName" : "BE7E7043-9BB7-4BEB-BEC3-60A2590CC2B4.mp4",
         "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.10 AM",
-        "timestamp" : 1793146330.043
+        "suggestedHumanReadableName" : "Screen Recording 2026-10-28 at 12.20.36 AM.mp4",
+        "timestamp" : 1793146836.912
       },
       {
         "configurationName" : "Test Scheme Action",
         "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
         "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "1D578BB0-D42F-415D-82BE-E9D9A1B697CF.png",
-        "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "228-iPhone-before-widget-picker_0_DE0BFCEA-0EB2-41C4-842F-758E9704FD4A.png",
-        "timestamp" : 1793146328.227
-      },
-      {
-        "configurationName" : "Test Scheme Action",
-        "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
-        "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "BA3D76BE-582B-40E5-80E2-5D50059A3B50.png",
-        "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "228-iPhone-horizontal-widgets_0_24EE6272-606B-4EC9-B3F7-71286CFFED8D.png",
-        "timestamp" : 1793146326.85
-      },
-      {
-        "configurationName" : "Test Scheme Action",
-        "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
-        "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "C3CFE133-5DDB-4534-BD88-AFBF291FAEE8",
-        "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.05 AM",
-        "timestamp" : 1793146325.058
-      },
-      {
-        "configurationName" : "Test Scheme Action",
-        "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
-        "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "83A4EEE6-3F18-4A35-B370-43D23BC6D346",
-        "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Synthesized Event 2026-10-28 at 12.12.04 AM",
-        "timestamp" : 1793146324.25
-      },
-      {
-        "configurationName" : "Test Scheme Action",
-        "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
-        "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "AFDC23CA-40AE-4976-B44B-512E4ECACF50.mp4",
-        "isAssociatedWithFailure" : false,
-        "suggestedHumanReadableName" : "Screen Recording 2026-10-28 at 12.11.59 AM.mp4",
-        "timestamp" : 1793146319.556
-      },
-      {
-        "configurationName" : "Test Scheme Action",
-        "deviceId" : "DC4CD8B3-4457-4153-9087-A0D7A2F9BFD9",
-        "deviceName" : "iPhone 16 Pro",
-        "exportedFileName" : "37326F5C-1C0C-49F9-97E8-08C727B76620.txt",
+        "exportedFileName" : "1C1BF200-4AAE-4050-9FF3-9B38F82173DC.txt",
         "isAssociatedWithFailure" : true,
         "suggestedHumanReadableName" : "Complete Issue Description.txt"
       }

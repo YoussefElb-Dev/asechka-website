@@ -1,106 +1,10 @@
 {
-  "source": "1c3087134475aa2b651a90e5024703e4e335d2e5",
-  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40606754006",
+  "source": "383c025514300844c43a5b4e7d2ded99c7e4aa56",
+  "run": "https://github.com/YoussefElb-Dev/asechka-website/actions/runs/40607678482",
   "backend": "success",
   "android": "success",
   "iphone": "failure",
   "jobs": [
-    {
-      "name": "iPhone IPA for sideloading",
-      "conclusion": "failure",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Generate the native Xcode project",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build project",
-          "conclusion": "success"
-        },
-        {
-          "name": "Test native screens, offline posts, and encrypted storage",
-          "conclusion": "failure"
-        },
-        {
-          "name": "Capture native iPhone preview",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Build the iPhone app",
-          "conclusion": "skipped"
-        },
-        {
-          "name": "Package IPA for signing by a sideloading tool",
-          "conclusion": "skipped"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "skipped"
-        },
-        {
-          "name": "Run actions/upload-artifact@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
-    },
-    {
-      "name": "Shared collection tests",
-      "conclusion": "success",
-      "steps": [
-        {
-          "name": "Set up job",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run actions/setup-node@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
-          "conclusion": "success"
-        },
-        {
-          "name": "Run node --test tests/*.test.mjs",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/setup-node@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Post Run actions/checkout@v4",
-          "conclusion": "success"
-        },
-        {
-          "name": "Complete job",
-          "conclusion": "success"
-        }
-      ]
-    },
     {
       "name": "Android APK",
       "conclusion": "success",
@@ -158,12 +62,108 @@
           "conclusion": "success"
         }
       ]
+    },
+    {
+      "name": "Shared collection tests",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node --test tests/*.test.mjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "iPhone IPA for sideloading",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Generate the native Xcode project",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build project",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test native screens, offline posts, and encrypted storage",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Capture native iPhone preview",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the iPhone app",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Package IPA for signing by a sideloading tool",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
     }
   ],
   "files": {
     "Asechka-Android.apk": {
       "bytes": 8514217,
-      "sha256": "630a04d934abb403a4224e3b51ccce1eb0a4153ecf5363e87abd777b4597f0d4"
+      "sha256": "08727c971e39532e6c305cb6983126c087d6d8aec59537b43152deb81f1adc80"
     }
   }
 }
