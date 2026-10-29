@@ -3,15 +3,15 @@
   "bucketList": [],
   "hearts": {
     "me": {
-      "id": "d0768180-9cc0-498d-9c14-c38bf60953d7",
-      "sentAt": "2026-10-29T05:10:08.880Z"
+      "id": "0a8ba192-039f-4ef9-95f7-2327a3ec4ceb",
+      "sentAt": "2026-10-29T22:52:25.897Z"
     },
     "asechka": {
       "id": "bbafda44-6e2c-4e8c-ba58-5812bbfb0522",
       "sentAt": "2026-10-29T16:44:41.232Z"
     }
   },
-  "updatedAt": "2026-10-29T16:44:41.232Z",
+  "updatedAt": "2026-10-29T22:52:25.897Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -34,7 +34,7 @@
       "asechka": 17
     },
     "2026-10-29": {
-      "me": 20,
+      "me": 49,
       "asechka": 5
     }
   },
@@ -693,7 +693,8 @@
     "b1baad61-daa6-4966-a9c0-76977132014b": "me|16|2026-10-28",
     "d0768180-9cc0-498d-9c14-c38bf60953d7": "me|20|2026-10-29",
     "b8c6d58c-c309-4e7b-b387-3604a87b5821": "asechka|1|2026-10-29",
-    "bbafda44-6e2c-4e8c-ba58-5812bbfb0522": "asechka|4|2026-10-29"
+    "bbafda44-6e2c-4e8c-ba58-5812bbfb0522": "asechka|4|2026-10-29",
+    "0a8ba192-039f-4ef9-95f7-2327a3ec4ceb": "me|29|2026-10-29"
   },
   "heartStreak": {
     "version": 1,
@@ -715,6 +716,6 @@
     "lastResetOn": null,
     "nextLifeOn": "2026-11-12",
     "todayComplete": true,
-    "asOf": "2026-10-29T16:44:41.232Z"
+    "asOf": "2026-10-29T22:52:25.897Z"
   }
 }
