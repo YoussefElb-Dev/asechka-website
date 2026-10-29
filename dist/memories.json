@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T05:10:18.656Z",
+  "updatedAt": "2026-10-29T05:10:20.778Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -419,7 +419,19 @@
       "date": "2026-10-28",
       "createdAt": "2026-10-29T05:10:18.656Z",
       "author": "youssef",
-      "text": "If I could ask eternity for just one gift, it wouldn’t be a thousand lifetimes or a world without sorrow. It would simply be the chance to grow old beside you, to watch our dreams become memories, and to spend my final moments looking into the same eyes that made me fall in love with life all over again."
+      "text": "If I could ask eternity for just one gift, it wouldn’t be a thousand lifetimes or a world without sorrow. It would simply be the chance to grow old beside you, to watch our dreams become memories, and to spend my final moments looking into the same eyes that made me fall in love with life all over again.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b7ef4a48-963b-4954-8d4e-0b2956ce2e66",
+            "hash": "415f9c5e4c6af0b803fe5e4ea9ed4340e7d1c70ca8a2055a152af43783b54d27"
+          }
+        ]
+      }
     }
   ],
   "photos": [
