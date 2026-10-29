@@ -11,7 +11,7 @@
       "sentAt": "2026-10-29T16:44:41.232Z"
     }
   },
-  "updatedAt": "2026-10-29T22:52:28.208Z",
+  "updatedAt": "2026-10-29T22:52:49.998Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -717,6 +717,18 @@
     "lastResetOn": null,
     "nextLifeOn": "2026-11-12",
     "todayComplete": true,
-    "asOf": "2026-10-29T22:52:28.208Z"
-  }
+    "asOf": "2026-10-29T22:52:49.998Z"
+  },
+  "messages": [
+    {
+      "id": "82afd7dc-077c-418e-8291-b3556feb5003",
+      "from": "youssef",
+      "to": "asnat",
+      "text": "I miss you a lot and I love you a lot and I always will 💕",
+      "preview": "I miss you a lot and I love you a lot and I always will 💕",
+      "day": "2026-10-29",
+      "createdAt": "2026-10-29T22:52:49.998Z",
+      "closedAt": null
+    }
+  ]
 }
