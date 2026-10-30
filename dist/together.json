@@ -11,7 +11,7 @@
       "sentAt": "2026-10-30T01:16:08.868Z"
     }
   },
-  "updatedAt": "2026-10-30T01:16:08.868Z",
+  "updatedAt": "2026-10-30T01:52:40.438Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -736,7 +736,7 @@
     "lastResetOn": null,
     "nextLifeOn": "2026-11-12",
     "todayComplete": true,
-    "asOf": "2026-10-30T01:16:08.868Z"
+    "asOf": "2026-10-30T01:52:40.438Z"
   },
   "messages": [
     {
@@ -752,11 +752,10 @@
       "id": "866eaeeb-29c1-46fb-bbf9-ca072b9457ba",
       "from": "asnat",
       "to": "youssef",
-      "text": "My love I'm missing you so much, listening to our Playlist AND holding and smelling your sweater",
       "preview": "My love I'm missing you so much, listening to our Playlist A…",
       "day": "2026-10-29",
       "createdAt": "2026-10-30T01:14:45.855Z",
-      "closedAt": null
+      "closedAt": "2026-10-30T01:52:40.438Z"
     }
   ]
 }
