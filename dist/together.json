@@ -11,7 +11,7 @@
       "sentAt": "2026-10-31T02:18:30.125Z"
     }
   },
-  "updatedAt": "2026-10-31T02:18:30.125Z",
+  "updatedAt": "2026-10-31T02:18:33.354Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -758,7 +758,7 @@
     "lastResetOn": null,
     "nextLifeOn": "2026-11-12",
     "todayComplete": true,
-    "asOf": "2026-10-31T02:18:30.125Z"
+    "asOf": "2026-10-31T02:18:33.354Z"
   },
   "messages": [
     {
@@ -783,11 +783,10 @@
       "id": "ef82b853-28eb-4abf-bba7-65e30b58e98e",
       "from": "youssef",
       "to": "asnat",
-      "text": "Can’t wait for hurricane Asechka shiiii FUCK",
       "preview": "Can’t wait for hurricane Asechka shiiii FUCK",
       "day": "2026-10-30",
       "createdAt": "2026-10-30T23:18:02.715Z",
-      "closedAt": null
+      "closedAt": "2026-10-31T02:18:33.354Z"
     }
   ]
 }
