@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T02:21:30.762Z",
+  "updatedAt": "2026-10-31T02:21:36.500Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -852,7 +852,19 @@
       "src": "assets/photos/2026/10/dcf3e02f-cc75-4bc0-95e1-dc1f3ccf2db2.jpg",
       "caption": "I'm always so happy with you",
       "alt": "I'm always so happy with you",
-      "contentHash": "b58a2cad81d8e4a25239bb1cd94409534285f3297989b8e6e822863b0b872ab2"
+      "contentHash": "b58a2cad81d8e4a25239bb1cd94409534285f3297989b8e6e822863b0b872ab2",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "025740c3-784d-4b38-bac6-13b5018c9402",
+            "hash": "ff0508acd465cd72339430322c03b5512a4edf85eaf0d3ea6371cd6de33ccb2c"
+          }
+        ]
+      }
     }
   ]
 }
