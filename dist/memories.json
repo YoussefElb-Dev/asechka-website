@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T15:24:45.141Z",
+  "updatedAt": "2026-10-31T15:25:04.727Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -463,7 +463,19 @@
       "createdAt": "2026-10-31T15:24:45.141Z",
       "author": "youssef",
       "text": "True love does not ask for grand spectacles, finding its depth instead in the quiet persistence of devotion. You have become my still water, the singular presence I return to through every shifting season, choosing each other with the quiet certainty of swans who bind their lives together and cross the widest skies as one.",
-      "note": "Created with Shakespeare"
+      "note": "Created with Shakespeare",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a2d4efda-b272-45d5-9dd9-05eb66b4aa55",
+            "hash": "844bef484f03a8a9c7664c0ef4e3f69cba0ff9b48d51fa7c77188385283a10a1"
+          }
+        ]
+      }
     }
   ],
   "photos": [
