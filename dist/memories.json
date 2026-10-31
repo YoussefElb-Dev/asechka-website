@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T02:21:36.500Z",
+  "updatedAt": "2026-10-31T02:21:38.671Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -842,7 +842,19 @@
       "src": "assets/photos/2026/10/90c705be-9020-4733-9c85-2bb018f60dcb.jpg",
       "caption": "",
       "alt": "A picture of us",
-      "contentHash": "06efa616a12bdfc0547cb9879daa442939a9976feb8ccd03fca56d85baa8c9c1"
+      "contentHash": "06efa616a12bdfc0547cb9879daa442939a9976feb8ccd03fca56d85baa8c9c1",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "f50c1ab1-3fbb-4267-9900-990027376914",
+            "hash": "eb8a4fcd94c1b616553c41336ef18474fb444a1dda4c8a4ea9491cb521a5dd95"
+          }
+        ]
+      }
     },
     {
       "id": "dcf3e02f-cc75-4bc0-95e1-dc1f3ccf2db2",
