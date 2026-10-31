@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T02:21:38.671Z",
+  "updatedAt": "2026-10-31T02:21:40.550Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -832,7 +832,19 @@
       "src": "assets/photos/2026/10/ae2b2988-b45a-45fb-bfc7-e9bef6053d26.jpg",
       "caption": "Alisson did us justiceeee",
       "alt": "Alisson did us justiceeee",
-      "contentHash": "52a2b4b77da9b650c7c7670fd7431bc0d731034c472ab2839098343640a2565d"
+      "contentHash": "52a2b4b77da9b650c7c7670fd7431bc0d731034c472ab2839098343640a2565d",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "d653bf33-85a8-4b85-8a70-97e23e3f503b",
+            "hash": "65f9ae167cd7c928fbd1f954a27ad8af18cafda13d46a54852b04ddb22bcbf20"
+          }
+        ]
+      }
     },
     {
       "id": "90c705be-9020-4733-9c85-2bb018f60dcb",
