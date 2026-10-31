@@ -28,8 +28,17 @@
     <a class="collection-back" href="/#photos"><span aria-hidden="true">←</span> Back to our little universe</a>
     <section aria-labelledby="photos-title">
       <div class="collection-intro"><p class="eyebrow">EVERY LITTLE MOMENT, KEPT HERE</p><h1 class="collection-title" id="photos-title">A little collection <span class="handwritten">of us.</span></h1><p>Our favorite days. Our silly faces. Even the blurry pictures. Every moment we want to keep.</p></div>
+      <div class="photo-collections">
+        <div class="photo-filters" role="group" aria-label="Filter photos">
+          <button type="button" data-photo-filter="all" aria-pressed="true" aria-controls="photo-grid">All</button>
+          <button type="button" data-photo-filter="memories" aria-pressed="false" aria-controls="photo-grid">Memories</button>
+          <button type="button" data-photo-filter="photography" aria-pressed="false" aria-controls="photo-grid">Photography</button>
+        </div>
+        <div class="photo-collection-copy" aria-live="polite"><h2 id="photo-collection-title">All our pictures</h2><p id="photo-collection-description">Memories of us, and the little things we notice.</p></div>
+      </div>
       <p class="collection-status" id="collection-status" role="status">Gathering our favorite moments…</p>
       <div class="photo-grid" id="photo-grid"></div>
+      <p class="photo-filter-empty" id="photo-filter-empty" hidden>No photographs here yet. Add a little thing you noticed today.</p>
       <div class="photo-empty" id="photo-empty" hidden><div class="empty-polaroid" aria-hidden="true"><span class="tape"></span><div><svg viewBox="0 0 80 64" fill="none"><rect x="9" y="16" width="62" height="40" rx="5"/><path d="m25 16 5-9h20l5 9"/><circle cx="40" cy="36" r="12"/><path d="M58 24h5"/></svg></div><span class="handwritten">you + me, soon ♡</span></div><div class="empty-photo-copy"><p class="handwritten">Leaving some room<br>for our favorite days.</p><p>We haven’t filled this page yet.<br>I’m looking forward to it.</p></div></div>
       <p class="collection-count" id="photo-count" hidden></p>
     </section>

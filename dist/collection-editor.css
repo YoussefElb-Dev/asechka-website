@@ -26,10 +26,10 @@
 .memory-editor fieldset{padding:0;margin:0;border:0;min-width:0}
 .memory-editor label{display:block;font-size:12px;font-weight:600;margin:18px 0 8px}
 .memory-editor label span{font-weight:400;color:var(--muted)}
-.memory-editor input:not([type=file]),.memory-editor textarea{display:block;width:100%;min-width:0;border:1px solid #d2d9ea;border-radius:10px;padding:12px;background:#fff;color:var(--ink);font:400 16px/1.5 'DM Sans',sans-serif}
+.memory-editor input:not([type=file]),.memory-editor textarea,.memory-editor select{display:block;width:100%;min-width:0;border:1px solid #d2d9ea;border-radius:10px;padding:12px;background:#fff;color:var(--ink);font:400 16px/1.5 'DM Sans',sans-serif}
 .memory-editor textarea{resize:vertical;min-height:78px}
 .memory-editor textarea[name=text]{min-height:150px}
-.memory-editor input:focus-visible,.memory-editor textarea:focus-visible{outline:2px solid #a497cc;outline-offset:3px}
+.memory-editor input:focus-visible,.memory-editor textarea:focus-visible,.memory-editor select:focus-visible{outline:2px solid #a497cc;outline-offset:3px}
 .memory-editor :disabled{opacity:.65;cursor:wait}
 .memory-file-box{background:#edf2fb;border:1px dashed #b9c9e2;border-radius:12px;padding:16px;min-width:0}
 .memory-file-caption{display:block;font-family:'Caveat',cursive;color:#6e789b;font-size:24px;line-height:1.2;margin-bottom:12px}

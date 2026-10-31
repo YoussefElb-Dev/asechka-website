@@ -51,6 +51,10 @@ quoteCount.hidden = savedQuotes.length === 0;
 quoteCount.textContent = `${savedQuotes.length} ${savedQuotes.length === 1 ? 'quote' : 'quotes'} kept here. And counting.`;
 }
 let savedPhotos = [];
+let photoContent = [];
+const photoFilters = [...document.querySelectorAll('[data-photo-filter]')];
+const requestedCollection = new URLSearchParams(window.location.search).get('collection');
+let photoFilter = photoFilters.length && ['memories', 'photography'].includes(requestedCollection) ? requestedCollection : 'all';
 const photoGrid = document.getElementById('photo-grid');
 const photoDialog = document.getElementById('photo-dialog');
 const lightboxImage = document.getElementById('lightbox-image');
@@ -62,7 +66,7 @@ let photoOpener;
 let waitingContent;
 
 function photoCaption(photo) {
-  return typeof photo.caption === 'string' && photo.caption.trim() ? photo.caption : 'A moment with you';
+  return typeof photo.caption === 'string' && photo.caption.trim() ? photo.caption : photo.collection === 'photography' ? 'A little thing we noticed' : 'A moment with you';
 }
 function photoAlt(photo) {
   return typeof photo.alt === 'string' && photo.alt.trim() ? photo.alt : photoCaption(photo);
@@ -91,8 +95,10 @@ lightboxImage?.addEventListener('load', () => {
 
 function renderPhotos(photos) {
 if (!photoGrid) return;
+photoContent = Array.isArray(photos) ? photos : [];
 const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
-savedPhotos = (Array.isArray(photos) ? photos : [])
+savedPhotos = photoContent
+  .filter(photo => photoFilter === 'all' || (photo?.collection ?? 'memories') === photoFilter)
   .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
   .map(photo => ({ ...photo, src: memoryPhotoURL(photo).trim() }))
   .filter(photo => {
@@ -136,13 +142,34 @@ visiblePhotos.forEach((photo, index) => {
 });
 photoGrid.replaceChildren(photoFragment);
 if (focusedSrc) [...photoGrid.querySelectorAll('[data-photo-src]')].find(button => button.dataset.photoSrc === focusedSrc)?.focus({ preventScroll: true });
-document.getElementById('photo-empty').hidden = savedPhotos.length > 0;
+document.getElementById('photo-empty').hidden = savedPhotos.length > 0 || photoFilter === 'photography';
+const filterEmpty = document.getElementById('photo-filter-empty');
+if (filterEmpty) filterEmpty.hidden = savedPhotos.length > 0 || photoFilter !== 'photography';
 const photoCount = document.getElementById('photo-count');
 photoCount.hidden = savedPhotos.length === 0;
 photoCount.textContent = visiblePhotos.length < savedPhotos.length
   ? `${visiblePhotos.length} of ${savedPhotos.length} moments. There’s more in our collection.`
-  : `${savedPhotos.length} ${savedPhotos.length === 1 ? 'moment' : 'moments'} I want to keep.`;
+  : photoFilter === 'photography'
+    ? `${savedPhotos.length} ${savedPhotos.length === 1 ? 'photograph' : 'photographs'}. Little things, kept here.`
+    : `${savedPhotos.length} ${savedPhotos.length === 1 ? 'moment' : 'moments'} I want to keep.`;
 }
+
+function selectPhotoCollection() {
+  for (const button of photoFilters) button.setAttribute('aria-pressed', String(button.dataset.photoFilter === photoFilter));
+  const title = document.getElementById('photo-collection-title');
+  const description = document.getElementById('photo-collection-description');
+  if (title) title.textContent = photoFilter === 'photography' ? 'Photography' : photoFilter === 'memories' ? 'Our memories' : 'All our pictures';
+  if (description) description.textContent = photoFilter === 'photography' ? 'Little things, seen by us.' : photoFilter === 'memories' ? 'Our favorite days. Our silly faces. Every moment of us.' : 'Memories of us, and the little things we notice.';
+  editor.setPhotoCollection(photoFilter === 'photography' ? 'photography' : 'memories');
+  renderPhotos(photoContent);
+}
+for (const button of photoFilters) button.addEventListener('click', () => {
+  photoFilter = button.dataset.photoFilter;
+  const url = new URL(window.location.href);
+  if (photoFilter === 'all') url.searchParams.delete('collection'); else url.searchParams.set('collection', photoFilter);
+  window.history.replaceState(null, '', url);
+  selectPhotoCollection();
+});
 
 document.getElementById('close-photo')?.addEventListener('click', () => photoDialog.close());
 previousButton?.addEventListener('click', () => showPhoto(currentPhoto - 1));
@@ -184,6 +211,7 @@ const editor = createMemoryEditor({ quoteList, photoGrid, onSaved(content) {
   localRevision++;
   renderContent(content); lastContent = JSON.stringify(content);
 } });
+if (photoFilters.length) selectPhotoCollection();
 async function checkForMemories() {
   if (checking || document.hidden) return;
   checking = true;

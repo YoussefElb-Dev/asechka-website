@@ -26,6 +26,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private ApiClient api;
   private Images images;
   private BookViews book;
+  private GamesView games;
+  private String gameInvite = "";
   private HomeExtras homeExtras;
   private HomeExtras.HeartRain heartRain;
 
@@ -88,7 +90,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private ImageView quoteArtwork;
   private int quoteArtworkIndex = -1;
   private Button quotePauseButton;
-  private final String[] labels = {"Home", "Photos", "Music", "Our days", "Words", "Quotes"};
+  private final String[] labels = {"Home", "Photos", "Music", "Our days", "Words", "Quotes", "Games"};
   private final String[] languageIds = {"ar-EG", "ru", "he", "fr", "es"};
   private final String[] languageNames = {
     "Egyptian Arabic · مصري",
@@ -167,6 +169,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       memoryTab = state.getInt("memoryTab");
       wordDraft = state.getString("words", "");
     }
+    readGameInvitation(getIntent());
     getWindow()
         .getDecorView()
         .setSystemUiVisibility(
@@ -222,11 +225,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     quoteDue = android.os.SystemClock.uptimeMillis() + 8000;
     if (root != null) root.invalidate();
     if (appUnlocked && api != null && api.canOpen() && root != null) refresh(false);
+    if (appUnlocked && screen == 6 && games != null) games.activate();
   }
 
   @Override
   protected void onPause() {
     started = false;
+    if (games != null) games.suspend();
     if (messages != null) messages.suspend();
     accessEpoch++;
     appUnlocked = biometrics == null || !biometrics.enabled();
@@ -243,6 +248,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   @Override
   protected void onDestroy() {
+    if (games != null) games.close();
     if (messages != null) messages.close();
     accessEpoch++;
     if (entryGate != null) {
@@ -298,6 +304,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       openStart();
       return;
     }
+    if (screen == 6 && games != null && games.back()) return;
     if (screen != 0 && api.canOpen() && root != null) {
       select(0);
     } else super.onBackPressed();
@@ -407,6 +414,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void showIdentity() {
+    if (games != null) { games.close(); games = null; }
     persistWords();
     hideKeyboard();
     choosingProfile = true;
@@ -460,6 +468,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void showLogin() {
+    if (games != null) { games.close(); games = null; }
     accessEpoch++;
     appUnlocked = false;
     if (entryGate != null) {
@@ -872,6 +881,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       return;
     }
     int previous = screen;
+    if (previous == 6 && target != 6 && games != null) games.suspend();
     screen = target;
     root.requestFocus();
     renderNav();
@@ -884,7 +894,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private int navPosition(int target) {
-    int[] order = {0, 1, 5, 2, 3, 4};
+    int[] order = {0, 1, 5, 2, 3, 4, 6};
     for (int i = 0; i < order.length; i++) if (order[i] == target) return i;
     return 0;
   }
@@ -895,7 +905,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void renderNav() {
     bottom.removeAllViews();
-    int[] order = {0, 1, 5, 2, 3, 4};
+    int[] order = {0, 1, 5, 2, 3, 4, 6};
     for (int position = 0; position < order.length; position++) {
       final int i = order[position];
       final int target = i;
@@ -915,7 +925,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       iconFrame.setBackground(u.shape(selected ? Ui.PRIMARY : Color.TRANSPARENT, 17));
       FrameLayout.LayoutParams iconParams =
           new FrameLayout.LayoutParams(u.dp(23), u.dp(23), Gravity.CENTER);
-      iconFrame.addView(new Ui.Icon(this, i, selected ? Color.WHITE : Ui.MUTED), iconParams);
+      iconFrame.addView(i == 6 ? new HomeGlyph(this, 6, selected ? Color.WHITE : Ui.MUTED, Color.TRANSPARENT) : new Ui.Icon(this, i, selected ? Color.WHITE : Ui.MUTED), iconParams);
       tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(46), u.dp(34)));
       if (selected && motion()) {
         iconFrame.setScaleX(.8f);
@@ -947,6 +957,20 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void render(boolean keepScroll) {
     if (content == null) return;
+    if (games != null) games.setVisibility(screen == 6 ? View.VISIBLE : View.GONE);
+    if (screen == 6) {
+      scroll.setVisibility(View.GONE);
+      if (feed != null) feed.setVisibility(View.GONE);
+      if (games == null) games = new GamesView(this, api);
+      if (games.getParent() != stage) {
+        if (games.getParent() instanceof ViewGroup) ((ViewGroup) games.getParent()).removeView(games);
+        stage.addView(games, new FrameLayout.LayoutParams(-1, -1));
+      }
+      games.setVisibility(View.VISIBLE);
+      if (!gameInvite.isEmpty()) { games.invitation(gameInvite); gameInvite = ""; }
+      if (appUnlocked && started) games.activate();
+      return;
+    }
     if (screen == 0 || screen == 1 || screen == 5) {
       scroll.setVisibility(View.GONE);
       boolean freshFeed = feed == null || feed.mode != screen;
@@ -1159,6 +1183,27 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   public String actor() {
     return person().equals("Asnat") ? "asnat" : "youssef";
+  }
+
+  private void readGameInvitation(Intent intent) {
+    Uri uri = intent == null ? null : intent.getData();
+    if (uri == null || !"asechka".equals(uri.getScheme()) || !"games".equals(uri.getHost())) return;
+    String code = uri.getQueryParameter("code");
+    if (code != null && code.matches("[A-Za-z0-9]{6}")) {
+      gameInvite = code.toUpperCase(Locale.US);
+      screen = 6;
+    }
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    setIntent(intent);
+    readGameInvitation(intent);
+    if (!gameInvite.isEmpty() && root != null && appUnlocked) {
+      renderNav();
+      render(false);
+    }
   }
 
   public Images feedImages() {

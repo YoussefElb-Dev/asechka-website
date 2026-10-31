@@ -75,6 +75,20 @@ final class HomeGlyph extends View {
         path.cubicTo(17, 3, 22, 5, 22, 12);
         path.cubicTo(22, 19, 17, 21, 12, 12);
         break;
+      case 6:
+        path.moveTo(7, 6);
+        path.lineTo(17, 6);
+        path.cubicTo(21, 6, 23, 16, 21, 19);
+        path.cubicTo(19, 22, 16, 16, 14, 16);
+        path.lineTo(10, 16);
+        path.cubicTo(8, 16, 5, 22, 3, 19);
+        path.cubicTo(1, 16, 3, 6, 7, 6);
+        path.close();
+        path.moveTo(7, 9); path.lineTo(7, 14);
+        path.moveTo(4.5f, 11.5f); path.lineTo(9.5f, 11.5f);
+        path.addCircle(16, 10, .8f, Path.Direction.CW);
+        path.addCircle(19, 13, .8f, Path.Direction.CW);
+        break;
     }
   }
 

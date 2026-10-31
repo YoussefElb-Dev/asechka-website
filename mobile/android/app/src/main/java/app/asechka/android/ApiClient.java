@@ -222,6 +222,15 @@ public final class ApiClient {
     return json(path, "POST", body.toString(), "application/json");
   }
 
+  /** A short-lived game ticket; deliberately bypasses the offline mutation outbox. */
+  public JSONObject gamesSession(String actor) throws Exception {
+    if (!"asnat".equals(actor) && !"youssef".equals(actor))
+      throw new ApiError("Choose a profile before opening Games.", 400);
+    if (!signedIn()) throw new ApiError("Reconnect with our code to play together.", 401);
+    if (!connected()) throw new ApiError("Games needs an internet connection.", 0);
+    return json("/api/games-session", "POST", new JSONObject().put("actor", actor).toString(), "application/json");
+  }
+
   boolean connected() {
     if (onlineOverride != null) return onlineOverride;
     ConnectivityManager manager =
@@ -502,6 +511,7 @@ public final class ApiClient {
     if (path.equals("/api/music")) connection.setRequestProperty("X-Asechka-Music", "1");
     if (path.equals("/api/memories")) connection.setRequestProperty("X-Asechka-Memories", "1");
     if (path.equals("/api/together")) connection.setRequestProperty("X-Asechka-Together", "1");
+    if (path.equals("/api/games-session")) connection.setRequestProperty("X-Asechka-Games", "1");
     if (path.equals("/api/translation"))
       connection.setRequestProperty("X-Asechka-Translation", "1");
     try {

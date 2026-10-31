@@ -7,6 +7,8 @@ struct PostDraft:Codable {
     var note=""
     var date=Date()
     var photo:Data?
+    var collection:PhotoCollection?
+    var photoType:Bool?
 }
 struct ComposerView:View {
     @EnvironmentObject private var universe:UniverseStore
@@ -19,12 +21,14 @@ struct ComposerView:View {
     @State private var committed=false
     @State private var restored=false
     @State private var failure:String?
-    private var draftKey:String{"post-draft:"+universe.actor+":"+(request.post?.id ?? (request.photo ? "photo":"quote"))}
+    private var draftKey:String{"post-draft:"+universe.actor+":"+(request.post?.id ?? (request.photo ? (request.collection == .photography ? "photo:photography":"photo"):"quote")))}
+    private var collectionBinding:Binding<PhotoCollection>{Binding(get:{draft.collection ?? request.post?.photoCollection ?? request.collection},set:{draft.collection=$0;persist()})}
     var body:some View {
         NavigationStack{ScrollView{VStack(alignment:.leading,spacing:20){
             HStack(spacing:12){Avatar(actor:universe.actor,size:44);VStack(alignment:.leading,spacing:4){Text(universe.name).font(.headline);Text("Our little universe · just us two").font(.caption).foregroundColor(Palette.muted)}}
             if request.post==nil {Picker("Post type",selection:$photo){Text("Photo").tag(true);Text("Quote").tag(false)}.pickerStyle(.segmented)}
             if photo {
+                Picker("Photo collection",selection:collectionBinding){ForEach(PhotoCollection.allCases){Text($0.title).tag($0)}}.pickerStyle(.segmented).accessibilityIdentifier("composer.photo.collection")
                 Group{
                     if let bytes=draft.photo,let image=UIImage(data:bytes){Image(uiImage:image).resizable().scaledToFit()}
                     else if let post=request.post {CachedPhoto(source:post.imageURL,living:false)}
@@ -50,8 +54,9 @@ struct ComposerView:View {
             }
         }
         .onAppear{guard !restored else{return};restored=true;photo=request.photo
-            if let saved=universe.vault.value(draftKey,as:PostDraft.self){draft=saved}
+            if let saved=universe.vault.value(draftKey,as:PostDraft.self){draft=saved;photo=saved.photoType ?? request.photo}
             else if let post=request.post{draft.text=post.content;draft.note=post.note ?? "";draft.date=Self.day.date(from:post.date) ?? Date()}
+            if draft.collection==nil{draft.collection=request.post?.photoCollection ?? request.collection}
         }
         .task(id:selection){guard let selection else{return};preparing=true;defer{preparing=false}
             do{guard let bytes=try await selection.loadTransferable(type:Data.self),bytes.count<=25_000_000 else{throw ServerError(message:"Choose a picture smaller than 25 MB.",status:400)}
@@ -59,6 +64,8 @@ struct ComposerView:View {
             }catch{failure=error.localizedDescription}
         }
         .task(id:draft.text+draft.note){do{try await Task.sleep(nanoseconds:700_000_000)}catch{return};persist()}
+        .onChange(of:photo){draft.photoType=$0;persist()}
+        .onChange(of:draft.date){_ in persist()}
         .onDisappear{persist()}
     }
     static var day:DateFormatter{let f=DateFormatter();f.locale=Locale(identifier:"en_US_POSIX");f.dateFormat="yyyy-MM-dd";return f}
@@ -68,6 +75,7 @@ struct ComposerView:View {
         var body:[String:Any]=["action":(request.post==nil ? "add":"update")+(photo ? "Photo":"Quote"),"date":Self.day.string(from:draft.date),photo ? "caption":"text":draft.text.trimmingCharacters(in:.whitespacesAndNewlines),"note":draft.note,"author":universe.actor,"operationId":operation]
         if let post=request.post{body["id"]=post.id;body["expectedVersion"]=post.editVersion ?? ""}
         if photo,let bytes=draft.photo{body["photo"]="data:image/jpeg;base64,"+bytes.base64EncodedString()}
+        if photo{body["collection"]=(draft.collection ?? request.post?.photoCollection ?? request.collection).rawValue}
         do{try universe.enqueue("/api/memories",body);committed=true;universe.vault.remove(draftKey);Touch.tap(true);dismiss()}
         catch{failure=error.localizedDescription}
     }

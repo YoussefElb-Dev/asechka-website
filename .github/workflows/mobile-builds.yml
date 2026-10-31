@@ -9,7 +9,7 @@ on:
         options: [iphone, android, both]
         default: iphone
       full_checks:
-        description: 'Run backend and full iPhone simulator checks (uses extra runner time)'
+        description: 'Run full iPhone simulator checks (shared tests and Games checks always run)'
         type: boolean
         default: false
 permissions:
@@ -19,10 +19,21 @@ concurrency:
   cancel-in-progress: true
 jobs:
   backend:
-    if: ${{ inputs.full_checks }}
     timeout-minutes: 5
-    name: Shared collection tests
+    name: Shared tests and all-six Games verification
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      GAMES_TEST_REDIS_URL: redis://127.0.0.1:6379
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,7 +41,10 @@ jobs:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: node --test tests/*.test.mjs
+      - name: Verify six modules, original assets, native catalogs and versions
+        run: node mobile/tools/verify-games.mjs
   android:
+    needs: backend
     if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
     timeout-minutes: 15
     name: Android APK
@@ -46,37 +60,72 @@ jobs:
           packages: platform-tools
       - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - name: Restore the existing Android signing identity
+        id: signing
         env:
           SIGNING_JSON: ${{ secrets.ANDROID_SIGNING }}
         run: |
           python3 - <<'PY'
           import os,json,base64,pathlib
           if not os.environ['SIGNING_JSON']:
-              raise SystemExit('Add the ANDROID_SIGNING repository secret before building APK updates.')
+              with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+                  output.write('variant=debug\napk_name=Asechka-Android-debug.apk\n')
+              print('::warning::ANDROID_SIGNING is absent. Building an installable debug-signed APK; it cannot update the release-signed app.')
+              raise SystemExit(0)
           signing=json.loads(os.environ['SIGNING_JSON'])
+          if not signing['password'] or any(c in signing['password'] for c in '\r\n'):
+              raise SystemExit('Invalid Android signing password; restore ANDROID_SIGNING.')
+          print('::add-mask::'+signing['password'])
           target=pathlib.Path(os.environ['RUNNER_TEMP'])/'asechka-release.jks'
-          target.write_bytes(base64.b64decode(signing['keystore']))
+          target.write_bytes(base64.b64decode(signing['keystore'],validate=True))
           with open(os.environ['GITHUB_ENV'],'a') as env:
               env.write(f"ASECHKA_KEYSTORE_PATH={target}\nASECHKA_KEYSTORE_PASSWORD={signing['password']}\n")
+          with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+              output.write('variant=release\napk_name=Asechka-Android.apk\n')
           PY
       - name: Build an APK with Android 6 and newer compatibility
         working-directory: mobile/android
-        run: chmod +x gradlew && ./gradlew --no-daemon assembleRelease
+        env:
+          VARIANT: ${{ steps.signing.outputs.variant }}
+        run: |
+          chmod +x gradlew
+          if [ "$VARIANT" = release ]; then TASK=assembleRelease; else TASK=assembleDebug; fi
+          ./gradlew --no-daemon testDebugUnitTest "$TASK" 2>&1 | tee build.log
+        shell: bash --noprofile --norc -e -o pipefail {0}
       - name: Package Android download
+        env:
+          VARIANT: ${{ steps.signing.outputs.variant }}
+          APK_NAME: ${{ steps.signing.outputs.apk_name }}
         run: |
           mkdir -p output
-          cp mobile/android/app/build/outputs/apk/release/app-release.apk output/Asechka-Android.apk
-          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose output/Asechka-Android.apk
-          cd output && sha256sum Asechka-Android.apk > Asechka-Android.apk.sha256
+          cp "mobile/android/app/build/outputs/apk/$VARIANT/app-$VARIANT.apk" "output/$APK_NAME"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "output/$APK_NAME"
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "output/$APK_NAME" > output/APK-info.txt
+          python3 mobile/tools/verify-games.py --apk "output/$APK_NAME" --badging output/APK-info.txt
+          if [ "$VARIANT" = debug ]; then
+            printf '%s\n' 'Installable DEBUG APK: ANDROID_SIGNING was absent. Uses the Android debug identity; cannot update an existing release-signed install. Back up local data before removing an existing app. Configure the original ANDROID_SIGNING secret for update-compatible release APKs.' > output/INSTALL.txt
+          else
+            printf '%s\n' 'Release APK signed with the configured original identity. Transfer the complete APK and open it in Android Files. Keep the same signing identity when updating to retain local data.' > output/INSTALL.txt
+          fi
+          cat output/INSTALL.txt >> "$GITHUB_STEP_SUMMARY"
+          cd output && sha256sum "$APK_NAME" > "$APK_NAME.sha256"
       - uses: actions/upload-artifact@v4
         with:
-          name: Asechka-Android-APK
+          name: Asechka-Android-${{ steps.signing.outputs.variant == 'release' && 'APK' || 'DEBUG-APK' }}
           path: output/*
           retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: Android-build-diagnostics
+          path: |
+            mobile/android/build.log
+            mobile/android/app/build/reports
+          retention-days: 3
       - name: Remove temporary signing material
         if: always()
         run: rm -f "$RUNNER_TEMP/asechka-release.jks"
   iphone:
+    needs: backend
     if: ${{ inputs.platform == 'iphone' || inputs.platform == 'both' }}
     name: iPhone IPA for sideloading
     runs-on: macos-15
@@ -89,6 +138,10 @@ jobs:
       - name: Build project
         working-directory: mobile/ios
         run: xcodegen generate
+      - name: Check renamed widget sharing profiles
+        run: |
+          swiftc mobile/ios/SharedWidgets/WidgetSnapshot.swift mobile/ios/Sources/SharedHeartStreak.swift mobile/tools/WidgetProfileChecks.swift -o "$RUNNER_TEMP/widget-profile-checks"
+          "$RUNNER_TEMP/widget-profile-checks"
       - name: Test native screens, offline posts, and encrypted storage
         if: ${{ inputs.full_checks }}
         working-directory: mobile/ios
@@ -140,8 +193,10 @@ jobs:
           cd package
           zip -qry Asechka-iPhone.ipa Payload
           python3 ../../tools/verify-ipa.py Asechka-iPhone.ipa
+          python3 ../../tools/verify-games.py --ipa Asechka-iPhone.ipa
           shasum -a 256 Asechka-iPhone.ipa > Asechka-iPhone.ipa.sha256
-          printf '%s\n' 'Native iOS 16+ app. In Sideloadly leave Remove App Extensions (Plug-ins) UNCHECKED and keep AsechkaWidgets. Sign both app and extension. Install using the same Apple ID/bundle ID, then open Asechka once before searching Add Widget. Messages > Our home-screen widgets now reports missing extensions or shared data. Both targets need the same provisioned App Group (group.app.asechka.shared) for personal counts. Signing capabilities depend on your Apple account/profile.' > INSTALL.txt
+          printf '%s\n' 'Native iOS 16+ device build prepared for sideload signing; the ad-hoc IPA is NOT device-installable until signed and provisioned by a sideload tool. In Sideloadly leave Remove App Extensions (Plug-ins) UNCHECKED and keep AsechkaWidgets. Sign both app and extension. Install using the same Apple ID/bundle ID, then open Asechka once before searching Add Widget. Messages > Our home-screen widgets reports missing extensions or shared data. Both targets need the same provisioned App Group for personal counts. Signing capabilities depend on your Apple account/profile. This workflow does not upload to TestFlight.' > INSTALL.txt
+          cat INSTALL.txt >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: Asechka-iPhone-IPA

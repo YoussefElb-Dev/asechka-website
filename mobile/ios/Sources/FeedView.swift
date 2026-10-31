@@ -5,6 +5,7 @@ struct FeedView:View {
     @EnvironmentObject private var universe:UniverseStore
     var mode:Int
     @Binding var savedOnly:Bool
+    @Binding var photoSection:PhotoSection
     var create:(Bool)->Void
     var corner:()->Void
     var navigate:(Int)->Void
@@ -15,7 +16,7 @@ struct FeedView:View {
     @State private var shortcut:BookRoute?
     @State private var heartHistory=false
     private var home:Bool{mode==0 && !savedOnly}
-    var posts:[Post]{universe.memories.posts.filter{(mode==0 || (mode==1 ? $0.isPhoto:!$0.isPhoto)) && (!savedOnly || universe.bookmarks.contains($0.key))}}
+    var posts:[Post]{universe.memories.posts.filter{(mode==0 || (mode==1 ? photoSection.includes($0):!$0.isPhoto)) && (!savedOnly || universe.bookmarks.contains($0.key))}}
     private var quoteBackgrounds:[String:Int]{
         var result:[String:Int]=[:],previous = -1
         for post in posts where !post.isPhoto {let index=QuoteBackgrounds.next(post.id.isEmpty ? post.text ?? "":post.id,after:previous);result[post.key]=index;previous=index}
@@ -27,7 +28,7 @@ struct FeedView:View {
                 header.id("top")
                 if mode==2 && !savedOnly {QuoteCarousel().padding(.horizontal,18)}
                 let backgrounds=quoteBackgrounds
-                ForEach(posts){post in PostCard(post:post,backgroundIndex:backgrounds[post.key] ?? 0,comments:{comments=PostSelection(post:post)},open:{viewer=PostSelection(post:post)},edit:{edit=ComposeRequest(photo:post.isPhoto,post:post)},delete:{deletion=PostSelection(post:post)})}
+                ForEach(posts){post in PostCard(post:post,backgroundIndex:backgrounds[post.key] ?? 0,comments:{comments=PostSelection(post:post)},open:{viewer=PostSelection(post:post)},edit:{edit=ComposeRequest(photo:post.isPhoto,post:post,collection:post.photoCollection)},delete:{deletion=PostSelection(post:post)})}
                 Text(posts.isEmpty ? "Our next favorite moment starts with you. ♡":"All caught up. More little moments soon. ♡").font(.footnote).foregroundColor(Palette.muted).padding(30)
             }.padding(.bottom,12)}
             .refreshable{await universe.refresh()}
@@ -36,7 +37,7 @@ struct FeedView:View {
         .sheet(item:$shortcut){route in BookView(personal:route.personal,initialChapter:route.chapter)}
         .sheet(isPresented:$heartHistory){HeartHistoryView()}
         .sheet(item:$edit){ComposerView(request:$0)}
-        .fullScreenCover(item:$viewer){selection in PhotoViewer(post:selection.post)}
+        .fullScreenCover(item:$viewer){selection in PhotoViewer(post:selection.post,collection:mode==1 ? photoSection.collection:nil)}
         .confirmationDialog("Delete this shared post?",isPresented:Binding(get:{deletion != nil},set:{if !$0{deletion=nil}}),titleVisibility:.visible){
             Button("Delete post",role:.destructive){guard let post=deletion?.post else{return};do{try universe.enqueue("/api/memories",["action":post.isPhoto ? "removePhoto":"removeQuote","id":post.id,"expectedVersion":post.editVersion ?? ""])}catch{universe.error=error.localizedDescription};deletion=nil}
         }message:{Text("This removes it from both phones and the website.")}
@@ -54,8 +55,11 @@ struct FeedView:View {
             }
             if mode==0 && !savedOnly {HomeHub(open:{shortcut=$0},openHistory:{heartHistory=true})}
             if !home {VStack(alignment:.leading,spacing:6){
-                Text(savedOnly ? "Kept close.":mode==1 ? "Our camera roll.":mode==2 ? "Words to keep.":"Our little us.").font(.custom("Manrope-Bold",size:28))
-                Text("A little life together, one moment at a time.").font(.subheadline).foregroundColor(Palette.muted)
+                Text(savedOnly ? "Kept close.":mode==1 ? (photoSection == .photography ? "Photography.":"Our camera roll."):mode==2 ? "Words to keep.":"Our little us.").font(.custom("Manrope-Bold",size:28))
+                Text(mode==1 && photoSection == .photography ? "Everyday frames, small details, and things that catch our eye.":"A little life together, one moment at a time.").font(.subheadline).foregroundColor(Palette.muted)
+                if mode==1 {
+                    Picker("Photo collection",selection:$photoSection){ForEach(PhotoSection.allCases){Text($0.title).tag($0)}}.pickerStyle(.segmented).accessibilityIdentifier("photos.collection.filter")
+                }
                 Button{create(mode != 2)}label:{HStack(spacing:12){Avatar(actor:universe.actor);Text("Something to share, \(universe.name)?").font(.subheadline).foregroundColor(Palette.muted);Spacer();Image(systemName:"plus")}.padding(14).background(.white,in:RoundedRectangle(cornerRadius:22))}.padding(.top,10)
             }.padding(.horizontal,22)}
         }.padding(.top,home ? 10:12).padding(.bottom,home ? 0:8)
@@ -204,6 +208,7 @@ struct PhotoViewer:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.dismiss) private var dismiss
     var post:Post
+    var collection:PhotoCollection? = nil
     @State private var selected:String?
     @State private var scale:CGFloat=1
     @State private var lastScale:CGFloat=1
@@ -219,5 +224,5 @@ struct PhotoViewer:View {
             }
         }
     }
-    private func move(_ delta:Int){let photos=universe.memories.photos;guard let index=photos.firstIndex(where:{$0.id==current.id}),!photos.isEmpty else{return};Touch.tap();scale=1;lastScale=1;offset = .zero;savedOffset = .zero;withAnimation(.easeInOut(duration:0.25)){selected=photos[(index+delta+photos.count)%photos.count].key}}
+    private func move(_ delta:Int){let photos=universe.memories.photos.filter{collection==nil || $0.photoCollection==collection};guard let index=photos.firstIndex(where:{$0.id==current.id}),!photos.isEmpty else{return};Touch.tap();scale=1;lastScale=1;offset = .zero;savedOffset = .zero;withAnimation(.easeInOut(duration:0.25)){selected=photos[(index+delta+photos.count)%photos.count].key}}
 }
