@@ -74,18 +74,19 @@ export async function authorize(request) {
   if (path === '/gate.css' || path === '/gate.js' || path === '/assets/favicon.svg') return null;
   if (path === '/robots.txt') return response('User-agent: *\nDisallow: /\n', 200, { 'Content-Type': 'text/plain' });
   if (path === '/api/session' || path === '/api/logout') {
-    if (request.method !== 'POST') return response('Method not allowed', 405, { Allow: 'POST' });
-    if (!sameOrigin(request)) return response('Forbidden', 403);
+    const problem = (message, status, extra = {}) => response(json ? JSON.stringify({ error: message }) : message, status, { 'Content-Type': json ? 'application/json' : 'text/plain; charset=utf-8', ...extra });
+    if (request.method !== 'POST') return problem('Method not allowed', 405, { Allow: 'POST' });
+    if (!sameOrigin(request)) return problem('Forbidden', 403);
     if (path === '/api/logout') return redirect('/login', { 'Set-Cookie': cookieValue('', request, 0) });
     if (!auth) return response(json ? JSON.stringify({ error: 'Our little door isn’t ready yet. Try again soon.' }) : gatePage('login', 'Our little door isn’t ready yet. Try again soon.'), 503, { 'Content-Type': json ? 'application/json' : 'text/html; charset=utf-8' });
     if (!allowedAttempt(request)) return response(json ? JSON.stringify({ error: 'A few too many guesses. Give it a minute, love.' }) : gatePage('login', 'A few too many guesses. Give it a minute, love.'), 429, { 'Content-Type': json ? 'application/json' : 'text/html; charset=utf-8', 'Retry-After': '60' });
-    if (Number(request.headers.get('content-length') || 0) > 1024) return response('Too much data', 413);
+    if (Number(request.headers.get('content-length') || 0) > 1024) return problem('Too much data', 413);
     let input;
     try {
       const raw = await request.text();
-      if (raw.length > 1024) return response('Too much data', 413);
+      if (raw.length > 1024) return problem('Too much data', 413);
       input = new URLSearchParams(raw).get('password') || '';
-    } catch { return response('Bad request', 400); }
+    } catch { return problem('Bad request', 400); }
     if (!equal(input, auth.password)) {
       await new Promise(resolve => setTimeout(resolve, 600));
       const error = 'Not quite, love. Try our little code again.';
@@ -98,9 +99,15 @@ export async function authorize(request) {
     if (signedIn) return redirect('/welcome');
     return response(gatePage('login'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
   }
+  if (!auth && path === '/api/shakespeare') return response(JSON.stringify({ error: 'Asechka login is unavailable. Please try again later.' }), 503, { 'Content-Type': 'application/json' });
   if (!auth) return response(gatePage('login', 'Our little door isn’t ready yet. Try again soon.'), 503, { 'Content-Type': 'text/html; charset=utf-8' });
-  if (!signedIn) return ['/api/journal','/api/keepsakes','/api/memories','/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
+  if (!signedIn) return ['/api/shakespeare','/api/journal','/api/keepsakes','/api/memories','/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
   if (path === '/welcome') return response(gatePage('welcome'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
+  if (path === '/api/shakespeare') {
+    if (request.method !== 'POST') return response(JSON.stringify({ error: 'Use POST to keep a selected quote.' }), 405, { 'Content-Type': 'application/json', Allow: 'POST' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-shakespeare') !== '1' || request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return response(JSON.stringify({ error: 'Please send this quote from Shakespeare.' }), 403, { 'Content-Type': 'application/json' });
+    return null;
+  }
   if (path === '/api/journal' && request.method === 'POST') {
     if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-journal') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save our little book from the website.' }), 403, { 'Content-Type': 'application/json' });
     return null;
