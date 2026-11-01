@@ -25,6 +25,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   private boolean foreground;
   private TextView aimLabel;
   private SeekBar aimBar;
+  private SeekBar powerBar;
   private float power=.55f;
   private int pocket;
   private JSONObject current;
@@ -155,7 +156,8 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     }
     aimLabel=text("Aim · "+Math.round(Math.toDegrees(board.angle))+"°",13,MUTED,false);add(aimLabel,12);
     aimBar=slider("Aim in degrees",359,(int)((Math.toDegrees(board.angle)+360)%360));aimBar.setEnabled(board.myTurn());aimBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){if(user){board.angle=(float)Math.toRadians(value);board.invalidate();aimLabel.setText("Aim · "+value+"°");}}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(aimBar,0);
-    TextView powerLabel=text("Power · "+Math.round(power*100)+"%",13,MUTED,false);add(powerLabel,8);SeekBar strength=slider("Shot power percent",100,Math.round(power*100));strength.setEnabled(board.myTurn());strength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){power=Math.max(.01f,value/100f);powerLabel.setText("Power · "+Math.round(power*100)+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(strength,0);
+    TextView powerLabel=text("Power · "+Math.round(power*100)+"%",13,MUTED,false);add(powerLabel,8);SeekBar strength=slider("Shot power percent",100,Math.round(power*100));powerBar=strength;strength.setEnabled(board.myTurn());strength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){power=Math.max(.01f,value/100f);powerLabel.setText("Power · "+Math.round(power*100)+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(strength,0);
+    add(text("Drag the cloth to aim. Then pull back from the cue ball and release to shoot, or use the sliders and Shoot button.",13,MUTED,false),8);
     Spinner pockets=spinner(new String[]{"Top left pocket","Top middle pocket","Top right pocket","Bottom right pocket","Bottom middle pocket","Bottom left pocket"});pockets.setSelection(pocket);pockets.setContentDescription("Called pocket for the eight ball");pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;}public void onNothingSelected(AdapterView<?> a){}});add(pockets,8);
     add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"callPocket",pocket))),12);
   }
@@ -187,6 +189,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if(finished)return;
     if(board.placing()){
       if(board.ownFleetPlaced()){add(text("Your fleet is confirmed. Waiting for your partner’s fleet.",14,MUTED,false),14);return;}
+      add(text("Drag a ship on your ocean to reposition it, or select a ship and tap its starting cell.",13,MUTED,false),10);
       String[] ships={"Carrier · 5 cells","Battleship · 4 cells","Cruiser · 3 cells","Submarine · 3 cells","Destroyer · 2 cells"};Spinner choose=spinner(ships);choose.setSelection(board.fleet.selected);choose.setContentDescription("Ship to place");choose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){board.fleet.selected=pos;}public void onNothingSelected(AdapterView<?> a){}});add(choose,12);
       LinearLayout controls=row();controls.addView(button(board.fleet.vertical?"Rotate · vertical":"Rotate · horizontal",false,()->{board.fleet.vertical=!board.fleet.vertical;signature="";refresh();}),new LinearLayout.LayoutParams(0,-2,1));controls.addView(button("Arrange for me",false,()->{board.fleet.automatic();selection();}),new LinearLayout.LayoutParams(0,-2,1));add(controls,8);
       add(button("Clear placement",false,()->{board.fleet.reset();selection();}),8);
@@ -208,6 +211,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   public void move(JSONObject action){if(current==null)return;feedback("pool".equals(current.optString("game"))?"pocket":"battleship".equals(current.optString("game"))?"splash":"connect4".equals(current.optString("game"))?"drop":"move");client.move(current,action);if(board!=null)board.update(current,client.pending,client.connected);refresh();}
   public void selection(){feedback("tap");signature="";refresh();}
   public void aim(float radians){if(aimLabel!=null)aimLabel.setText("Aim · "+Math.round((Math.toDegrees(radians)+360)%360)+"°");if(aimBar!=null)aimBar.setProgress((int)((Math.toDegrees(radians)+360)%360));}
+  public void charge(float value,boolean release){power=value;if(powerBar!=null)powerBar.setProgress(Math.round(value*100));if(release&&value>=.03f&&board.myTurn())move(GamesData.obj("type","shot","angle",board.angle,"power",value,"callPocket",pocket));}
   private void feedback(String sound){if(getContext().getSharedPreferences("games-settings",0).getBoolean("haptics",true))Motion.haptic(this,false);audio.play(sound);}
 
   private void createDialog(int game){

@@ -44,7 +44,7 @@ struct GamesBattleshipView: View {
             if committed {
                 Text("Fleet locked. Waiting for your person to place theirs.").foregroundColor(GamesPalette.mint)
             } else {
-                Text("Select a ship, rotate, then tap its starting cell. Nothing is shared until you lock the fleet.").font(.subheadline).foregroundColor(GamesPalette.muted)
+                Text("Drag a ship onto your chart, or select, rotate, and tap its starting cell. Nothing is shared until you lock the fleet.").font(.subheadline).foregroundColor(GamesPalette.muted)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 90))], spacing: 8) {
                     ForEach(0..<5, id: \.self) { index in
                         Button {
@@ -56,7 +56,8 @@ struct GamesBattleshipView: View {
                                 Text(String(repeating: "▪", count: GamesFleet.lengths[index])).font(.title3)
                                 Text(ships[index].isEmpty ? "Unplaced" : "Placed").font(.caption2)
                             }.frame(maxWidth: .infinity, minHeight: 68).background(selectedShip == index ? GamesPalette.mint.opacity(0.22) : GamesPalette.surface, in: RoundedRectangle(cornerRadius: 12))
-                        }.disabled(!canPlace).accessibilityLabel("Ship \(index + 1), length \(GamesFleet.lengths[index]), \(ships[index].isEmpty ? "unplaced" : "placed")\(selectedShip == index ? ", selected" : "")")
+                        }.disabled(!canPlace).draggable("asechka-ship:\(index)")
+                            .accessibilityLabel("Ship \(index + 1), length \(GamesFleet.lengths[index]), \(ships[index].isEmpty ? "unplaced" : "placed")\(selectedShip == index ? ", selected" : "")")
                     }
                 }
                 Button { rotate() } label: { Label(vertical ? "Vertical · rotate to horizontal" : "Horizontal · rotate to vertical", systemImage: "rotate.right").gamesAction(false) }.disabled(!canPlace)
@@ -96,6 +97,13 @@ struct GamesBattleshipView: View {
                             .disabled(own ? !canPlace : !canFire(cell))
                             .accessibilityLabel(cellLabel(cell, own: own))
                             .accessibilityIdentifier("games.battleship.\(own ? "own" : "target").\(cell)")
+                            .dropDestination(for: String.self) { items, _ in
+                                guard own && canPlace, let item = items.first, item.hasPrefix("asechka-ship:"), let index = Int(item.dropFirst(13)), (0..<5).contains(index) else { return false }
+                                selectedShip = index
+                                if ships[index].count > 1 { vertical = ships[index][1] - ships[index][0] == 10 }
+                                place(cell)
+                                return ships[index].first == cell
+                            }
                     }
                 }
             }.aspectRatio(1.055, contentMode: .fit)

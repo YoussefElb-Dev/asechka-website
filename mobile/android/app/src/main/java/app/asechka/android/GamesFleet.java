@@ -10,18 +10,23 @@ final class GamesFleet {
   boolean vertical;
 
   boolean place(int cell) {
-    if (cell < 0 || cell >= 100) return false;
+    int[] candidate = candidate(cell);
+    if (candidate == null) return false;
+    ships[selected] = candidate;
+    for (int i = 1; i <= 5; i++) if (ships[(selected + i) % 5] == null) { selected = (selected + i) % 5; break; }
+    return true;
+  }
+  int[] candidate(int cell) {
+    if (cell < 0 || cell >= 100) return null;
     int length = LENGTHS[selected];
-    if ((vertical ? cell / 10 : cell % 10) + length > 10) return false;
+    if ((vertical ? cell / 10 : cell % 10) + length > 10) return null;
     int[] candidate = new int[length];
     for (int i = 0; i < length; i++) {
       candidate[i] = cell + (vertical ? i * 10 : i);
       for (int j = 0; j < ships.length; j++) if (j != selected && ships[j] != null)
-        for (int occupied : ships[j]) if (occupied == candidate[i]) return false;
+        for (int occupied : ships[j]) if (occupied == candidate[i]) return null;
     }
-    ships[selected] = candidate;
-    for (int i = 1; i <= 5; i++) if (ships[(selected + i) % 5] == null) { selected = (selected + i) % 5; break; }
-    return true;
+    return candidate;
   }
   boolean complete() { for (int[] ship : ships) if (ship == null) return false; return true; }
   void reset() { Arrays.fill(ships, null); selected = 0; }

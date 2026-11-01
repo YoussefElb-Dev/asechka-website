@@ -15,6 +15,8 @@ struct GamesPoolView: View {
     @State private var balls: [GamesBall] = []
     @State private var playing = false
     @State private var serverBusy = false
+    @State private var charging: Bool?
+    @State private var gestureAngle = 0.0
     private let pocketNames = ["1 · Top left", "2 · Top middle", "3 · Top right", "4 · Bottom right", "5 · Bottom middle", "6 · Bottom left"]
     private var inHand: Bool { room.state["ballInHand"].bool }
     private var canControl: Bool { store.myTurn(room) && !serverBusy && !playing }
@@ -59,9 +61,18 @@ struct GamesPoolView: View {
                 let point = GamesPoolCanvas.tablePoint(value.location, size: geometry.size)
                 if inHand { cueX = min(989, max(11, point.x)); cueY = min(489, max(11, point.y)) }
                 else if let cue = balls.first(where: { $0.id == 0 && !$0.pocketed }) {
-                    let radians = atan2(point.y - cue.y, point.x - cue.x)
-                    angle = (radians * 180 / .pi + 360).truncatingRemainder(dividingBy: 360)
+                    let start = GamesPoolCanvas.tablePoint(value.startLocation, size: geometry.size)
+                    if charging == nil { charging = hypot(start.x - cue.x, start.y - cue.y) < 75; gestureAngle = angle * .pi / 180 }
+                    if charging == true {
+                        power = min(1, max(0, (-(point.x - start.x) * cos(gestureAngle) - (point.y - start.y) * sin(gestureAngle)) / 280))
+                    } else {
+                        let radians = atan2(point.y - cue.y, point.x - cue.x)
+                        angle = (radians * 180 / .pi + 360).truncatingRemainder(dividingBy: 360)
+                    }
                 }
+            }.onEnded { _ in
+                if charging == true && canControl && !inHand && power >= 0.03 { takeShot() }
+                charging = nil
             })
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Pool table. \(balls.filter { !$0.pocketed }.count) balls remain. Use the labeled aim, power and placement controls below.")
@@ -76,10 +87,10 @@ struct GamesPoolView: View {
             Slider(value: $power, in: 0...1, step: 0.01).accessibilityLabel("Shot power").accessibilityValue("\(Int(power * 100)) percent")
             Picker("Called pocket for the eight", selection: $pocket) { ForEach(0..<6, id: \.self) { Text(pocketNames[$0]).tag($0) } }.pickerStyle(.menu)
             Button {
-                store.move(room, ["type": "shot", "angle": .number(angle * .pi / 180), "power": .number(power), "callPocket": .int(pocket)])
+                takeShot()
             } label: { Label(store.hasPending(room) ? "Sending shot…" : room.state["breakShot"].bool ? "Take the break" : "Take the shot", systemImage: "arrow.up.right").gamesAction() }
                 .disabled(!canControl).accessibilityIdentifier("games.pool.shoot")
-            Text("Drag on the cloth to aim. Call the eight’s pocket before shooting; pocket numbers run clockwise from the top left.").font(.caption).foregroundColor(GamesPalette.muted)
+            Text("Drag on the cloth to aim. Pull back from the cue ball and release to shoot, or use the controls. Call the eight’s pocket before shooting; numbers run clockwise from the top left.").font(.caption).foregroundColor(GamesPalette.muted)
         }.disabled(!canControl).gamesPanel()
     }
     private var placementControls: some View {
@@ -93,6 +104,10 @@ struct GamesPoolView: View {
             if !cueValid { Text("Choose a spot outside pockets and other balls.").font(.caption).foregroundColor(GamesPalette.rose) }
             Button { store.move(room, ["type": "place", "x": .number(cueX), "y": .number(cueY)]) } label: { Text(store.hasPending(room) ? "Placing cue…" : "Place cue ball here").gamesAction() }.disabled(!canControl || !cueValid)
         }.disabled(!canControl).gamesPanel()
+    }
+    private func takeShot() {
+        guard canControl else { return }
+        store.move(room, ["type": "shot", "angle": .number(angle * .pi / 180), "power": .number(power), "callPocket": .int(pocket)])
     }
     private var pocketedSummary: some View {
         let ids = room.state["lastShot"]["pocketed"].array.compactMap(\.int)

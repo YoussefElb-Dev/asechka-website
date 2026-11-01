@@ -21,7 +21,10 @@ struct ComposerView:View {
     @State private var committed=false
     @State private var restored=false
     @State private var failure:String?
-    private var draftKey:String{"post-draft:"+universe.actor+":"+(request.post?.id ?? (request.photo ? (request.collection == .photography ? "photo:photography":"photo"):"quote")))}
+    private var draftKey: String {
+        let kind = request.photo ? (request.collection == .photography ? "photo:photography" : "photo") : "quote"
+        return "post-draft:\(universe.actor):\(request.post?.id ?? kind)"
+    }
     private var collectionBinding:Binding<PhotoCollection>{Binding(get:{draft.collection ?? request.post?.photoCollection ?? request.collection},set:{draft.collection=$0;persist()})}
     var body:some View {
         NavigationStack{ScrollView{VStack(alignment:.leading,spacing:20){

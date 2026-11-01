@@ -10,7 +10,7 @@ import org.json.*;
 
 /** Real native boards. Touch input and drawing never wait for the network or disk. */
 final class GamesBoard extends View {
-  interface Host { void move(JSONObject action); void selection(); void aim(float radians); }
+  interface Host { void move(JSONObject action); void selection(); void aim(float radians); void charge(float power, boolean release); }
   private final Host host;
   private final String actor;
   private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -22,6 +22,9 @@ final class GamesBoard extends View {
   final GamesFleet fleet = new GamesFleet();
   float angle = 0;
   private float downX, downY;
+  private boolean draggingFleet, charging;
+  private int dragCell = -1, dragOffset;
+  private float gesturePower;
   private final AccessibilityManager accessibility;
   private final BoardNodes nodes = new BoardNodes();
 
@@ -151,6 +154,7 @@ final class GamesBoard extends View {
       if(own&&placing()&&!ownFleetPlaced())for(int[] ship:fleet.ships)if(ship!=null)for(int v:ship)if(v==cell)occupied=true;
       if(!own&&sunk!=null)for(int i=0;i<sunk.length();i++)if(contains(GamesData.array(sunk.optJSONObject(i),"cells"),cell))occupied=true;
       if(occupied)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff88aabd);
+      if(own&&draggingFleet){int[] preview=fleet.candidate(dragCell);if(preview!=null)for(int v:preview)if(v==cell)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff9ce0c4);}
       if(contains(shots,cell)) {
         if(contains(hits,cell)) { line(c,x+size*.3f,y+size*.3f,x+size*.7f,y+size*.7f,3,0xffffaf9b);line(c,x+size*.7f,y+size*.3f,x+size*.3f,y+size*.7f,3,0xffffaf9b); }
         else circle(c,x+size/2,y+size/2,size*.13f,0xffc3d5df);
@@ -238,7 +242,29 @@ final class GamesBoard extends View {
   }
 
   public boolean onTouchEvent(MotionEvent event) {
-    if(event.getActionMasked()==MotionEvent.ACTION_DOWN){downX=event.getX();downY=event.getY();if("pool".equals(game)&&field.contains(downX,downY))getParent().requestDisallowInterceptTouchEvent(true);return true;}
+    if(event.getActionMasked()==MotionEvent.ACTION_DOWN){
+      downX=event.getX();downY=event.getY();charging=false;draggingFleet=false;
+      if(placing()&&canMove&&!ownFleetPlaced()&&field.contains(downX,downY)){
+        draggingFleet=true;dragCell=hit(downX,downY);dragOffset=0;
+        for(int i=0;i<fleet.ships.length;i++)if(fleet.ships[i]!=null)for(int j=0;j<fleet.ships[i].length;j++)if(fleet.ships[i][j]==dragCell){fleet.selected=i;fleet.vertical=fleet.ships[i][1]-fleet.ships[i][0]==10;dragOffset=j;}
+        dragCell-=dragOffset*(fleet.vertical?10:1);getParent().requestDisallowInterceptTouchEvent(true);
+      }
+      if("pool".equals(game)&&field.contains(downX,downY)){
+        getParent().requestDisallowInterceptTouchEvent(true);
+        if(myTurn()&&!state.optBoolean("ballInHand")){JSONArray balls=GamesData.array(state,"balls");for(int i=0;i<balls.length();i++){JSONObject b=balls.optJSONObject(i);if(b!=null&&b.optInt("id")==0){float x=field.left+(float)b.optDouble("x")/1000*field.width(),y=field.top+(float)b.optDouble("y")/500*field.height();charging=Math.hypot(x-downX,y-downY)<Math.max(24*getResources().getDisplayMetrics().density,field.width()*.035f);}}}
+        gesturePower=0;
+      }
+      return true;
+    }
+    if(draggingFleet&&(event.getActionMasked()==MotionEvent.ACTION_MOVE||event.getActionMasked()==MotionEvent.ACTION_UP)){
+      int cell=hit(event.getX(),event.getY());dragCell=cell<0?-1:cell-dragOffset*(fleet.vertical?10:1);invalidate();
+      if(event.getActionMasked()==MotionEvent.ACTION_UP){draggingFleet=false;getParent().requestDisallowInterceptTouchEvent(false);if(dragCell>=0)activate(dragCell);performClick();}return true;
+    }
+    if(charging&&myTurn()&&(event.getActionMasked()==MotionEvent.ACTION_MOVE||event.getActionMasked()==MotionEvent.ACTION_UP)){
+      float pull=(float)(-(event.getX()-downX)*Math.cos(angle)-(event.getY()-downY)*Math.sin(angle));
+      gesturePower=Math.max(0,Math.min(1,pull/(field.width()*.28f)));host.charge(gesturePower,event.getActionMasked()==MotionEvent.ACTION_UP);invalidate();
+      if(event.getActionMasked()==MotionEvent.ACTION_UP){charging=false;getParent().requestDisallowInterceptTouchEvent(false);performClick();}return true;
+    }
     if("pool".equals(game)&&myTurn()&&!state.optBoolean("ballInHand")&&(event.getActionMasked()==MotionEvent.ACTION_MOVE||event.getActionMasked()==MotionEvent.ACTION_UP)) {
       JSONArray balls=GamesData.array(state,"balls");
       for(int i=0;i<balls.length();i++){JSONObject b=balls.optJSONObject(i);if(b!=null&&b.optInt("id")==0){float x=field.left+(float)b.optDouble("x")/1000*field.width(),y=field.top+(float)b.optDouble("y")/500*field.height();angle=(float)Math.atan2(event.getY()-y,event.getX()-x);invalidate();host.aim(angle);break;}}
@@ -250,7 +276,7 @@ final class GamesBoard extends View {
         else {int cell=hit(event.getX(),event.getY());if(cell>=0)activate(cell);}
       }
     }
-    if(event.getActionMasked()==MotionEvent.ACTION_CANCEL)getParent().requestDisallowInterceptTouchEvent(false);
+    if(event.getActionMasked()==MotionEvent.ACTION_CANCEL){charging=false;draggingFleet=false;invalidate();getParent().requestDisallowInterceptTouchEvent(false);}
     return true;
   }
   public boolean performClick(){super.performClick();return true;}

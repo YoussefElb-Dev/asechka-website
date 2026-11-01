@@ -2222,8 +2222,51 @@ public final class NativeTests extends Instrumentation {
     screenshot("games-hub");
     call("select", new Class[] {int.class}, 0);
     check(get("feed") != null, "Returning home retains the feed");
+    nativeGameGestureTests();
     ui(() -> activity.finish());
   }
+
+  private void nativeGameGestureTests() throws Exception {
+    final JSONObject[] action = {null};
+    final GamesBoard[] surface = {null};
+    final boolean[] pullReleased = {false};
+    ui(() -> {
+      GamesBoard board = new GamesBoard(activity, "asnat", new GamesBoard.Host() {
+        public void move(JSONObject value) { action[0] = value; }
+        public void selection() {}
+        public void aim(float value) {}
+        public void charge(float value, boolean release) { if (release && value >= .03f) { pullReleased[0] = true; action[0] = GamesData.obj("type", "shot", "power", value); } }
+      });
+      surface[0] = board;
+      ((FrameLayout) uncheckedGet("stage")).addView(board, new FrameLayout.LayoutParams(800, 512));
+      JSONObject state = GamesData.obj("turn", 0, "winner", JSONObject.NULL, "ballInHand", false, "balls", new JSONArray().put(GamesData.obj("id", 0, "x", 250, "y", 250, "pocketed", false)));
+      board.update(GamesData.obj("id", "gesture-pool", "game", "pool", "status", "playing", "players", new JSONArray().put(GamesData.obj("actor", "asnat")).put(GamesData.obj("actor", "youssef")), "state", state), null, true);
+      board.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(512, View.MeasureSpec.EXACTLY));board.layout(0, 0, 800, 512);
+      Bitmap frame=Bitmap.createBitmap(800,512,Bitmap.Config.ARGB_8888);board.draw(new android.graphics.Canvas(frame));frame.recycle();
+      // Pool field is 44..756, cue is (222,224). A horizontal pull from the cue charges the shot.
+      touch(board, MotionEvent.ACTION_DOWN, 222, 224);touch(board, MotionEvent.ACTION_MOVE, 92, 224);touch(board, MotionEvent.ACTION_UP, 92, 224);
+    });
+    check(pullReleased[0] && action[0].optDouble("power") > .5, "Native cue pull releases a proportional shot");
+    ui(() -> {
+      GamesBoard board = surface[0];
+      board.update(GamesData.obj("id", "gesture-fleet", "game", "battleship", "status", "playing", "players", new JSONArray().put(GamesData.obj("actor", "asnat")).put(GamesData.obj("actor", "youssef")), "state", GamesData.obj("turn", 0, "winner", JSONObject.NULL, "phase", "placement", "fleets", new JSONArray().put(JSONObject.NULL).put(JSONObject.NULL))), null, true);
+      board.fleet.automatic();board.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(832, View.MeasureSpec.EXACTLY));board.layout(0,0,800,832);
+      Bitmap frame=Bitmap.createBitmap(800,832,Bitmap.Config.ARGB_8888);board.draw(new android.graphics.Canvas(frame));frame.recycle();
+      android.graphics.RectF field;
+      try { field=(android.graphics.RectF)inner(board,"field"); } catch(Exception error){throw new RuntimeException(error);}
+      float cell=field.width()/10;
+      touch(board,MotionEvent.ACTION_DOWN,field.left+cell*.5f,field.top+cell*.5f);
+      touch(board,MotionEvent.ACTION_MOVE,field.left+cell*2.5f,field.top+cell*1.5f);
+      touch(board,MotionEvent.ACTION_UP,field.left+cell*2.5f,field.top+cell*1.5f);
+    });
+    check(surface[0].fleet.ships[0][0]==12, "Dragging a placed ship repositions it on the ocean");
+    GamesFleet fleet=surface[0].fleet;fleet.selected=0;
+    check(fleet.candidate(19)==null, "Drag preview rejects ships outside the board");
+    check(fleet.candidate(20)==null, "Drag preview rejects overlap with another ship");
+    ui(() -> ((FrameLayout) uncheckedGet("stage")).removeView(surface[0]));
+  }
+
+  private void touch(View view,int kind,float x,float y){long at=SystemClock.uptimeMillis();MotionEvent event=MotionEvent.obtain(at,at,kind,x,y,0);view.dispatchTouchEvent(event);event.recycle();}
 
   private Object inner(Object object, String name) throws Exception {
     Field field = object.getClass().getDeclaredField(name);
