@@ -213,13 +213,20 @@ struct GamesPoolFrame: Equatable {
     var time: Double
     var balls: [GamesBall]
     static func read(_ shot: GamesJSON) -> [GamesPoolFrame] {
-        shot["frames"].array.enumerated().compactMap { index, frame in
-            let balls = (frame.array.isEmpty ? frame["balls"].array : frame.array).compactMap(GamesBall.init)
-            guard !balls.isEmpty else { return nil }
+        var result: [GamesPoolFrame] = []
+        for (index, frame) in shot["frames"].array.enumerated() {
+            let values: [GamesJSON] = frame.array.isEmpty ? frame["balls"].array : frame.array
+            let balls: [GamesBall] = values.compactMap { GamesBall($0) }
+            guard !balls.isEmpty else { continue }
             // The service timestamps frames in seconds (t), or milliseconds (time/ms).
-            let seconds = frame["t"].double ?? frame["time"].double.map { $0 / 1000 } ?? frame["ms"].double.map { $0 / 1000 } ?? Double(index) / 30
-            return GamesPoolFrame(time: max(0, seconds), balls: balls)
-        }.sorted { $0.time < $1.time }
+            let seconds: Double
+            if let time = frame["t"].double { seconds = time }
+            else if let milliseconds = frame["time"].double { seconds = milliseconds / 1000 }
+            else if let milliseconds = frame["ms"].double { seconds = milliseconds / 1000 }
+            else { seconds = Double(index) / 30 }
+            result.append(GamesPoolFrame(time: max(0, seconds), balls: balls))
+        }
+        return result.sorted { $0.time < $1.time }
     }
     static func sample(_ frames: [GamesPoolFrame], at time: Double) -> [GamesBall] {
         guard let first = frames.first else { return [] }
