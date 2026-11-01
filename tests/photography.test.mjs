@@ -17,9 +17,10 @@ const add = (extra = {}) => ({ action: 'addPhoto', operationId: randomUUID(), da
 const conflict = error => error.status === 409;
 const invalid = error => error.status === 400;
 function legacy() {
+  const id = randomUUID();
   return {
     version: 1, quotes: ['An older thought'], extra: { keep: true },
-    photos: [{ id: randomUUID(), src: 'assets/photos/our-first-day.jpg', caption: 'Our first day', date,
+    photos: [{ id, src: `assets/photos/2026/10/${id}.jpg`, caption: 'Our first day', date,
       alt: 'An old picture of us', extra: 'keep this', createdAt: '2026-10-12T16:00:00.000Z' }],
   };
 }

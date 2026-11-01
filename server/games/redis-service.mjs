@@ -11,7 +11,7 @@ const actors=['asnat','youssef'];
 
 /** Shared durable authority for Vercel instances. Commits and pub/sub are atomic. */
 export class RedisGamesService extends GamesService {
-  constructor({url=process.env.REDIS_URL,prefix=process.env.GAMES_REDIS_PREFIX||'asechka:games:v1',now=Date.now}={}) {
+  constructor({url=process.env.REDIS_URL,prefix=process.env.GAMES_REDIS_PREFIX||(process.env.VERCEL_ENV==='preview'?`asechka:games:preview:${process.env.VERCEL_GIT_COMMIT_REF||process.env.VERCEL_URL||'default'}`:'asechka:games:v1'),now=Date.now}={}) {
     super({now});this.url=url;this.prefix=prefix;this.instance=randomUUID();this.raw='';this.localPresence=new Map();this.closing=false;
   }
   async init(){

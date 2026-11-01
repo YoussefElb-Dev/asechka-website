@@ -7,8 +7,8 @@ The portable Node/JSON server and Docker image remain local/self-hosted fallback
 ## Preferred: existing Vercel project
 
 1. Connect a durable Redis provider reachable from the Vercel function region. Use its secure `rediss://` connection URL, including credentials, as the encrypted `REDIS_URL` environment variable. This implementation uses the Node Redis client (pinned 6.3.1) with Redis protocol and pub/sub; a provider's HTTP REST URL/token alone is not equivalent.
-2. In the existing project's environment settings, add `GAMES_TOKEN_SECRET` (at least 32 random characters), `REDIS_URL`, and `GAMES_WS_URL=wss://YOUR_EXISTING_SITE/api/games-socket`. Set `GAMES_ALLOWED_ORIGINS` to exact site origins, comma-separated. Scope configuration to the deployment environments you intend to enable and redeploy after changes.
-3. Use Fluid Compute and the route's configured duration. Allow `/api/games-socket` through the site's upgrade path, middleware, and deployment protection policy while preserving the first-message ticket requirement. Never put a Redis credential or the signing secret in the returned URL or native bundle.
+2. Add `REDIS_URL` to the existing project's encrypted environment settings. In this same-project deployment, tickets derive a separate signing key from the existing `SESSION_SECRET` and `SITE_PASSWORD`, and the API selects its own secure `/api/games-socket` URL. Optional overrides are `GAMES_TOKEN_SECRET` (at least 32 random characters) and `GAMES_WS_URL`. Set `GAMES_ALLOWED_ORIGINS` to exact browser site origins if needed; native clients omit Origin. Scope configuration to the deployment environments you intend to enable and redeploy after changes.
+3. Use Fluid Compute and the socket route's configured 300-second duration. Allow `/api/games-socket` through the site's upgrade path, middleware, and deployment protection policy while preserving the first-message ticket requirement. Never put a Redis credential or the signing secret in the returned URL or native bundle.
 4. Deploy the source containing both Games API routes, rules, Redis service, pinned dependencies/lockfile, and existing application. No separate always-running process or file volume is needed for this Vercel mode. Do not start the portable JSON server as a Vercel build command.
 5. Complete the two-client live verification below against the actual production WSS URL. Reconnects caused by function duration or new deployments must reauthenticate, reload shared rooms, and preserve pending action identities. Confirm cross-instance updates and persistence; a successful website deployment alone does not establish these.
 
@@ -22,10 +22,10 @@ The backend workflow starts `redis:8-alpine`, publishes port 6379, waits for `re
 
 | Variable | Configure on | Meaning |
 | --- | --- | --- |
-| `GAMES_TOKEN_SECRET` | API **and** Games service | Same secret, at least 32 random characters; signs/verifies 15-minute games tickets |
-| `GAMES_WS_URL` | API host | Preferred `wss://EXISTING_SITE/api/games-socket`; self-hosted `wss://HOST/games`; returned to the app, not a secret |
+| `GAMES_TOKEN_SECRET` | API **and** Games service | Optional same-project override; required matching secret for a separate host; at least 32 random characters |
+| `GAMES_WS_URL` | API host | Optional same-project override; with Redis, defaults to this origin's secure `/api/games-socket`; required for a separate host |
 | `REDIS_URL` | Vercel Games route | Secret secure Redis-protocol connection for persistent state and pub/sub |
-| `GAMES_REDIS_PREFIX` | Redis Games route | Key/channel namespace; default `asechka:games:v1`; use separate namespaces/instances for preview and production |
+| `GAMES_REDIS_PREFIX` | Redis Games route | Optional key/channel override; production defaults to `asechka:games:v1`, Vercel previews use a separate branch namespace; use separate test storage |
 | `GAMES_TEST_REDIS_URL` | Integration tests / CI | Isolated test Redis instance; plain loopback allowed for CI service |
 | `GAMES_DATA_DIR` | Portable JSON fallback only | Persistent writable directory containing `matches.json`; default `.games-data` relative to the server working directory |
 | `GAMES_HOST` | Games service | Listen address; default `127.0.0.1`; use `0.0.0.0` inside a container |

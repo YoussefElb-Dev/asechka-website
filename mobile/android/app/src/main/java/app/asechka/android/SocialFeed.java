@@ -89,6 +89,7 @@ final class SocialFeed extends ListView {
   private final FeedAdapter adapter;
   private final ArrayList<Post> posts = new ArrayList<>();
   private boolean onlySaved;
+  private String photoSection = "all";
   private int scrollState;
   private JSONObject delayedData;
   private TextView empty;
@@ -172,6 +173,8 @@ final class SocialFeed extends ListView {
     onlySaved = saved;
   }
 
+  void photoSection(String section) { photoSection = section; }
+
   void submit(JSONObject data, boolean keep) {
     if (keep && scrollState != AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
       delayedData = data;
@@ -193,6 +196,8 @@ final class SocialFeed extends ListView {
           JSONObject value =
               raw instanceof JSONObject ? (JSONObject) raw : OfflineStore.json("text", raw);
           Post post = new Post(value, collection.equals("photos") ? "photo" : "quote", i);
+          if (mode == 1 && !photoSection.equals("all")
+              && !photoSection.equals(value.optString("collection", "memories"))) continue;
           if (!onlySaved || host.saved(post)) posts.add(post);
         }
       }

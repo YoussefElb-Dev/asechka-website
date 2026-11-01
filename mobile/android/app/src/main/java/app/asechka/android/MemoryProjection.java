@@ -80,6 +80,7 @@ final class MemoryProjection {
         item.put("author", body.getString("author"));
       if (collection.equals("photos")) {
         item.put("caption", body.optString("caption"));
+        if (body.has("collection")) item.put("collection", body.getString("collection"));
         item.put("alt", body.optString("caption", "A picture of us"));
         if (body.has("photo")) item.put("src", photoPath(body));
       } else {

@@ -67,6 +67,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private Runnable activeConversationRefresh;
   private final ExecutorService socialWrites = Executors.newSingleThreadExecutor();
   private boolean savedPosts;
+  private String photoSection = "all";
   private TextView notice;
   private Dialog activeDialog;
   private PlanEditor planEditor;
@@ -982,6 +983,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       }
       feed.setVisibility(View.VISIBLE);
       feed.savedOnly(savedPosts);
+      feed.photoSection(photoSection);
       feed.submit(memories, keepScroll && !freshFeed);
       return;
     }
@@ -1085,7 +1087,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             savedPosts
                 ? "Kept close."
                 : screen == 1
-                    ? "Our camera roll."
+                    ? (photoSection.equals("photography") ? "Photography." : "Our camera roll.")
                     : screen == 5 ? "Words to keep." : "Our little us.",
             27));
     u.add(
@@ -1093,10 +1095,30 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         u.text(
             savedPosts
                 ? "Your saved photos and words, in one place."
-                : "A little life together, one moment at a time.",
+                : screen == 1 && photoSection.equals("photography")
+                    ? "Everyday frames, small details, and things that catch our eye."
+                    : "A little life together, one moment at a time.",
             13,
             Ui.MUTED),
         4);
+    if (screen == 1) {
+      LinearLayout sections = u.row(5);
+      String[] values = {"all", "memories", "photography"};
+      String[] names = {"All", "Memories", "Photography"};
+      for (int i = 0; i < values.length; i++) {
+        final String section = values[i];
+        Button choice = u.button(names[i], section.equals(photoSection), () -> {
+          photoSection = section;
+          if (feed != null) { stage.removeView(feed); feed = null; }
+          render(false);
+        });
+        choice.setTextSize(12);
+        choice.setContentDescription("Photo collection: " + names[i]);
+        choice.setSelected(section.equals(photoSection));
+        sections.addView(choice, new LinearLayout.LayoutParams(0, u.dp(48), 1));
+      }
+      u.add(intro, sections, 14);
+    }
     LinearLayout compose = u.row(12);
     compose.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
     compose.setBackground(u.shape(Color.WHITE, 22));
@@ -1107,7 +1129,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         new LinearLayout.LayoutParams(0, -2, 1));
     compose.addView(
         new SocialFeed.Icon(this, "plus"), new LinearLayout.LayoutParams(u.dp(34), u.dp(34)));
-    compose.setOnClickListener(v -> choosePost());
+    compose.setOnClickListener(v -> { if (screen == 1 && photoSection.equals("photography")) createPost(true); else choosePost(); });
     u.add(intro, compose, 17);
     if (!home) header.addView(intro);
     if (screen == 5 && !savedPosts) {
@@ -1153,6 +1175,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         "❞",
         false,
         () -> createPost(false));
+    sheet.item("Photography · little things we notice", "Pictures we take of everyday things", "◉", false, () -> {
+      memoryEditor = new MemoryEditor(true, null, "photography"); memoryEditor.show();
+    });
     track(sheet);
     sheet.show();
   }
@@ -3010,6 +3035,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     final TextView status, quotePreview;
     final Button share;
     final String draftKey;
+    String photoCollection;
+    RadioGroup collectionPicker;
     String selectedPhoto, operation = UUID.randomUUID().toString(), fingerprint = "";
     boolean photoBusy, committed;
     final Runnable saveDraft = () -> persistDraft();
@@ -3019,6 +3046,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     }
 
     MemoryEditor(boolean photo, JSONObject original) {
+      this(photo, original, screen == 1 && photoSection.equals("photography") ? "photography" : "memories");
+    }
+
+    MemoryEditor(boolean photo, JSONObject original, String initialCollection) {
       this.photo = photo;
       this.original = original;
       draftKey =
@@ -3026,10 +3057,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               + actor()
               + ":"
               + (original == null
-                  ? (photo ? "photo" : "quote")
+                  ? (photo ? (initialCollection.equals("photography") ? "photo:photography" : "photo") : "quote")
                   : original.optString("id", original.optString("editKey")));
       JSONObject draft = api.store.read(draftKey);
       if (draft == null) draft = original == null ? new JSONObject() : original;
+      photoCollection = draft.optString("collection", original == null ? initialCollection : original.optString("collection", "memories"));
+      if (!photoCollection.equals("photography")) photoCollection = "memories";
       selectedPhoto = draft.has("photo") ? draft.optString("photo") : null;
       LinearLayout shell = u.column();
       shell.setBackgroundColor(Ui.BG);
@@ -3056,6 +3089,19 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       who.addView(u.text("Our little universe · just us two", 12, Ui.MUTED));
       byline.addView(who);
       u.add(body, byline, 8);
+      if (photo) {
+        u.add(body, u.label("PHOTO COLLECTION"), 16);
+        collectionPicker = new RadioGroup(MainActivity.this);
+        collectionPicker.setOrientation(RadioGroup.HORIZONTAL);
+        for (String name : new String[] {"Memories", "Photography"}) {
+          RadioButton radio = new RadioButton(MainActivity.this);
+          radio.setId(View.generateViewId()); radio.setText(name); radio.setTextColor(Ui.INK);
+          radio.setTag(name.toLowerCase(Locale.US)); radio.setMinHeight(u.dp(48));
+          collectionPicker.addView(radio, new RadioGroup.LayoutParams(0, -2, 1));
+          if (photoCollection.equals(radio.getTag())) collectionPicker.check(radio.getId());
+        }
+        u.add(body, collectionPicker, 4);
+      }
       preview = u.image(body, "Post photo preview", 280);
       preview.setScaleType(ImageView.ScaleType.FIT_CENTER);
       preview.setBackground(u.shape(Ui.BLUE, 24));
@@ -3137,6 +3183,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           };
       text.addTextChangedListener(watcher);
       note.addTextChangedListener(watcher);
+      if (collectionPicker != null) collectionPicker.setOnCheckedChangeListener((group, id) -> {
+        View selected = group.findViewById(id);
+        if (selected != null) { photoCollection = selected.getTag().toString(); persistDraft(); }
+      });
       quotePreview.setText(
           text.length() == 0 ? "Your words, kept close. ♡" : "“" + text.getText() + "”");
       if (selectedPhoto != null) prepared(selectedPhoto);
@@ -3199,6 +3249,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                 "date",
                 when.getText().toString());
         if (selectedPhoto != null) draft.put("photo", selectedPhoto);
+        if (photo) draft.put("collection", photoCollection);
         api.store.write(draftKey, draft);
       } catch (Exception e) {
         status.setText("Couldn’t save this draft yet. " + message(e));
@@ -3247,6 +3298,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               "author",
               actor());
       try {
+        if (photo) body.put("collection", photoCollection);
         if (photo && selectedPhoto != null) body.put("photo", selectedPhoto);
         if (original != null) {
           body.put("id", original.optString("id", original.optString("editKey")));
