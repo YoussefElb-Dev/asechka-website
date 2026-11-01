@@ -6,6 +6,10 @@ The portable Node/JSON server and Docker image remain local/self-hosted fallback
 
 ## Preferred: existing Vercel project
 
+The existing `asechka-website` project is now connected to the **asechka-games** Upstash database on its free persistent plan, in Washington, D.C. (`iad1`), with eviction disabled. Production and preview receive the encrypted connection settings and a separate Games signing secret. Preview match storage uses its own branch namespace. The deployed production socket is `wss://asechka-website.vercel.app/api/games-socket`.
+
+The Hobby deployment includes routing middleware in its 12-function limit. Music search is therefore rewritten to the existing music handler; `/api/music-search` remains compatible with the website and native apps. Keep the exact socket function override before the general API glob in `vercel.json`.
+
 1. Connect a durable Redis provider reachable from the Vercel function region. Use its secure `rediss://` connection URL, including credentials, as the encrypted `REDIS_URL` environment variable. This implementation uses the Node Redis client (pinned 6.3.1) with Redis protocol and pub/sub; a provider's HTTP REST URL/token alone is not equivalent.
 2. Add `REDIS_URL` to the existing project's encrypted environment settings. In this same-project deployment, tickets derive a separate signing key from the existing `SESSION_SECRET` and `SITE_PASSWORD`, and the API selects its own secure `/api/games-socket` URL. Optional overrides are `GAMES_TOKEN_SECRET` (at least 32 random characters) and `GAMES_WS_URL`. Set `GAMES_ALLOWED_ORIGINS` to exact browser site origins if needed; native clients omit Origin. Scope configuration to the deployment environments you intend to enable and redeploy after changes.
 3. Use Fluid Compute and the socket route's configured 300-second duration. Allow `/api/games-socket` through the site's upgrade path, middleware, and deployment protection policy while preserving the first-message ticket requirement. Never put a Redis credential or the signing secret in the returned URL or native bundle.
@@ -17,6 +21,12 @@ Redis compare-and-set writes prevent independent instances from committing confl
 ## Redis verification in CI
 
 The backend workflow starts `redis:8-alpine`, publishes port 6379, waits for `redis-cli ping` health, and sets `GAMES_TEST_REDIS_URL=redis://127.0.0.1:6379`. The normal `tests/*.test.mjs` command includes `tests/games-redis.test.mjs`, so the Redis adapter runs against a real isolated Redis service in CI. Local Redis testing uses the same variable pointed at an isolated test instance; never point integration tests at production storage. A local run without Redis must distinguish skipped Redis tests from a successful Redis integration pass.
+
+### Deployed smoke check
+
+`server/games/cloud-check.mjs` connects two real WSS clients, creates six disposable rooms, exchanges legal moves in every game, verifies wins, a rematch, a reconnect, a duplicate action, stale-state rejection, private word/fleet filtering, and matching pool results. It removes only its own room IDs and receipts using Redis compare-and-set, preserving other matches. Run it with private environment variables `GAMES_CHECK_URL`, `GAMES_TOKEN_SECRET`, `REDIS_URL`, and the correct `GAMES_REDIS_PREFIX` if checking a preview. The explicit invocation is `node server/games/cloud-check.mjs --write-test-rooms`. Do not commit or log credentials.
+
+On October 31, 2026, all six checks passed against production. Twenty-eight move acknowledgments measured **33.87 ms median / 62.05 ms p95**, from this Windows computer to Vercel. This small hosted smoke sample is separate from physical-device input or frame-rate measurements. Two independent service instances also passed TLS, persistence, and conflicting-write verification against the provisioned Upstash database in an isolated QA namespace.
 
 ## Configuration
 

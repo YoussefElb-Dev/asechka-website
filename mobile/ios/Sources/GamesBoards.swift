@@ -4,12 +4,15 @@ struct GamesTicTacToeView: View {
     @ObservedObject var store: GamesStore
     var room: GamesRoom
     @EnvironmentObject private var universe: UniverseStore
+    @Environment(\.accessibilityReduceMotion) private var systemReduced
+    @AppStorage("games.reduceMotion") private var reduced = false
     private var pendingCell: Int? { store.pending.first { $0.room == room.id }?.action["cell"].int }
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
             ForEach(0..<9, id: \.self) { cell in
                 Button { store.move(room, ["type": "place", "cell": .int(cell)]) } label: {
                     mark(cell).frame(maxWidth: .infinity).aspectRatio(1, contentMode: .fit)
+                        .animation(systemReduced || reduced ? nil : .spring(response: 0.3, dampingFraction: 0.72), value: room.state["board"][cell])
                         .background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 20))
                         .overlay(RoundedRectangle(cornerRadius: 20).stroke(highlight(cell) ? GamesPalette.theme(room) : .white.opacity(0.08), lineWidth: highlight(cell) ? 3 : 1))
                 }.buttonStyle(SoftPress()).disabled(!store.myTurn(room) || !room.state["board"][cell].isNull)
@@ -25,6 +28,7 @@ struct GamesTicTacToeView: View {
         if let player {
             Image(systemName: player == 0 ? "xmark" : "circle").font(.system(size: 42, weight: .medium))
                 .foregroundColor(GamesPalette.player(player)).opacity(pending ? 0.4 : 1)
+                .transition(.scale(scale: 0.6).combined(with: .opacity))
         } else { Color.clear }
     }
     private func highlight(_ cell: Int) -> Bool { room.state["line"].array.contains(.int(cell)) || pendingCell == cell }
@@ -39,6 +43,8 @@ struct GamesConnectFourView: View {
     @ObservedObject var store: GamesStore
     var room: GamesRoom
     @EnvironmentObject private var universe: UniverseStore
+    @Environment(\.accessibilityReduceMotion) private var systemReduced
+    @AppStorage("games.reduceMotion") private var reduced = false
     private var pendingColumn: Int? { store.pending.first { $0.room == room.id }?.action["column"].int }
     private var pendingCell: Int? {
         guard let column = pendingColumn else { return nil }
@@ -68,9 +74,16 @@ struct GamesConnectFourView: View {
         let player = room.state["board"][cell].int
         let pending = player == nil && pendingCell == cell
         let color = player.map(GamesPalette.player) ?? (pending ? GamesPalette.player(room.player(universe.actor) ?? 0).opacity(0.4) : GamesPalette.background)
-        return Circle().fill(color).aspectRatio(1, contentMode: .fit)
-            .overlay(Circle().stroke(room.state["line"].array.contains(.int(cell)) ? .white : .white.opacity(0.08), lineWidth: 2))
-            .overlay { if let player { Text(player == 0 ? "✦" : "○").font(.caption).foregroundColor(GamesPalette.background) } }
+        return ZStack {
+            Circle().fill(GamesPalette.background)
+            if player != nil || pending {
+                Circle().fill(color)
+                    .overlay(Circle().stroke(room.state["line"].array.contains(.int(cell)) ? .white : .white.opacity(0.08), lineWidth: 2))
+                    .overlay { if let player { Text(player == 0 ? "✦" : "○").font(.caption).foregroundColor(GamesPalette.background) } }
+                    .transition(.offset(y: -160).combined(with: .opacity))
+            }
+        }.aspectRatio(1, contentMode: .fit)
+            .animation(systemReduced || reduced ? nil : .spring(response: 0.45, dampingFraction: 0.68), value: room.state["board"][cell])
     }
     private func cellLabel(_ cell: Int) -> String { room.state["board"][cell].int.map { "player \($0 + 1)" } ?? (pendingCell == cell ? "move pending" : "empty") }
 }

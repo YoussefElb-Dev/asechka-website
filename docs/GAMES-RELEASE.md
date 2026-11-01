@@ -52,4 +52,12 @@ After a successful build, exercise all six games on an iPhone and Android togeth
 
 Measure acknowledgment percentiles in the deployed region, native input-to-display latency, and actual frame pacing on named devices. The targets (under 16 ms local feedback, 60 FPS/optional high refresh, sub-150 ms same-region p95 acknowledgment) are targets, not claims made by packaging or a loopback benchmark. Physical haptics, thermal behavior, and unsigned IPA installability cannot be established by source checks.
 
-Current verification performed by the asset/CI work is recorded in the task handoff. This document deliberately does not invent a successful GitHub run, produced IPA/APK, physical-device pass, or cloud latency result.
+## Recorded verification · October 31, 2026
+
+- The shared workflow passed all **237 tests** with Redis 8, including all six rules, two-client networking, conflicts, reconnects, privacy, and Photography collection behavior.
+- GitHub Actions produced and signature-verified release Android APKs using the existing signing identity. Android emulator verification passed **33 Games/Photography assertions**, including real JPEG upload/sync, legacy photo behavior, native navigation, pool pull-back input, ship dragging/validation, and checkers replay reconstruction.
+- The Android native socket connected to the production Vercel endpoint with normal TLS/hostname validation and correctly rejected an unauthenticated client. This credential-free test is `adb shell am instrument -w -e gamesTlsOnly true app.asechka.android.tests/app.asechka.android.NativeTests`.
+- The production two-client WSS check passed all six games, reconnect, deduplication, stale rejection, rematch, private word/fleet visibility, and identical pool results. Its 28 measured moves had **33.87 ms median / 62.05 ms p95** acknowledgment from this Windows host. The disposable rooms and their receipts were removed afterward.
+- iPhone compilation and unit tests passed after simplifying pool-frame decoding. The full UI suite and final IPA packaging must be confirmed from the final linked Actions run before marking that archive delivered.
+
+Physical iPhone/Android play together, 60/120 Hz frame pacing, thermal behavior, and haptics still require physical devices. Invitations currently arrive in the live room list and can be opened by room code or native share link. Background push invitation delivery needs APNs/FCM registration, server delivery credentials, and correctly provisioned Apple capabilities; it is not implemented by the WebSocket service. Optional AI/practice modes are not included. These are limitations, not claims of tested behavior.

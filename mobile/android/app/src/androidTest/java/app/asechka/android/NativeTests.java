@@ -21,6 +21,7 @@ public final class NativeTests extends Instrumentation {
   private boolean widgetsOnly;
   private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly, gateOnly, gamesOnly;
   private String upgrade;
+  private boolean gamesTlsOnly;
 
   @Override
   public void onCreate(Bundle args) {
@@ -36,6 +37,7 @@ public final class NativeTests extends Instrumentation {
     gateOnly = "true".equals(args.getString("gateOnly"));
     gamesOnly = "true".equals(args.getString("gamesOnly"));
     upgrade = args.getString("upgrade", "");
+    gamesTlsOnly = "true".equals(args.getString("gamesTlsOnly"));
     start();
   }
 
@@ -43,7 +45,10 @@ public final class NativeTests extends Instrumentation {
   public void onStart() {
     Bundle result = new Bundle();
     try {
-      if (!upgrade.isEmpty()) {
+      if (gamesTlsOnly) {
+        liveGamesTransport();
+        result.putString("stream", "PASS: Android native production TLS/WebSocket transport rejects an unauthenticated client.\n");
+      } else if (!upgrade.isEmpty()) {
         upgradeTest(upgrade.equals("seed"));
         result.putString(
             "stream", "PASS: " + assertions + " upgrade assertions (" + upgrade + ").\n");
@@ -114,6 +119,25 @@ public final class NativeTests extends Instrumentation {
       result.putString("stream", "FAIL: " + text);
       finish(Activity.RESULT_CANCELED, result);
     }
+  }
+
+  private void liveGamesTransport() throws Exception {
+    GamesSocket socket = new GamesSocket();
+    java.util.concurrent.CountDownLatch completed = new java.util.concurrent.CountDownLatch(1);
+    final boolean[] rejected = {false};
+    final Exception[] failure = {null};
+    try {
+      socket.connect("wss://asechka-website.vercel.app/api/games-socket");
+      socket.send(GamesData.obj("type","auth","ticket","invalid-test-ticket").toString());
+      Thread reader = new Thread(() -> {
+        try { socket.read(value -> {
+          JSONObject message = new JSONObject(value);
+          if("error".equals(message.optString("type"))&&!message.optString("error").isEmpty()){rejected[0]=true;completed.countDown();}
+        }); } catch(Exception error){failure[0]=error;completed.countDown();}
+      },"NativeGamesLiveCheck");reader.start();
+      if(!completed.await(25,java.util.concurrent.TimeUnit.SECONDS))throw new IOException("Live Games response timed out");
+      if(!rejected[0])throw new IOException("Native Games authentication rejection failed",failure[0]);
+    } finally {socket.close();}
   }
 
   private void check(boolean condition, String message) {

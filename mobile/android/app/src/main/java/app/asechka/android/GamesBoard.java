@@ -25,6 +25,8 @@ final class GamesBoard extends View {
   private boolean draggingFleet, charging;
   private int dragCell = -1, dragOffset;
   private float gesturePower;
+  private int animatedCell=-1,animatedFrom=-1;
+  private long animationStarted;
   private final AccessibilityManager accessibility;
   private final BoardNodes nodes = new BoardNodes();
 
@@ -39,6 +41,16 @@ final class GamesBoard extends View {
   void update(JSONObject room, JSONObject pending, boolean online) {
     String oldId = this.room.optString("id");
     if (!oldId.equals(room.optString("id"))) { selected = -1; fleet.reset(); }
+    if(oldId.equals(room.optString("id"))&&this.room.optLong("seq")!=room.optLong("seq")&&motion()){
+      JSONArray before=GamesData.array(this.state,"board"),after=GamesData.array(GamesData.state(room),"board");
+      animatedCell=animatedFrom=-1;
+      if(before.length()==after.length())for(int i=0;i<after.length();i++){
+        if(!before.isNull(i)&&after.isNull(i))animatedFrom=i;
+        if(before.isNull(i)&&!after.isNull(i))animatedCell=i;
+      }
+      if("checkers".equals(room.optString("game"))){JSONArray moves=GamesData.array(GamesData.state(room),"moves");JSONObject last=moves.optJSONObject(moves.length()-1);if(last!=null){animatedFrom=last.optInt("from",-1);animatedCell=last.optInt("to",-1);}}
+      animationStarted=android.os.SystemClock.uptimeMillis();
+    }else if(!oldId.equals(room.optString("id")))animatedCell=-1;
     this.room = room; this.state = GamesData.state(room); this.game = room.optString("game");
     this.player = GamesData.player(room, actor);
     this.pending = pending != null && room.optString("id").equals(pending.optString("room")) ? pending.optJSONObject("action") : null;
@@ -81,6 +93,8 @@ final class GamesBoard extends View {
     float size = Math.min(field.width()/cols, field.height()/rows);
     field.right = field.left+size*cols; field.bottom = field.top+size*rows;
     JSONArray board = GamesData.array(state,"board"), line = GamesData.array(state,"line"), legal = GamesData.array(state,"legal");
+    float progress=motion()?Math.min(1,(android.os.SystemClock.uptimeMillis()-animationStarted)/420f):1;
+    boolean animating=animatedCell>=0&&progress<1;
     for (int i=0;i<rows*cols;i++) {
       float x=field.left+(i%cols)*size, y=field.top+(i/cols)*size;
       int fill = cols==8 ? ((i/8+i%8)%2==0 ? 0xff8d8490 : 0xff333047) : 0xff222b41;
@@ -95,10 +109,18 @@ final class GamesBoard extends View {
       }
       Object value=board.opt(i);
       if(value==null||value==JSONObject.NULL)continue;
-      if(cols==3) mark(c,x+size/2,y+size/2,size*.25f,((Number)value).intValue(),255);
+      if(animating&&i==animatedCell&&cols!=3)continue;
+      if(cols==3) {float reveal=animating&&i==animatedCell?progress:1;mark(c,x+size/2,y+size/2,size*.25f*(.75f+.25f*reveal),((Number)value).intValue(),(int)(255*reveal));}
       else if(cols==7) disc(c,x+size/2,y+size/2,size*.37f,((Number)value).intValue(),false);
       else if(value instanceof JSONObject) { JSONObject piece=(JSONObject)value; disc(c,x+size/2,y+size/2,size*.36f,piece.optInt("player"),piece.optBoolean("king")); }
     }
+    if(animating&&cols!=3){
+      float t=progress*progress*(3-2*progress),x=field.left+(animatedCell%cols+.5f)*size,y=field.top+(animatedCell/cols+.5f)*size;
+      Object value=board.opt(animatedCell);
+      if(cols==7&&value instanceof Number){float bounce=new android.view.animation.OvershootInterpolator(.55f).getInterpolation(progress);disc(c,x,field.top-size+(y-field.top+size)*bounce,size*.37f,((Number)value).intValue(),false);}
+      else if(cols==8&&value instanceof JSONObject){JSONObject piece=(JSONObject)value;float fromX=field.left+(animatedFrom%cols+.5f)*size,fromY=field.top+(animatedFrom/cols+.5f)*size;disc(c,fromX+(x-fromX)*t,fromY+(y-fromY)*t,size*.36f,piece.optInt("player"),piece.optBoolean("king"));}
+    }
+    if(animating&&isShown())postInvalidateOnAnimation();
     if (pending!=null) {
       int cell=pending.optInt("cell",pending.optInt("to",-1));
       if(cols==7) { int col=pending.optInt("column",-1); if(col>=0) for(int r=5;r>=0;r--) if(board.isNull(r*7+col)) {cell=r*7+col;break;} }
@@ -111,19 +133,18 @@ final class GamesBoard extends View {
   }
 
   private void drawHangman(Canvas c) {
-    float w=getWidth(),h=getHeight(),x=w*.47f,y=h*.28f;
-    line(c,w*.2f,h*.88f,w*.8f,h*.88f,5,0xff6c738e);
-    line(c,w*.3f,h*.88f,w*.3f,h*.13f,5,0xff6c738e);
-    line(c,w*.3f,h*.13f,x,h*.13f,5,0xff6c738e);
-    line(c,x,h*.13f,x,y-h*.08f,3,0xffc8ad90);
-    int wrong=6-state.optInt("remaining",6);
-    if(wrong>0)ring(c,x,y,h*.09f,4,0xffffc98c);
-    if(wrong>1)line(c,x,y+h*.09f,x,h*.61f,4,0xffffc98c);
-    if(wrong>2)line(c,x,h*.43f,x-w*.09f,h*.52f,4,0xffffc98c);
-    if(wrong>3)line(c,x,h*.43f,x+w*.09f,h*.52f,4,0xffffc98c);
-    if(wrong>4)line(c,x,h*.61f,x-w*.08f,h*.77f,4,0xffffc98c);
-    if(wrong>5)line(c,x,h*.61f,x+w*.08f,h*.77f,4,0xffffc98c);
-    for(int i=0;i<6;i++)circle(c,w*.7f,h*.2f+i*h*.1f,h*.025f,i<state.optInt("remaining",6)?0xff9cdec4:0xff374056);
+    float w=getWidth(),h=getHeight(),x=w*.5f,y=h*.45f,r=h*.29f;
+    int remaining=state.optInt("remaining",6);
+    ring(c,x,y,r,1,0xff354259);ring(c,x,y,r*.56f,1,0xff29364d);
+    for(int i=0;i<6;i++){
+      double angle=i*Math.PI/3-Math.PI/2,next=(i+1)*Math.PI/3-Math.PI/2;
+      float px=x+(float)Math.cos(angle)*r,py=y+(float)Math.sin(angle)*r;
+      line(c,px,py,x+(float)Math.cos(next)*r,y+(float)Math.sin(next)*r,2,i<remaining?0xff6d778f:0xff29364d);
+      circle(c,px,py,h*.038f,i<remaining?0xffffc98c:0xff354259);
+      if(i<remaining)circle(c,px-h*.008f,py-h*.009f,h*.012f,0xffffecd0);
+    }
+    caption(c,"♡",x-h*.075f,y+h*.064f,h*.24f,0xffedafbd);
+    caption(c,"BETWEEN THE LETTERS",w*.25f,h*.93f,w*.035f,0xffc7afab);
   }
 
   private void drawFleet(Canvas c) {
