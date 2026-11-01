@@ -136,6 +136,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if("hangman".equals(game))hangmanControls(s,finished,me);
     if("battleship".equals(game))fleetControls(s,finished,me);
     if("checkers".equals(game)&&!finished){add(text(s.isNull("forced")?"Tap a highlighted piece, then a highlighted destination.":"Continue the capture with the selected piece.",13,MUTED,false),12);accessibleCheckers(s);}
+    if("checkers".equals(game)&&GamesData.array(s,"moves").length()>0)add(button("Move history & replay",false,()->checkersReplay(r)),12);
     if(finished){
       JSONArray votes=GamesData.array(r,"rematchReady");boolean voted=false;ArrayList<String> names=new ArrayList<>();for(int i=0;i<votes.length();i++){String who=votes.optString(i);names.add(GamesData.name(who));if(client.actor.equals(who))voted=true;}
       if(!names.isEmpty())add(text(TextUtils.join(" & ",names)+" wants another round",13,ACCENT,false),14);
@@ -143,6 +144,30 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
       String resultKey=id+":"+r.optLong("seq");if(!lastResult.equals(resultKey)){lastResult=resultKey;audio.play(s.opt("winner") instanceof Number&&s.optInt("winner")==me?"win":"lose");}
     }
     LinearLayout reactions=row();for(String emoji:new String[]{"♡","👏","🎉","✨"}){Button b=action(emoji,false,client.connected,()->{client.command("react",GamesData.obj("room",id,"emoji",emoji));});b.setContentDescription("Send reaction "+emoji);reactions.addView(b,new LinearLayout.LayoutParams(0,-2,1));}add(reactions,22);
+  }
+
+  private void checkersReplay(JSONObject room){
+    JSONArray moves=GamesData.array(GamesData.state(room),"moves");
+    LinearLayout content=column();content.setPadding(dp(16),dp(8),dp(16),dp(12));
+    GamesBoard replay=new GamesBoard(activity,client.actor,this);
+    TextView caption=text("Starting position",14,INK,true);
+    content.addView(caption);content.addView(replay);
+    SeekBar timeline=slider("Replay move",moves.length(),0);content.addView(timeline);
+    LinearLayout navigation=row();
+    navigation.addView(button("Previous",false,()->timeline.setProgress(Math.max(0,timeline.getProgress()-1))),new LinearLayout.LayoutParams(0,-2,1));
+    navigation.addView(button("Next",false,()->timeline.setProgress(Math.min(moves.length(),timeline.getProgress()+1))),new LinearLayout.LayoutParams(0,-2,1));content.addView(navigation);
+    Runnable show=()->{
+      int step=timeline.getProgress();JSONObject snapshot,state;
+      try{snapshot=new JSONObject(room.toString());state=GamesData.state(snapshot);state.put("board",GamesReplay.board(moves,step));state.put("legal",new JSONArray());state.put("forced",JSONObject.NULL);}catch(JSONException ignored){return;}
+      replay.update(snapshot,null,false);
+      caption.setText(step==0?"Starting position":"Move "+step+" of "+moves.length()+" · "+GamesReplay.notation(moves.optJSONObject(step-1)));
+      timeline.setContentDescription("Replay move "+step+" of "+moves.length());
+    };
+    timeline.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar bar,int value,boolean user){show.run();}public void onStartTrackingTouch(SeekBar bar){}public void onStopTrackingTouch(SeekBar bar){}});
+    show.run();
+    StringBuilder history=new StringBuilder();for(int i=0;i<moves.length();i++){JSONObject move=moves.optJSONObject(i);history.append(i+1).append(". Player ").append(move.optInt("player")+1).append(" · ").append(GamesReplay.notation(move)).append('\n');}
+    TextView list=text(history.toString(),12,MUTED,false);list.setTextIsSelectable(true);ScrollView historyScroll=new ScrollView(activity);historyScroll.addView(list);content.addView(historyScroll,new LinearLayout.LayoutParams(-1,dp(100)));
+    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Dialog_Alert).setTitle("Crown & Capture · replay").setView(content).setPositiveButton("Current board",null).create();dialog.show();
   }
 
   private void poolControls(JSONObject s,boolean finished){

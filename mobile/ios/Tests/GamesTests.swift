@@ -67,6 +67,18 @@ final class GamesTests: XCTestCase {
         XCTAssertFalse(GamesFleet.valid(overlap))
         XCTAssertEqual(GamesFleet.coordinate(99), "J10")
     }
+    func testCheckersReplayRestoresStartingPositionAndCapture() throws {
+        let moves = try JSONDecoder().decode([GamesJSON].self, from: Data(#"[{"from":17,"to":26,"player":0},{"from":40,"to":33,"player":1},{"from":26,"to":40,"captured":33,"player":0}]"#.utf8))
+        let initial = GamesCheckersReplay.board(moves: moves, through: 0)
+        XCTAssertEqual(initial.filter { !$0.isNull }.count, 24)
+        XCTAssertEqual(initial[17]["player"].int, 0)
+        let captured = GamesCheckersReplay.board(moves: moves, through: 3)
+        XCTAssertTrue(captured[17].isNull); XCTAssertTrue(captured[26].isNull); XCTAssertTrue(captured[33].isNull)
+        XCTAssertEqual(captured[40]["player"].int, 0)
+        XCTAssertEqual(captured.filter { !$0.isNull }.count, 23)
+        XCTAssertEqual(GamesCheckersReplay.notation(moves[2]), "14×21")
+        XCTAssertEqual(initial[40]["player"].int, 1)
+    }
     func testPoolSamplesUseSecondsAndReconnectElapsedTime() throws {
         let shot = try JSONDecoder().decode(GamesJSON.self, from: Data(#"{"duration":2,"frames":[{"t":0,"balls":[{"id":0,"x":100,"y":250,"pocketed":false}]},{"t":2,"balls":[{"id":0,"x":300,"y":250,"pocketed":false}]}]}"#.utf8))
         let frames = GamesPoolFrame.read(shot)

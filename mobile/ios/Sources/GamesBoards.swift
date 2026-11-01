@@ -79,6 +79,13 @@ struct GamesCheckersView: View {
     @ObservedObject var store: GamesStore
     var room: GamesRoom
     @State private var selected: Int?
+    @State private var replayStep: Int?
+    @State private var showHistory = false
+    private var moves: [GamesJSON] { room.state["moves"].array }
+    private var displayBoard: [GamesJSON] {
+        if let replayStep { return GamesCheckersReplay.board(moves: moves, through: replayStep) }
+        return room.state["board"].array
+    }
     private var legal: [GamesJSON] { room.state["legal"].array }
     private var source: Int? { room.state["forced"].int ?? selected }
     private var pendingTo: Int? { store.pending.first { $0.room == room.id }?.action["to"].int }
@@ -89,13 +96,41 @@ struct GamesCheckersView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 1), count: 8), spacing: 1) {
                 ForEach(0..<64, id: \.self) { cell in
                     Button { select(cell) } label: { square(cell) }
-                        .buttonStyle(.plain).disabled(!store.myTurn(room) || !interactive(cell))
+                        .buttonStyle(.plain).disabled(replayStep != nil || !store.myTurn(room) || !interactive(cell))
                         .accessibilityLabel(label(cell)).accessibilityIdentifier("games.checkers.\(cell)")
                 }
             }.padding(4).background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 12))
             if let source { Text("Selected: row \(source / 8 + 1), column \(source % 8 + 1)").font(.caption).foregroundColor(GamesPalette.lilac) }
+            if !moves.isEmpty { replayControls }
         }.frame(maxWidth: 600).frame(maxWidth: .infinity)
-            .onChange(of: room.seq) { _ in selected = room.state["forced"].int }
+            .onChange(of: room.seq) { _ in selected = room.state["forced"].int; replayStep = nil }
+    }
+    private var replayControls: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Button(replayStep == nil ? "Replay this round" : "Return to current board") { replayStep = replayStep == nil ? 0 : nil }
+                    .frame(minHeight: 44)
+                Spacer()
+                Text("\(moves.count) moves").font(.caption).foregroundColor(GamesPalette.muted)
+            }
+            if let step = replayStep {
+                HStack {
+                    Button("Previous") { replayStep = max(0, step - 1) }.disabled(step == 0).frame(minHeight: 44)
+                    Spacer()
+                    Text(step == 0 ? "Starting position" : "Move \(step): \(GamesCheckersReplay.notation(moves[step - 1]))").font(.caption)
+                    Spacer()
+                    Button("Next") { replayStep = min(moves.count, step + 1) }.disabled(step == moves.count).frame(minHeight: 44)
+                }
+                Slider(value: Binding(get: { Double(replayStep ?? moves.count) }, set: { replayStep = Int($0) }), in: 0...Double(max(1, moves.count)), step: 1)
+                    .accessibilityLabel("Replay move").accessibilityValue("\(step) of \(moves.count)")
+            }
+            DisclosureGroup("Move history", isExpanded: $showHistory) {
+                ForEach(moves.indices, id: \.self) { index in
+                    Text("\(index + 1). Player \((moves[index]["player"].int ?? 0) + 1) · \(GamesCheckersReplay.notation(moves[index]))")
+                        .font(.caption.monospaced()).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 3)
+                }
+            }
+        }
     }
     private func destination(_ cell: Int) -> Bool { legal.contains { $0["from"].int == source && $0["to"].int == cell } }
     private func interactive(_ cell: Int) -> Bool { destination(cell) || legal.contains { $0["from"].int == cell } }
@@ -104,7 +139,7 @@ struct GamesCheckersView: View {
         else if legal.contains(where: { $0["from"].int == cell }) { selected = cell; GamesFeedback.play() }
     }
     private func square(_ cell: Int) -> some View {
-        let piece = room.state["board"][cell]
+        let piece = displayBoard.indices.contains(cell) ? displayBoard[cell] : GamesJSON.null
         let dark = (cell / 8 + cell % 8) % 2 == 1
         return ZStack {
             Rectangle().fill(dark ? Color(red: 0.18, green: 0.18, blue: 0.28) : Color(red: 0.10, green: 0.12, blue: 0.19))
@@ -114,12 +149,12 @@ struct GamesCheckersView: View {
                 if piece["king"].bool { Image(systemName: "crown.fill").font(.caption).foregroundColor(GamesPalette.background) }
                 else { Text(player == 0 ? "1" : "2").font(.caption2.bold()).foregroundColor(GamesPalette.background) }
             }
-            if destination(cell) { Circle().fill(GamesPalette.mint.opacity(0.5)).padding(13) }
-            if source == cell || pendingTo == cell { Rectangle().stroke(GamesPalette.theme(room), lineWidth: 3) }
+            if replayStep == nil && destination(cell) { Circle().fill(GamesPalette.mint.opacity(0.5)).padding(13) }
+            if replayStep == nil && (source == cell || pendingTo == cell) { Rectangle().stroke(GamesPalette.theme(room), lineWidth: 3) }
         }.aspectRatio(1, contentMode: .fit)
     }
     private func label(_ cell: Int) -> String {
-        let piece = room.state["board"][cell]
+        let piece = displayBoard.indices.contains(cell) ? displayBoard[cell] : GamesJSON.null
         let occupant = piece["player"].int.map { "player \($0 + 1) \(piece["king"].bool ? "king" : "piece")" } ?? "empty"
         return "Row \(cell / 8 + 1), column \(cell % 8 + 1), \(occupant)\(destination(cell) ? ", legal destination" : "")\(source == cell ? ", selected" : "")"
     }

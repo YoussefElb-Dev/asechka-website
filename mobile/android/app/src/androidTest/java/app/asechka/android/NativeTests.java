@@ -2223,6 +2223,11 @@ public final class NativeTests extends Instrumentation {
     call("select", new Class[] {int.class}, 0);
     check(get("feed") != null, "Returning home retains the feed");
     nativeGameGestureTests();
+    JSONArray replayMoves = new JSONArray("[{\"from\":17,\"to\":26,\"player\":0},{\"from\":40,\"to\":33,\"player\":1},{\"from\":26,\"to\":40,\"captured\":33,\"player\":0}]");
+    JSONArray beforeReplay=GamesReplay.board(replayMoves,0),afterReplay=GamesReplay.board(replayMoves,3);
+    check(beforeReplay.optJSONObject(17).optInt("player")==0 && beforeReplay.optJSONObject(40).optInt("player")==1, "Replay begins with the original pieces");
+    check(afterReplay.isNull(17)&&afterReplay.isNull(26)&&afterReplay.isNull(33)&&afterReplay.optJSONObject(40).optInt("player")==0, "Replay restores moves and captures");
+    check(GamesReplay.notation(replayMoves.optJSONObject(2)).equals("14×21"), "Move history uses standard checkers notation");
     ui(() -> activity.finish());
   }
 

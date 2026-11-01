@@ -176,6 +176,31 @@ struct GamesPendingMove: Codable, Equatable, Identifiable {
     var message: GamesJSON { .object(["type": "move", "id": .string(id), "room": .string(room), "seq": .int(seq), "action": action]) }
 }
 
+enum GamesCheckersReplay {
+    static func board(moves: [GamesJSON], through step: Int) -> [GamesJSON] {
+        var board = Array(repeating: GamesJSON.null, count: 64)
+        for cell in 0..<64 where (cell / 8 + cell % 8) % 2 == 1 && (cell / 8 < 3 || cell / 8 > 4) {
+            board[cell] = .object(["player": .int(cell / 8 < 3 ? 0 : 1), "king": .bool(false)])
+        }
+        for move in moves.prefix(max(0, step)) {
+            guard let from = move["from"].int, let to = move["to"].int,
+                  board.indices.contains(from), board.indices.contains(to) else { break }
+            var piece = board[from].object
+            board[from] = .null
+            if move["promoted"].bool { piece["king"] = .bool(true) }
+            board[to] = .object(piece)
+            if let captured = move["captured"].int, board.indices.contains(captured) { board[captured] = .null }
+        }
+        return board
+    }
+    static func notation(_ move: GamesJSON) -> String {
+        let from = move["from"].int ?? 0, to = move["to"].int ?? 0
+        let start = from / 8 * 4 + from % 8 / 2 + 1
+        let end = to / 8 * 4 + to % 8 / 2 + 1
+        return "\(start)\(move["captured"].isNull ? "–" : "×")\(end)\(move["promoted"].bool ? " ♛" : "")"
+    }
+}
+
 enum GamesFleet {
     static let lengths = [5, 4, 3, 3, 2]
     static func cells(start: Int, length: Int, vertical: Bool) -> [Int]? {
