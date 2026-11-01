@@ -117,12 +117,12 @@ struct GamesBattleshipView: View {
         let ship = fleet.firstIndex { $0.contains(cell) }
         let selected = own && placement && ship == selectedShip
         return ZStack {
-            RoundedRectangle(cornerRadius: 3).fill(ship == nil ? GamesPalette.surface : GamesPalette.mint.opacity(selected ? 0.65 : 0.3))
+            RoundedRectangle(cornerRadius: 3).fill(ship == nil ? Palette.blue : GamesPalette.mint.opacity(selected ? 0.65 : 0.3))
             if hit { Image(systemName: "xmark").font(.system(size: 12, weight: .heavy)).foregroundColor(GamesPalette.rose) }
             else if shot { Circle().fill(GamesPalette.muted).padding(10) }
             if !own && pendingCell == cell { Image(systemName: "scope").font(.caption).foregroundColor(GamesPalette.lilac) }
         }.aspectRatio(1, contentMode: .fit)
-            .overlay(RoundedRectangle(cornerRadius: 3).stroke(selected ? GamesPalette.mint : .white.opacity(0.06)))
+            .overlay(RoundedRectangle(cornerRadius: 3).stroke(selected ? GamesPalette.mint : GamesPalette.line))
     }
     private var revealedEnemyShips: [[Int]] {
         // Read only the explicit sunk reveal, or the public final fleet after game over.

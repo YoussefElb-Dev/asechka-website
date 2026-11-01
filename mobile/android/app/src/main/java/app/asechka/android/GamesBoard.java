@@ -97,7 +97,7 @@ final class GamesBoard extends View {
     boolean animating=animatedCell>=0&&progress<1;
     for (int i=0;i<rows*cols;i++) {
       float x=field.left+(i%cols)*size, y=field.top+(i/cols)*size;
-      int fill = cols==8 ? ((i/8+i%8)%2==0 ? 0xff8d8490 : 0xff333047) : 0xff222b41;
+      int fill = cols==8 ? ((i/8+i%8)%2==0 ? 0xfff7f2fc : 0xffc7badb) : 0xffeeebf8;
       rect(c,x+2,y+2,x+size-2,y+size-2,cols==8?3:10,fill);
       if (contains(line,i)) rect(c,x+3,y+3,x+size-3,y+size-3,8,0x665fcdb3);
       if (i==selected) rect(c,x+2,y+2,x+size-2,y+size-2,5,0x99bda3f1);
@@ -135,27 +135,27 @@ final class GamesBoard extends View {
   private void drawHangman(Canvas c) {
     float w=getWidth(),h=getHeight(),x=w*.5f,y=h*.45f,r=h*.29f;
     int remaining=state.optInt("remaining",6);
-    ring(c,x,y,r,1,0xff354259);ring(c,x,y,r*.56f,1,0xff29364d);
+    ring(c,x,y,r,1,0xffd9e1f0);ring(c,x,y,r*.56f,1,0xffeeebf8);
     for(int i=0;i<6;i++){
       double angle=i*Math.PI/3-Math.PI/2,next=(i+1)*Math.PI/3-Math.PI/2;
       float px=x+(float)Math.cos(angle)*r,py=y+(float)Math.sin(angle)*r;
-      line(c,px,py,x+(float)Math.cos(next)*r,y+(float)Math.sin(next)*r,2,i<remaining?0xff6d778f:0xff29364d);
-      circle(c,px,py,h*.038f,i<remaining?0xffffc98c:0xff354259);
-      if(i<remaining)circle(c,px-h*.008f,py-h*.009f,h*.012f,0xffffecd0);
+      line(c,px,py,x+(float)Math.cos(next)*r,y+(float)Math.sin(next)*r,2,i<remaining?0xffa69abb:0xffeeebf8);
+      circle(c,px,py,h*.038f,i<remaining?0xff6b5cb5:0xffd9e1f0);
+      if(i<remaining)circle(c,px-h*.008f,py-h*.009f,h*.012f,0xffe7ddfa);
     }
-    caption(c,"♡",x-h*.075f,y+h*.064f,h*.24f,0xffedafbd);
-    caption(c,"BETWEEN THE LETTERS",w*.25f,h*.93f,w*.035f,0xffc7afab);
+    caption(c,"♡",x-h*.075f,y+h*.064f,h*.24f,0xff9f4b6f);
+    caption(c,"BETWEEN THE LETTERS",w*.25f,h*.93f,w*.035f,0xff64708b);
   }
 
   private void drawFleet(Canvas c) {
     float size=field.width()/10;
     field.top += getWidth()*.065f; field.bottom=field.top+size*10;
-    caption(c,placing()?"YOUR OCEAN · PLACE SHIPS":"TARGET OCEAN",field.left,field.top-getWidth()*.027f,getWidth()*.032f,0xffa6c7dc);
+    caption(c,placing()?"YOUR OCEAN · PLACE SHIPS":"TARGET OCEAN",field.left,field.top-getWidth()*.027f,getWidth()*.032f,0xff64708b);
     ocean(c,field,placing(),false);
     if(!placing()) {
       float ownSize=size*.61f;
       ownField.set(field.left,field.bottom+getWidth()*.105f,field.left+ownSize*10,field.bottom+getWidth()*.105f+ownSize*10);
-      caption(c,"YOUR FLEET · INCOMING FIRE",ownField.left,ownField.top-getWidth()*.027f,getWidth()*.032f,0xffa6c7dc);
+      caption(c,"YOUR FLEET · INCOMING FIRE",ownField.left,ownField.top-getWidth()*.027f,getWidth()*.032f,0xff64708b);
       ocean(c,ownField,true,true);
     } else ownField.setEmpty();
   }
@@ -169,16 +169,16 @@ final class GamesBoard extends View {
     JSONArray sunk=GamesData.array(state,"sunkShips").optJSONArray(player);
     for(int cell=0;cell<100;cell++) {
       float x=rect.left+(cell%10)*size,y=rect.top+(cell/10)*size;
-      rect(c,x+1,y+1,x+size-1,y+size-1,2,0xff20384b);
+      rect(c,x+1,y+1,x+size-1,y+size-1,2,0xffeaf1fc);
       boolean occupied=false;
       if(ships!=null) for(int i=0;i<ships.length();i++)if(contains(GamesData.array(ships.optJSONObject(i),"cells"),cell))occupied=true;
       if(own&&placing()&&!ownFleetPlaced())for(int[] ship:fleet.ships)if(ship!=null)for(int v:ship)if(v==cell)occupied=true;
       if(!own&&sunk!=null)for(int i=0;i<sunk.length();i++)if(contains(GamesData.array(sunk.optJSONObject(i),"cells"),cell))occupied=true;
-      if(occupied)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff88aabd);
-      if(own&&draggingFleet){int[] preview=fleet.candidate(dragCell);if(preview!=null)for(int v:preview)if(v==cell)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff9ce0c4);}
+      if(occupied)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff6a9eaa);
+      if(own&&draggingFleet){int[] preview=fleet.candidate(dragCell);if(preview!=null)for(int v:preview)if(v==cell)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff2e746a);}
       if(contains(shots,cell)) {
-        if(contains(hits,cell)) { line(c,x+size*.3f,y+size*.3f,x+size*.7f,y+size*.7f,3,0xffffaf9b);line(c,x+size*.7f,y+size*.3f,x+size*.3f,y+size*.7f,3,0xffffaf9b); }
-        else circle(c,x+size/2,y+size/2,size*.13f,0xffc3d5df);
+        if(contains(hits,cell)) { line(c,x+size*.3f,y+size*.3f,x+size*.7f,y+size*.7f,3,0xff9f4b6f);line(c,x+size*.7f,y+size*.3f,x+size*.3f,y+size*.7f,3,0xff9f4b6f); }
+        else circle(c,x+size/2,y+size/2,size*.13f,0xff64708b);
       }
       if(!incoming&&pending!=null&&pending.optInt("cell",-1)==cell)ring(c,x+size/2,y+size/2,size*.35f,2,0xffe8ceff);
     }
@@ -224,7 +224,7 @@ final class GamesBoard extends View {
       }
     }
     if(pending!=null&&"place".equals(pending.optString("type")))ring(c,left+(float)pending.optDouble("x")/1000*width,top+(float)pending.optDouble("y")/500*height,width*.017f,2,0xffe0d0ff);
-    caption(c,moving()?"SHOT IN MOTION":"TABLE 01 · JUST THE TWO OF US",left,field.bottom+getHeight()*.09f,getWidth()*.029f,0xffa8c5b6);
+    caption(c,moving()?"SHOT IN MOTION":"TABLE 01 · JUST THE TWO OF US",left,field.bottom+getHeight()*.09f,getWidth()*.029f,0xff64708b);
   }
 
   boolean motion() { return Motion.enabled(getContext()) && !getContext().getSharedPreferences("games-settings",0).getBoolean("reduce-motion",false); }
@@ -234,8 +234,8 @@ final class GamesBoard extends View {
   private void ring(Canvas c,float x,float y,float r,float stroke,int color){p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(stroke);p.setColor(color);c.drawCircle(x,y,r,p);}
   private void line(Canvas c,float x,float y,float x2,float y2,float stroke,int color){p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(stroke);p.setStrokeCap(Paint.Cap.ROUND);p.setColor(color);c.drawLine(x,y,x2,y2,p);}
   private void caption(Canvas c,String text,float x,float y,float size,int color){p.setStyle(Paint.Style.FILL);p.setColor(color);p.setTypeface(Typeface.DEFAULT_BOLD);p.setTextAlign(Paint.Align.LEFT);p.setTextSize(size);c.drawText(text,x,y,p);}
-  private void mark(Canvas c,float x,float y,float r,int who,int alpha){int color=(alpha<<24)|(who==0?0x00c9adff:0x008bd9d0);if(who==0){line(c,x-r,y-r,x+r,y+r,Math.max(4,r*.23f),color);line(c,x-r,y+r,x+r,y-r,Math.max(4,r*.23f),color);}else ring(c,x,y,r,Math.max(4,r*.23f),color);}
-  private void disc(Canvas c,float x,float y,float r,int who,boolean king){circle(c,x,y+2,r,0xff101728);circle(c,x,y,r,who==0?0xffc4a8ef:0xff82c8c5);ring(c,x,y,r*.73f,Math.max(1,r*.06f),who==0?0xff9c79c9:0xff4f999e);if(king)caption(c,"♛",x-r*.57f,y+r*.42f,r*1.3f,0xff24263d);}
+  private void mark(Canvas c,float x,float y,float r,int who,int alpha){int color=(alpha<<24)|(who==0?0x006b5cb5:0x002e746a);if(who==0){line(c,x-r,y-r,x+r,y+r,Math.max(4,r*.23f),color);line(c,x-r,y+r,x+r,y-r,Math.max(4,r*.23f),color);}else ring(c,x,y,r,Math.max(4,r*.23f),color);}
+  private void disc(Canvas c,float x,float y,float r,int who,boolean king){circle(c,x,y+2,r,0xff101728);circle(c,x,y,r,who==0?0xff7964ae:0xff3e8c82);ring(c,x,y,r*.73f,Math.max(1,r*.06f),who==0?0xffc6b4e4:0xffa1d2c9);if(king)caption(c,"♛",x-r*.57f,y+r*.42f,r*1.3f,0xffffffff);}
 
   private int hit(float x,float y) {
     if(!field.contains(x,y))return -1;

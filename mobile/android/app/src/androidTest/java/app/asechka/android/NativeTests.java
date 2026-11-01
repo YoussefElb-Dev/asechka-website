@@ -2246,6 +2246,18 @@ public final class NativeTests extends Instrumentation {
     for (String title : GamesData.TITLES) check(text(title) != null, "Native game card: " + title);
     check(views(decor(), android.webkit.WebView.class).isEmpty(), "Games renders through native views");
     screenshot("games-hub");
+    GamesView games = (GamesView) get("games");
+    ui(() -> ((View) views(games, GamesArt.class).get(0).getParent()).performClick());
+    Dialog match = (Dialog) inner(games, "dialog");
+    check(match.isShowing() && hasText(match.getWindow().getDecorView(), "One round"), "Native match sheet opens from the game artwork");
+    check(views(match.getWindow().getDecorView(), GamesArt.class).size() == 1, "Match sheet shares the bundled card artwork");
+    screenshot("games-create");
+    ui(match::dismiss);
+    click("Settings");
+    Dialog preferences = (Dialog) inner(games, "dialog");
+    check(preferences.isShowing(), "Native game preferences open");
+    screenshot("games-settings");
+    ui(preferences::dismiss);
     nativeGameLayouts();
     call("select", new Class[] {int.class}, 0);
     check(get("feed") != null, "Returning home retains the feed");

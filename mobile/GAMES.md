@@ -1,4 +1,4 @@
-# Games · 2.3.0 (19)
+# Games · 2.3.1 (20)
 
 The Games feature uses Android Views/Canvas and SwiftUI/Canvas, the existing website connection, and an authoritative Node WebSocket service. The preferred deployment uses the existing Vercel project with Redis for shared durable state; a portable Node/JSON server remains available for local development and self-hosting. Native code draws the boards; the server validates moves and owns match results. Both platforms use the same six game IDs: `pool`, `tictactoe`, `hangman`, `connect4`, `checkers`, `battleship`.
 
@@ -21,7 +21,7 @@ The canonical source bundle is `mobile/games-assets/`. The generator copies iden
 - iOS: `mobile/ios/Resources/default/games/` (bundled as `default/games/`).
 - Android: `mobile/android/app/src/main/assets/default/games/` (AssetManager `default/games/`).
 
-Use `covers/<game-id>.png` for native cards. Each is 480 × 320; SVG masters are 960 × 640 and do not require a native SVG library. Audio is PCM WAV at `audio/<cue>.wav`: `tap`, `invite`, `collision`, `pocket`, `drop`, `move`, `splash`, `hit`, `win`, `lose`. Play cues only when sound is enabled; motion and haptics remain native settings. No media downloads are needed for the bundled covers or sounds.
+Use `covers/<game-id>.png` for native cards and match sheets. PNGs and SVG masters are 960 × 640; raster export uses 2× sampling for smooth edges. The light lavender/blue artwork matches the existing app and is shared by iPhone and Android. Audio is PCM WAV at `audio/<cue>.wav`: `tap`, `invite`, `collision`, `pocket`, `drop`, `move`, `splash`, `hit`, `win`, `lose`. Play cues only when sound is enabled; motion and haptics remain native settings. No media downloads are needed for the bundled covers or sounds.
 
 ## Local verification
 

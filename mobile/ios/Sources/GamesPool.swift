@@ -154,10 +154,10 @@ struct GamesPoolCanvas: View {
             c.fill(Path(roundedRect: rail, cornerRadius: 35), with: .linearGradient(Gradient(colors: [Color(red: 0.24, green: 0.17, blue: 0.29), Color(red: 0.12, green: 0.11, blue: 0.2)]), startPoint: .zero, endPoint: CGPoint(x: 1000, y: 500)))
             c.fill(Path(CGRect(x: 0, y: 0, width: 1000, height: 500)), with: .linearGradient(Gradient(colors: [Color(red: 0.05, green: 0.28, blue: 0.27), Color(red: 0.025, green: 0.15, blue: 0.18)]), startPoint: .zero, endPoint: CGPoint(x: 1000, y: 500)))
             for (index, point) in Self.pockets.enumerated() {
-                c.fill(Path(ellipseIn: CGRect(x: point.x - 28, y: point.y - 28, width: 56, height: 56)), with: .color(GamesPalette.background))
+                c.fill(Path(ellipseIn: CGRect(x: point.x - 28, y: point.y - 28, width: 56, height: 56)), with: .color(Color(red: 0.05, green: 0.08, blue: 0.12)))
                 let offset: CGFloat = point.y == 0 ? -24 : 24
-                c.draw(Text("\(index + 1)").font(.system(size: 17, weight: .bold)).foregroundColor(index == pocket ? GamesPalette.rose : .white.opacity(0.6)), at: CGPoint(x: point.x, y: point.y + offset))
-                if index == pocket { c.stroke(Path(ellipseIn: CGRect(x: point.x - 30, y: point.y - 30, width: 60, height: 60)), with: .color(GamesPalette.rose), lineWidth: 3) }
+                c.draw(Text("\(index + 1)").font(.system(size: 17, weight: .bold)).foregroundColor(index == pocket ? Color(red: 1, green: 0.78, blue: 0.86) : .white.opacity(0.75)), at: CGPoint(x: point.x, y: point.y + offset))
+                if index == pocket { c.stroke(Path(ellipseIn: CGRect(x: point.x - 30, y: point.y - 30, width: 60, height: 60)), with: .color(Color(red: 1, green: 0.78, blue: 0.86)), lineWidth: 3) }
             }
             if aiming, let cue = balls.first(where: { $0.id == 0 && !$0.pocketed }) {
                 var aim = Path(); aim.move(to: CGPoint(x: cue.x, y: cue.y)); aim.addLine(to: CGPoint(x: cue.x + cos(angle) * 220, y: cue.y + sin(angle) * 220))

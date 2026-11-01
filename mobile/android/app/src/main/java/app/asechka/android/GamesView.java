@@ -14,7 +14,7 @@ import org.json.*;
 
 /** A native little games lounge. The server is the only source of opponents and results. */
 final class GamesView extends ScrollView implements GamesClient.Listener, GamesBoard.Host {
-  private static final int BG=0xff0d1220,PANEL=0xff1a2234,INK=0xfff3f0fa,MUTED=0xffb1bbd0,ACCENT=0xffc5afff;
+  private static final int BG=Ui.BG,PANEL=0xffffffff,INK=Ui.INK,MUTED=Ui.MUTED,ACCENT=Ui.PURPLE;
   private final MainActivity activity;
   private final LinearLayout body;
   final GamesClient client;
@@ -59,17 +59,17 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     int y=getScrollY();if(board!=null&&board.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)board.getParent()).removeView(board);
     body.removeAllViews();
     LinearLayout top=row();TextView eyebrow=text("OUR LITTLE ARCADE",11,ACCENT,true);eyebrow.setLetterSpacing(.16f);top.addView(eyebrow,new LinearLayout.LayoutParams(0,-2,1));top.addView(button("Settings",false,this::settings));add(top,0);
-    LinearLayout connection=row();TextView live=text((client.connected?"●  ":"○  ")+client.status,12,client.connected?0xff9ce0c4:MUTED,false);live.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);connection.addView(live,new LinearLayout.LayoutParams(0,-2,1));connection.addView(button("Retry",false,client::reconnect));add(connection,6);
-    if(!client.error.isEmpty()){TextView error=text(client.error,14,0xffffc2b7,false);error.setPadding(dp(12),dp(12),dp(12),dp(12));error.setBackground(shape(0xff392834,12));error.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);add(error,8);}
+    LinearLayout connection=row();TextView live=text((client.connected?"●  ":"○  ")+client.status,12,client.connected?0xff2e746a:MUTED,false);live.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);connection.addView(live,new LinearLayout.LayoutParams(0,-2,1));connection.addView(button("Retry",false,client::reconnect));add(connection,6);
+    if(!client.error.isEmpty()){TextView error=text(client.error,14,0xff9f4b6f,false);error.setPadding(dp(12),dp(12),dp(12),dp(12));error.setBackground(shape(0xfff6eaf0,12));error.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);add(error,8);}
     if(current==null)hub();else room();
     if(y>0)post(()->scrollTo(0,y));
   }
 
   private void hub(){
-    add(text("A little friendly\ncompetition.",34,INK,true),16);
+    add(text("Our game room.",30,INK,true),16);
     add(text("Six ways to spend a little more time together.",15,MUTED,false),8);
     String partner="asnat".equals(client.actor)?"youssef":"asnat";
-    add(text("●  "+GamesData.name(partner)+(online(partner)?" is here":" is away"),13,online(partner)?0xff9ce0c4:MUTED,false),18);
+    add(text("●  "+GamesData.name(partner)+(online(partner)?" is here":" is away"),13,online(partner)?0xff2e746a:MUTED,false),18);
     LinearLayout actions=row();actions.addView(button("Join with a code",true,()->joinDialog("")),new LinearLayout.LayoutParams(0,-2,1));actions.addView(button("Refresh rooms",false,()->{client.command("list",new JSONObject());refresh();}),new LinearLayout.LayoutParams(0,-2,1));add(actions,14);
     if(!client.selectedRoom.isEmpty())add(button("Back to all games",false,()->{client.select("");refresh();}),8);
     ArrayList<JSONObject> rooms=new ArrayList<>(client.rooms.values());
@@ -114,7 +114,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     add(text(GamesData.TAGS[index]+"  ·  ROOM "+r.optString("code"),11,GamesData.COLORS[index],true),6);
     LinearLayout tools=row();tools.addView(button("Invite / share",false,()->share(r)),new LinearLayout.LayoutParams(0,-2,1));tools.addView(button("Rules & help",false,()->help(index)),new LinearLayout.LayoutParams(0,-2,1));add(tools,12);
     JSONArray players=GamesData.array(r,"players");
-    for(int i=0;i<players.length();i++){JSONObject p=players.optJSONObject(i);if(p==null)continue;add(text((p.optBoolean("online")?"●  ":"○  ")+GamesData.name(p.optString("actor"))+(p.optString("actor").equals(client.actor)?" · you":"")+" · "+(p.optBoolean("online")?"online":"away")+("lobby".equals(r.optString("status"))?p.optBoolean("ready")?" · ready":" · getting ready":""),13,p.optBoolean("online")?0xffb5e5d3:MUTED,false),7);}
+    for(int i=0;i<players.length();i++){JSONObject p=players.optJSONObject(i);if(p==null)continue;add(text((p.optBoolean("online")?"●  ":"○  ")+GamesData.name(p.optString("actor"))+(p.optString("actor").equals(client.actor)?" · you":"")+" · "+(p.optBoolean("online")?"online":"away")+("lobby".equals(r.optString("status"))?p.optBoolean("ready")?" · ready":" · getting ready":""),13,p.optBoolean("online")?0xff2e746a:MUTED,false),7);}
     if(players.length()<2)add(text("Waiting for your person. Share the code or invitation link.",14,MUTED,false),10);
     int me=GamesData.player(r,client.actor);
     if(me<0){add(button("Join this room",true,()->{client.command("join",GamesData.obj("code",r.optString("code")));refresh();}),18);return;}
@@ -167,7 +167,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     show.run();
     StringBuilder history=new StringBuilder();for(int i=0;i<moves.length();i++){JSONObject move=moves.optJSONObject(i);history.append(i+1).append(". Player ").append(move.optInt("player")+1).append(" · ").append(GamesReplay.notation(move)).append('\n');}
     TextView list=text(history.toString(),12,MUTED,false);list.setTextIsSelectable(true);ScrollView historyScroll=new ScrollView(activity);historyScroll.addView(list);content.addView(historyScroll,new LinearLayout.LayoutParams(-1,dp(100)));
-    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Dialog_Alert).setTitle("Crown & Capture · replay").setView(content).setPositiveButton("Current board",null).create();dialog.show();
+    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle("Crown & Capture · replay").setView(content).setPositiveButton("Current board",null).create();dialog.show();
   }
 
   private void poolControls(JSONObject s,boolean finished){
@@ -199,9 +199,9 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
       add(text(s.optString("category","WORD CHALLENGE").toUpperCase(Locale.US),12,ACCENT,true),12);
       String pattern=s.optString("pattern","");add(text(pattern.replace("", " ").trim(),26,INK,true),10);
       add(text(s.optInt("remaining",6)+" guesses left"+(s.has("deadline")&&!finished?" · timed round":""),13,MUTED,false),7);
-      if(s.has("deadline")&&!finished){TextView countdown=text("",13,0xffffc98c,true);add(countdown,6);long deadline=s.optLong("deadline");Runnable tick=new Runnable(){public void run(){if(countdown.getParent()==null)return;long seconds=Math.max(0,(deadline-System.currentTimeMillis()+999)/1000);countdown.setText(seconds+" seconds remaining");if(seconds>0)countdown.postDelayed(this,1000);}};countdown.post(tick);}
+      if(s.has("deadline")&&!finished){TextView countdown=text("",13,0xff9f4b6f,true);add(countdown,6);long deadline=s.optLong("deadline");Runnable tick=new Runnable(){public void run(){if(countdown.getParent()==null)return;long seconds=Math.max(0,(deadline-System.currentTimeMillis()+999)/1000);countdown.setText(seconds+" seconds remaining");if(seconds>0)countdown.postDelayed(this,1000);}};countdown.post(tick);}
       if(!s.isNull("word")&&s.has("word"))add(text((finished?"The word was ":"Your secret: ")+s.optString("word"),16,INK,true),9);
-      if(!s.isNull("hint"))add(text(s.optString("hint"),14,0xffffd29b,false),9);
+      if(!s.isNull("hint"))add(text(s.optString("hint"),14,0xff6b5cb5,false),9);
       if(!finished&&s.optInt("setter")!=me){
         JSONArray guesses=GamesData.array(s,"guesses");String pendingLetter=client.pending==null?"":GamesData.state(client.pending).optString("letter");
         for(int start=0;start<26;start+=7){LinearLayout row=row();for(int i=start;i<Math.min(start+7,26);i++){final String letter=""+(char)('a'+i);boolean used=false;for(int j=0;j<guesses.length();j++)used|=letter.equalsIgnoreCase(guesses.optString(j));Button key=action(letter.toUpperCase(Locale.US),false,board.myTurn()&&!used,()->move(GamesData.obj("type","guess","letter",letter)));key.setContentDescription("Guess letter "+letter);key.setPadding(0,dp(4),0,dp(4));row.addView(key,new LinearLayout.LayoutParams(0,dp(48),1));}add(row,6);}
@@ -240,31 +240,31 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   private void feedback(String sound){if(getContext().getSharedPreferences("games-settings",0).getBoolean("haptics",true))Motion.haptic(this,false);audio.play(sound);}
 
   private void createDialog(int game){
-    LinearLayout content=column();content.setPadding(dp(18),dp(8),dp(18),dp(8));add(content,text("Choose the little details before inviting your person.",14,MUTED,false),8);
+    LinearLayout content=column();content.setPadding(dp(18),dp(8),dp(18),dp(8));content.addView(new GamesArt(activity,game),new LinearLayout.LayoutParams(-1,dp(180)));add(content,text("Choose the little details before inviting your person.",14,MUTED,false),8);
     Spinner best=spinner(new String[]{"One round","Best of three","Best of five"});best.setContentDescription("Series length");add(content,best,12);
     Spinner theme=spinner(new String[]{"Violet","Ocean","Rose"});theme.setContentDescription("Board color theme");add(content,theme,10);
     Spinner setter=spinner(new String[]{"I choose the first word","My partner chooses the first word"}),timer=spinner(new String[]{"No timer","60 seconds","120 seconds","300 seconds"});
     if(game==2){setter.setContentDescription("First word setter");timer.setContentDescription("Hangman timer");add(content,setter,10);add(content,timer,10);}
-    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Dialog_Alert).setTitle(GamesData.TITLES[game]).setView(content).setNegativeButton("Cancel",null).setPositiveButton("Create room",(d,w)->{
+    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle(GamesData.TITLES[game]).setView(content).setNegativeButton("Cancel",null).setPositiveButton("Create room",(d,w)->{
       JSONObject settings=GamesData.obj("bestOf",new int[]{1,3,5}[best.getSelectedItemPosition()],"theme",new String[]{"violet","ocean","rose"}[theme.getSelectedItemPosition()],"setter",setter.getSelectedItemPosition());
       try{if(game==2&&timer.getSelectedItemPosition()>0)settings.put("timedSeconds",new int[]{0,60,120,300}[timer.getSelectedItemPosition()]);}catch(JSONException ignored){}
       client.command("create",GamesData.obj("game",GamesData.IDS[game],"settings",settings));refresh();audio.play("invite");
     }).create();dialog.show();
   }
-  private void joinDialog(String initial){EditText code=input("Six-character room code");code.setFilters(new InputFilter[]{new InputFilter.AllCaps(),new InputFilter.LengthFilter(12)});code.setText(initial);code.setSingleLine();code.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Dialog_Alert).setTitle("Your invitation awaits").setView(code).setNegativeButton("Cancel",null).setPositiveButton("Join room",(d,w)->{client.command("join",GamesData.obj("code",code.getText().toString().trim().toUpperCase(Locale.US)));refresh();}).create();dialog.show();}
+  private void joinDialog(String initial){EditText code=input("Six-character room code");code.setFilters(new InputFilter[]{new InputFilter.AllCaps(),new InputFilter.LengthFilter(12)});code.setText(initial);code.setSingleLine();code.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle("Your invitation awaits").setView(code).setNegativeButton("Cancel",null).setPositiveButton("Join room",(d,w)->{client.command("join",GamesData.obj("code",code.getText().toString().trim().toUpperCase(Locale.US)));refresh();}).create();dialog.show();}
   private void share(JSONObject r){
     String code=r.optString("code"),link="asechka://games?code="+code;
     LinearLayout options=column();options.setPadding(dp(20),dp(8),dp(20),dp(16));TextView label=text(code,34,ACCENT,true);label.setTextIsSelectable(true);add(options,label,6);add(options,text(link,14,MUTED,false),8);
     add(options,button("Copy room code",false,()->{((android.content.ClipboardManager)activity.getSystemService(Context.CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("Game invitation",code));Toast.makeText(activity,"Room code copied",Toast.LENGTH_SHORT).show();}),12);
     add(options,button("Share invitation link",true,()->{Intent send=new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT,"A game, just us two. Join room "+code+"\n"+link);activity.startActivity(Intent.createChooser(send,"Invite your person"));}),8);
-    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Dialog_Alert).setTitle("A little invitation").setView(options).setPositiveButton("Done",null).create();dialog.show();
+    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle("A little invitation").setView(options).setPositiveButton("Done",null).create();dialog.show();
   }
-  private void help(int game){dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Dialog_Alert).setTitle(GamesData.TAGS[game]+" · how to play").setMessage(GamesData.RULES[game]+"\n\nConnection interrupted? Your last unconfirmed move is saved securely and retried with the same ID. If the board changed, it is synchronized and you can choose again. Both players must vote for a rematch.\n\nAccessibility: board squares are screen-reader buttons. Pool has aim and power sliders. Fleet coordinates and legal checkers moves have native controls.").setPositiveButton("Let’s play",null).create();dialog.show();}
+  private void help(int game){dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle(GamesData.TAGS[game]+" · how to play").setMessage(GamesData.RULES[game]+"\n\nConnection interrupted? Your last unconfirmed move is saved securely and retried with the same ID. If the board changed, it is synchronized and you can choose again. Both players must vote for a rematch.\n\nAccessibility: board squares are screen-reader buttons. Pool has aim and power sliders. Fleet coordinates and legal checkers moves have native controls.").setPositiveButton("Let’s play",null).create();dialog.show();}
   private void settings(){
     android.content.SharedPreferences prefs=activity.getSharedPreferences("games-settings",0);LinearLayout options=column();options.setPadding(dp(18),dp(8),dp(18),dp(10));
     for(String[] setting:new String[][]{{"sound","Original game sounds","false"},{"haptics","Gentle haptic feedback","true"},{"reduce-motion","Reduce motion / skip pool playback","false"}}){Switch toggle=new Switch(activity);toggle.setText(setting[1]);toggle.setTextColor(INK);toggle.setMinHeight(dp(56));toggle.setChecked(prefs.getBoolean(setting[0],Boolean.parseBoolean(setting[2])));toggle.setOnCheckedChangeListener((v,checked)->{prefs.edit().putBoolean(setting[0],checked).apply();if(board!=null)board.invalidate();});add(options,toggle,8);}
     add(options,text("Your phone’s animation and haptics preferences also apply. Sounds start off. Reduced motion shows the final pool positions while the server finishes the shot.",13,MUTED,false),14);
-    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Dialog_Alert).setTitle("Make yourself comfortable").setView(options).setPositiveButton("Done",null).create();dialog.show();
+    dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle("Make yourself comfortable").setView(options).setPositiveButton("Done",null).create();dialog.show();
   }
 
   private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
@@ -272,7 +272,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   private LinearLayout row(){LinearLayout r=new LinearLayout(activity);r.setGravity(Gravity.CENTER_VERTICAL);return r;}
   private GradientDrawable shape(int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));return d;}
   private TextView text(String value,int size,int color,boolean bold){TextView t=new TextView(activity);t.setText(value);t.setTextSize(size);t.setTextColor(color);t.setIncludeFontPadding(false);t.setLineSpacing(dp(3),1);Compat.font(t,R.font.dm_sans,bold?700:400);return t;}
-  private Button button(String value,boolean primary,Runnable click){Button b=new Button(activity);b.setText(value);b.setTextSize(13);b.setTextColor(primary?0xff211a34:INK);b.setAllCaps(false);b.setMinWidth(0);b.setMinimumWidth(0);b.setMinHeight(dp(48));b.setMinimumHeight(dp(48));b.setPadding(dp(12),dp(10),dp(12),dp(10));b.setBackground(new RippleDrawable(android.content.res.ColorStateList.valueOf(0x338b79ad),shape(primary?ACCENT:PANEL,12),null));b.setOnClickListener(v->click.run());return b;}
+  private Button button(String value,boolean primary,Runnable click){Button b=new Button(activity);b.setText(value);b.setTextSize(13);b.setTextColor(primary?0xffffffff:INK);b.setAllCaps(false);b.setMinWidth(0);b.setMinimumWidth(0);b.setMinHeight(dp(48));b.setMinimumHeight(dp(48));b.setPadding(dp(12),dp(10),dp(12),dp(10));b.setBackground(new RippleDrawable(android.content.res.ColorStateList.valueOf(0x338b79ad),shape(primary?ACCENT:Ui.PALE,12),null));b.setOnClickListener(v->click.run());return b;}
   private Button action(String value,boolean primary,boolean enabled,Runnable click){Button b=button(value,primary,click);b.setEnabled(enabled);b.setAlpha(enabled?1:.45f);return b;}
   private EditText input(String hint){EditText e=new EditText(activity);e.setHint(hint);e.setContentDescription(hint);e.setTextColor(INK);e.setHintTextColor(MUTED);e.setTextSize(16);e.setMinHeight(dp(52));e.setPadding(dp(12),dp(10),dp(12),dp(10));e.setBackground(shape(PANEL,12));return e;}
   private Spinner spinner(String[] values){Spinner s=new Spinner(activity);ArrayAdapter<String> adapter=new ArrayAdapter<String>(activity,android.R.layout.simple_spinner_item,values){public View getView(int p,View v,android.view.ViewGroup parent){TextView t=(TextView)super.getView(p,v,parent);t.setTextColor(INK);t.setTextSize(14);t.setSingleLine(false);return t;}public View getDropDownView(int p,View v,android.view.ViewGroup parent){TextView t=(TextView)super.getDropDownView(p,v,parent);t.setTextColor(INK);t.setBackgroundColor(PANEL);t.setMinHeight(dp(48));return t;}};adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);s.setAdapter(adapter);s.setMinimumHeight(dp(50));s.setBackground(shape(PANEL,12));return s;}
