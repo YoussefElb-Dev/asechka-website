@@ -32,6 +32,8 @@ for(const asset of manifest.assets) {
 }
 assert(bytes<512*1024,'Games assets exceeded 512 KiB per bundle');
 if(!process.argv.includes('--assets-only')) {
+  const functions=(await readdir(resolve(root,'api'))).filter(name=>name.endsWith('.js'));
+  assert(functions.length+1<=12,'Vercel Hobby permits 12 functions including routing middleware');
   const engine=await import(pathToFileURL(resolve(root,'server/games/engine.mjs')));
   assert.deepEqual([...engine.games].sort(),[...games].sort(),'All six authoritative modules must be registered');
   for(const game of games) {
