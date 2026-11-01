@@ -53,7 +53,11 @@ export class RedisGamesService extends GamesService {
     for(const actor of actors){const count=Number(await this.redis.eval(PRESENCE,{keys:[`${this.prefix}:presence:${actor}`],arguments:[String(now+45_000),String(this.localPresence.get(actor)||0),this.instance,String(now)]}));if((this.presence.get(actor)||0)!==count)changed=true;this.presence.set(actor,count);}
     if(notify&&changed)await this.redis.publish(this.prefix+':events',JSON.stringify({source:this.instance,kind:'presence'}));
   }
-  tick(){const task=this.queue.then(async()=>{
+  tick(){
+    // Pub/sub and the periodic reconciliation keep this snapshot current. Avoid a
+    // paid Redis read every second when no timed round is due to expire.
+    if(!this.data.rooms.some(room=>room.status==='playing'&&room.state?.deadline!==undefined&&room.state.deadline<=this.now()))return Promise.resolve();
+    const task=this.queue.then(async()=>{
     for(let attempt=0;attempt<8;attempt++){
       await this.load();const next=structuredClone(this.data),changed=[];
       for(const room of next.rooms){if(room.status!=='playing'||room.state?.deadline===undefined||room.state.deadline>this.now())continue;room.state=expireGame(room.game,room.state,this.now());if(room.state.winner!==null){this.settle(room);room.seq++;room.updatedAt=this.now();changed.push(room);}}
