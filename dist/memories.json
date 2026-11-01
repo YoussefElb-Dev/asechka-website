@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-01T06:21:32.563Z",
+  "updatedAt": "2026-11-01T18:50:19.121Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -492,7 +492,19 @@
       "date": "2026-10-31",
       "createdAt": "2026-11-01T06:21:32.563Z",
       "author": "youssef",
-      "text": "If I could leave one thing behind in this world, I would want it to be the certainty that you were loved beyond anything words could ever hold. That even on the days you felt ordinary, someone saw an entire miracle in you. And that in a world where everything eventually fades, my heart found something in yours worth holding onto forever."
+      "text": "If I could leave one thing behind in this world, I would want it to be the certainty that you were loved beyond anything words could ever hold. That even on the days you felt ordinary, someone saw an entire miracle in you. And that in a world where everything eventually fades, my heart found something in yours worth holding onto forever.",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "52c60eec-1d7a-49df-88ee-b4998acd684d",
+            "hash": "e2bdd65af5919dc710f25ae8e4d87765e9eb52667a324763e31a49b7247cc102"
+          }
+        ]
+      }
     }
   ],
   "photos": [
