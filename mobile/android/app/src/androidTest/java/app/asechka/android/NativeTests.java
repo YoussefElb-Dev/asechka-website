@@ -19,7 +19,7 @@ public final class NativeTests extends Instrumentation {
   private int assertions;
   private boolean featuresOnly;
   private boolean widgetsOnly;
-  private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly, gateOnly;
+  private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly, gateOnly, gamesOnly;
   private String upgrade;
 
   @Override
@@ -34,6 +34,7 @@ public final class NativeTests extends Instrumentation {
     bookOnly = "true".equals(args.getString("bookOnly"));
     homeOnly = "true".equals(args.getString("homeOnly"));
     gateOnly = "true".equals(args.getString("gateOnly"));
+    gamesOnly = "true".equals(args.getString("gamesOnly"));
     upgrade = args.getString("upgrade", "");
     start();
   }
@@ -63,7 +64,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (widgetsOnly) {
+        if (gamesOnly) {
+          gamesAndPhotographyTests();
+        } else if (widgetsOnly) {
           widgetTests();
         } else if (featuresOnly) {
           featureTests();
@@ -99,6 +102,7 @@ public final class NativeTests extends Instrumentation {
                 + " compatibility assertions on Android API "
                 + Build.VERSION.SDK_INT
                 + ".\n");
+      if (gamesOnly) result.putString("stream", "PASS: " + assertions + " Games and Photography native assertions.\n");
       finish(Activity.RESULT_OK, result);
     } catch (Throwable e) {
       try {
@@ -214,7 +218,7 @@ public final class NativeTests extends Instrumentation {
     check(api.canOpen() && api.signedIn(), "Secure login succeeds");
     for (int screen : new int[] {0, 1, 5, 2, 3, 4}) {
       call("select", new Class[] {int.class}, screen);
-      check(((ViewGroup) get("bottom")).getChildCount() == 6, "Native screen renders: " + screen);
+      check(((ViewGroup) get("bottom")).getChildCount() == 7, "Native screen renders: " + screen);
     }
     call("select", new Class[] {int.class}, 3);
     check(
@@ -1986,8 +1990,8 @@ public final class NativeTests extends Instrumentation {
     for (int screen : new int[] {0, 1, 5, 2, 3, 4}) {
       call("select", new Class[] {int.class}, screen);
       check(
-          ((ViewGroup) get("bottom")).getChildCount() == 6,
-          "All six native tabs remain: " + screen);
+          ((ViewGroup) get("bottom")).getChildCount() == 7,
+          "All seven native tabs remain: " + screen);
     }
     call("select", new Class[] {int.class}, 0);
     SocialFeed feed = (SocialFeed) get("feed");
@@ -2171,6 +2175,104 @@ public final class NativeTests extends Instrumentation {
     chrome("Personal tools");
   }
 
+  private void gamesAndPhotographyTests() throws Exception {
+    prepareMotionFixture();
+    offline(api, true);
+    call("select", new Class[] {int.class}, 1);
+    check(((SocialFeed) get("feed")).items().size() == 1, "All includes the legacy photo");
+    click("Photography");
+    check(((SocialFeed) get("feed")).items().isEmpty(), "Legacy pictures stay in Memories");
+    check(text("Photography.") != null, "Photography has its own native heading");
+    ui(() -> activity.createPost(true));
+    Object composer = get("memoryEditor");
+    check(inner(composer, "photoCollection").equals("photography"), "Composer follows the selected section");
+    check(inner(composer, "draftKey").toString().endsWith("photo:photography"), "Photography draft is independent");
+    Dialog editor = (Dialog) get("activeDialog");
+    check(hasText(editor.getWindow().getDecorView(), "Memories") && hasText(editor.getWindow().getDecorView(), "Photography"), "Photo category can be changed before upload");
+    File source = new File(getTargetContext().getCacheDir(), "photography-qa.png");
+    Bitmap sample = Bitmap.createBitmap(720, 960, Bitmap.Config.ARGB_8888);
+    sample.eraseColor(0xffbad3c6);
+    try (FileOutputStream out = new FileOutputStream(source)) { sample.compress(Bitmap.CompressFormat.PNG, 100, out); }
+    sample.recycle();
+    call("onActivityResult", new Class[] {int.class, int.class, Intent.class}, 121, Activity.RESULT_OK, new Intent().setData(Uri.fromFile(source)));
+    await(() -> !((boolean) inner(get("memoryEditor"), "photoBusy")), "Photo picker prepares native JPEG");
+    ui(() -> views(editor.getWindow().getDecorView(), EditText.class).get(0).setText("Light on a leaf"));
+    clickIn(editor, "Share");
+    await(() -> get("activeDialog") == null, "Photography saves durably offline");
+    await(() -> ((SocialFeed) get("feed")).items().size() == 1, "Pending Photography upload is visible immediately");
+    JSONObject projected = api.cached("/memories.json", true).getJSONArray("photos").getJSONObject(1);
+    check(projected.optString("collection").equals("photography"), "Offline projection keeps category");
+    screenshot("games-photography");
+    click("Memories");
+    check(((SocialFeed) get("feed")).items().size() == 1, "Memories excludes Photography");
+    click("All");
+    check(((SocialFeed) get("feed")).items().size() == 2, "All includes both collections");
+    offline(api, false);
+    api.syncPending();
+    JSONObject uploaded = api.get("/memories.json").getJSONArray("photos").getJSONObject(1);
+    check(uploaded.optString("collection").equals("photography"), "Photography category reaches the real fixture API");
+    check(api.image(ApiClient.photoURL(uploaded)).length > 20, "Uploaded Photography image can be fetched");
+    JSONObject preserved = new JSONObject().put("version", 1).put("quotes", new JSONArray()).put("photos", new JSONArray().put(uploaded));
+    MemoryProjection.apply(preserved, obj("action", "updatePhoto", "id", uploaded.getString("id"), "operationId", UUID.randomUUID().toString(), "caption", "New caption", "date", "2026-10-31"), System.currentTimeMillis());
+    check(preserved.getJSONArray("photos").getJSONObject(0).optString("collection").equals("photography"), "Older offline edits preserve category");
+    call("select", new Class[] {int.class}, 6);
+    check(((ViewGroup) get("bottom")).getChildCount() == 7, "Games joins the existing navigation");
+    for (String title : GamesData.TITLES) check(text(title) != null, "Native game card: " + title);
+    check(views(decor(), android.webkit.WebView.class).isEmpty(), "Games renders through native views");
+    screenshot("games-hub");
+    call("select", new Class[] {int.class}, 0);
+    check(get("feed") != null, "Returning home retains the feed");
+    nativeGameGestureTests();
+    JSONArray replayMoves = new JSONArray("[{\"from\":17,\"to\":26,\"player\":0},{\"from\":40,\"to\":33,\"player\":1},{\"from\":26,\"to\":40,\"captured\":33,\"player\":0}]");
+    JSONArray beforeReplay=GamesReplay.board(replayMoves,0),afterReplay=GamesReplay.board(replayMoves,3);
+    check(beforeReplay.optJSONObject(17).optInt("player")==0 && beforeReplay.optJSONObject(40).optInt("player")==1, "Replay begins with the original pieces");
+    check(afterReplay.isNull(17)&&afterReplay.isNull(26)&&afterReplay.isNull(33)&&afterReplay.optJSONObject(40).optInt("player")==0, "Replay restores moves and captures");
+    check(GamesReplay.notation(replayMoves.optJSONObject(2)).equals("14×21"), "Move history uses standard checkers notation");
+    ui(() -> activity.finish());
+  }
+
+  private void nativeGameGestureTests() throws Exception {
+    final JSONObject[] action = {null};
+    final GamesBoard[] surface = {null};
+    final boolean[] pullReleased = {false};
+    ui(() -> {
+      GamesBoard board = new GamesBoard(activity, "asnat", new GamesBoard.Host() {
+        public void move(JSONObject value) { action[0] = value; }
+        public void selection() {}
+        public void aim(float value) {}
+        public void charge(float value, boolean release) { if (release && value >= .03f) { pullReleased[0] = true; action[0] = GamesData.obj("type", "shot", "power", value); } }
+      });
+      surface[0] = board;
+      ((FrameLayout) uncheckedGet("stage")).addView(board, new FrameLayout.LayoutParams(800, 512));
+      JSONObject state = GamesData.obj("turn", 0, "winner", JSONObject.NULL, "ballInHand", false, "balls", new JSONArray().put(GamesData.obj("id", 0, "x", 250, "y", 250, "pocketed", false)));
+      board.update(GamesData.obj("id", "gesture-pool", "game", "pool", "status", "playing", "players", new JSONArray().put(GamesData.obj("actor", "asnat")).put(GamesData.obj("actor", "youssef")), "state", state), null, true);
+      board.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(512, View.MeasureSpec.EXACTLY));board.layout(0, 0, 800, 512);
+      Bitmap frame=Bitmap.createBitmap(800,512,Bitmap.Config.ARGB_8888);board.draw(new android.graphics.Canvas(frame));frame.recycle();
+      // Pool field is 44..756, cue is (222,224). A horizontal pull from the cue charges the shot.
+      touch(board, MotionEvent.ACTION_DOWN, 222, 224);touch(board, MotionEvent.ACTION_MOVE, 92, 224);touch(board, MotionEvent.ACTION_UP, 92, 224);
+    });
+    check(pullReleased[0] && action[0].optDouble("power") > .5, "Native cue pull releases a proportional shot");
+    ui(() -> {
+      GamesBoard board = surface[0];
+      board.update(GamesData.obj("id", "gesture-fleet", "game", "battleship", "status", "playing", "players", new JSONArray().put(GamesData.obj("actor", "asnat")).put(GamesData.obj("actor", "youssef")), "state", GamesData.obj("turn", 0, "winner", JSONObject.NULL, "phase", "placement", "fleets", new JSONArray().put(JSONObject.NULL).put(JSONObject.NULL))), null, true);
+      board.fleet.automatic();board.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(832, View.MeasureSpec.EXACTLY));board.layout(0,0,800,832);
+      Bitmap frame=Bitmap.createBitmap(800,832,Bitmap.Config.ARGB_8888);board.draw(new android.graphics.Canvas(frame));frame.recycle();
+      android.graphics.RectF field;
+      try { field=(android.graphics.RectF)inner(board,"field"); } catch(Exception error){throw new RuntimeException(error);}
+      float cell=field.width()/10;
+      touch(board,MotionEvent.ACTION_DOWN,field.left+cell*.5f,field.top+cell*.5f);
+      touch(board,MotionEvent.ACTION_MOVE,field.left+cell*2.5f,field.top+cell*1.5f);
+      touch(board,MotionEvent.ACTION_UP,field.left+cell*2.5f,field.top+cell*1.5f);
+    });
+    check(surface[0].fleet.ships[0][0]==12, "Dragging a placed ship repositions it on the ocean");
+    GamesFleet fleet=surface[0].fleet;fleet.selected=0;
+    check(fleet.candidate(19)==null, "Drag preview rejects ships outside the board");
+    check(fleet.candidate(20)==null, "Drag preview rejects overlap with another ship");
+    ui(() -> ((FrameLayout) uncheckedGet("stage")).removeView(surface[0]));
+  }
+
+  private void touch(View view,int kind,float x,float y){long at=SystemClock.uptimeMillis();MotionEvent event=MotionEvent.obtain(at,at,kind,x,y,0);view.dispatchTouchEvent(event);event.recycle();}
+
   private Object inner(Object object, String name) throws Exception {
     Field field = object.getClass().getDeclaredField(name);
     field.setAccessible(true);
@@ -2191,7 +2293,7 @@ public final class NativeTests extends Instrumentation {
     offline(api, false);
     api.login("native-test-code");
     call("select", new Class[] {int.class}, 0);
-    check(((ViewGroup) get("bottom")).getChildCount() == 6, "Six native navigation tabs");
+    check(((ViewGroup) get("bottom")).getChildCount() == 7, "Seven native navigation tabs");
     for (String label : new String[] {"Home", "Photos", "Quotes", "Music", "Our days", "Words"})
       check(text(label) != null, "Navigation label " + label);
     check(

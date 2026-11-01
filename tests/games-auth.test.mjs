@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { sessionToken } from '../server/auth.js';
+import { handleGamesSession } from '../server/games-session-api.js';
+import { verifyTicket } from '../server/games/tickets.mjs';
+process.env.SITE_PASSWORD='test-games-code';process.env.SESSION_SECRET='test-session-secret-'.repeat(4);process.env.GAMES_TOKEN_SECRET='test-token-secret-'.repeat(4);process.env.GAMES_WS_URL='wss://games.example/games';
+const key=createHash('sha256').update(process.env.SESSION_SECRET+'\0'+process.env.SITE_PASSWORD).digest();
+const request=(body,extra={})=>new Request('https://asechka.example/api/games-session',{method:'POST',headers:{cookie:'asechka_session='+sessionToken(key),origin:'https://asechka.example','content-type':'application/json','x-asechka-games':'1',...extra},body:JSON.stringify(body)});
+test('existing signed login exchanges for a scoped expiring games ticket without exposing secrets',async()=>{const response=await handleGamesSession(request({actor:'asnat'}));assert.equal(response.status,200);const value=await response.json();assert.equal(value.url,process.env.GAMES_WS_URL);assert.equal(verifyTicket(value.ticket,process.env.GAMES_TOKEN_SECRET).actor,'asnat');assert.equal(value.expiresIn,900);assert.ok(!JSON.stringify(value).includes(process.env.GAMES_TOKEN_SECRET));});
+test('ticket exchange rejects unauthenticated, cross-origin, invalid profiles, oversized requests',async()=>{for(const[body,headers,status]of [[{actor:'asnat'},{cookie:''},401],[{actor:'asnat'},{origin:'https://evil.example'},403],[{actor:'intruder'},{},400],[{actor:'asnat',admin:true},{},400],[{actor:'asnat'},{'content-length':'2000'},413]])assert.equal((await handleGamesSession(request(body,headers))).status,status);});
+test('missing deployment settings report a useful unavailable response',async()=>{const url=process.env.GAMES_WS_URL;delete process.env.GAMES_WS_URL;try{const response=await handleGamesSession(request({actor:'asnat'}));assert.equal(response.status,503);assert.match((await response.json()).error,/configured/);}finally{process.env.GAMES_WS_URL=url;}});

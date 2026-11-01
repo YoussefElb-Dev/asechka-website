@@ -8,8 +8,8 @@ export function createMusicAPI({ catalog: songs = catalog, store: favorites = st
     const denied = await authorize(request);
     if (denied) return denied;
     try {
-      const path = new URL(request.url).pathname;
-      if (path === '/api/music-search') {
+      const url = new URL(request.url), path = url.pathname;
+      if (path === '/api/music-search' || (path === '/api/music' && url.searchParams.get('__asechka_music') === 'search')) {
         if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405);
         return json({ tracks: await songs.search(new URL(request.url).searchParams.get('q')) });
       }

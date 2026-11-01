@@ -17,6 +17,19 @@ struct Comment: Codable, Identifiable, Equatable {
     var text: String
     var createdAt: String
 }
+enum PhotoCollection: String, Codable, CaseIterable, Identifiable {
+    case memories, photography
+    var id: String { rawValue }
+    var title: String { self == .memories ? "Memories" : "Photography" }
+}
+enum PhotoSection: String, CaseIterable, Identifiable {
+    case all, memories, photography
+    var id: String { rawValue }
+    var title: String { self == .all ? "All" : self == .memories ? "Memories" : "Photography" }
+    var collection: PhotoCollection? { PhotoCollection(rawValue: rawValue) }
+    var defaultCollection: PhotoCollection { collection ?? .memories }
+    func includes(_ post: Post) -> Bool { post.isPhoto && (collection == nil || post.photoCollection == collection) }
+}
 struct Post: Codable, Identifiable, Equatable {
     var id: String
     var editKey: String?
@@ -24,6 +37,7 @@ struct Post: Codable, Identifiable, Equatable {
     var date: String = ""
     var text: String?
     var caption: String?
+    var collection: String?
     var note: String?
     var src: String?
     var author: String?
@@ -33,6 +47,7 @@ struct Post: Codable, Identifiable, Equatable {
     var social: Conversation?
     var pending: Bool?
     var isPhoto: Bool { src != nil }
+    var photoCollection: PhotoCollection { PhotoCollection(rawValue: collection ?? "") ?? .memories }
     var kind: String { isPhoto ? "photo" : "quote" }
     var key: String { "\(kind):\(id)" }
     var name: String { Self.name(author ?? "us") }
@@ -46,7 +61,7 @@ struct Post: Codable, Identifiable, Equatable {
         return src
     }
     enum CodingKeys: String, CodingKey {
-        case id, editKey, editVersion, date, text, caption, note, src, author, createdAt, revision, contentHash, social, pending
+        case id, editKey, editVersion, date, text, caption, collection, note, src, author, createdAt, revision, contentHash, social, pending
     }
     init(id: String, date: String = "", text: String? = nil, src: String? = nil) {
         self.id=id; self.date=date; self.text=text; self.src=src
@@ -60,6 +75,7 @@ struct Post: Codable, Identifiable, Equatable {
         editKey=try c.decodeIfPresent(String.self,forKey:.editKey); editVersion=try c.decodeIfPresent(String.self,forKey:.editVersion)
         date=try c.decodeIfPresent(String.self,forKey:.date) ?? ""
         text=try c.decodeIfPresent(String.self,forKey:.text); caption=try c.decodeIfPresent(String.self,forKey:.caption)
+        collection=try c.decodeIfPresent(String.self,forKey:.collection)
         note=try c.decodeIfPresent(String.self,forKey:.note); src=try c.decodeIfPresent(String.self,forKey:.src)
         author=try c.decodeIfPresent(String.self,forKey:.author); createdAt=try c.decodeIfPresent(String.self,forKey:.createdAt)
         revision=try c.decodeIfPresent(String.self,forKey:.revision); contentHash=try c.decodeIfPresent(String.self,forKey:.contentHash)
@@ -109,6 +125,7 @@ enum Projection {
             if found==nil {post.author=body["author"] as? String;post.createdAt=pending.createdAt}
             if isPhoto {
                 post.caption=body["caption"] as? String
+                if let raw=body["collection"] as? String,let collection=PhotoCollection(rawValue:raw){post.collection=collection.rawValue}
                 if body["photo"] != nil { post.src=photoPath(body) }
             } else {post.text=body["text"] as? String;post.note=body["note"] as? String}
             post.revision=operation;post.editVersion="local:"+operation

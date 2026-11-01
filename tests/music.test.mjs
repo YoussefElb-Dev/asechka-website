@@ -112,4 +112,7 @@ test('music API requires signed login and same-origin protected writes; arbitrar
   assert.equal(response.status,200);const body=await response.json();assert.equal(body.tracks[0].trackUrl,song(1).trackUrl);assert.equal(lookupCalls,1);
   assert.equal((await api(new Request(origin+'/api/music',{method:'POST',headers,body:'['}))).status,400);
   assert.equal((await api(new Request(origin+'/api/music-search?q=Artist',{headers:{cookie}}))).status,200);
+  const rewrittenSearch=await api(new Request(origin+'/api/music?__asechka_music=search&q=Artist',{headers:{cookie}}));
+  assert.deepEqual((await rewrittenSearch.json()).tracks,[song(1)]);
+  assert.equal((await api(new Request(origin+'/api/music?__asechka_music=search',{method:'POST',headers,body:JSON.stringify(change())}))).status,405);
 });

@@ -70,6 +70,9 @@ export async function authorize(request) {
   catch { return response('Bad request', 400); }
   const json = request.headers.get('accept')?.includes('application/json');
   const auth = settings();
+  // The socket endpoint authenticates a scoped ticket as its first bounded frame.
+  // Native clients intentionally never forward the website cookie to sockets.
+  if(path==='/api/games-socket' && request.method==='GET' && request.headers.get('upgrade')?.toLowerCase()==='websocket')return null;
   const signedIn = auth && validSession(request.headers.get('cookie'), auth.key);
   if (path === '/gate.css' || path === '/gate.js' || path === '/assets/favicon.svg') return null;
   if (path === '/robots.txt') return response('User-agent: *\nDisallow: /\n', 200, { 'Content-Type': 'text/plain' });
@@ -99,10 +102,14 @@ export async function authorize(request) {
     if (signedIn) return redirect('/welcome');
     return response(gatePage('login'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
   }
-  if (!auth && path === '/api/shakespeare') return response(JSON.stringify({ error: 'Asechka login is unavailable. Please try again later.' }), 503, { 'Content-Type': 'application/json' });
+  if (!auth && ['/api/shakespeare','/api/games-session'].includes(path)) return response(JSON.stringify({ error: 'Asechka login is unavailable. Please try again later.' }), 503, { 'Content-Type': 'application/json' });
   if (!auth) return response(gatePage('login', 'Our little door isn’t ready yet. Try again soon.'), 503, { 'Content-Type': 'text/html; charset=utf-8' });
-  if (!signedIn) return ['/api/shakespeare','/api/journal','/api/keepsakes','/api/memories','/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
+  if (!signedIn) return ['/api/games-session','/api/shakespeare','/api/journal','/api/keepsakes','/api/memories','/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
   if (path === '/welcome') return response(gatePage('welcome'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
+  if (path === '/api/games-session' && request.method === 'POST') {
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-games') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({error:'Please connect from Asechka.'}),403,{'Content-Type':'application/json'});
+    return null;
+  }
   if (path === '/api/shakespeare') {
     if (request.method !== 'POST') return response(JSON.stringify({ error: 'Use POST to keep a selected quote.' }), 405, { 'Content-Type': 'application/json', Allow: 'POST' });
     if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-shakespeare') !== '1' || request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return response(JSON.stringify({ error: 'Please send this quote from Shakespeare.' }), 403, { 'Content-Type': 'application/json' });

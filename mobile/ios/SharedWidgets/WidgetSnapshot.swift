@@ -26,7 +26,10 @@ struct WidgetSnapshot:Codable {
         var payload=data
         if let start=data.range(of:Data("<plist".utf8)),let end=data.range(of:Data("</plist>".utf8)),start.lowerBound<end.upperBound {payload=Data(data[start.lowerBound..<end.upperBound])}
         guard let raw=try? PropertyListSerialization.propertyList(from:payload,options:[],format:nil),let profile=raw as? [String:Any],let entitlements=profile["Entitlements"] as? [String:Any],let groups=entitlements["com.apple.security.application-groups"] as? [String]else{return []}
-        return Array(Set(groups.filter{$0.hasPrefix("group.") && $0.contains("app.asechka.shared")})).sorted()
+        // Some signers replace the requested identifier with the containing app's
+        // bundle identifier (for example group.app.asechka.ios.<team>).
+        // Only use Asechka groups actually allowed by this bundle's own profile.
+        return Array(Set(groups.filter{$0.hasPrefix("group.") && $0.contains("app.asechka.") && !$0.contains("*")})).sorted()
     }
     static var preview:Self {
         var v=Self();v.quotes=["Every ordinary day feels a little brighter with you."];v.asnat=128;v.youssef=116

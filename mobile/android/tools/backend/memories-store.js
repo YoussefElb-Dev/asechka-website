@@ -5,6 +5,12 @@ import { socialActions, checkedSocialChange, changeSocial, contentFingerprint } 
 const SHA = /^[a-f0-9]{40}$/;
 const VERSION = /^[a-f0-9]{64}$/;
 const fingerprint = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+const photoCollections = new Set(['memories', 'photography']);
+const photoCollection = item => item.collection ?? 'memories';
+// Preserve the distinction between an omitted category (keep it) and an explicit
+// move when retrying a photo edit after a lost response. Image bytes have their
+// own contentHash, so the revision receipt does not need to retain them.
+const photoRevisionFingerprint = ({ photo, ...intent }) => fingerprint(intent);
 const conflict = () => { throw new TogetherError('This memory changed while you were editing. Close this window and open Edit again to see the latest version. Your words are still here to copy.', 409); };
 function editKey(item, index, kind) {
   if (UUID.test(item?.id || '')) return item.id;
@@ -21,6 +27,8 @@ export function editableMemories(value) {
 }
 const fail = message => { throw new TogetherError(message, 400); };
 export function checkedMemoryChange(input) {
+  if (input?.collection !== undefined && !['addPhoto', 'updatePhoto'].includes(input.action)) fail('Only photo additions and edits can choose a collection.');
+  if (input?.collection !== undefined && !photoCollections.has(input.collection)) fail('Choose Memories or Photography for this picture.');
   if (input && socialActions.has(input.action)) return checkedSocialChange(input);
   if (!input || !['addQuote', 'addPhoto', 'updateQuote', 'updatePhoto', 'removeQuote', 'removePhoto'].includes(input.action) || !UUID.test(input.operationId || '')) fail('Choose a quote or picture to keep.');
   const change = { action: input.action, operationId: input.operationId };
@@ -44,6 +52,7 @@ export function checkedMemoryChange(input) {
     change.text = text(input.text, 10000, true); change.note = text(input.note ?? '', 1000);
   } else {
     change.caption = text(input.caption ?? '', 1000);
+    if (input.collection !== undefined || input.action === 'addPhoto') change.collection = input.collection ?? 'memories';
     change.photo = input.photo === undefined && input.action === 'updatePhoto' ? null : checkedPhoto(input.photo);
     if (!change.photo && input.action === 'addPhoto') fail('Choose the picture you want to keep.');
     if (change.photo) change.contentHash = createHash('sha256').update(change.photo).digest('hex');
@@ -53,7 +62,8 @@ export function checkedMemoryChange(input) {
 export function checkedMemories(value) {
   if (!value || value.version !== 1 || !Array.isArray(value.quotes) || !Array.isArray(value.photos)
       || value.quotes.some(q => typeof q !== 'string' && (!q || typeof q.text !== 'string'))
-      || value.photos.some(p => !p || typeof p.src !== 'string' || !photoPath.test(p.src)))
+      || value.photos.some(p => !p || typeof p.src !== 'string' || !photoPath.test(p.src)
+        || p.collection !== undefined && !photoCollections.has(p.collection)))
     throw new TogetherError('Our saved collection could not be read. Nothing has been changed.');
   return structuredClone(value);
 }
@@ -72,6 +82,9 @@ export function appendMemory(base, change, now = new Date()) {
     }
     const previous = collection[index];
     if (previous?.revision === change.operationId && !change.action.startsWith('remove')) {
+      if (photo && (previous.revisionFingerprint !== undefined
+        ? previous.revisionFingerprint !== photoRevisionFingerprint(change)
+        : change.collection !== undefined && photoCollection(previous) !== change.collection)) conflict();
       if (previous.date !== change.date || (photo ? previous.caption !== change.caption || change.photo && previous.contentHash !== change.contentHash : previous.text !== change.text || (previous.note || '') !== change.note)) conflict();
       return { data, changed: false };
     }
@@ -81,7 +94,8 @@ export function appendMemory(base, change, now = new Date()) {
     else {
       item = { ...(typeof previous === 'string' ? {} : previous), id: change.id, date: change.date, revision: change.operationId };
       if (photo) {
-        Object.assign(item, { caption: change.caption, alt: change.caption || 'A picture of us' });
+        Object.assign(item, { caption: change.caption, alt: change.caption || 'A picture of us', revisionFingerprint: photoRevisionFingerprint(change) });
+        if (change.collection !== undefined) item.collection = change.collection;
         if (change.photo) Object.assign(item, { src: photoFilename(change), contentHash: change.contentHash });
       } else {
         item.text = change.text;
@@ -96,13 +110,13 @@ export function appendMemory(base, change, now = new Date()) {
   const other = (photo ? data.quotes : data.photos).some(item => item?.id === change.operationId);
   const existing = collection.find(item => item?.id === change.operationId);
   if (other || existing && (existing.date !== change.date
-      || (photo ? existing.caption !== change.caption || existing.contentHash !== change.contentHash
+      || (photo ? existing.caption !== change.caption || existing.contentHash !== change.contentHash || photoCollection(existing) !== change.collection
           : existing.text !== change.text || (existing.note || '') !== change.note)))
     throw new TogetherError('This saved memory changed. Review it before trying again.', 409);
   if (existing) return { data, changed: false };
   if (data.quotes.length + data.photos.length >= 5000) throw new TogetherError('Our collection is full. Please make some room before adding more.', 409);
   const item = { id: change.operationId, date: change.date, createdAt: now.toISOString(), ...(change.author ? { author: change.author } : {}) };
-  if (photo) Object.assign(item, { src: photoFilename(change), caption: change.caption, alt: change.caption || 'A picture of us', contentHash: change.contentHash });
+  if (photo) Object.assign(item, { src: photoFilename(change), caption: change.caption, alt: change.caption || 'A picture of us', contentHash: change.contentHash, collection: change.collection });
   else Object.assign(item, { text: change.text, ...(change.note ? { note: change.note } : {}) });
   collection.push(item); data.updatedAt = now.toISOString();
   checkSize(data);

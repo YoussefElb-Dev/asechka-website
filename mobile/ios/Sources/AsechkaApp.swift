@@ -43,7 +43,7 @@ struct Avatar:View {
     @StateObject private var universe=UniverseStore()
     var body:some Scene {WindowGroup{RootView().environmentObject(universe).tint(Palette.purple).preferredColorScheme(.light).buttonStyle(SoftPress())}}
 }
-struct ComposeRequest:Identifiable {let id=UUID();var photo:Bool;var post:Post?}
+struct ComposeRequest:Identifiable {let id=UUID();var photo:Bool;var post:Post?;var collection:PhotoCollection = .memories}
 struct PostSelection:Identifiable {var post:Post;var id:String{post.key}}
 struct RootView:View {
     @EnvironmentObject private var universe:UniverseStore
@@ -57,7 +57,8 @@ struct RootView:View {
     @Namespace private var tabMotion
     @State private var corner=false
     @State private var savedOnly=false
-    private let tabs=[("house","Home"),("photo.on.rectangle","Photos"),("quote.bubble","Quotes"),("music.note","Music"),("sparkles","Our days"),("character.bubble","Words")]
+    @State private var photoSection:PhotoSection = .all
+    private let tabs=[("house","Home"),("photo.on.rectangle","Photos"),("quote.bubble","Quotes"),("music.note","Music"),("sparkles","Our days"),("character.bubble","Words"),("gamecontroller","Games")]
     var body:some View {
         Group {
             if universe.storageUnavailable {VStack(spacing:20){Image(systemName:"lock.shield").font(.largeTitle);Text("Your saved space is temporarily unavailable.").font(.title2);Text("Restart the app to try again.").foregroundColor(Palette.muted)}.multilineTextAlignment(.center).padding(32)}
@@ -77,6 +78,18 @@ struct RootView:View {
         .sheet(isPresented:$corner){CornerView()}
         .sheet(isPresented:$settings){SettingsView()}
         .sheet(isPresented:$connection){ConnectionView()}
+        .onOpenURL{url in
+            guard let code=GamesRoom.invitationCode(url) else{return}
+            tab=6;universe.games.openInvitation(code)
+        }
+        .onAppear{
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--preview-fixture") && ProcessInfo.processInfo.arguments.contains("--games-preview"){tab=6}
+            #endif
+        }
+        .task(id:"\(universe.actor)|\(universe.unlocked)|\(universe.requiresCode)|\(universe.online)|\(phase == .active)"){
+            universe.games.configure(universe,active:phase == .active)
+        }
         .alert("A little moment",isPresented:Binding(get:{universe.error != nil},set:{if !$0{universe.error=nil}})) {
             Button("OK",role:.cancel){universe.error=nil}
         }message:{Text(universe.error ?? "")}
@@ -102,17 +115,18 @@ struct RootView:View {
             HStack(spacing:8){
                 Text("asechka.").font(.custom("Manrope-Bold",size:25))
                 Spacer()
-                Button{Touch.tap();composer=ComposeRequest(photo:tab != 2)}label:{Image(systemName:"plus.app").font(.system(size:22)).frame(width:44,height:44)}.accessibilityLabel("Create post")
+                Button{Touch.tap();composer=ComposeRequest(photo:tab != 2,collection:tab==1 ? photoSection.defaultCollection:.memories)}label:{Image(systemName:"plus.app").font(.system(size:22)).frame(width:44,height:44)}.accessibilityLabel("Create post")
                 Button{Touch.tap();messages=true}label:{Image(systemName:"envelope").font(.system(size:21)).frame(width:44,height:44)}.accessibilityLabel("Messages")
                 Button{Touch.tap();connection=true}label:{Image(systemName:"arrow.clockwise").font(.system(size:20)).frame(width:44,height:44)}.accessibilityLabel("Refresh and reconnect")
                 Button{Touch.tap();settings=true}label:{Avatar(actor:universe.actor,size:38)}.accessibilityLabel("Profile and settings")
             }.padding(.horizontal,20).padding(.vertical,7)
             Button{connection=true}label:{HStack(spacing:5){Circle().fill(universe.online ? Palette.purple:Palette.muted).frame(width:5,height:5);Text(universe.message).font(.system(size:11));Spacer()}.foregroundColor(Palette.muted).padding(.horizontal,23).padding(.bottom,9)}
             Group{
-                if tab<3 {FeedView(mode:tab,savedOnly:$savedOnly,create:{composer=ComposeRequest(photo:$0)},corner:{corner=true},navigate:{tab=$0})}
+                if tab<3 {FeedView(mode:tab,savedOnly:$savedOnly,photoSection:$photoSection,create:{composer=ComposeRequest(photo:$0,collection:tab==1 ? photoSection.defaultCollection:.memories)},corner:{corner=true},navigate:{tab=$0})}
                 else if tab==3 {SoundtrackView()}
                 else if tab==4 {DaysView()}
-                else {WordsView()}
+                else if tab==5 {WordsView()}
+                else {GamesView(store:universe.games)}
             }.frame(maxWidth:.infinity,maxHeight:.infinity).id(tab)
                 .transition(.opacity.combined(with:.offset(x:reduced ? 0:8)))
         }

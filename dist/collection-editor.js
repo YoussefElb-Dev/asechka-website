@@ -38,6 +38,7 @@ export async function preparePhoto(file) {
 }
 
 export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
+  let photoCollection = 'memories';
   let writable = false, loaded = false, busy = false, kind, editing, opener, photoData, removalOnly = false;
   let lastPayload = '', operationId;
   const toolbars = [];
@@ -67,6 +68,11 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
           <img class="memory-photo-preview" alt="Preview of the picture you’re saving" hidden>
           <label for="memory-caption">A caption <span>(optional)</span></label>
           <textarea id="memory-caption" name="caption" rows="2" maxlength="1000" placeholder="The story behind this little moment…" dir="auto"></textarea>
+          <label for="memory-collection">Keep in</label>
+          <select id="memory-collection" name="collection" aria-describedby="memory-collection-help">
+            <option value="memories">Memories</option><option value="photography">Photography</option>
+          </select>
+          <p id="memory-collection-help" class="memory-field-help">Memories of us, or Photography: little things, seen by us. You can move a picture here anytime.</p>
         </div>
         <label for="memory-date">A date to remember</label>
         <input id="memory-date" name="date" type="date" required>
@@ -126,10 +132,11 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
     form.elements.text.value = item?.text || '';
     form.elements.note.value = item?.note || '';
     form.elements.caption.value = item?.caption || '';
+    form.elements.collection.value = item ? item.collection ?? 'memories' : photoCollection;
     const today = new Date();
     form.elements.date.value = /^\d{4}-\d{2}-\d{2}$/.test(item?.date || '') ? item.date : new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-    dialog.querySelector('#memory-editor-title').textContent = editing ? (kind === 'Quote' ? 'A little change to our words.' : 'A little change to our moment.') : (kind === 'Quote' ? 'Something I want to tell you.' : 'Another moment with you.');
-    dialog.querySelector('.memory-editor-intro').textContent = removalOnly ? 'A little pause before we let this one go.' : 'For our collection. For both of us.';
+    dialog.querySelector('#memory-editor-title').textContent = editing ? (kind === 'Quote' ? 'A little change to our words.' : 'A little change to our moment.') : (kind === 'Quote' ? 'Something I want to tell you.' : photoCollection === 'photography' ? 'A little thing you noticed.' : 'Another moment with you.');
+    dialog.querySelector('.memory-editor-intro').textContent = removalOnly ? 'A little pause before we let this one go.' : kind === 'Photo' && form.elements.collection.value === 'photography' ? 'Little things, seen by us.' : 'For our collection. For both of us.';
     if (removalOnly) {
       dialog.querySelector('#memory-editor-title').textContent = kind === 'Quote' ? 'Remove this quote?' : 'Remove this picture?';
       removalPreview.querySelector('p').textContent = kind === 'Quote' ? item.text : item.caption || 'A moment with you';
@@ -186,6 +193,9 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
         if (!input.text) { message('Write a few words before saving this quote.', true); form.elements.text.focus(); return; }
       } else {
         input.caption = form.elements.caption.value.trim();
+        // An unchanged selection leaves older uncategorized photos untouched and
+        // lets the server preserve the category on ordinary caption/image edits.
+        if (!editing || form.elements.collection.value !== (editing.collection ?? 'memories')) input.collection = form.elements.collection.value;
         if (photoData) input.photo = photoData;
         if (!editing && !photoData) { message('Choose the picture you’d like to keep.', true); return; }
       }
@@ -222,6 +232,10 @@ export function createMemoryEditor({ onSaved, quoteList, photoGrid }) {
     removalPreview.querySelector('p').textContent = '';
   });
   return {
+    setPhotoCollection(collection) {
+      photoCollection = collection === 'photography' ? 'photography' : 'memories';
+      for (const { button, type } of toolbars) if (type === 'Photo') button.textContent = photoCollection === 'photography' ? '+ Add photography' : '+ Add a picture';
+    },
     update(content) {
       loaded = true; writable = content.writable === true;
       for (const { button, note } of toolbars) {

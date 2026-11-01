@@ -3,7 +3,11 @@
   "framework": null,
   "buildCommand": "",
   "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/music-search", "destination": "/api/music?__asechka_music=search" }
+  ],
   "functions": {
+    "api/games-socket.js": { "maxDuration": 300 },
     "api/*.js": { "includeFiles": "dist/{*.json,assets/photos/**,assets/recipes/**}", "maxDuration": 60 }
   }
 }
