@@ -4,7 +4,7 @@
   "buildCommand": "",
   "outputDirectory": "dist",
   "functions": {
-    "api/*.js": { "includeFiles": "dist/{*.json,assets/photos/**,assets/recipes/**}", "maxDuration": 60 },
-    "api/games-socket.js": { "maxDuration": 300 }
+    "api/games-socket.js": { "maxDuration": 300 },
+    "api/*.js": { "includeFiles": "dist/{*.json,assets/photos/**,assets/recipes/**}", "maxDuration": 60 }
   }
 }

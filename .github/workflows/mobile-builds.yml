@@ -156,6 +156,11 @@ jobs:
         working-directory: mobile/ios
         run: |
           mkdir -p preview
+          # Compiler failures have no simulator app to install or capture.
+          if [ ! -d build-test/Build/Products/Debug-iphonesimulator/Asechka.app ]; then
+            echo 'No simulator app was built; compiler diagnostics are in test.log.'
+            exit 0
+          fi
           xcrun xcresulttool export attachments --path NativeChecks.xcresult --output-path preview/screens
           # Keep useful screenshots and their names, without storing test recordings.
           python3 - <<'PY'
