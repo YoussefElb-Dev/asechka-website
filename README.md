@@ -8,6 +8,8 @@ Repository visibility also controls the privacy of the saved collections. This r
 
 ## Keep quotes and pictures from the website
 
+The Pictures collection now has **All**, **Memories**, and **Photography** sections. Photography is for everyday pictures and small things that catch your eye. Choose the collection when adding or editing a photo; opening the uploader from Photography selects it automatically. Existing pictures remain Memories. The same categories synchronize with both native apps.
+
 After unlocking the site, use **Add a quote** or **Add a picture** on the home page or in the full Quotes and Pictures collections. Quotes support multiple lines, a date, and an optional note. Pictures support a caption and a date; choose a JPG, PNG, or WebP up to 25 MB and the browser prepares a smaller JPEG without EXIF metadata before uploading.
 
 In either full collection, choose **Edit** below a memory to change its words, note, caption, or date. A picture can also be replaced. **Remove** sits beside Edit and shows the selected quote or picture before asking for confirmation; **Keep it** cancels. The home-page previews have **Edit / remove** links to the full collections. Both people use the existing password and save to the same private GitHub collection as the Android app and Studio; no new account or paid service is needed. Existing free-plan quotas and repository storage limits still apply.
