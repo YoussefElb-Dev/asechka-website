@@ -14,7 +14,7 @@ struct GamesTicTacToeView: View {
                     mark(cell).frame(maxWidth: .infinity).aspectRatio(1, contentMode: .fit)
                         .animation(systemReduced || reduced ? nil : .spring(response: 0.3, dampingFraction: 0.72), value: room.state["board"][cell])
                         .background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 20))
-                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(highlight(cell) ? GamesPalette.theme(room) : .white.opacity(0.08), lineWidth: highlight(cell) ? 3 : 1))
+                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(highlight(cell) ? GamesPalette.theme(room) : GamesPalette.line, lineWidth: highlight(cell) ? 3 : 1))
                 }.buttonStyle(SoftPress()).disabled(!store.myTurn(room) || !room.state["board"][cell].isNull)
                     .accessibilityLabel("Row \(cell / 3 + 1), column \(cell % 3 + 1), \(valueLabel(cell))")
                     .accessibilityIdentifier("games.tictactoe.\(cell)")
@@ -155,7 +155,7 @@ struct GamesCheckersView: View {
         let piece = displayBoard.indices.contains(cell) ? displayBoard[cell] : GamesJSON.null
         let dark = (cell / 8 + cell % 8) % 2 == 1
         return ZStack {
-            Rectangle().fill(dark ? Color(red: 0.18, green: 0.18, blue: 0.28) : Color(red: 0.10, green: 0.12, blue: 0.19))
+            Rectangle().fill(dark ? Color(red: 0.78, green: 0.73, blue: 0.86) : Color(red: 0.97, green: 0.95, blue: 0.99))
             if let player = piece["player"].int {
                 Circle().fill(GamesPalette.player(player)).padding(5)
                     .overlay(Circle().stroke(.black.opacity(0.25), lineWidth: 2).padding(9))
@@ -187,7 +187,7 @@ struct GamesHangmanView: View {
         VStack(alignment: .leading, spacing: 18) {
             if room.state["phase"].string == "choose" {
                 if setter { choose }
-                else { GamesArtwork(kind: .hangman).frame(height: 160); Text("A secret is on its way. Your keyboard appears when your person chooses a word.").foregroundColor(GamesPalette.muted) }
+                else { GamesCover(kind: .hangman).aspectRatio(1.5, contentMode: .fit); Text("A secret is on its way. Your keyboard appears when your person chooses a word.").foregroundColor(GamesPalette.muted) }
             } else { guessingBoard }
         }.gamesPanel().onChange(of: room.round) { _ in word = "" }
     }

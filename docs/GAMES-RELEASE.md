@@ -1,6 +1,6 @@
-# Games release verification · 2.3.0 (19)
+# Games release verification · 2.3.1 (20)
 
-The feature uses version **2.3.0**, build **19**, consistently in `mobile/ios/project.yml`, Android Gradle, and `mobile/android/build.ps1`. This advances beyond the published widget repair 2.2.9 (18). The iOS workflow retains that repair's renamed-widget-profile executable check. Both platforms retain the existing application/bundle IDs and widget extension packaging.
+The current visual refresh uses version **2.3.1**, build **20**, consistently in `mobile/ios/project.yml`, Android Gradle, and `mobile/android/build.ps1`. Games now shares the app's light lavender palette, explicit readable sheet text, and consistent 960 × 640 cover artwork. The iOS workflow retains the widget repair's renamed-widget-profile executable check. Both platforms retain the existing application/bundle IDs and widget extension packaging.
 
 ## Required checks
 
@@ -23,7 +23,9 @@ For Android, optionally pass `--badging /path/to/aapt-output.txt` generated with
 
 ## GitHub Actions
 
-`Native Android and iPhone apps` remains manually dispatched. Select `android`, `iphone`, or `both`. Both build jobs depend on the shared-tests/source-verification job. `full_checks` adds the existing iPhone simulator suite/previews; shared tests and Games verification run regardless of that option. Android also runs its local Gradle unit-test task before building. Final archive checks and checksums always run. Successful artifacts, logs, and workflow URLs are the build evidence; do not claim a remote build succeeded until a successful run and actual outputs exist.
+`Native Android and iPhone apps` remains manually dispatched. Select `android`, `iphone`, or `both`. Both build jobs depend on the shared-tests/source-verification job. `full_checks` enables simulator checks/previews; `ios_test_scope=all` retains the full suite including system widget registration, while `games` runs all unit tests and the Games/Photography UI journeys, including all six match sheets and preferences. Shared tests and Games verification run regardless of those options. Android also runs its local Gradle unit-test task before building. Final archive checks and checksums always run. Successful artifacts, logs, and workflow URLs are the build evidence; do not claim a remote build succeeded until a successful run and actual outputs exist.
+
+The Games scope exports the screenshots already recorded by its UI journeys without reinstalling the Home fixture. Optional preview capture has a three-minute limit so a stalled simulator command cannot consume the remaining archive-build time.
 
 | Artifact | Signing / installation |
 | --- | --- |
@@ -38,7 +40,7 @@ Preserve the existing encrypted GitHub `ANDROID_SIGNING` secret. It is JSON with
 
 With no secret, CI explicitly builds `assembleDebug`, verifies its signature, names the download `Asechka-Android-debug.apk`, and includes debug installation guidance in the artifact and run summary. A hosted runner may generate a different debug key on each run, so even two fallback builds need not update one another. Do not remove an existing app without backing up needed local data. Restore the original release signing secret for compatible updates; never manufacture a replacement release key for an existing installation.
 
-The Windows portable builder retains its existing protected local signing workflow and now uses 2.3.0 (19). It is separate from the CI missing-secret fallback. With the configured SDK/JDK, use `mobile/android/build.ps1`; verify its resulting APK and version before sharing it. No new signing material belongs in source control.
+The Windows portable builder retains its existing protected local signing workflow and now uses 2.3.1 (20). It is separate from the CI missing-secret fallback. With the configured SDK/JDK, use `mobile/android/build.ps1`; verify its resulting APK and version before sharing it. No new signing material belongs in source control.
 
 ### iPhone credentials and sideloading
 
@@ -52,9 +54,18 @@ After a successful build, exercise all six games on an iPhone and Android togeth
 
 Measure acknowledgment percentiles in the deployed region, native input-to-display latency, and actual frame pacing on named devices. The targets (under 16 ms local feedback, 60 FPS/optional high refresh, sub-150 ms same-region p95 acknowledgment) are targets, not claims made by packaging or a loopback benchmark. Physical haptics, thermal behavior, and unsigned IPA installability cannot be established by source checks.
 
-## Recorded verification · October 31, 2026
+## Visual refresh verification · 2.3.1 (20), October 31, 2026
 
-- The shared workflow passed all **237 tests** with Redis 8, including all six rules, two-client networking, conflicts, reconnects, privacy, and Photography collection behavior.
+- The shared CI suite completed **237 cases: 230 passed, 7 Windows-only cases skipped, 0 failed**, with Redis 8 persistence/CAS/pub-sub checks enabled and passing. These totals distinguish platform skips from executed tests.
+- [Android release build 41260352485](https://github.com/YoussefElb-Dev/asechka-website/actions/runs/41260352485) passed the shared checks and produced the release APK with the existing signing identity. The downloaded archive passed version/build, exact Games asset/hash, and checksum checks.
+- Android emulator verification passed **51 Games/Photography assertions**, including all six native boards, shared artwork in the match sheet, preferences, Photography upload, pool pull-back input, fleet placement, and checkers replay. Saved native captures confirm the light surfaces and readable game controls. Recorded board states are visual fixtures, separate from the previous production networking verification below.
+- [iPhone simulator run 41260762794](https://github.com/YoussefElb-Dev/asechka-website/actions/runs/41260762794) passed all **29 unit tests and 3 Games/Photography UI journeys**, including opening all six match sheets and settings. Its native screenshot attachments were downloaded and inspected. The overall job later reached its time limit after the optional Home-fixture reinstall stalled; the workflow now skips that extra reinstall for the Games scope and bounds optional capture time.
+- [iPhone release build 41261610174](https://github.com/YoussefElb-Dev/asechka-website/actions/runs/41261610174) succeeded using identical iPhone application sources. Its downloaded IPA passed the exact Games payload/hash checks, packaged version/build checks, arm64 app and embedded WidgetKit extension checks, and checksum comparison. It requires Apple-ID signing/provisioning for installation.
+- All six covers are **960 × 640**, shared by the hub and match sheet on both platforms. The complete asset payload remains below the 512 KiB cap; generated SVG, PNG, manifest, and native copies pass reproducibility checks.
+
+## Previous release verification · 2.3.0 (19), October 31, 2026
+
+- The shared workflow passed its test suite with Redis 8, including all six rules, two-client networking, conflicts, reconnects, privacy, and Photography collection behavior. CI totals include Windows-only platform skips, as detailed for the current release above.
 - [Release build 41257260648](https://github.com/YoussefElb-Dev/asechka-website/actions/runs/41257260648) passed the shared checks, Android release build, and iPhone packaging jobs on `main` (`fd3615fc416a9a9f9c83dc9da91b04546c322954`). Both downloaded archives passed their exact Games asset/hash checks; the APK passed signature verification and the IPA passed its arm64 app/embedded WidgetKit extension checks. Downloaded archive SHA-256 values matched the workflow files.
 - Android emulator verification passed **120 existing application assertions**, including login, native navigation, shared CRUD, stale conflicts after asynchronous outbox processing, JPEG upload, music, hearts, translation, copy, zoom, and logout. The separate Games/Photography suite passed **45 assertions**, including real JPEG upload/sync, legacy photo behavior, native navigation, pool pull-back input, ship dragging/validation, checkers replay reconstruction, and all six native board layouts. Board screenshots use recorded public rule states without a network connection; they establish rendering/layout, separately from the production two-client networking check.
 - The Android native socket connected to the production Vercel endpoint with normal TLS/hostname validation and correctly rejected an unauthenticated client. This credential-free test is `adb shell am instrument -w -e gamesTlsOnly true app.asechka.android.tests/app.asechka.android.NativeTests`.

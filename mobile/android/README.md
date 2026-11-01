@@ -1,4 +1,4 @@
-# Asechka for Android — 2.3.0 (19)
+# Asechka for Android — 2.3.1 (20)
 
 A native Android app for [our live website](https://asechka-website.vercel.app). All screens use Android views, text inputs, dialogs, image rendering, navigation, and the system photo picker. The application contains no WebView, bundled website, browser shell, JavaScript bridge, or website credentials.
 

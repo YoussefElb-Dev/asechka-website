@@ -7,7 +7,7 @@ final class GamesData {
   static final String[] TITLES = {"Velvet Eight", "Three Little Marks", "Between the Letters", "Four in Orbit", "Crown & Capture", "Midnight Fleet"};
   static final String[] TAGS = {"8-BALL POOL", "TIC TAC TOE", "HANGMAN", "CONNECT FOUR", "CHECKERS", "BATTLESHIP"};
   static final String[] NOTES = {"A little angle. A perfect evening.", "Your move, my favorite rival.", "A secret only you can guess.", "Find your constellation of four.", "Make a move worth crowning.", "Two oceans. One worthy opponent."};
-  static final int[] COLORS = {0xff77e8c1, 0xffd2b4ff, 0xffffc98c, 0xff9dbdff, 0xffedafbd, 0xff91dcf4};
+  static final int[] COLORS = {0xff2e746a, 0xff6b5cb5, 0xff9f4b6f, 0xff6b5cb5, 0xff9f4b6f, 0xff2e746a};
   static JSONObject obj(Object... pairs) {
     JSONObject value = new JSONObject();
     try { for (int i = 0; i < pairs.length; i += 2) value.put((String) pairs[i], pairs[i + 1]); }

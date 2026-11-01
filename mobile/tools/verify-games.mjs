@@ -18,7 +18,7 @@ for(const asset of manifest.assets) {
     assert.equal(asset.width,960);assert.equal(asset.height,640);
   } else if(asset.format==='png') {
     assert(data.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])));
-    assert.equal(data.readUInt32BE(16),480);assert.equal(data.readUInt32BE(20),320);
+    assert.equal(data.readUInt32BE(16),960);assert.equal(data.readUInt32BE(20),640);
   } else if(asset.format==='wav') {
     assert.equal(data.toString('ascii',0,4),'RIFF');assert.equal(data.toString('ascii',8,16),'WAVEfmt ');
     assert.equal(data.readUInt16LE(20),1);assert.equal(data.readUInt16LE(22),1);

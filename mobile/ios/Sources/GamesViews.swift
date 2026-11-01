@@ -2,12 +2,15 @@ import SwiftUI
 import UIKit
 
 enum GamesPalette {
-    static let background = Color(red: 0.035, green: 0.045, blue: 0.09)
-    static let surface = Color(red: 0.085, green: 0.10, blue: 0.17)
-    static let muted = Color(red: 0.68, green: 0.72, blue: 0.83)
-    static let lilac = Color(red: 0.73, green: 0.64, blue: 1)
-    static let mint = Color(red: 0.38, green: 0.87, blue: 0.76)
-    static let rose = Color(red: 1, green: 0.57, blue: 0.69)
+    static let background = Palette.background
+    static let surface = Color.white
+    static let inset = Palette.lavender
+    static let ink = Palette.ink
+    static let muted = Palette.muted
+    static let line = Color(red: 217/255, green: 225/255, blue: 240/255)
+    static let lilac = Palette.purple
+    static let mint = Color(red: 46/255, green: 116/255, blue: 106/255)
+    static let rose = Color(red: 159/255, green: 75/255, blue: 111/255)
     static func player(_ index: Int) -> Color { index == 0 ? lilac : mint }
     static func accent(_ kind: GamesKind) -> Color {
         switch kind {
@@ -28,14 +31,14 @@ extension View {
     func gamesPanel() -> some View {
         padding(18).frame(maxWidth: .infinity, alignment: .leading)
             .background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 22))
-            .overlay(RoundedRectangle(cornerRadius: 22).stroke(.white.opacity(0.07)))
+            .overlay(RoundedRectangle(cornerRadius: 22).stroke(GamesPalette.line.opacity(0.6)))
     }
     func gamesAction(_ prominent: Bool = true) -> some View {
         font(.system(.subheadline, design: .rounded).weight(.semibold))
             .padding(.horizontal, 16).frame(minHeight: 48)
             .frame(maxWidth: .infinity)
-            .foregroundColor(prominent ? GamesPalette.background : .white)
-            .background(prominent ? GamesPalette.lilac : GamesPalette.surface, in: RoundedRectangle(cornerRadius: 14))
+            .foregroundColor(prominent ? .white : GamesPalette.ink)
+            .background(prominent ? GamesPalette.lilac : GamesPalette.inset, in: RoundedRectangle(cornerRadius: 14))
     }
 }
 
@@ -46,6 +49,7 @@ struct GamesView: View {
     @State private var preferences = false
     @State private var code = ""
     @State private var history = false
+    @State private var joining = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -55,14 +59,15 @@ struct GamesView: View {
                     Button { store.activeRoomID = nil } label: { Label("All games", systemImage: "arrow.left").frame(minHeight: 44) }
                     GamesRoomView(store: store, room: room)
                 } else {
-                    invitationPanel
                     roomList
                     featuredPool
+                    invitationPanel
                     Text("A little competition. A lot of us.").font(.title2.bold())
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 155), spacing: 14)], spacing: 14) {
                         ForEach(GamesKind.allCases) { kind in
                             Button { creating = kind } label: { GamesCard(kind: kind) }
                                 .buttonStyle(.plain).accessibilityLabel("\(kind.title). \(kind.subtitle). Create a room")
+                                .accessibilityIdentifier("games.card.\(kind.rawValue)")
                         }
                     }
                 }
@@ -70,40 +75,41 @@ struct GamesView: View {
                 .frame(maxWidth: .infinity)
         }
         .background(GamesPalette.background.ignoresSafeArea())
-        .foregroundColor(.white).tint(GamesPalette.lilac).environment(\.colorScheme, .dark)
+        .foregroundColor(GamesPalette.ink).tint(GamesPalette.lilac)
         .refreshable { store.refresh() }
         .sheet(item: $creating) { kind in GamesCreateView(store: store, kind: kind) }
         .sheet(isPresented: $preferences) { GamesPreferencesView() }
-        .onAppear { if !store.invitation.isEmpty { code = store.invitation } }
-        .onChange(of: store.invitation) { if !$0.isEmpty { code = $0 } }
+        .onAppear { if !store.invitation.isEmpty { code = store.invitation; joining = true } }
+        .onChange(of: store.invitation) { if !$0.isEmpty { code = $0; joining = true } }
     }
     private var header: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 6) {
                 Text("PLAY, STAY A WHILE").font(.caption.weight(.bold)).tracking(2).foregroundColor(GamesPalette.lilac)
-                Text("Our game room.").font(.system(.largeTitle, design: .rounded).bold())
+                Text("Our game room.").font(.system(.title, design: .rounded).bold())
                 HStack(spacing: 6) {
                     Circle().fill(partnerOnline ? GamesPalette.mint : GamesPalette.muted).frame(width: 7, height: 7)
                     Text("\(universe.partner) is \(partnerOnline ? "here" : "away")").font(.subheadline).foregroundColor(GamesPalette.muted)
                 }.accessibilityElement(children: .combine)
             }
             Spacer(minLength: 8)
-            Button { preferences = true } label: { Image(systemName: "slider.horizontal.3").font(.title3).frame(width: 44, height: 44).background(.white.opacity(0.06), in: Circle()) }
+            Button { preferences = true } label: { Image(systemName: "slider.horizontal.3").font(.title3).frame(width: 44, height: 44).background(GamesPalette.inset, in: Circle()) }
                 .accessibilityLabel("Games sound, haptics and motion settings")
+                .accessibilityIdentifier("games.preferences")
         }
     }
     private var partnerOnline: Bool { store.connected && store.presence.contains(universe.actor == "asnat" ? "youssef" : "asnat") }
     private var featuredPool: some View {
         Button { creating = .pool } label: {
             VStack(alignment: .leading, spacing: 12) {
-                GamesCover(kind: .pool).frame(height: 190).clipped().clipShape(RoundedRectangle(cornerRadius: 18))
-                Text("TONIGHT’S LITTLE ESCAPE").font(.caption2.bold()).tracking(2).foregroundColor(GamesPalette.mint)
+                GamesCover(kind: .pool).aspectRatio(1.5, contentMode: .fit).clipShape(RoundedRectangle(cornerRadius: 18))
+                Text("TONIGHT’S LITTLE ESCAPE").font(.caption2.bold()).tracking(2).foregroundColor(GamesPalette.lilac)
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(GamesKind.pool.title).font(.system(.title, design: .rounded).bold())
                         Text("8-ball pool · Live multiplayer for two").font(.subheadline).foregroundColor(GamesPalette.muted)
                     }
-                    Spacer(); Image(systemName: "play.circle.fill").font(.largeTitle).foregroundColor(GamesPalette.mint)
+                    Spacer(); Image(systemName: "play.circle.fill").font(.largeTitle).foregroundColor(GamesPalette.lilac)
                 }
                 Text("A private table, a called pocket, and nowhere else to be.").font(.subheadline).foregroundColor(GamesPalette.muted)
             }.gamesPanel()
@@ -111,18 +117,17 @@ struct GamesView: View {
             .accessibilityIdentifier("games.featured.pool")
     }
     private var invitationPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Meet me here").font(.headline)
-            Text("Share a room from any game, or enter your person’s code.").font(.subheadline).foregroundColor(GamesPalette.muted)
+        DisclosureGroup(isExpanded: $joining) {
             HStack(spacing: 10) {
                 TextField("Room code", text: $code).textInputAutocapitalization(.characters).autocorrectionDisabled()
-                    .submitLabel(.go).onSubmit { store.join(code) }.padding(12).background(.black.opacity(0.2), in: RoundedRectangle(cornerRadius: 10))
+                    .submitLabel(.go).onSubmit { store.join(code) }.padding(12).background(GamesPalette.background, in: RoundedRectangle(cornerRadius: 10))
                     .accessibilityIdentifier("games.join.code")
-                Button { store.join(code) } label: { Text("Join").padding(.horizontal, 16).frame(minHeight: 46).background(GamesPalette.lilac, in: RoundedRectangle(cornerRadius: 12)).foregroundColor(GamesPalette.background) }
+                Button { store.join(code) } label: { Text("Join").padding(.horizontal, 16).frame(minHeight: 46).background(GamesPalette.lilac, in: RoundedRectangle(cornerRadius: 12)).foregroundColor(.white) }
                     .disabled(!store.connected || store.working || code.trimmingCharacters(in: .whitespaces).isEmpty)
                     .accessibilityIdentifier("games.join")
-            }
-        }.gamesPanel()
+            }.padding(.top, 12)
+        } label: { Label("Join with a room code", systemImage: "link").font(.subheadline.weight(.semibold)).frame(minHeight: 30) }
+            .gamesPanel()
     }
     @ViewBuilder private var roomList: some View {
         let active = store.rooms.filter { !$0.finished }
@@ -171,7 +176,8 @@ struct GamesConnectionBanner: View {
                     Spacer(); Button { store.error = nil } label: { Image(systemName: "xmark.circle").frame(width: 44, height: 44) }.accessibilityLabel("Dismiss games error")
                 }
             }
-        }.padding(12).background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 16))
+        }.padding(.horizontal, 14).padding(.vertical, store.connected ? 10 : 4)
+            .background(GamesPalette.inset.opacity(0.65), in: RoundedRectangle(cornerRadius: 16))
     }
 }
 
@@ -179,7 +185,7 @@ struct GamesCard: View {
     var kind: GamesKind
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            GamesCover(kind: kind).frame(height: 115).clipped().clipShape(RoundedRectangle(cornerRadius: 13)).accessibilityHidden(true)
+            GamesCover(kind: kind).aspectRatio(1.5, contentMode: .fit).clipShape(RoundedRectangle(cornerRadius: 13)).accessibilityHidden(true)
             Text(kind.classic.uppercased()).font(.caption2.bold()).foregroundColor(GamesPalette.accent(kind))
             Text(kind.title).font(.system(.headline, design: .rounded)).fixedSize(horizontal: false, vertical: true)
             Text(kind.subtitle).font(.caption).foregroundColor(GamesPalette.muted).fixedSize(horizontal: false, vertical: true)
@@ -187,9 +193,9 @@ struct GamesCard: View {
             HStack { Text("JUST THE TWO OF US").font(.system(size: 8, weight: .bold)).tracking(1); Spacer(); Image(systemName: "arrow.up.right") }
                 .foregroundColor(GamesPalette.accent(kind))
         }.padding(16).frame(maxWidth: .infinity, minHeight: 255, alignment: .topLeading)
-            .background(LinearGradient(colors: [GamesPalette.accent(kind).opacity(0.12), GamesPalette.surface], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 24))
-            .overlay(RoundedRectangle(cornerRadius: 24).stroke(GamesPalette.accent(kind).opacity(0.18)))
-            .foregroundColor(.white)
+            .background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 24))
+            .overlay(RoundedRectangle(cornerRadius: 24).stroke(GamesPalette.line.opacity(0.7)))
+            .foregroundColor(GamesPalette.ink)
     }
 }
 
@@ -201,7 +207,7 @@ struct GamesCover: View {
     }
     var body: some View {
         GeometryReader { geometry in
-            if let image { Image(uiImage: image).resizable().scaledToFill().frame(width: geometry.size.width, height: geometry.size.height).clipped() }
+            if let image { Image(uiImage: image).resizable().scaledToFit().frame(width: geometry.size.width, height: geometry.size.height) }
             else { GamesArtwork(kind: kind) }
         }
     }
@@ -219,7 +225,13 @@ struct GamesCreateView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section { GamesArtwork(kind: kind).frame(height: 140); Text(kind.title).font(.title2.bold()); Text(kind.subtitle) }
+                Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        GamesCover(kind: kind).aspectRatio(1.5, contentMode: .fit).clipShape(RoundedRectangle(cornerRadius: 16)).accessibilityHidden(true)
+                        Text(kind.title).font(.title2.bold()).foregroundColor(GamesPalette.ink)
+                        Text(kind.subtitle).font(.subheadline).foregroundColor(GamesPalette.muted)
+                    }.padding(.vertical, 4)
+                }
                 Section("Make it ours") {
                     Picker("Series", selection: $bestOf) { Text("One round").tag(1); Text("Best of three").tag(3); Text("Best of five").tag(5) }
                     Picker("Board accent", selection: $theme) { Text("Violet").tag("violet"); Text("Ocean").tag("ocean"); Text("Rose").tag("rose") }
@@ -235,13 +247,15 @@ struct GamesCreateView: View {
                         var settings: [String: GamesJSON] = ["bestOf": .int(bestOf), "theme": .string(theme), "setter": .int(setter)]
                         if kind == .hangman && timed { settings["timedSeconds"] = .int(seconds) }
                         store.create(kind, settings: .object(settings)); dismiss()
-                    } label: { Text("Create our room").frame(maxWidth: .infinity, minHeight: 44) }
+                    } label: { Text("Create our room").gamesAction() }
+                        .buttonStyle(.plain).listRowBackground(Color.clear)
                         .disabled(!store.connected || store.working).accessibilityIdentifier("games.create.\(kind.rawValue)")
                     if !store.connected { Text("Connect to Games before creating a room.").font(.caption) }
                 }
-            }.navigationTitle("A new little match").navigationBarTitleDisplayMode(.inline)
+            }.scrollContentBackground(.hidden).background(GamesPalette.background)
+                .navigationTitle("A new little match").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }
-        }.tint(GamesPalette.lilac).preferredColorScheme(.dark)
+        }.foregroundColor(GamesPalette.ink).tint(GamesPalette.lilac).preferredColorScheme(.light)
     }
 }
 
@@ -259,8 +273,9 @@ struct GamesPreferencesView: View {
                     Toggle("Reduce game motion", isOn: $reduceMotion)
                 }
                 Section { Text("Reduced motion shows the final pool result immediately. Your device’s Reduce Motion setting is always respected. All games also offer labeled native controls for VoiceOver.").font(.subheadline) }
-            }.navigationTitle("Play your way").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
-        }.tint(GamesPalette.lilac).preferredColorScheme(.dark)
+            }.scrollContentBackground(.hidden).background(GamesPalette.background)
+                .navigationTitle("Play your way").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+        }.foregroundColor(GamesPalette.ink).tint(GamesPalette.lilac).preferredColorScheme(.light)
     }
 }
 
@@ -368,8 +383,9 @@ struct GamesRoomView: View {
     private var rulesSheet: some View {
         NavigationStack {
             ScrollView { VStack(alignment: .leading, spacing: 18) { Text(room.kind?.title ?? "Game rules").font(.title.bold()); Text(room.kind?.rules ?? "").lineSpacing(6) }.padding(24) }
+                .background(GamesPalette.background)
                 .navigationTitle("How we play").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { rules = false } } }
-        }.tint(GamesPalette.lilac).preferredColorScheme(.dark)
+        }.foregroundColor(GamesPalette.ink).tint(GamesPalette.lilac).preferredColorScheme(.light)
     }
     static func resultText(_ room: GamesRoom) -> String {
         if room.winner.string == "draw" { return "A lovely tie. One more?" }
