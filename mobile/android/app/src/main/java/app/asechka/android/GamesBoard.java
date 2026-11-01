@@ -34,7 +34,7 @@ final class GamesBoard extends View {
     super(context); this.actor = actor; this.host = host;
     setFocusable(true); setClickable(true); setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
     accessibility = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-    setBackground(new Ui(context).shape(0xff161c2c,20));
+    setBackground(new Ui(context).shape(Color.WHITE,20));
     Motion.customTouch(this);
   }
 
@@ -83,7 +83,7 @@ final class GamesBoard extends View {
     else if ("battleship".equals(game)) drawFleet(c);
     else drawGrid(c);
     if (focused >= 0) {
-      RectF b = bounds(focused); p.setColor(0xffffe0a5); p.setStrokeWidth(3); p.setStyle(Paint.Style.STROKE); c.drawRoundRect(b,5,5,p);
+      RectF b = bounds(focused); p.setColor(Ui.PURPLE); p.setStrokeWidth(3); p.setStyle(Paint.Style.STROKE); c.drawRoundRect(b,5,5,p);
     }
   }
 
@@ -180,7 +180,7 @@ final class GamesBoard extends View {
         if(contains(hits,cell)) { line(c,x+size*.3f,y+size*.3f,x+size*.7f,y+size*.7f,3,0xff9f4b6f);line(c,x+size*.7f,y+size*.3f,x+size*.3f,y+size*.7f,3,0xff9f4b6f); }
         else circle(c,x+size/2,y+size/2,size*.13f,0xff64708b);
       }
-      if(!incoming&&pending!=null&&pending.optInt("cell",-1)==cell)ring(c,x+size/2,y+size/2,size*.35f,2,0xffe8ceff);
+      if(!incoming&&pending!=null&&pending.optInt("cell",-1)==cell)ring(c,x+size/2,y+size/2,size*.35f,2,Ui.PURPLE);
     }
   }
 
