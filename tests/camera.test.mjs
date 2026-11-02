@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { cameraView, checkedCamera, checkedCameraChange, changeCamera, GitHubCameraStore } from '../server/camera-store.js';
+import { cameraView, checkedCamera, checkedCameraChange, changeCamera, GitHubCameraStore, cameraKey, sealFilm, openFilm, storedCamera } from '../server/camera-store.js';
 import { createCameraAPI } from '../server/camera-api.js';
 import { authorize } from '../server/auth.js';
 const seed = () => ({ version: 1, rolls: [] });
@@ -11,6 +11,46 @@ const draft = (action, extra = {}) => ({ action, operationId: randomUUID(), acto
 const apply = (data, input) => changeCamera(data, checkedCameraChange(input), new Date('2026-11-02T20:00:00Z'));
 const roll = () => { const input = draft('create', { title: 'Our ordinary days' }); return { input, data: apply(seed(), input).data, id: input.operationId }; };
 const shot = id => draft('capture', { rollId: id, photo: jpeg, caption: 'A secret little note' });
+
+test('repository copies contain authenticated ciphertext and never reveal pictures or captions', () => {
+  const key = cameraKey('camera-fixture-encryption-secret-1234567890'), bytes = Buffer.from(jpeg.slice(23), 'base64');
+  const first = sealFilm(bytes, key), second = sealFilm(bytes, key);
+  assert(!first.equals(second)); assert(!first.includes(bytes)); assert.deepEqual(openFilm(first, key), bytes);
+  const tampered = Buffer.from(first); tampered[tampered.length - 1] ^= 1;
+  assert.throws(() => openFilm(tampered, key)); assert.throws(() => openFilm(first, cameraKey('a-different-camera-fixture-secret-1234567890')));
+  assert.throws(() => cameraKey('too-short'));
+  let { data, id } = roll(); data = apply(data, shot(id)).data;
+  const stored = storedCamera(data, key); assert.equal(stored.rolls[0].shots[0].caption, undefined);
+  assert(!JSON.stringify(stored).includes('A secret little note'));
+  assert.equal(openFilm(Buffer.from(stored.rolls[0].shots[0].sealedCaption, 'base64'), key).toString(), 'A secret little note');
+  assert.equal(data.rolls[0].shots[0].caption, 'A secret little note');
+});
+
+test('successful repository saves use one atomic tree and decrypt images only after development', async () => {
+  const secret = 'camera-store-success-fixture-secret-1234567890', key = cameraKey(secret);
+  let data = seed(), entries, encryptedPhoto, head = '1'.repeat(40), writes = 0;
+  const store = new GitHubCameraStore({ token: () => 'test-only-token', secret: () => secret, fetcher: async (url, options) => {
+    const path = new URL(url).pathname.split('/asechka-website')[1], body = options.body && JSON.parse(options.body); let result;
+    if (path === '/git/ref/heads/main') result = { object: { sha: head } };
+    else if (path === '/contents/private/camera.json') result = { type:'file', size:1000, encoding:'base64', sha:'3'.repeat(40), content:Buffer.from(JSON.stringify(storedCamera(data, key))).toString('base64') };
+    else if (/^\/contents\/private\/camera\/.+\.bin$/.test(path)) result = { type:'file', size:encryptedPhoto.length, encoding:'base64', sha:'4'.repeat(40), content:encryptedPhoto.toString('base64') };
+    else if (path.startsWith('/git/commits/') && options.method === 'GET') result = { tree: { sha:'2'.repeat(40) } };
+    else if (path === '/git/blobs') { encryptedPhoto = Buffer.from(body.content, 'base64'); assert.deepEqual(openFilm(encryptedPhoto, key), Buffer.from(jpeg.slice(23), 'base64')); result = { sha:'4'.repeat(40) }; }
+    else if (path === '/git/trees') { entries = body.tree; assert.equal(body.base_tree,'2'.repeat(40)); result = { sha:'5'.repeat(40) }; }
+    else if (path === '/git/commits') result = { sha:'6'.repeat(40) };
+    else if (path === '/git/refs/heads/main') { assert.equal(body.force,false); writes++; const saved=JSON.parse(entries[0].content); assert(!entries[0].content.includes('A secret little note')); data=structuredClone(saved); for(const roll of data.rolls)for(const shot of roll.shots){shot.caption=openFilm(Buffer.from(shot.sealedCaption,'base64'),key).toString();delete shot.sealedCaption;}head=body.sha;result={}; }
+    else throw Error('Unexpected Git request '+path);
+    return Response.json(result);
+  } });
+  const create = draft('create',{title:'Private even in a repository'}); await store.change(create);
+  const capture = shot(create.operationId); await store.change(capture);
+  assert.deepEqual(entries.map(entry=>entry.path),['private/camera.json',`private/camera/${capture.operationId}.bin`]);
+  await store.change(capture); assert.equal(writes,2);
+  await assert.rejects(()=>store.photo(capture.operationId), e=>e.status===404);
+  for(let i=1;i<24;i++) data=apply(data,shot(create.operationId)).data;
+  await store.change(draft('develop',{rollId:create.operationId}));
+  assert.deepEqual(await store.photo(capture.operationId),Buffer.from(jpeg.slice(23),'base64'));
+});
 
 test('24 shots stay sealed, stable retries consume one slot, and development creates a revisitable album', () => {
   let { data, id, input } = roll(); assert.equal(apply(data, input).changed, false);
@@ -50,13 +90,14 @@ test('reactions are separate per profile and malformed inputs cannot corrupt a r
 test('GitHub commits metadata and private photo atomically and retries the last-slot race without overfilling', async () => {
   let { data, id } = roll(); for (let i = 0; i < 23; i++) data = apply(data, shot(id)).data;
   let head = '1'.repeat(40), tree = '2'.repeat(40), staged, race = true; const calls = [];
-  const store = new GitHubCameraStore({ token: () => 'test-token', fetcher: async (url, options) => {
+  const encryptionKey = cameraKey('test-only-camera-secret-1234567890123456789');
+  const store = new GitHubCameraStore({ secret: () => 'test-only-camera-secret-1234567890123456789', token: () => 'test-token', fetcher: async (url, options) => {
     const path = new URL(url).pathname.split('/asechka-website')[1], body = options.body && JSON.parse(options.body); calls.push({ path, body }); let value;
     if (path === '/git/ref/heads/main') value = { object: { sha: head } };
-    else if (path === '/contents/private/camera.json') value = { type: 'file', size: 1000, sha: '3'.repeat(40), encoding: 'base64', content: Buffer.from(JSON.stringify(data)).toString('base64') };
+    else if (path === '/contents/private/camera.json') value = { type: 'file', size: 1000, sha: '3'.repeat(40), encoding: 'base64', content: Buffer.from(JSON.stringify(storedCamera(data, encryptionKey))).toString('base64') };
     else if (path.startsWith('/git/commits/') && options.method === 'GET') value = { tree: { sha: tree } };
     else if (path === '/git/blobs') value = { sha: '4'.repeat(40) };
-    else if (path === '/git/trees') { assert.equal(body.base_tree, tree); assert(body.tree.every(entry => entry.path === 'private/camera.json' || /^private\/camera\/[a-f0-9-]{36}\.jpg$/.test(entry.path))); staged = JSON.parse(body.tree[0].content); value = { sha: '5'.repeat(40) }; }
+    else if (path === '/git/trees') { assert.equal(body.base_tree, tree); assert(body.tree.every(entry => entry.path === 'private/camera.json' || /^private\/camera\/[a-f0-9-]{36}\.bin$/.test(entry.path))); staged = JSON.parse(body.tree[0].content); value = { sha: '5'.repeat(40) }; }
     else if (path === '/git/commits') value = { sha: '6'.repeat(40) };
     else if (path === '/git/refs/heads/main') { assert.equal(body.force, false); if (race) { race = false; data = apply(data, { ...shot(id), actor: 'youssef' }).data; head = '7'.repeat(40); tree = '8'.repeat(40); return Response.json({}, { status: 422 }); } data = staged; value = {}; }
     else throw Error('Unexpected Git call ' + path);

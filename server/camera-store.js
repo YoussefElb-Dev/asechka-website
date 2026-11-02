@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { GitHubTogetherStore, TogetherError, checkedPhoto } from './together-store.js';
 import { UUID } from './daily-memory.js';
@@ -7,6 +7,42 @@ const SHA = /^[a-f0-9]{40}$/;
 const fail = (message, status = 503) => { throw new TogetherError(message, status); };
 const people = ['asnat', 'youssef'];
 const hash = value => createHash('sha256').update(value).digest('hex');
+const envelope = Buffer.from('ASECHKA-FILM-1');
+export function cameraKey(secret) {
+  if (typeof secret !== 'string' || secret.length < 32) fail('Our camera encryption needs its connection restored.');
+  return createHash('sha256').update('asechka-camera-v1\0' + secret).digest();
+}
+export function sealFilm(bytes, key) {
+  const iv = randomBytes(12), cipher = createCipheriv('aes-256-gcm', key, iv);
+  cipher.setAAD(envelope);
+  const encrypted = Buffer.concat([cipher.update(bytes), cipher.final()]);
+  return Buffer.concat([envelope, iv, cipher.getAuthTag(), encrypted]);
+}
+export function openFilm(bytes, key) {
+  try {
+    if (bytes.length < envelope.length + 28 || !bytes.subarray(0, envelope.length).equals(envelope)) throw Error();
+    const offset = envelope.length, decipher = createDecipheriv('aes-256-gcm', key, bytes.subarray(offset, offset + 12));
+    decipher.setAAD(envelope); decipher.setAuthTag(bytes.subarray(offset + 12, offset + 28));
+    return Buffer.concat([decipher.update(bytes.subarray(offset + 28)), decipher.final()]);
+  } catch { fail('This film couldn’t be unlocked. Restore the original camera encryption secret.'); }
+}
+export function storedCamera(data, key) {
+  const stored = checkedCamera(data);
+  for (const roll of stored.rolls) for (const shot of roll.shots) { shot.sealedCaption = sealFilm(Buffer.from(shot.caption, 'utf8'), key).toString('base64'); delete shot.caption; }
+  return stored;
+}
+function unlockedCamera(value, key) {
+  const data = structuredClone(value);
+  if (!Array.isArray(data?.rolls)) fail('Our film collection couldn’t be read.');
+  for (const roll of data.rolls) {
+    if (!Array.isArray(roll.shots)) fail('Our film collection couldn’t be read.');
+    for (const shot of roll.shots) {
+      if (typeof shot.sealedCaption !== 'string' || shot.sealedCaption.length > 2000 || Object.hasOwn(shot, 'caption')) fail('This film couldn’t be unlocked.');
+      shot.caption = openFilm(Buffer.from(shot.sealedCaption, 'base64'), key).toString('utf8'); delete shot.sealedCaption;
+    }
+  }
+  return checkedCamera(data);
+}
 export function checkedCamera(data) {
   if (data?.version !== 1 || !Array.isArray(data.rolls) || data.rolls.length > 100) fail('Our film collection couldn’t be read.');
   const ids = new Set(); let active = 0;
@@ -83,15 +119,16 @@ export function changeCamera(base, change, now = new Date()) {
   return { data: checkedCamera(data), changed: true };
 }
 export class GitHubCameraStore extends GitHubTogetherStore {
-  async read(options) { return checkedCamera(await this.jsonFile('private/camera.json', options)); }
+  constructor({ secret = () => process.env.SESSION_SECRET, ...options } = {}) { super(options); this.secret = secret; }
+  async read(options) { return unlockedCamera(await this.jsonFile('private/camera.json', options), cameraKey(this.secret())); }
   async photo(id) {
     if (!UUID.test(id || '')) fail('Frame not found.', 404);
     const data = await this.read({ fresh: true });
     if (!data.rolls.some(roll => roll.developedAt && roll.shots.some(shot => shot.id === id))) fail('This frame is still sealed.', 404);
-    const path = `private/camera/${id}.jpg`;
+    const path = `private/camera/${id}.bin`;
     const bytes = this.writable ? await this.file(path) : await readFile(new URL(`../${path}`, import.meta.url));
-    if (!bytes || bytes.length > 320000) fail('This frame couldn’t be read.');
-    return bytes;
+    if (!bytes || bytes.length > 320100) fail('This frame couldn’t be read.');
+    return openFilm(bytes, cameraKey(this.secret()));
   }
   async change(input) {
     if (!this.writable) fail('Reconnect our shared camera before saving.');
@@ -103,11 +140,12 @@ export class GitHubCameraStore extends GitHubTogetherStore {
       if (!update.changed) return update.data;
       const parent = await this.github(`/git/commits/${sha}`);
       if (!SHA.test(parent.tree?.sha || '')) fail('Our camera connection couldn’t be read.');
-      const entries = [{ path: 'private/camera.json', mode: '100644', type: 'blob', content: JSON.stringify(update.data, null, 2) + '\n' }];
+      const key = cameraKey(this.secret());
+      const entries = [{ path: 'private/camera.json', mode: '100644', type: 'blob', content: JSON.stringify(storedCamera(update.data, key), null, 2) + '\n' }];
       if (change.photo) {
-        blob ||= await this.github('/git/blobs', 'POST', { encoding: 'base64', content: change.photo.toString('base64') });
+        blob ||= await this.github('/git/blobs', 'POST', { encoding: 'base64', content: sealFilm(change.photo, key).toString('base64') });
         if (!SHA.test(blob.sha || '')) fail('Our camera connection couldn’t be read.');
-        entries.push({ path: `private/camera/${change.operationId}.jpg`, mode: '100644', type: 'blob', sha: blob.sha });
+        entries.push({ path: `private/camera/${change.operationId}.bin`, mode: '100644', type: 'blob', sha: blob.sha });
       }
       const tree = await this.github('/git/trees', 'POST', { base_tree: parent.tree.sha, tree: entries });
       if (!SHA.test(tree.sha || '')) fail('Our camera connection couldn’t be read.');
