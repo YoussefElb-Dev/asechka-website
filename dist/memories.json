@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-02T07:01:46.779Z",
+  "updatedAt": "2026-11-02T23:09:00.386Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -512,7 +512,19 @@
       "createdAt": "2026-11-02T07:01:46.779Z",
       "author": "youssef",
       "text": "Like swans that choose a single mate to navigate the currents of a lifetime, my heart found its permanent reflection the moment it found you. Every quiet morning beside you is the same silent promise to weather the deep water and the open sky together, always. You are the stillness I return to when the rest of the world moves too fast.",
-      "note": "Created with Shakespeare"
+      "note": "Created with Shakespeare",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b0ca6dcf-eccb-4d0e-9dcd-c3565c2c1513",
+            "hash": "4cf8e892e1c7794f243ab46306fd9b67b7cee41f8b379191396ca1335f288da1"
+          }
+        ]
+      }
     }
   ],
   "photos": [
