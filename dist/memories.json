@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-02T03:40:24.514Z",
+  "updatedAt": "2026-11-02T03:40:31.019Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -972,17 +972,6 @@
           }
         ]
       }
-    },
-    {
-      "id": "26676460-46ef-4575-a39c-7516498802ae",
-      "date": "2026-11-01",
-      "createdAt": "2026-11-02T03:40:24.514Z",
-      "author": "asnat",
-      "src": "assets/photos/2026/11/26676460-46ef-4575-a39c-7516498802ae.jpg",
-      "caption": "A pretty soapy puddle",
-      "alt": "A pretty soapy puddle",
-      "contentHash": "98a812acee9d43225a970c5f20e14039b7d8ea14fc69f3b811c60cd69ea9df94",
-      "collection": "photography"
     }
   ]
 }
