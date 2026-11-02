@@ -1,5 +1,15 @@
 # For Asechka
 
+## Our shared disposable camera · 2.4.0
+
+Open **Our camera** on the website, or **Our disposable camera** on Home in either native app. Load one shared roll with a name. Both profiles contribute to its 24 frames using their device's camera. Captured pictures have no review or retake screen. Add an optional 240-character note before the shutter; it remains sealed with the picture.
+
+The shot counter, sender names and capture dates are shared. Pictures and captions stay hidden until all 24 frames are saved and either person chooses **Develop our 24 moments**. Open the developed roll together and reveal its photos one at a time. Each person can leave a heart, laugh, teary smile or sparkle reaction. Developed rolls remain as albums in the camera; load a fresh roll afterward. There is one unfinished roll at a time, up to 100 rolls in this collection.
+
+Camera data is stored in `private/camera.json` and photos in `private/camera/<UUID>.jpg`, outside the public `dist` directory. The signed `/api/camera` service removes sealed captions from responses and refuses sealed-photo requests even when the photo ID is known. The shared website password grants both profiles access; profile choices are labels, not separate accounts. Existing server-only repository access is reused. Metadata and the resized JPEG are committed atomically; concurrent last-frame attempts cannot overfill the roll. Stable operation IDs prevent duplicate frames after retries. This route shares the journal function through a rewrite to retain the existing hosting function budget.
+
+The native apps encrypt an unsent shot and keep it for explicit retry after restarting; they never display its picture. On the website, keep the page open to retry an unsent shot; leaving shows a browser warning and reloading loses that unsent browser copy. Camera access needs permission and internet to share a new shot. Native capture uses AVFoundation on iPhone and the native Android camera; both camera screens and the website stop the camera when closed or backgrounded. Saved native albums can be reopened offline after loading; iPhone downloads each revealed picture as it is opened. Optional Android biometric locking returns a backgrounded camera to the protected main app.
+
 The original powder-blue and lavender website for Asnat: a letter, a mysterious Friday countdown, a growing quote collection, and our photo album. Real cat photographs, gentle animations, keyboard controls, and reduced-motion support.
 
 Live site: https://asechka-website.vercel.app

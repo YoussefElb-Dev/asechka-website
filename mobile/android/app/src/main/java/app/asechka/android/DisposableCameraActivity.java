@@ -115,5 +115,6 @@ public final class DisposableCameraActivity extends Activity {
   @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results){super.onRequestPermissionsResult(request,permissions,results);if(request==244){if(results.length>0&&results[0]==PackageManager.PERMISSION_GRANTED)openCamera();else{notice="Allow camera access in Android Settings to keep a moment.";render();}}}
   @Override protected void onResume(){super.onResume();visible=true;main.removeCallbacks(poll);poll.run();}
   @Override protected void onPause(){visible=false;main.removeCallbacks(poll);if(cameraDialog!=null)cameraDialog.dismiss();releaseCamera();super.onPause();}
+  @Override protected void onStop(){super.onStop();if(new BiometricDoor(this,api.store).enabled()){getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);finish();}}
   @Override protected void onDestroy(){main.removeCallbacks(poll);images.close();work.shutdown();super.onDestroy();}
 }

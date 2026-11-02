@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-let data = { rolls: [] }, actor = localStorage.getItem('camera-actor') || 'asnat', stream, facing = 'environment', busy = false, pending, selected, frame = 0;
+let data = { rolls: [] }, actor = localStorage.getItem('camera-actor') || 'asnat', stream, cameraEpoch = 0, facing = 'environment', busy = false, pending, selected, frame = 0;
 const name = person => person === 'asnat' ? 'Asnat' : 'Youssef';
 const active = () => data.rolls.find(roll => !roll.developedAt);
 function status(text) { $('status').textContent = text; }
@@ -33,10 +33,10 @@ async function save(body) {
 for (const button of document.querySelectorAll('[data-actor]')) button.onclick = () => { actor = button.dataset.actor; localStorage.setItem('camera-actor', actor); render(); };
 $('new-roll').onsubmit = async event => { event.preventDefault(); await save({ action: 'create', title: $('new-title').value, actor, operationId: crypto.randomUUID() }); };
 $('develop').onclick = async () => { const roll = active(); if (!roll) return; await save({ action: 'develop', rollId: roll.id, actor, operationId: crypto.randomUUID() }); };
-function stopCamera() { stream?.getTracks().forEach(track => track.stop()); stream = undefined; $('camera-preview').srcObject = null; $('shutter').disabled = true; }
+function stopCamera() { cameraEpoch++; stream?.getTracks().forEach(track => track.stop()); stream = undefined; $('camera-preview').srcObject = null; $('shutter').disabled = true; }
 async function openCamera() {
-  stopCamera(); $('camera-message').textContent = 'Opening your camera…';
-  try { if (!navigator.mediaDevices?.getUserMedia) throw new Error('This browser needs HTTPS and camera support. Try the native app or a supported browser.'); stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facing }, width: { ideal: 1600 }, height: { ideal: 1200 } }, audio: false }); if (!$('capture-dialog').open) { stopCamera(); return; } $('camera-preview').srcObject = stream; await $('camera-preview').play(); $('shutter').disabled = false; $('camera-message').textContent = 'One shot. A little surprise for later.'; }
+  stopCamera(); const epoch = cameraEpoch; $('camera-message').textContent = 'Opening your camera…';
+  try { if (!navigator.mediaDevices?.getUserMedia) throw new Error('This browser needs HTTPS and camera support. Try the native app or a supported browser.'); const opened = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facing }, width: { ideal: 1600 }, height: { ideal: 1200 } }, audio: false }); if (epoch !== cameraEpoch || !$('capture-dialog').open) { opened.getTracks().forEach(track => track.stop()); return; } stream = opened; $('camera-preview').srcObject = stream; await $('camera-preview').play(); $('shutter').disabled = false; $('camera-message').textContent = 'One shot. A little surprise for later.'; }
   catch (error) { $('camera-message').textContent = error.name === 'NotAllowedError' ? 'Allow camera access in your browser settings, then try again.' : error.message; }
 }
 $('shoot').onclick = () => { $('caption').value = ''; $('capture-dialog').showModal(); openCamera(); };
