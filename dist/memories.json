@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-02T03:41:02.796Z",
+  "updatedAt": "2026-11-02T03:41:34.516Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -982,6 +982,17 @@
       "caption": "Look at you, cutie",
       "alt": "Look at you, cutie",
       "contentHash": "f633c7a06b3925611e72dbd07994b803c71bdc89827d26a99057af1e406c94a2",
+      "collection": "memories"
+    },
+    {
+      "id": "debd6a2d-39bf-4f65-9c43-cc2270644771",
+      "date": "2026-11-01",
+      "createdAt": "2026-11-02T03:41:34.516Z",
+      "author": "asnat",
+      "src": "assets/photos/2026/11/debd6a2d-39bf-4f65-9c43-cc2270644771.jpg",
+      "caption": "",
+      "alt": "A picture of us",
+      "contentHash": "49548993c8285662fff4ca8c585e8c3c313e2c11331431617cbf5dcc7ce3a018",
       "collection": "memories"
     }
   ]
