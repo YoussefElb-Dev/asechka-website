@@ -28,7 +28,7 @@ $manifest.Save($manifestPath)
 $resZip = Join-Path $buildDir 'resources.zip'
 $unsigned = Join-Path $buildDir 'unsigned.apk'
 Run-Tool "$buildTools\aapt2.exe" @('compile','--dir',"$projectRoot\app\src\main\res",'-o',$resZip)
-Run-Tool "$buildTools\aapt2.exe" @('link','-o',$unsigned,'-I',$platform,'--manifest',$manifestPath,'-R',$resZip,'--java',$generated,'--min-sdk-version','23','--target-sdk-version','36','--version-code','20','--version-name','2.3.1','--auto-add-overlay','-A',"$projectRoot\app\src\main\assets")
+Run-Tool "$buildTools\aapt2.exe" @('link','-o',$unsigned,'-I',$platform,'--manifest',$manifestPath,'-R',$resZip,'--java',$generated,'--min-sdk-version','23','--target-sdk-version','36','--version-code','21','--version-name','2.4.0','--auto-add-overlay','-A',"$projectRoot\app\src\main\assets")
 $sources = @(Get-ChildItem -LiteralPath "$projectRoot\app\src\main\java",$generated -Recurse -Filter '*.java' | ForEach-Object { '"' + $_.FullName.Replace('\','/') + '"' })
 $sourceList = Join-Path $buildDir 'sources.txt'
 [System.IO.File]::WriteAllLines($sourceList,$sources,[System.Text.UTF8Encoding]::new($false))
@@ -36,6 +36,7 @@ Run-Tool "$JavaHome\bin\javac.exe" @('--release','17','-encoding','UTF-8','-clas
 $classJar = Join-Path $buildDir 'classes.jar'
 Run-Tool "$JavaHome\bin\jar.exe" @('--create','--file',$classJar,'-C',$classes,'.')
 Run-Tool "$buildTools\d8.bat" @('--lib',$platform,'--min-api','23','--output',$dex,$classJar)
+Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archive = [System.IO.Compression.ZipFile]::Open($unsigned,[System.IO.Compression.ZipArchiveMode]::Update)
 try {

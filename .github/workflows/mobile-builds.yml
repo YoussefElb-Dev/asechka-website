@@ -15,7 +15,7 @@ on:
       ios_test_scope:
         description: 'Simulator suite when checks are enabled; all retains the system widget-gallery check'
         type: choice
-        options: [all, games]
+        options: [all, games, camera]
         default: all
 permissions:
   contents: read
@@ -159,6 +159,9 @@ jobs:
           if [ "$IOS_TEST_SCOPE" = games ]; then
             FILTER=(-only-testing:AsechkaTests -only-testing:AsechkaUITests/GamesJourneyTests)
           fi
+          if [ "$IOS_TEST_SCOPE" = camera ]; then
+            FILTER=(-only-testing:AsechkaTests -only-testing:AsechkaUITests/FilmJourneyTests)
+          fi
           xcodebuild -project Asechka.xcodeproj -scheme Asechka -destination "platform=iOS Simulator,id=$DEVICE" -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 -maximum-test-execution-time-allowance 180 -derivedDataPath build-test -resultBundlePath NativeChecks.xcresult CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- "${FILTER[@]}" test 2>&1 | tee test.log
         shell: bash --noprofile --norc -e -o pipefail {0}
       - name: Capture native iPhone preview
@@ -184,7 +187,7 @@ jobs:
           PY
           # Games journeys already capture their hub, six sheets and settings.
           # Reinstalling the fixture solely for a Home image can stall simctl.
-          if [ "$IOS_TEST_SCOPE" = games ]; then exit 0; fi
+          if [ "$IOS_TEST_SCOPE" = games ] || [ "$IOS_TEST_SCOPE" = camera ]; then exit 0; fi
           xcrun simctl boot "$IOS_SIMULATOR" || true
           xcrun simctl bootstatus "$IOS_SIMULATOR" -b
           xcrun simctl install "$IOS_SIMULATOR" build-test/Build/Products/Debug-iphonesimulator/Asechka.app

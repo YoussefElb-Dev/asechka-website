@@ -6,8 +6,8 @@ android {
         applicationId 'app.asechka.android'
         minSdk 23
         targetSdk 36
-        versionCode 20
-        versionName '2.3.1'
+        versionCode 21
+        versionName '2.4.0'
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }

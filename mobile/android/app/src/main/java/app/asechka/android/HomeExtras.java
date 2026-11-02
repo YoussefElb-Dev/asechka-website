@@ -157,6 +157,7 @@ final class HomeExtras {
     clock.addView(timeRow);
     clock.setContentDescription("Our time together. Open Since us.");
     clock.setOnClickListener(v -> open.open(0));
+    u.add(root, u.button("Our disposable camera · 24 secret moments", false, () -> activity.startActivity(new android.content.Intent(activity, DisposableCameraActivity.class))), 10);
     String[] names = {
       "Secret vocab",
       "Open when…",

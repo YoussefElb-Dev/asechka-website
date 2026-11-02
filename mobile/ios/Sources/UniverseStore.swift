@@ -158,7 +158,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.8",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
-        for (endpoint,header) in [("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation"),("/api/games-session","X-Asechka-Games")] {
+        for (endpoint,header) in [("/api/camera","X-Asechka-Camera"),("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation"),("/api/games-session","X-Asechka-Games")] {
             if path==endpoint {request.setValue("1",forHTTPHeaderField:header)}
         }
         let (data,response)=try await session.data(for:request)

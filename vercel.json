@@ -4,10 +4,22 @@
   "buildCommand": "",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/music-search", "destination": "/api/music?__asechka_music=search" }
+    {
+      "source": "/api/music-search",
+      "destination": "/api/music?__asechka_music=search"
+    },
+    {
+      "source": "/api/camera",
+      "destination": "/api/journal?__camera=1"
+    }
   ],
   "functions": {
-    "api/games-socket.js": { "maxDuration": 300 },
-    "api/*.js": { "includeFiles": "dist/{*.json,assets/photos/**,assets/recipes/**}", "maxDuration": 60 }
+    "api/games-socket.js": {
+      "maxDuration": 300
+    },
+    "api/*.js": {
+      "includeFiles": "{dist/*.json,dist/assets/photos/**,dist/assets/recipes/**,private/camera.json}",
+      "maxDuration": 60
+    }
   }
 }

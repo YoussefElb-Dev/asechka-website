@@ -506,6 +506,7 @@ public final class ApiClient {
       sentCookie = signedIn() ? cookie : "";
       if (!sentCookie.isEmpty()) connection.setRequestProperty("Cookie", sentCookie);
     }
+    if (path.equals("/api/camera")) connection.setRequestProperty("X-Asechka-Camera", "1");
     if (path.equals("/api/journal")) connection.setRequestProperty("X-Asechka-Journal", "1");
     if (path.equals("/api/keepsakes")) connection.setRequestProperty("X-Asechka-Keepsakes", "1");
     if (path.equals("/api/music")) connection.setRequestProperty("X-Asechka-Music", "1");
