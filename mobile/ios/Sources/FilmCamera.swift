@@ -48,10 +48,18 @@ struct FilmView: View {
             .navigationTitle("Our disposable camera").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }; ToolbarItem(placement: .primaryAction) { Button { Task { await refresh() } } label: { Image(systemName: "arrow.clockwise") }.disabled(busy).accessibilityLabel("Refresh camera") } }
         }
-        .sheet(isPresented: $camera) { NavigationStack { NativeFilmCamera { bytes, caption in
-            camera = false
-            Task { await capture(bytes, caption: caption) }
-        }.ignoresSafeArea(edges: .bottom).navigationTitle("Keep this moment").navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { camera = false } } } }
+        .sheet(isPresented: $camera) {
+            NavigationStack {
+                NativeFilmCamera { bytes, caption in
+                    camera = false
+                    Task { await capture(bytes, caption: caption) }
+                }
+                .ignoresSafeArea(edges: .bottom)
+                .navigationTitle("Keep this moment")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { camera = false } } }
+            }
+        }
         .sheet(item: $album) { FilmAlbumView(roll: $0, changed: { await refresh() }) }
         .confirmationDialog("Discard this unsent shot? A saved server copy, if any, stays on the roll.", isPresented: $discard, titleVisibility: .visible) { Button("Discard local copy", role: .destructive) { universe.vault.remove("film-pending"); pending = nil; Task { await refresh() } }; Button("Keep it", role: .cancel) {} }
         .task {

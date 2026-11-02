@@ -24,7 +24,7 @@ public final class DisposableCameraActivity extends Activity {
   private final ExecutorService work = Executors.newSingleThreadExecutor();
   private final Handler main = new Handler(Looper.getMainLooper());
   private boolean busy, visible;
-  private String notice = "Connecting our shared camera…", createId = UUID.randomUUID().toString();
+  private String notice = "Connecting our shared camera…", createId = UUID.randomUUID().toString(), rollName = "";
   private Dialog cameraDialog;
   private Camera camera;
   private SurfaceView preview;
@@ -59,7 +59,7 @@ public final class DisposableCameraActivity extends Activity {
     u.add(shell,u.text(count+" of 24 moments kept",13,Ui.MUTED),9);
     for (int row=0; row<3; row++) { LinearLayout strip=u.row(5); for(int col=0;col<8;col++) { int index=row*8+col;TextView slot=u.text(index<count ? "♡" : String.valueOf(index+1),12,index<count ? Color.WHITE : Ui.MUTED);slot.setGravity(Gravity.CENTER);slot.setBackground(u.shape(index<count ? Ui.PURPLE : Color.WHITE,6));strip.addView(slot,new LinearLayout.LayoutParams(0,u.dp(30),1)); }u.add(shell,strip,6); }
     if(roll == null) {
-      EditText title=u.input("Name our next roll","",80,false);u.add(shell,title,15);
+      EditText title=u.input("Name our next roll",rollName,80,false);title.addTextChangedListener(new android.text.TextWatcher(){public void beforeTextChanged(CharSequence s,int start,int count,int after){}public void onTextChanged(CharSequence s,int start,int before,int count){rollName=s.toString();}public void afterTextChanged(android.text.Editable s){}});u.add(shell,title,15);
       Button load=u.button("Load a fresh roll ↗",true,()->{String value=title.getText().toString().trim();if(value.isEmpty()){title.setError("Give our roll a name");return;}try{submit(new JSONObject().put("action","create").put("title",value).put("actor",actor()).put("operationId",createId),false);}catch(Exception e){failure(e);}});load.setEnabled(!busy && collection.optBoolean("writable") && pending==null);u.add(shell,load,12);
     } else {
       Button action=u.button(count==24 ? "Develop our 24 moments ✦" : "Take a secret photo ●",true,()->{if(count==24){try{submit(new JSONObject().put("action","develop").put("rollId",roll.optString("id")).put("actor",actor()).put("operationId",UUID.randomUUID().toString()),false);}catch(Exception e){failure(e);}}else openCamera();});action.setEnabled(!busy && collection.optBoolean("writable") && pending==null);u.add(shell,action,16);
