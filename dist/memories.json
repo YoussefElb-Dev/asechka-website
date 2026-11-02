@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T15:27:59.591Z",
+  "updatedAt": "2026-11-02T23:09:00.386Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -486,6 +486,45 @@
         ]
       },
       "revision": "b4ccf8cf-8d7f-463e-8b06-98419796b992"
+    },
+    {
+      "id": "f25e4058-5a62-4483-9977-469665598881",
+      "date": "2026-10-31",
+      "createdAt": "2026-11-01T06:21:32.563Z",
+      "author": "youssef",
+      "text": "If I could leave one thing behind in this world, I would want it to be the certainty that you were loved beyond anything words could ever hold. That even on the days you felt ordinary, someone saw an entire miracle in you. And that in a world where everything eventually fades, my heart found something in yours worth holding onto forever.",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "52c60eec-1d7a-49df-88ee-b4998acd684d",
+            "hash": "e2bdd65af5919dc710f25ae8e4d87765e9eb52667a324763e31a49b7247cc102"
+          }
+        ]
+      }
+    },
+    {
+      "id": "aadc3f70-80ed-4d1d-a0d8-6851d12503ca",
+      "date": "2026-11-02",
+      "createdAt": "2026-11-02T07:01:46.779Z",
+      "author": "youssef",
+      "text": "Like swans that choose a single mate to navigate the currents of a lifetime, my heart found its permanent reflection the moment it found you. Every quiet morning beside you is the same silent promise to weather the deep water and the open sky together, always. You are the stillness I return to when the rest of the world moves too fast.",
+      "note": "Created with Shakespeare",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b0ca6dcf-eccb-4d0e-9dcd-c3565c2c1513",
+            "hash": "4cf8e892e1c7794f243ab46306fd9b67b7cee41f8b379191396ca1335f288da1"
+          }
+        ]
+      }
     }
   ],
   "photos": [
@@ -950,6 +989,52 @@
           {
             "id": "4b17a94a-cc56-47fb-a46c-0977e6a48801",
             "hash": "09f99b2b3554648ea61756e6f05259d169f84052b321b75ab7dad6b81c1a0731"
+          }
+        ]
+      }
+    },
+    {
+      "id": "e0f61207-3ff0-432d-a4de-d5abe7a49243",
+      "date": "2026-11-01",
+      "createdAt": "2026-11-02T03:41:02.796Z",
+      "author": "asnat",
+      "src": "assets/photos/2026/11/e0f61207-3ff0-432d-a4de-d5abe7a49243.jpg",
+      "caption": "Look at you, cutie",
+      "alt": "Look at you, cutie",
+      "contentHash": "f633c7a06b3925611e72dbd07994b803c71bdc89827d26a99057af1e406c94a2",
+      "collection": "memories",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "39896a31-17e1-4199-a0cf-11714bc41f49",
+            "hash": "ba6167b449ce027ab5fc195422836bd9f0312f57e0c37403d915b9f3fdf5799c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "debd6a2d-39bf-4f65-9c43-cc2270644771",
+      "date": "2026-11-01",
+      "createdAt": "2026-11-02T03:41:34.516Z",
+      "author": "asnat",
+      "src": "assets/photos/2026/11/debd6a2d-39bf-4f65-9c43-cc2270644771.jpg",
+      "caption": "",
+      "alt": "A picture of us",
+      "contentHash": "49548993c8285662fff4ca8c585e8c3c313e2c11331431617cbf5dcc7ce3a018",
+      "collection": "memories",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "6fc6a267-1f98-4474-a62e-e0cc831b5ba9",
+            "hash": "de6fc6cca13d8f2bf61722c97b2243159634731cddee838b5d3fb2710536f769"
           }
         ]
       }
