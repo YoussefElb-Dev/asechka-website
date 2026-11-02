@@ -131,6 +131,7 @@ struct FilmAlbumView: View {
     @State private var image: UIImage?
     @State private var message = ""
     @State private var reactions: [String:String] = [:]
+    @State private var savedReactions: [String:[String:String]] = [:]
     @State private var busy = false
     private var shot: FilmShot { roll.shots[index] }
     var body: some View {
@@ -145,7 +146,7 @@ struct FilmAlbumView: View {
             HStack { Button("← Previous") { index -= 1; Touch.tap() }.disabled(index == 0); Spacer(); Button("Next moment →") { index += 1; Touch.tap() }.disabled(index == 23) }.padding(.vertical, 12)
         }.padding(22) }.background(Palette.background).navigationTitle(roll.title).navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } } }
         .task(id: shot.id) {
-            image = nil; reactions = shot.reactions ?? [:]; message = ""
+            image = nil; reactions = savedReactions[shot.id] ?? shot.reactions ?? [:]; message = ""
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--film-preview"), let path = Bundle.main.path(forResource: "cats-cuddle", ofType: "jpg", inDirectory: "default") { image = UIImage(contentsOfFile: path); return }
             #endif
@@ -154,7 +155,7 @@ struct FilmAlbumView: View {
     }
     @MainActor private func react(_ reaction: String) async {
         busy = true; defer { busy = false }; let id = shot.id
-        do { let body: [String:Any] = ["action":"react", "actor":universe.actor, "rollId":roll.id, "shotId":id, "reaction":reactions[universe.actor] == reaction ? "" : reaction, "operationId":UUID().uuidString.lowercased()]; let bytes = try await universe.request("/api/camera", body: JSONSerialization.data(withJSONObject: body)); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); if shot.id == id { reactions = collection.rolls.first { $0.id == roll.id }?.shots.first { $0.id == id }?.reactions ?? [:] }; await changed() } catch { message = error.localizedDescription }
+        do { let body: [String:Any] = ["action":"react", "actor":universe.actor, "rollId":roll.id, "shotId":id, "reaction":reactions[universe.actor] == reaction ? "" : reaction, "operationId":UUID().uuidString.lowercased()]; let bytes = try await universe.request("/api/camera", body: JSONSerialization.data(withJSONObject: body)); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); let saved = collection.rolls.first { $0.id == roll.id }?.shots.first { $0.id == id }?.reactions ?? [:]; savedReactions[id] = saved; if shot.id == id { reactions = saved }; await changed() } catch { message = error.localizedDescription }
     }
 }
 
