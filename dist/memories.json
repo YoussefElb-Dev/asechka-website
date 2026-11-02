@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-02T03:41:39.212Z",
+  "updatedAt": "2026-11-02T03:41:41.110Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -982,7 +982,19 @@
       "caption": "Look at you, cutie",
       "alt": "Look at you, cutie",
       "contentHash": "f633c7a06b3925611e72dbd07994b803c71bdc89827d26a99057af1e406c94a2",
-      "collection": "memories"
+      "collection": "memories",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "39896a31-17e1-4199-a0cf-11714bc41f49",
+            "hash": "ba6167b449ce027ab5fc195422836bd9f0312f57e0c37403d915b9f3fdf5799c"
+          }
+        ]
+      }
     },
     {
       "id": "debd6a2d-39bf-4f65-9c43-cc2270644771",
