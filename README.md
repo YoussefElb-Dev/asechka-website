@@ -165,4 +165,4 @@ Every entry has Edit and Remove controls, with a confirmation before removal. Sa
 
 ### Live location and our time vault
 
-Version 2.5.0 adds a compact Home map, opt-in background location sharing until stopped, and encrypted notes/pictures/videos that open after an immutable date with a fresh QR plus nearby-location check from both phones. Setup, permissions, storage, limits, and verification are described in [LOCATION-VAULT.md](LOCATION-VAULT.md).
+Version 2.5.0 adds a compact Home map, opt-in background location sharing until stopped, and encrypted notes/pictures/videos that open after an immutable date with a fresh QR plus nearby-location check from both phones. Version 2.5.1 stops requesting the persistent iPhone location indicator when Always permission is granted. Setup, permissions, storage, limits, and verification are described in [LOCATION-VAULT.md](LOCATION-VAULT.md).

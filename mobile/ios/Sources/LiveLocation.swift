@@ -22,7 +22,10 @@ struct LocationSnapshot:Decodable {let serverTime:Double;let people:[LocationPer
     private var token="",actor="",lastSent=Date.distantPast
     private var active=false,requesting=false,sending=false
     private var pending:CLLocation?
-    init(universe:UniverseStore){self.universe=universe;super.init();manager.delegate=self;manager.desiredAccuracy=kCLLocationAccuracyBest;manager.distanceFilter=kCLDistanceFilterNone;manager.pausesLocationUpdatesAutomatically=false;manager.showsBackgroundLocationIndicator=true
+    init(universe:UniverseStore){self.universe=universe;super.init();manager.delegate=self;manager.desiredAccuracy=kCLLocationAccuracyBest;manager.distanceFilter=kCLDistanceFilterNone;manager.pausesLocationUpdatesAutomatically=false
+        // With Always permission, leave the persistent background indicator off.
+        // iOS still controls its privacy indicators and requires one for When In Use.
+        manager.showsBackgroundLocationIndicator=false
         if let saved=universe.vault.value("live-location-consent",as:[String:String].self){actor=saved["actor"] ?? "";token=saved["token"] ?? "";stopPending=saved["stopping"]=="1";sharing = !token.isEmpty && !stopPending}
     }
     func configure(active:Bool){self.active=active;guard let u=universe,u.unlocked,!u.requiresCode else{if !sharing{manager.stopUpdatingLocation()};return};if stopPending && active{stop()};if sharing{resume()};if active{Task{await refresh()}}}

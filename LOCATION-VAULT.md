@@ -1,4 +1,4 @@
-# Asechka 2.5.0 (22): where we are, and what we open together
+# Asechka 2.5.1 (23): where we are, and what we open together
 
 Home places the location map directly under the shortcut choices and before the shared posts. Standard phone layouts keep the controls and map visible on first arrival. Large accessibility text and very small screens may need scrolling so text and touch targets remain usable.
 
@@ -8,7 +8,7 @@ Sharing is off until each person chooses Share on their own phone. The phone app
 
 Android uses an explicitly started location foreground service, with an ongoing notification and a Stop action. Allow location and notifications when asked. It accepts approximate location for the map; precise location is needed for the vault. Battery management, force-stop, reboot, or removal of permissions may interrupt updates. Open Asechka again to resume a previously enabled session. The service does not automatically restart from a boot receiver.
 
-iPhone uses Core Location with background location capability, a visible system indicator, and an Always permission request. Allow Always in iPhone Settings for continued background delivery. Force-quitting Asechka can stop updates until it is reopened. Neither app can promise uninterrupted GPS or connectivity indefinitely.
+iPhone uses Core Location with background location capability and an Always permission request. Version 2.5.1 stops requesting the persistent background location indicator. Choose Settings > Privacy & Security > Location Services > Asechka > Always to keep background sharing without the app requesting the persistent indicator. With While Using permission, iOS requires its background location indicator; normal system privacy indicators and permission reminders remain under iOS control. This follows [Apple's documented indicator behavior](https://developer.apple.com/library/archive/qa/qa1965/_index.html). Force-quitting Asechka can stop updates until it is reopened. Neither app can promise uninterrupted GPS or connectivity indefinitely.
 
 The website shows both app locations. Its own Share button updates only while that page is visible. Leaving the browser page attempts to stop that browser's sharing session. A Stop request made offline immediately stops collection on that phone and persists a pending stop; reconnect to remove its server pin immediately. Without connectivity, that pin stops being Live after a minute and disappears after five minutes.
 
