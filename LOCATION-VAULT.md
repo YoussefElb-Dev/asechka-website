@@ -1,6 +1,6 @@
-# Asechka 2.5.1 (23): where we are, and what we open together
+# Asechka 2.5.2 (24): where we are, and what we open together
 
-Home places the location map directly under the shortcut choices and before the shared posts. Standard phone layouts keep the controls and map visible on first arrival. Large accessibility text and very small screens may need scrolling so text and touch targets remain usable.
+Home places the location map directly under the shortcut choices and before the shared posts. Version 2.5.2 gives the map more height: 160 points/dp in the phone apps, 170 pixels on the mobile website, and 240 pixels on desktop. Standard phone layouts keep the controls and map visible on first arrival. Large accessibility text and very small screens may need scrolling so text and touch targets remain usable.
 
 ## Live location
 

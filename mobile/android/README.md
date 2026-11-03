@@ -1,4 +1,4 @@
-# Asechka for Android — 2.5.1 (23)
+# Asechka for Android — 2.5.2 (24)
 
 A native Android app for [our live website](https://asechka-website.vercel.app). The main app uses Android views, text inputs, dialogs, image rendering, navigation, and the system photo picker. Version 2.5.0 adds an isolated, locally rendered map WebView (without a JavaScript bridge) and an authenticated embedded time-vault screen shared with the website. Background location collection uses a native foreground service. See [LOCATION-VAULT.md](../../LOCATION-VAULT.md) for consent, permissions, encryption, and together checks.
 
