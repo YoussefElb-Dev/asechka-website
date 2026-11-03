@@ -21,6 +21,7 @@ struct FilmView: View {
     @State private var title = ""
     @State private var message = "Connecting our shared camera…"
     @State private var camera = false
+    @State private var cameraNotice: String?
     @State private var album: FilmRoll?
     @State private var pending: Data?
     @State private var createID = UUID().uuidString.lowercased()
@@ -61,6 +62,9 @@ struct FilmView: View {
             }
         }
         .sheet(item: $album) { FilmAlbumView(roll: $0, changed: { await refresh() }) }
+        .alert("Our disposable camera", isPresented: Binding(get: { cameraNotice != nil }, set: { if !$0 { cameraNotice = nil } })) {
+            Button("OK", role: .cancel) { cameraNotice = nil }
+        } message: { Text(cameraNotice ?? "") }
         .confirmationDialog("Discard this unsent shot? A saved server copy, if any, stays on the roll.", isPresented: $discard, titleVisibility: .visible) { Button("Discard local copy", role: .destructive) { universe.vault.remove("film-pending"); pending = nil; Task { await refresh() } }; Button("Keep it", role: .cancel) {} }
         .task {
             pending = universe.vault.read("film-pending")
@@ -74,7 +78,10 @@ struct FilmView: View {
             HStack {
                 Image(systemName: "viewfinder").font(.system(size: 36)).foregroundColor(Palette.purple)
                 Spacer()
-                ZStack { Circle().fill(Color(red: 0.31, green: 0.27, blue: 0.37)).frame(width: 128, height: 128); Circle().stroke(Color.white.opacity(0.15), lineWidth: 12).frame(width: 95, height: 95); Image(systemName: "sparkle").font(.system(size: 34)).foregroundColor(Palette.lavender) }
+                Button(action: openCamera) {
+                    ZStack { Circle().fill(Color(red: 0.31, green: 0.27, blue: 0.37)).frame(width: 128, height: 128); Circle().stroke(Color.white.opacity(0.15), lineWidth: 12).frame(width: 95, height: 95); Image(systemName: "sparkle").font(.system(size: 34)).foregroundColor(Palette.lavender) }
+                        .contentShape(Circle())
+                }.buttonStyle(.plain).accessibilityLabel("Open camera").accessibilityHint("Take a secret photo for our roll").accessibilityIdentifier("film.camera.open")
                 Spacer()
                 VStack { Text("LEFT").font(.caption2); Text(String(format: "%02d", 24 - (current?.shots.count ?? 0))).font(.system(size: 28, weight: .medium, design: .monospaced)) }.padding(10).background(Palette.ink, in: RoundedRectangle(cornerRadius: 10)).foregroundColor(.white)
             }
@@ -84,13 +91,22 @@ struct FilmView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 8), spacing: 6) { ForEach(0..<24, id: \.self) { index in Text(index < roll.shots.count ? "♡" : String(index + 1)).font(.caption2).frame(maxWidth: .infinity, minHeight: 29).background(index < roll.shots.count ? Palette.purple : .white.opacity(0.7), in: RoundedRectangle(cornerRadius: 5)).foregroundColor(index < roll.shots.count ? .white : Palette.muted) } }
                 if roll.shots.count == 24 {
                     Button("Develop our 24 moments ✦") { Task { await mutate(["action":"develop", "rollId":roll.id, "actor":universe.actor, "operationId":UUID().uuidString.lowercased()]) } }.primary().disabled(busy || !writable)
-                } else { Button { camera = true; Touch.tap() } label: { Label("Take a secret photo", systemImage: "camera.fill").frame(maxWidth: .infinity).primary() }.disabled(busy || !writable || pending != nil) }
+                } else { Button(action: openCamera) { Label("Take a secret photo", systemImage: "camera.fill").frame(maxWidth: .infinity).primary() }.disabled(busy || !writable || pending != nil).accessibilityIdentifier("film.camera.take") }
             } else {
                 TextField("Name our next roll", text: $title).textFieldStyle(.roundedBorder)
                 Button("Load a fresh roll ↗") { Task { if await mutate(["action":"create", "title":title, "actor":universe.actor, "operationId":createID]) { title = ""; createID = UUID().uuidString.lowercased() } } }.primary().disabled(busy || !writable || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || title.count > 80 || pending != nil)
             }
             Text("Shooting as \(universe.name). Pictures stay sealed until the roll is full and developed.").font(.caption).foregroundColor(Palette.muted)
         }.padding(22).background(Palette.lavender, in: RoundedRectangle(cornerRadius: 28))
+    }
+    private func openCamera() {
+        if busy { cameraNotice = "Our camera is saving. Give it a moment, then try again." }
+        else if pending != nil { cameraNotice = "Your last photo is sealed on this phone. Retry saving it before taking another." }
+        else if !writable { cameraNotice = "Reconnect our shared camera using Refresh, then try again." }
+        else if let roll = current {
+            if roll.shots.count >= 24 { cameraNotice = "This roll is full. Develop our 24 moments before loading a fresh roll." }
+            else { camera = true; Touch.tap() }
+        } else { cameraNotice = "Name and load a fresh roll below before taking your first photo." }
     }
     @MainActor private func refresh() async {
         guard !busy else { return }
@@ -99,7 +115,7 @@ struct FilmView: View {
             let date = "2026-11-02T20:00:00Z"
             let frames = (0..<24).map { FilmShot(id: "fixture-\($0)", actor: $0 % 2 == 0 ? "asnat" : "youssef", createdAt: date, caption: "A little surprise, kept for you. ♡", reactions: ["asnat":"", "youssef":""]) }
             rolls = [FilmRoll(id: "current", title: "Our ordinary November", actor: "asnat", createdAt: date, developedAt: nil, shots: Array(frames.prefix(18))), FilmRoll(id: "album", title: "A weekend in little pieces", actor: "youssef", createdAt: date, developedAt: date, shots: frames)]
-            writable = false; message = "Preview · 18 moments kept. Six little surprises left."; return
+            writable = ProcessInfo.processInfo.arguments.contains("--film-capture-preview"); message = "Preview · 18 moments kept. Six little surprises left."; return
         }
         #endif
         do { let bytes = try await universe.request("/api/camera"); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); rolls = collection.rolls; writable = collection.writable; try? universe.vault.write("film-collection", bytes); if pending == nil { message = "Connected. Our ordinary, extraordinary life. ♡" } }
@@ -185,6 +201,13 @@ final class FilmCaptureController: UIViewController, AVCapturePhotoCaptureDelega
         flip.setTitle("Flip camera ↻", for: .normal); flip.setTitleColor(.white, for: .normal); flip.addTarget(self, action: #selector(switchCamera), for: .touchUpInside)
         status.text = "No previews. Keep a little surprise."; status.textColor = .white; status.font = .systemFont(ofSize: 13); status.numberOfLines = 0; status.textAlignment = .center
         for item in [caption, shutter, flip, status] { view.addSubview(item) }
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--film-capture-preview") {
+            status.text = "Camera controls preview · no photo will be taken."
+            flip.isEnabled = false
+            return
+        }
+        #endif
         switch AVCaptureDevice.authorizationStatus(for: .video) { case .authorized: start(); case .notDetermined: AVCaptureDevice.requestAccess(for: .video) { allowed in DispatchQueue.main.async { if allowed { self.start() } else { self.status.text = "Allow camera access in Settings to keep a moment." } } }; default: status.text = "Allow camera access in Settings to keep a moment." }
     }
     override func viewDidLayoutSubviews() {
