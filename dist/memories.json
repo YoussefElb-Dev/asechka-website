@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-03T16:14:57.520Z",
+  "updatedAt": "2026-11-03T16:14:59.584Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -495,13 +495,18 @@
       "text": "If I could leave one thing behind in this world, I would want it to be the certainty that you were loved beyond anything words could ever hold. That even on the days you felt ordinary, someone saw an entire miracle in you. And that in a world where everything eventually fades, my heart found something in yours worth holding onto forever.",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "52c60eec-1d7a-49df-88ee-b4998acd684d",
             "hash": "e2bdd65af5919dc710f25ae8e4d87765e9eb52667a324763e31a49b7247cc102"
+          },
+          {
+            "id": "777b718e-0c88-470c-b088-fed39d9cec94",
+            "hash": "efa4b127bdf7f99b3e1920c51d1b15309448f45b57ed0610aa6fe5aeaaaf5985"
           }
         ]
       }
