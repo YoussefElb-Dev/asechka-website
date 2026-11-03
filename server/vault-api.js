@@ -33,15 +33,15 @@ export function createVaultAPI({collection=new GitHubVaultStore(),storage=new Re
       const f=input.file;if(!f||!mediaTypes.includes(f.type)||typeof f.name!=='string'||f.name.length>150||!Number.isInteger(f.size)||f.size<=0||f.size>MAX_FILE)throw new LocationError('Choose a supported picture or video up to 16 MB.');
       const c=await storage.connect(),prefix=`${storage.prefix}:upload:${session}:${input.vaultId}:${input.fileId}`,meta={vaultId:input.vaultId,actor:input.actor,file:f},manifest=JSON.stringify(meta),old=await c.get(prefix+':meta');
       if(old&&JSON.stringify(storage.open(old))!==manifest)throw new LocationError('This upload changed. Choose the file again.',409);
-      if(!old)await c.set(prefix+':meta',storage.seal(meta),{EX:3600,NX:true});
+      if(!old){const accepted=await c.set(prefix+':meta',storage.seal(meta),{EX:3600,NX:true});if(!accepted&&JSON.stringify(storage.open(await c.get(prefix+':meta')))!==manifest)throw new LocationError('This upload changed. Choose the file again.',409);}
       const count=Math.ceil(f.size/CHUNK_SIZE);
       if(input.action==='upload'){
         if(!Number.isInteger(input.index)||input.index<0||input.index>=count||typeof input.bytes!=='string'||input.bytes.length>Math.ceil(CHUNK_SIZE/3)*4||! /^[A-Za-z0-9+/]+={0,2}$/.test(input.bytes))throw new LocationError('This file piece is invalid.');
         const bytes=Buffer.from(input.bytes,'base64'),expected=input.index===count-1?f.size-input.index*CHUNK_SIZE:CHUNK_SIZE;if(bytes.length!==expected||bytes.toString('base64')!==input.bytes)throw new LocationError('This file piece is incomplete.');
         const key=prefix+':'+input.index,oldChunk=await c.get(key);if(oldChunk&&storage.open(oldChunk).hash!==digest(bytes))throw new LocationError('This piece was already uploaded with different contents.',409);
-        if(!oldChunk)await c.set(key,storage.seal({hash:digest(bytes),bytes:input.bytes}),{EX:3600,NX:true});return json({uploaded:input.index+1,total:count});
+        if(!oldChunk){const accepted=await c.set(key,storage.seal({hash:digest(bytes),bytes:input.bytes}),{EX:3600,NX:true});if(!accepted&&storage.open(await c.get(key)).hash!==digest(bytes))throw new LocationError('This piece changed during upload. Choose the file again.',409);}return json({uploaded:input.index+1,total:count});
       }
-      const chunks=[];for(let i=0;i<count;i++){const raw=await c.get(prefix+':'+i);if(!raw)throw new LocationError('An upload piece expired. Choose the file again.',409);const chunk=storage.open(raw),bytes=Buffer.from(chunk.bytes,'base64');if(digest(bytes)!==chunk.hash)throw new LocationError('Upload verification failed.',503);chunks.push(bytes);}
+      const chunks=[];for(let i=0;i<count;i++){const raw=await c.get(prefix+':'+i);if(!raw)throw new LocationError('An upload piece expired. Choose the file again.',409);const chunk=storage.open(raw),bytes=Buffer.from(chunk.bytes,'base64'),expected=i===count-1?f.size-i*CHUNK_SIZE:CHUNK_SIZE;if(digest(bytes)!==chunk.hash||bytes.length!==expected)throw new LocationError('Upload verification failed.',503);chunks.push(bytes);}
       const refs=[];for(let i=0;i<chunks.length;i+=4)refs.push(...await Promise.all(chunks.slice(i,i+4).map(bytes=>collection.blob(bytes))));
       const result=await collection.change({action:'file',actor:input.actor,operationId:input.fileId,vaultId:input.vaultId,file:{...f,chunks:refs}});
       await c.del([prefix+':meta',...Array.from({length:count},(_,i)=>prefix+':'+i)]);

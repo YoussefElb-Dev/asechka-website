@@ -32,8 +32,8 @@ public final class LiveLocationService extends Service implements LocationListen
     if(consent==null||!consent.optBoolean("enabled")||!permitted()){stopSelf();return START_NOT_STICKY;}
     try{
       if(Build.VERSION.SDK_INT>=29)startForeground(NOTICE,notification("Until you stop · updates in the background"),android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);else startForeground(NOTICE,notification("Until you stop · updates in the background"));
-      if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED&&locations.isProviderEnabled(LocationManager.GPS_PROVIDER))locations.requestLocationUpdates(LocationManager.GPS_PROVIDER,10_000,0,this);
-      if(locations.isProviderEnabled(LocationManager.NETWORK_PROVIDER))locations.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,10_000,0,this);
+      if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED&&locations.getAllProviders().contains(LocationManager.GPS_PROVIDER))locations.requestLocationUpdates(LocationManager.GPS_PROVIDER,10_000,0,this);
+      if(locations.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))locations.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,10_000,0,this);
     }catch(SecurityException|IllegalStateException error){stopSelf();return START_NOT_STICKY;}
     return START_STICKY;
   }

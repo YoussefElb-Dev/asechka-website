@@ -161,3 +161,8 @@ Open **Our little book** (`/journal.html`) from the home page, Our days, or Sinc
 Every entry has Edit and Remove controls, with a confirmation before removal. Saves appear immediately and refresh on the other screen every minute or when reopened. Failed saves keep the draft while the editor stays open. Closing or reloading discards unsaved website drafts.
 
 `/api/journal` uses the existing signed login and server-only GitHub connection. It saves `dist/journal.json` and bounded JPEGs under `dist/assets/recipes/` atomically, preserves concurrent additions and other files, and rejects stale edits. Recipe images are served through the authenticated API for immediate updates. No extra account, paid service, or new secret is needed. Existing hosting and GitHub limits apply.
+
+
+### Live location and our time vault
+
+Version 2.5.0 adds a compact Home map, opt-in background location sharing until stopped, and encrypted notes/pictures/videos that open after an immutable date with a fresh QR plus nearby-location check from both phones. Setup, permissions, storage, limits, and verification are described in [LOCATION-VAULT.md](LOCATION-VAULT.md).
