@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-03T16:14:59.584Z",
+  "updatedAt": "2026-11-03T16:15:04.908Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -520,13 +520,18 @@
       "note": "Created with Shakespeare",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "b0ca6dcf-eccb-4d0e-9dcd-c3565c2c1513",
             "hash": "4cf8e892e1c7794f243ab46306fd9b67b7cee41f8b379191396ca1335f288da1"
+          },
+          {
+            "id": "f102b805-bde2-4a0e-94e2-4e35f419ca7e",
+            "hash": "a235c71a7930b24591ff9f07341f368e15b0fce8fbac8832555d4c30936bf40b"
           }
         ]
       }
