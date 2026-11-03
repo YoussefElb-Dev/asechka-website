@@ -33,5 +33,7 @@ every position, private fleet reveal, guessed letter, result, and animation.
 - Actual emulator captures: `../android/qa/focused-play/`.
 - iOS arm64 Release 2.6.1 (26) compiles on the hosted Mac and passes IPA, embedded
   WidgetKit-extension and exact Games-payload verification. Apple-ID signing is
-  required before installation. The 33 iOS unit tests pass; the complete focused
-  gameplay screen checks run in the separate hosted simulator job.
+  required before installation. The 33 iOS unit tests and four Games UI journeys
+  pass, including all six play screens, usable fleet-cell sizing, ship dragging,
+  rotation, invalid-drop retention, leaving every game, landscape Pool and
+  restoration of portrait. Actual captures: `../ios/qa/focused-play/`.
