@@ -214,6 +214,6 @@ struct GamesBattleshipView: View {
     private func restoreDraft() {
         ships = universe.vault.value(draftKey, as: [[Int]].self) ?? Array(repeating: [], count: 5)
         if ships.count != 5 { ships = Array(repeating: [], count: 5) }
-        selectedShip = 0; vertical = false; message = ""; oceanOverride = nil; dragIndex = nil; dragAnchor = nil
+        selectShip(0); oceanOverride = nil; dragIndex = nil; dragAnchor = nil
     }
 }
