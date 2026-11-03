@@ -50,7 +50,7 @@ final class GamesJourneyTests: XCTestCase {
         XCTAssertTrue(photography.waitForExistence(timeout: 5))
         photography.tap()
         XCTAssertTrue(app.staticTexts["Photography."].exists)
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = "Photography-native-section"; attachment.lifetime = .keepAlways; add(attachment)
         app.buttons["Create post"].tap()
         let selected = app.segmentedControls["composer.photo.collection"].buttons["Photography"]
@@ -64,7 +64,7 @@ final class GamesJourneyTests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.buttons["Games"].firstMatch.waitForExistence(timeout: 15))
         XCTAssertTrue(app.staticTexts["Our game room."].waitForExistence(timeout: 5))
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = "Games-native-hub"; attachment.lifetime = .keepAlways; add(attachment)
         XCTAssertTrue(app.buttons["games.featured.pool"].exists)
         app.buttons["games.featured.pool"].tap()
@@ -117,7 +117,7 @@ final class GamesJourneyTests: XCTestCase {
         }
     }
     private func capture(_ app: XCUIApplication, _ name: String) {
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
     }
 }

@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import Combine
 
 /// UIKit asks the actual full-screen controller which orientations it supports.
 /// A child SwiftUI view's geometry request cannot set that presentation policy.
@@ -25,6 +26,7 @@ final class GamesPresenterController: UIViewController {
     private var universe: UniverseStore?
     private var game: GamesPlayHostingController?
     private var transitioning = false
+    private var changes: AnyCancellable?
 
     override func loadView() {
         view = UIView()
@@ -38,6 +40,13 @@ final class GamesPresenterController: UIViewController {
     }
 
     func configure(store: GamesStore, universe: UniverseStore) {
+        if self.store !== store {
+            // A full-screen UIKit presentation takes the underlying SwiftUI
+            // hierarchy offscreen; presentation state must keep observing it.
+            changes = store.objectWillChange.sink { [weak self] _ in
+                DispatchQueue.main.async { [weak self] in self?.synchronize() }
+            }
+        }
         self.store = store
         self.universe = universe
         DispatchQueue.main.async { [weak self] in self?.synchronize() }
@@ -79,6 +88,7 @@ final class GamesPresenterController: UIViewController {
     }
 
     func tearDown() {
+        changes = nil
         store = nil
         universe = nil
         if let game { close(game, animated: false) }
