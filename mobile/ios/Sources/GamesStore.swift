@@ -78,6 +78,11 @@ enum GamesFeedback {
             presence = []; error = nil
         }
         eligible = active && universe.unlocked && !universe.requiresCode && universe.online && ["asnat", "youssef"].contains(actor)
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--preview-fixture") && ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--games-play=") }) {
+            eligible = false; connected = true; presence = ["asnat", "youssef"]; connectionText = "Local play preview"; return
+        }
+        #endif
         if eligible {
             if !connected && !connecting { connect() }
         } else {

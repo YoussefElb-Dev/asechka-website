@@ -731,6 +731,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root.requestFocus();
   }
 
+  void gamesFocus(boolean focused,boolean pool) {
+    if(root!=null&&root.getChildCount()>0)root.getChildAt(0).setVisibility(focused?View.GONE:View.VISIBLE);
+    if(notice!=null)notice.setVisibility(focused?View.GONE:View.VISIBLE);
+    if(bottom!=null)bottom.setVisibility(focused?View.GONE:View.VISIBLE);
+    int orientation=pool?android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE:android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+    if(getRequestedOrientation()!=orientation)setRequestedOrientation(orientation);
+  }
+
   private void settings(View anchor) {
     Ui.Sheet sheet = u.sheet("Our little settings", "");
     LinearLayout profile=u.row(14);profile.setPadding(u.dp(16),u.dp(16),u.dp(16),u.dp(16));profile.setBackground(u.shape(Color.WHITE,16));profile.addView(SocialFeed.avatar(this,actor(),50),new LinearLayout.LayoutParams(u.dp(50),u.dp(50)));LinearLayout copy=u.column();copy.addView(u.title(person(),17));u.add(copy,u.text("Our little universe",15,Ui.MUTED),4);profile.addView(copy);sheet.items.addView(profile);

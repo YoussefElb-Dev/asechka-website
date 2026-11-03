@@ -2333,10 +2333,13 @@ public final class NativeTests extends Instrumentation {
       await(() -> !views(games, GamesBoard.class).isEmpty()
           && views(games, GamesBoard.class).get(0).getHeight() > 0, "Native board lays out");
       GamesBoard board = views(games, GamesBoard.class).get(0);
-      ui(() -> games.scrollTo(0, Math.max(0, board.getTop() - 64)));
+      if ("battleship".equals(room.optString("game"))) ui(() -> { board.fleet.automatic(); board.invalidate(); });
+      ui(() -> games.scrollTo(0, 0));
+      await(() -> board.getBottom() <= games.getHeight(), "Board stays in the play viewport");
       check(board.getWidth() <= games.getWidth() && board.getWidth() > 0,
           "Board fits the native viewport: " + room.optString("game"));
       screenshot("games-board-" + room.optString("game"));
+      check(((View)inner(games,"body")).getHeight()<=games.getHeight()+2,"Primary play controls fit without page scrolling: "+room.optString("game"));
     }
     ui(() -> {
       games.client.connected = false;
@@ -2362,8 +2365,10 @@ public final class NativeTests extends Instrumentation {
       board.update(GamesData.obj("id", "gesture-pool", "game", "pool", "status", "playing", "players", new JSONArray().put(GamesData.obj("actor", "asnat")).put(GamesData.obj("actor", "youssef")), "state", state), null, true);
       board.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(512, View.MeasureSpec.EXACTLY));board.layout(0, 0, 800, 512);
       Bitmap frame=Bitmap.createBitmap(800,512,Bitmap.Config.ARGB_8888);board.draw(new android.graphics.Canvas(frame));frame.recycle();
-      // Pool field is 44..756, cue is (222,224). A horizontal pull from the cue charges the shot.
-      touch(board, MotionEvent.ACTION_DOWN, 222, 224);touch(board, MotionEvent.ACTION_MOVE, 92, 224);touch(board, MotionEvent.ACTION_UP, 92, 224);
+      android.graphics.RectF field;
+      try { field=(android.graphics.RectF)inner(board,"field"); } catch(Exception error){throw new RuntimeException(error);}
+      float cueX=field.left+field.width()*.25f,cueY=field.centerY(),pull=field.width()*.2f;
+      touch(board, MotionEvent.ACTION_DOWN, cueX, cueY);touch(board, MotionEvent.ACTION_MOVE, cueX-pull, cueY);touch(board, MotionEvent.ACTION_UP, cueX-pull, cueY);
     });
     check(pullReleased[0] && action[0].optDouble("power") > .5, "Native cue pull releases a proportional shot");
     ui(() -> {
@@ -2382,6 +2387,34 @@ public final class NativeTests extends Instrumentation {
     GamesFleet fleet=surface[0].fleet;fleet.selected=0;
     check(fleet.candidate(19)==null, "Drag preview rejects ships outside the board");
     check(fleet.candidate(20)==null, "Drag preview rejects overlap with another ship");
+    fleet.automatic();fleet.select(0);
+    check(!fleet.rotate()&&!fleet.vertical&&fleet.ships[0][1]==1,"Blocked rotation retains the actual orientation and position");
+    check(fleet.message.contains("overlaps"),"Blocked rotation explains overlap visibly");
+    check(fleet.place(5)&&fleet.selected==0,"Moving an existing ship keeps it selected");
+    check(fleet.rotate()&&fleet.vertical&&fleet.ships[0][1]==15,"Rotate immediately rotates the placed ship");
+    fleet.select(1);check(!fleet.vertical,"Selecting a placed ship restores its actual orientation");
+    fleet.select(0);check(fleet.vertical,"Re-selecting a vertical ship preserves its orientation");
+    check(fleet.rotate()&&fleet.place(75),"Ship can move near the lower edge horizontally");
+    check(!fleet.rotate()&&!fleet.vertical&&fleet.ships[0][0]==75,"Out-of-bounds rotation keeps the last valid placement");
+    check(!fleet.place(20)&&fleet.ships[0][0]==75&&fleet.message.contains("overlaps"),"Invalid drops preserve the last valid ship and explain why");
+    ui(() -> {
+      GamesBoard board=surface[0];
+      for(String game:new String[]{"tictactoe","connect4"}) {
+        int columns="tictactoe".equals(game)?3:7, rows="tictactoe".equals(game)?3:6;
+        JSONArray empty=new JSONArray();for(int i=0;i<columns*rows;i++)empty.put(JSONObject.NULL);
+        board.update(GamesData.obj("id","art-touch-"+game,"game",game,"status","playing","players",new JSONArray().put(GamesData.obj("actor","asnat")).put(GamesData.obj("actor","youssef")),"state",GamesData.obj("turn",0,"winner",JSONObject.NULL,"board",empty)),null,true);
+        board.measure(View.MeasureSpec.makeMeasureSpec(800,View.MeasureSpec.EXACTLY),View.MeasureSpec.makeMeasureSpec(832,View.MeasureSpec.EXACTLY));board.layout(0,0,800,board.getMeasuredHeight());
+        Bitmap frame=Bitmap.createBitmap(800,board.getHeight(),Bitmap.Config.ARGB_8888);board.draw(new android.graphics.Canvas(frame));frame.recycle();
+        android.graphics.RectF field;
+        try { field=(android.graphics.RectF)inner(board,"field"); } catch(Exception error){throw new RuntimeException(error);}
+        for(int row=0;row<rows;row++)for(int column=0;column<columns;column++) {
+          action[0]=null;
+          float x=field.left+(column+.5f)*field.width()/columns,y=field.top+(row+.5f)*field.height()/rows;
+          touch(board,MotionEvent.ACTION_DOWN,x,y);touch(board,MotionEvent.ACTION_UP,x,y);
+          check(action[0]!=null&&action[0].optInt(columns==3?"cell":"column",-1)==(columns==3?row*columns+column:column),"Artwork touch aligns: "+game+" "+row+","+column);
+        }
+      }
+    });
     ui(() -> ((FrameLayout) uncheckedGet("stage")).removeView(surface[0]));
   }
 

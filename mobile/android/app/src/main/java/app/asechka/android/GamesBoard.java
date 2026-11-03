@@ -14,6 +14,8 @@ final class GamesBoard extends View {
   private final Host host;
   private final String actor;
   private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint texturePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+  private String warmedGame = "";
   private final RectF field = new RectF(), ownField = new RectF();
   private JSONObject room = new JSONObject(), state = new JSONObject(), pending;
   private String game = "tictactoe";
@@ -24,6 +26,8 @@ final class GamesBoard extends View {
   private float downX, downY;
   private boolean draggingFleet, charging;
   private int dragCell = -1, dragOffset;
+  int maxBoardHeight;
+  Boolean ownOcean;
   private float gesturePower;
   private int animatedCell=-1,animatedFrom=-1;
   private long animationStarted;
@@ -40,6 +44,7 @@ final class GamesBoard extends View {
 
   void update(JSONObject room, JSONObject pending, boolean online) {
     String oldId = this.room.optString("id");
+    int oldTurn=this.state.optInt("turn",-1);
     if (!oldId.equals(room.optString("id"))) { selected = -1; fleet.reset(); }
     if(oldId.equals(room.optString("id"))&&this.room.optLong("seq")!=room.optLong("seq")&&motion()){
       JSONArray before=GamesData.array(this.state,"board"),after=GamesData.array(GamesData.state(room),"board");
@@ -52,7 +57,9 @@ final class GamesBoard extends View {
       animationStarted=android.os.SystemClock.uptimeMillis();
     }else if(!oldId.equals(room.optString("id")))animatedCell=-1;
     this.room = room; this.state = GamesData.state(room); this.game = room.optString("game");
+    if(!game.equals(warmedGame)){GamesTextures.warm(getContext(),game);warmedGame=game;}
     this.player = GamesData.player(room, actor);
+    if(!oldId.equals(room.optString("id"))||oldTurn!=this.state.optInt("turn",-1))ownOcean=null;
     this.pending = pending != null && room.optString("id").equals(pending.optString("room")) ? pending.optJSONObject("action") : null;
     canMove = online && pending == null && "playing".equals(room.optString("status")) && !GamesData.finished(state) && player >= 0;
     if ("checkers".equals(game) && !state.isNull("forced") && state.has("forced")) selected = state.optInt("forced",-1);
@@ -70,8 +77,8 @@ final class GamesBoard extends View {
 
   protected void onMeasure(int width, int height) {
     int w = MeasureSpec.getSize(width);
-    float ratio = "pool".equals(game) ? .64f : "battleship".equals(game) && !placing() ? 1.78f : "hangman".equals(game) ? .64f : "connect4".equals(game) ? .92f : 1.04f;
-    setMeasuredDimension(w, Math.round(w*ratio));
+    float ratio = "pool".equals(game) ? .54f : "hangman".equals(game) ? .64f : "connect4".equals(game) ? .92f : 1.04f;
+    int desired=Math.round(w*ratio);setMeasuredDimension(w,maxBoardHeight>0?Math.min(desired,maxBoardHeight):desired);
   }
 
   protected void onDraw(Canvas c) {
@@ -91,15 +98,17 @@ final class GamesBoard extends View {
     int cols = "tictactoe".equals(game) ? 3 : "connect4".equals(game) ? 7 : 8;
     int rows = cols == 7 ? 6 : cols;
     float size = Math.min(field.width()/cols, field.height()/rows);
+    field.left=(getWidth()-size*cols)/2;field.top=(getHeight()-size*rows)/2;
     field.right = field.left+size*cols; field.bottom = field.top+size*rows;
+    if(cols==8)rect(c,field.left-7,field.top-7,field.right+7,field.bottom+7,13,0xffc4abb6);
+    art(c,game+"/board",field);
     JSONArray board = GamesData.array(state,"board"), line = GamesData.array(state,"line"), legal = GamesData.array(state,"legal");
     float progress=motion()?Math.min(1,(android.os.SystemClock.uptimeMillis()-animationStarted)/420f):1;
     boolean animating=animatedCell>=0&&progress<1;
     for (int i=0;i<rows*cols;i++) {
       float x=field.left+(i%cols)*size, y=field.top+(i/cols)*size;
-      int fill = cols==8 ? ((i/8+i%8)%2==0 ? 0xfff7f2fc : 0xffc7badb) : 0xffeeebf8;
-      rect(c,x+2,y+2,x+size-2,y+size-2,cols==8?3:10,fill);
-      if (contains(line,i)) rect(c,x+3,y+3,x+size-3,y+size-3,8,0x665fcdb3);
+      if(cols==7){circle(c,x+size/2,y+size/2-1,size*.405f,0xffa28bbf);circle(c,x+size/2,y+size/2+1,size*.39f,0xfff5f1fa);}
+      if (contains(line,i)) {if(cols==7)ring(c,x+size/2,y+size/2,size*.42f,2,0xfffff5e2);else rect(c,x+3,y+3,x+size-3,y+size-3,8,0x22a58bc6);}
       if (i==selected) rect(c,x+2,y+2,x+size-2,y+size-2,5,0x99bda3f1);
       if (cols==8 && myTurn()) {
         boolean source=false, target=false;
@@ -121,6 +130,7 @@ final class GamesBoard extends View {
       else if(cols==8&&value instanceof JSONObject){JSONObject piece=(JSONObject)value;float fromX=field.left+(animatedFrom%cols+.5f)*size,fromY=field.top+(animatedFrom/cols+.5f)*size;disc(c,fromX+(x-fromX)*t,fromY+(y-fromY)*t,size*.36f,piece.optInt("player"),piece.optBoolean("king"));}
     }
     if(animating&&isShown())postInvalidateOnAnimation();
+    if(cols==3&&line.length()>=3){int first=line.optInt(0),last=line.optInt(line.length()-1);float x1=field.left+(first%3+.5f)*size,y1=field.top+(first/3+.5f)*size,x2=field.left+(last%3+.5f)*size,y2=field.top+(last/3+.5f)*size;float reveal=animating?progress:1;line(c,x1,y1,x1+(x2-x1)*reveal,y1+(y2-y1)*reveal,3,0x99a58bc6);}
     if (pending!=null) {
       int cell=pending.optInt("cell",pending.optInt("to",-1));
       if(cols==7) { int col=pending.optInt("column",-1); if(col>=0) for(int r=5;r>=0;r--) if(board.isNull(r*7+col)) {cell=r*7+col;break;} }
@@ -133,32 +143,26 @@ final class GamesBoard extends View {
   }
 
   private void drawHangman(Canvas c) {
-    float w=getWidth(),h=getHeight(),x=w*.5f,y=h*.45f,r=h*.29f;
+    float h=getHeight(),w=Math.min(getWidth(),h*1.5f);c.save();c.translate((getWidth()-w)/2,0);
     int remaining=state.optInt("remaining",6);
-    ring(c,x,y,r,1,0xffd9e1f0);ring(c,x,y,r*.56f,1,0xffeeebf8);
-    for(int i=0;i<6;i++){
-      double angle=i*Math.PI/3-Math.PI/2,next=(i+1)*Math.PI/3-Math.PI/2;
-      float px=x+(float)Math.cos(angle)*r,py=y+(float)Math.sin(angle)*r;
-      line(c,px,py,x+(float)Math.cos(next)*r,y+(float)Math.sin(next)*r,2,i<remaining?0xffa69abb:0xffeeebf8);
-      circle(c,px,py,h*.038f,i<remaining?0xff6b5cb5:0xffd9e1f0);
-      if(i<remaining)circle(c,px-h*.008f,py-h*.009f,h*.012f,0xffe7ddfa);
-    }
-    caption(c,"♡",x-h*.075f,y+h*.064f,h*.24f,0xff9f4b6f);
-    caption(c,"BETWEEN THE LETTERS",w*.25f,h*.93f,w*.035f,0xff64708b);
+    art(c,"hangman/book",new RectF(0,0,w,h));
+    for(int i=0;i<5;i++)line(c,w*.14f,h*(.27f+i*.105f),w*.42f,h*(.27f+i*.105f),Math.max(2,w*.005f),0xffc7b6df);
+    art(c,"common/heart",new RectF(w*.62f,h*.30f,w*.78f,h*.30f+w*.16f),remaining==0?65:255);
+    for(int i=0;i<6;i++)circle(c,w*(.64f+i*.025f),h*.69f,w*.009f,i<remaining?0xffcd8ca7:0xffead7e1);
+    c.restore();
   }
 
   private void drawFleet(Canvas c) {
-    float size=field.width()/10;
-    field.top += getWidth()*.065f; field.bottom=field.top+size*10;
-    caption(c,placing()?"YOUR OCEAN · PLACE SHIPS":"TARGET OCEAN",field.left,field.top-getWidth()*.027f,getWidth()*.032f,0xff64708b);
-    ocean(c,field,placing(),false);
-    if(!placing()) {
-      float ownSize=size*.61f;
-      ownField.set(field.left,field.bottom+getWidth()*.105f,field.left+ownSize*10,field.bottom+getWidth()*.105f+ownSize*10);
-      caption(c,"YOUR FLEET · INCOMING FIRE",ownField.left,ownField.top-getWidth()*.027f,getWidth()*.032f,0xff64708b);
-      ocean(c,ownField,true,true);
-    } else ownField.setEmpty();
+    float side=Math.min(field.width(),getHeight()-getWidth()*.11f);
+    field.left=(getWidth()-side)/2;field.right=field.left+side;
+    field.top=getWidth()*.08f;field.bottom=field.top+side;
+    boolean own=showingOwnOcean();
+    String label=placing()?draggingFleet?(fleet.candidate(dragCell)!=null?"RELEASE TO PLACE · VALID":"CANNOT PLACE · MOVE TO A CLEAR SPACE"):"YOUR OCEAN · PLACE SHIPS":own?"YOUR FLEET · INCOMING FIRE":"HER WATERS · TAP TO FIRE";
+    caption(c,label,field.left,field.top-getWidth()*.027f,Math.min(getWidth()*.029f,side*.033f),0xff64708b);
+    ocean(c,field,own,!placing()&&own);ownField.setEmpty();
   }
+  boolean showingOwnOcean(){return placing()||(ownOcean!=null?ownOcean:state.optInt("turn",-1)!=player);}
+  void showOcean(boolean own){ownOcean=own;invalidate();}
 
   private void ocean(Canvas c,RectF rect,boolean own,boolean incoming) {
     float size=rect.width()/10;
@@ -167,30 +171,43 @@ final class GamesBoard extends View {
     int attacker=incoming?1-player:player;
     JSONArray shots=GamesData.array(state,"shots").optJSONArray(attacker),hits=GamesData.array(state,"hits").optJSONArray(attacker);
     JSONArray sunk=GamesData.array(state,"sunkShips").optJSONArray(player);
+    art(c,"battleship/board",rect);
+    if(own&&placing()&&!ownFleetPlaced()){
+      for(int i=0;i<fleet.ships.length;i++)if(fleet.ships[i]!=null)drawShip(c,rect,fleet.ships[i],i);
+    }else if(ships!=null){for(int i=0;i<ships.length();i++)drawShip(c,rect,shipCells(ships.optJSONObject(i)),i);}
+    if(!own&&ships==null&&sunk!=null)for(int i=0;i<sunk.length();i++){JSONObject ship=sunk.optJSONObject(i);if(ship!=null)drawShip(c,rect,shipCells(ship),ship.optInt("index",i));}
     for(int cell=0;cell<100;cell++) {
       float x=rect.left+(cell%10)*size,y=rect.top+(cell/10)*size;
-      rect(c,x+1,y+1,x+size-1,y+size-1,2,0xffeaf1fc);
-      boolean occupied=false;
-      if(ships!=null) for(int i=0;i<ships.length();i++)if(contains(GamesData.array(ships.optJSONObject(i),"cells"),cell))occupied=true;
-      if(own&&placing()&&!ownFleetPlaced())for(int[] ship:fleet.ships)if(ship!=null)for(int v:ship)if(v==cell)occupied=true;
-      if(!own&&sunk!=null)for(int i=0;i<sunk.length();i++)if(contains(GamesData.array(sunk.optJSONObject(i),"cells"),cell))occupied=true;
-      if(occupied)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff6a9eaa);
-      if(own&&draggingFleet){int[] preview=fleet.candidate(dragCell);if(preview!=null)for(int v:preview)if(v==cell)rect(c,x+3,y+3,x+size-3,y+size-3,3,0xff2e746a);}
+      if(own&&placing()&&!ownFleetPlaced()&&fleet.ships[fleet.selected]!=null)for(int occupied:fleet.ships[fleet.selected])if(occupied==cell){p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(3);p.setColor(0xff76b4ab);c.drawRect(x+2,y+2,x+size-2,y+size-2,p);p.setStyle(Paint.Style.FILL);}
       if(contains(shots,cell)) {
-        if(contains(hits,cell)) { line(c,x+size*.3f,y+size*.3f,x+size*.7f,y+size*.7f,3,0xff9f4b6f);line(c,x+size*.7f,y+size*.3f,x+size*.3f,y+size*.7f,3,0xff9f4b6f); }
-        else circle(c,x+size/2,y+size/2,size*.13f,0xff64708b);
+        art(c,contains(hits,cell)?"common/hit":"common/miss",new RectF(x+size*.12f,y+size*.12f,x+size*.88f,y+size*.88f));
       }
       if(!incoming&&pending!=null&&pending.optInt("cell",-1)==cell)ring(c,x+size/2,y+size/2,size*.35f,2,Ui.PURPLE);
     }
+    if(own&&draggingFleet&&dragCell>=0){
+      int length=GamesFleet.LENGTHS[fleet.selected];boolean valid=fleet.candidate(dragCell)!=null;
+      float x=rect.left+dragCell%10*size,y=rect.top+dragCell/10*size;
+      c.save();c.clipRect(rect);rect(c,x+2,y+2,x+size*(fleet.vertical?1:length)-2,y+size*(fleet.vertical?length:1)-2,5,valid?0x6676b4ab:0x88d697b2);
+      p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(4);p.setColor(valid?0xff2e746a:0xff9f4b6f);c.drawRect(x+2,y+2,x+size*(fleet.vertical?1:length)-2,y+size*(fleet.vertical?length:1)-2,p);p.setStyle(Paint.Style.FILL);c.restore();
+    }
+  }
+
+  private static int[] shipCells(JSONObject ship){JSONArray cells=GamesData.array(ship,"cells");int[] result=new int[cells.length()];for(int i=0;i<result.length;i++)result[i]=cells.optInt(i);return result;}
+  private void drawShip(Canvas c,RectF ocean,int[] cells,int index){
+    if(cells.length<2)return;float size=ocean.width()/10;
+    boolean vertical=cells[1]-cells[0]==10;int first=cells[0],last=cells[cells.length-1];
+    float x=ocean.left+((first%10+last%10)/2f+.5f)*size,y=ocean.top+((first/10+last/10)/2f+.5f)*size;
+    String[] names={"carrier","battleship","cruiser","submarine","destroyer"};
+    c.save();c.translate(x,y);if(!vertical)c.rotate(90);
+    art(c,"battleship/"+names[Math.max(0,Math.min(4,index))],new RectF(-size*.37f,-size*(cells.length-.16f)/2,size*.37f,size*(cells.length-.16f)/2));c.restore();
   }
 
   private void drawPool(Canvas c) {
-    float left=getWidth()*.055f,top=getHeight()*.09f,width=getWidth()-2*left,height=width/2;
+    float width=Math.min(getWidth()*.9f,getHeight()/0.58f),height=width/2,left=(getWidth()-width)/2,top=(getHeight()-height)/2;
     field.set(left,top,left+width,top+height);
-    rect(c,left-10,top-10,left+width+10,top+height+10,17,0xff554135);
-    rect(c,left-4,top-4,left+width+4,top+height+4,12,0xff193e39);
-    rect(c,left,top,left+width,top+height,8,0xff226556);
-    for(float[] pocket:new float[][]{{0,0},{.5f,0},{1,0},{1,1},{.5f,1},{0,1}})circle(c,left+pocket[0]*width,top+pocket[1]*height,width*.024f,0xff0b1520);
+    float rail=width*.04f;
+    art(c,"pool/board",new RectF(left-rail,top-rail,left+width+rail,top+height+rail));
+    for(float[] pocket:new float[][]{{0,0},{.5f,0},{1,0},{1,1},{.5f,1},{0,1}}){float x=left+pocket[0]*width,y=top+pocket[1]*height,r=width*.028f;art(c,"pool/pocket",new RectF(x-r,y-r,x+r,y+r));}
     JSONArray balls=GamesData.array(state,"balls"),next=null;
     double blend=0;
     JSONObject shot=state.optJSONObject("lastShot");
@@ -214,13 +231,13 @@ final class GamesBoard extends View {
       double x=ball.optDouble("x"),y=ball.optDouble("y");
       if(next!=null)for(int j=0;j<next.length();j++){JSONObject b=next.optJSONObject(j);if(b!=null&&b.optInt("id")==ball.optInt("id")){x+=(b.optDouble("x")-x)*blend;y+=(b.optDouble("y")-y)*blend;break;}}
       float px=left+(float)x/1000*width,py=top+(float)y/500*height,r=width*.011f;
-      int id=ball.optInt("id"); int[] colors={0xffeee7d7,0xffe5c477,0xff94b2f0,0xffe79794,0xffb3a0e0,0xffe0a778,0xffa3cfaf,0xffb5828c,0xff111626};
-      circle(c,px+1,py+2,r,0x66000000);circle(c,px,py,r,colors[id<9?id:id-8]);
-      if(id>8)rect(c,px-r,py-r*.36f,px+r,py+r*.36f,r*.2f,0xffeee7d7);
-      if(id>0&&getWidth()>500){circle(c,px,py,r*.48f,0xffeee7d7);caption(c,""+id,px-r*.28f,py+r*.28f,r*.75f,0xff18212c);}
+      int id=ball.optInt("id");
+      circle(c,px+r*.12f,py+r*.2f,r,0x22263451);
+      art(c,"pool/ball-"+id+"-small",new RectF(px-r,py-r,px+r,py+r));
+      if(id>0){p.setTextAlign(Paint.Align.CENTER);p.setTypeface(Typeface.DEFAULT_BOLD);p.setTextSize(r*.76f);p.setStyle(Paint.Style.FILL);p.setColor(0xff263451);c.drawText(""+id,px,py-(p.ascent()+p.descent())/2,p);p.setTextAlign(Paint.Align.LEFT);}
       if(id==0&&myTurn()) {
         line(c,px,py,px+(float)Math.cos(angle)*width*.27f,py+(float)Math.sin(angle)*width*.27f,1.5f,0x99e9f5df);
-        line(c,px-(float)Math.cos(angle)*width*.22f,py-(float)Math.sin(angle)*width*.22f,px-(float)Math.cos(angle)*width*.045f,py-(float)Math.sin(angle)*width*.045f,3,0xffdbc297);
+        float pull=charging?gesturePower*width*.04f:0;c.save();c.translate(px,py);c.rotate((float)Math.toDegrees(angle));art(c,"pool/cue",new RectF(-width*.22f-pull,-width*.004f,-width*.025f-pull,width*.004f));c.restore();
       }
     }
     if(pending!=null&&"place".equals(pending.optString("type")))ring(c,left+(float)pending.optDouble("x")/1000*width,top+(float)pending.optDouble("y")/500*height,width*.017f,2,0xffe0d0ff);
@@ -234,8 +251,10 @@ final class GamesBoard extends View {
   private void ring(Canvas c,float x,float y,float r,float stroke,int color){p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(stroke);p.setColor(color);c.drawCircle(x,y,r,p);}
   private void line(Canvas c,float x,float y,float x2,float y2,float stroke,int color){p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(stroke);p.setStrokeCap(Paint.Cap.ROUND);p.setColor(color);c.drawLine(x,y,x2,y2,p);}
   private void caption(Canvas c,String text,float x,float y,float size,int color){p.setStyle(Paint.Style.FILL);p.setColor(color);p.setTypeface(Typeface.DEFAULT_BOLD);p.setTextAlign(Paint.Align.LEFT);p.setTextSize(size);c.drawText(text,x,y,p);}
-  private void mark(Canvas c,float x,float y,float r,int who,int alpha){int color=(alpha<<24)|(who==0?0x006b5cb5:0x002e746a);if(who==0){line(c,x-r,y-r,x+r,y+r,Math.max(4,r*.23f),color);line(c,x-r,y+r,x+r,y-r,Math.max(4,r*.23f),color);}else ring(c,x,y,r,Math.max(4,r*.23f),color);}
-  private void disc(Canvas c,float x,float y,float r,int who,boolean king){circle(c,x,y+2,r,0xff101728);circle(c,x,y,r,who==0?0xff7964ae:0xff3e8c82);ring(c,x,y,r*.73f,Math.max(1,r*.06f),who==0?0xffc6b4e4:0xffa1d2c9);if(king)caption(c,"♛",x-r*.57f,y+r*.42f,r*1.3f,0xffffffff);}
+  private void mark(Canvas c,float x,float y,float r,int who,int alpha){art(c,who==0?"tictactoe/x":"tictactoe/o",new RectF(x-r,y-r,x+r,y+r),alpha);}
+  private void disc(Canvas c,float x,float y,float r,int who,boolean king){circle(c,x+r*.08f,y+r*.12f,r,0x22263451);art(c,("checkers".equals(game)?"checkers/":"connect4/")+(who==0?"rose":"mint")+(king?"-king":""),new RectF(x-r,y-r,x+r,y+r));}
+  private void art(Canvas c,String name,RectF bounds){art(c,name,bounds,255);}
+  private void art(Canvas c,String name,RectF bounds,int alpha){texturePaint.setAlpha(alpha);c.drawBitmap(GamesTextures.image(getContext(),name),null,bounds,texturePaint);texturePaint.setAlpha(255);}
 
   private int hit(float x,float y) {
     if(!field.contains(x,y))return -1;
@@ -248,13 +267,13 @@ final class GamesBoard extends View {
     if("battleship".equals(game)&&placing()) {
       if(!canMove||ownFleetPlaced())return;
       if(fleet.place(cell)) { invalidate();host.selection(); }
-      else { announceForAccessibility("That ship overlaps another ship or leaves the ocean.");host.selection(); }
+      else { announceForAccessibility(fleet.message);host.selection(); }
       return;
     }
     if(!myTurn())return;
     if("tictactoe".equals(game)&&GamesData.array(state,"board").isNull(cell))host.move(GamesData.obj("type","place","cell",cell));
     else if("connect4".equals(game))host.move(GamesData.obj("type","drop","column",cell%7));
-    else if("battleship".equals(game)&&!contains(GamesData.array(state,"shots").optJSONArray(player),cell))host.move(GamesData.obj("type","fire","cell",cell));
+    else if("battleship".equals(game)&&!showingOwnOcean()&&!contains(GamesData.array(state,"shots").optJSONArray(player),cell))host.move(GamesData.obj("type","fire","cell",cell));
     else if("checkers".equals(game)) {
       JSONArray legal=GamesData.array(state,"legal");
       for(int i=0;i<legal.length();i++){JSONObject m=legal.optJSONObject(i);if(m!=null&&m.optInt("from")==selected&&m.optInt("to")==cell){host.move(GamesData.obj("type","move","from",selected,"to",cell));return;}}
@@ -267,7 +286,7 @@ final class GamesBoard extends View {
       downX=event.getX();downY=event.getY();charging=false;draggingFleet=false;
       if(placing()&&canMove&&!ownFleetPlaced()&&field.contains(downX,downY)){
         draggingFleet=true;dragCell=hit(downX,downY);dragOffset=0;
-        for(int i=0;i<fleet.ships.length;i++)if(fleet.ships[i]!=null)for(int j=0;j<fleet.ships[i].length;j++)if(fleet.ships[i][j]==dragCell){fleet.selected=i;fleet.vertical=fleet.ships[i][1]-fleet.ships[i][0]==10;dragOffset=j;}
+        for(int i=0;i<fleet.ships.length;i++)if(fleet.ships[i]!=null)for(int j=0;j<fleet.ships[i].length;j++)if(fleet.ships[i][j]==dragCell){fleet.select(i);dragOffset=j;}
         dragCell-=dragOffset*(fleet.vertical?10:1);getParent().requestDisallowInterceptTouchEvent(true);
       }
       if("pool".equals(game)&&field.contains(downX,downY)){
@@ -278,8 +297,9 @@ final class GamesBoard extends View {
       return true;
     }
     if(draggingFleet&&(event.getActionMasked()==MotionEvent.ACTION_MOVE||event.getActionMasked()==MotionEvent.ACTION_UP)){
-      int cell=hit(event.getX(),event.getY());dragCell=cell<0?-1:cell-dragOffset*(fleet.vertical?10:1);invalidate();
-      if(event.getActionMasked()==MotionEvent.ACTION_UP){draggingFleet=false;getParent().requestDisallowInterceptTouchEvent(false);if(dragCell>=0)activate(dragCell);performClick();}return true;
+      int cell=hit(event.getX(),event.getY()),column=cell<0?-1:cell%10-(fleet.vertical?0:dragOffset),row=cell<0?-1:cell/10-(fleet.vertical?dragOffset:0);
+      dragCell=column<0||row<0?-1:row*10+column;invalidate();
+      if(event.getActionMasked()==MotionEvent.ACTION_UP){draggingFleet=false;getParent().requestDisallowInterceptTouchEvent(false);activate(dragCell);performClick();}return true;
     }
     if(charging&&myTurn()&&(event.getActionMasked()==MotionEvent.ACTION_MOVE||event.getActionMasked()==MotionEvent.ACTION_UP)){
       float pull=(float)(-(event.getX()-downX)*Math.cos(angle)-(event.getY()-downY)*Math.sin(angle));

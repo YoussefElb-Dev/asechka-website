@@ -120,6 +120,18 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
             requiresCode=false
             let salt=UUID().uuidString;try? vault.save("offline-code",[salt,Self.verifier("123456",salt)])
             #if DEBUG
+            if let argument = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--games-play=") }),
+               let url = Bundle.main.url(forResource: "games-native-layouts", withExtension: "json"),
+               let data = try? Data(contentsOf: url),
+               let rooms = try? JSONDecoder().decode([GamesRoom].self, from: data),
+               var room = rooms.first(where: { $0.game == String(argument.dropFirst(13)) }) {
+                if room.game == "hangman" {
+                    var state = room.state.object
+                    state["setter"] = .int(1); state["turn"] = .int(0); state["word"] = .null
+                    room.state = .object(state)
+                }
+                try? vault.save("games.rooms:asnat", [room]); try? vault.save("games.active:asnat", room.id)
+            }
             if ProcessInfo.processInfo.arguments.contains("--incoming-message") {
                 let letter:[String:Any]=["id":UUID().uuidString.lowercased(),"from":"youssef","to":"asnat","text":"A little love from Youssef, right here with you. Every ordinary moment is a little brighter because it is ours.","preview":"A little love from Youssef, right here with you. Every ordinary…","day":HeartLedger.day(),"createdAt":ISO8601DateFormatter().string(from:Date()),"closedAt":NSNull()]
                 if let data=try? JSONSerialization.data(withJSONObject:["version":1,"bucketList":[],"hearts":["me":NSNull(),"asechka":NSNull()],"messages":[letter]]){try? vault.write("snapshot:/api/together",data)}

@@ -1,6 +1,28 @@
 import XCTest
 
 final class GamesJourneyTests: XCTestCase {
+    func testFocusedGamesKeepPrimaryActionsVisible() {
+        for game in ["tictactoe", "connect4", "checkers", "hangman", "battleship", "pool"] {
+            let app = XCUIApplication()
+            app.launchArguments = ["--preview-fixture", "--games-preview", "--games-play=\(game)"]
+            app.launch()
+            XCTAssertTrue(app.buttons["games.play.back"].waitForExistence(timeout: 15), game)
+            XCTAssertFalse(app.buttons["Create post"].isHittable, "Match uses the screen: \(game)")
+            if game == "pool" {
+                let landscape = NSPredicate { _, _ in app.frame.width > app.frame.height }
+                expectation(for: landscape, evaluatedWith: app)
+                waitForExpectations(timeout: 8)
+                XCTAssertTrue(app.buttons["Fine controls"].isHittable)
+            }
+            if game == "tictactoe" { XCTAssertTrue(app.buttons["games.tictactoe.8"].isHittable) }
+            if game == "battleship" { XCTAssertTrue(app.buttons["games.battleship.commit"].exists) }
+            if game == "hangman" { XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Guess Z")).firstMatch.isHittable) }
+            capture(app, "Games-focused-\(game)")
+            app.buttons["games.play.back"].tap()
+            XCTAssertTrue(app.staticTexts["Our game room."].waitForExistence(timeout: 5))
+            app.terminate()
+        }
+    }
     func testPhotographyFilterAndComposerDefault() {
         let app = XCUIApplication()
         app.launchArguments = ["--preview-fixture"]

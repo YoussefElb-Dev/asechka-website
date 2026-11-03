@@ -167,11 +167,22 @@ export async function buildAssets(check=false) {
   const add=(path,data,metadata)=>{const bytes=Buffer.isBuffer(data)?data:Buffer.from(data);outputs.set(path,bytes);entries.push({path,...metadata,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),source:'mobile/tools/games-assets.mjs',attribution:'Original project artwork and synthesized audio; no third-party media.'});};
   for(const [index,id] of games.entries()) {const shapes=scene(id);add(`covers/${id}.svg`,svg(shapes,titles[index]),{game:id,kind:'vector',width:960,height:640,format:'svg',destination:'Games hub cover / scalable master'});add(`covers/${id}.png`,raster(shapes),{game:id,kind:'cover',width:960,height:640,format:'png',destination:'Native Games hub cover'});}
   for(const [name,spec] of Object.entries(sounds))add(`audio/${name}.wav`,wav(spec),{kind:'sound',format:'wav',sampleRate:22050,channels:1,bitsPerSample:16,duration:Math.round(22050*spec.seconds)/22050,destination:`Optional native effect: ${name}`});
+  // Curated imagegen exports override the original geometric cover PNGs and add
+  // independently movable gameplay art. Validate masters without image tooling.
+  const curated=JSON.parse(await readFile(resolve(root,master,'gameplay-assets.json'),'utf8'));
+  for(const asset of curated.assets){
+    if(!/^(?:covers|gameplay)\/[a-z0-9/-]+\.png$/.test(asset.path)||asset.path.includes('..'))throw new Error('Unsafe gameplay asset path');
+    const data=await readFile(resolve(root,master,asset.path));
+    if(data.length!==asset.bytes||createHash('sha256').update(data).digest('hex')!==asset.sha256)throw new Error(`Changed gameplay export: ${asset.path}`);
+    const index=entries.findIndex(item=>item.path===asset.path);if(index>=0)entries.splice(index,1);
+    add(asset.path,data,{...asset,source:asset.source,attribution:'Original built-in imagegen artwork / project vector boards; approved Soft Orbit style.'});
+    Object.assign(entries.at(-1),{source:asset.source,attribution:'Original built-in imagegen artwork / project vector boards; approved Soft Orbit style.'});
+  }
   const manifest={schema:1,collection:'Soft Orbit Games',license:'Original assets created for this project. No external attribution required.',generator:'node mobile/tools/games-assets.mjs',games,bundleRoots:bundles,assets:entries};
   outputs.set('manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
   let size=0;
   for(const base of [master,...bundles])for(const [path,data] of outputs){const target=resolve(root,base,path);if(check){let actual;try{actual=await readFile(target);}catch{throw new Error(`Missing generated asset: ${relative(root,target)}`);}if(!actual.equals(data))throw new Error(`Stale asset: ${relative(root,target)}; regenerate with node mobile/tools/games-assets.mjs`);}else{await mkdir(dirname(target),{recursive:true});await writeFile(target,data);}if(base===master)size+=data.length;}
-  console.log(`${check?'Verified reproducible':'Generated'} ${games.length} covers (SVG + PNG), ${Object.keys(sounds).length} WAV cues, manifest and both native copies; ${(size/1024).toFixed(1)} KiB per bundle.`);
+  console.log(`${check?'Verified reproducible':'Generated'} ${entries.length} game assets, manifest and both native copies; ${(size/1024).toFixed(1)} KiB per bundle.`);
   return manifest;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))await buildAssets(process.argv.includes('--check'));

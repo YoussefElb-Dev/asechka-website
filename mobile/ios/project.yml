@@ -6,8 +6,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '2.5.2'
-    CURRENT_PROJECT_VERSION: '24'
+    MARKETING_VERSION: '2.6.1'
+    CURRENT_PROJECT_VERSION: '26'
     TARGETED_DEVICE_FAMILY: '1,2'
     CODE_SIGNING_ALLOWED: NO
 targets:
@@ -18,6 +18,8 @@ targets:
       - path: SharedWidgets
       - path: Widgets/AsechkaWidgets.swift
       - path: Sources
+      - path: ../shared-test-resources/games-native-layouts.json
+        buildPhase: resources
       - path: Resources/default
         type: folder
         buildPhase: resources

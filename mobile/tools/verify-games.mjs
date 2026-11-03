@@ -18,7 +18,8 @@ for(const asset of manifest.assets) {
     assert.equal(asset.width,960);assert.equal(asset.height,640);
   } else if(asset.format==='png') {
     assert(data.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])));
-    assert.equal(data.readUInt32BE(16),960);assert.equal(data.readUInt32BE(20),640);
+    assert.equal(data.readUInt32BE(16),asset.width);assert.equal(data.readUInt32BE(20),asset.height);
+    assert(asset.width>0&&asset.width<=1080&&asset.height>0&&asset.height<=1000,'Mobile texture dimensions are bounded');
   } else if(asset.format==='wav') {
     assert.equal(data.toString('ascii',0,4),'RIFF');assert.equal(data.toString('ascii',8,16),'WAVEfmt ');
     assert.equal(data.readUInt16LE(20),1);assert.equal(data.readUInt16LE(22),1);
@@ -30,7 +31,8 @@ for(const asset of manifest.assets) {
     assert(asset.duration<=.6);
   } else assert.fail(`Unexpected format: ${asset.format}`);
 }
-assert(bytes<512*1024,'Games assets exceeded 512 KiB per bundle');
+assert(bytes<8*1024*1024,'Games assets exceeded the 8 MiB runtime bundle budget');
+for(const game of games)assert(manifest.assets.some(a=>a.path.startsWith(`gameplay/${game}/`)&&a.kind==='board'),`${game}: gameplay board missing`);
 if(!process.argv.includes('--assets-only')) {
   const functions=(await readdir(resolve(root,'api'))).filter(name=>name.endsWith('.js'));
   assert(functions.length+1<=12,'Vercel Hobby permits 12 functions including routing middleware');

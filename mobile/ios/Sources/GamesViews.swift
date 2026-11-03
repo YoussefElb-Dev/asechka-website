@@ -79,6 +79,9 @@ struct GamesView: View {
         .refreshable { store.refresh() }
         .sheet(item: $creating) { kind in GamesCreateView(store: store, kind: kind) }
         .sheet(isPresented: $preferences) { GamesPreferencesView() }
+        .fullScreenCover(isPresented: Binding(get: { store.selectedRoom.map { $0.status != "lobby" } ?? false }, set: { if !$0 { store.activeRoomID = nil } })) {
+            GamesPlayView(store: store)
+        }
         .onAppear { if !store.invitation.isEmpty { code = store.invitation; joining = true } }
         .onChange(of: store.invitation) { if !$0.isEmpty { code = $0; joining = true } }
     }
@@ -202,8 +205,7 @@ struct GamesCard: View {
 struct GamesCover: View {
     var kind: GamesKind
     private var image: UIImage? {
-        guard let url = Bundle.main.url(forResource: kind.rawValue, withExtension: "png", subdirectory: "default/games/covers") else { return nil }
-        return UIImage(contentsOfFile: url.path)
+        GamesAssets.cover(kind)
     }
     var body: some View {
         GeometryReader { geometry in

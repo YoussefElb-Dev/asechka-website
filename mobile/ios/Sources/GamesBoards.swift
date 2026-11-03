@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GamesTicTacToeView: View {
+    @Environment(\.gamesBoardLimit) private var boardLimit
     @ObservedObject var store: GamesStore
     var room: GamesRoom
     @EnvironmentObject private var universe: UniverseStore
@@ -8,30 +9,41 @@ struct GamesTicTacToeView: View {
     @AppStorage("games.reduceMotion") private var reduced = false
     private var pendingCell: Int? { store.pending.first { $0.room == room.id }?.action["cell"].int }
     var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 3), spacing: 0) {
             ForEach(0..<9, id: \.self) { cell in
                 Button { store.move(room, ["type": "place", "cell": .int(cell)]) } label: {
                     mark(cell).frame(maxWidth: .infinity).aspectRatio(1, contentMode: .fit)
+                        .contentShape(Rectangle())
                         .animation(systemReduced || reduced ? nil : .spring(response: 0.3, dampingFraction: 0.72), value: room.state["board"][cell])
-                        .background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 20))
-                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(highlight(cell) ? GamesPalette.theme(room) : GamesPalette.line, lineWidth: highlight(cell) ? 3 : 1))
+                        .background(highlight(cell) ? GamesPalette.lilac.opacity(0.09) : Color.clear, in: RoundedRectangle(cornerRadius: 20))
                 }.buttonStyle(SoftPress()).disabled(!store.myTurn(room) || !room.state["board"][cell].isNull)
                     .accessibilityLabel("Row \(cell / 3 + 1), column \(cell % 3 + 1), \(valueLabel(cell))")
                     .accessibilityIdentifier("games.tictactoe.\(cell)")
             }
-        }.frame(maxWidth: 480).frame(maxWidth: .infinity)
+        }.background(GamesSprite("tictactoe/board")).clipShape(RoundedRectangle(cornerRadius: 22))
+            .overlay { winningLine }.frame(maxWidth: min(480, boardLimit)).frame(maxWidth: .infinity)
     }
     @ViewBuilder private func mark(_ cell: Int) -> some View {
         let value = room.state["board"][cell].int
         let pending = value == nil && pendingCell == cell
         let player = value ?? (pending ? room.player(universe.actor) : nil)
         if let player {
-            Image(systemName: player == 0 ? "xmark" : "circle").font(.system(size: 42, weight: .medium))
-                .foregroundColor(GamesPalette.player(player)).opacity(pending ? 0.4 : 1)
+            GamesSprite(player == 0 ? "tictactoe/x" : "tictactoe/o").scaledToFit().padding(24).opacity(pending ? 0.4 : 1)
                 .transition(.scale(scale: 0.6).combined(with: .opacity))
         } else { Color.clear }
     }
     private func highlight(_ cell: Int) -> Bool { room.state["line"].array.contains(.int(cell)) || pendingCell == cell }
+    private var winningLine: some View {
+        GeometryReader { geometry in
+            let cells = room.state["line"].array.compactMap(\.int)
+            if let first = cells.first, let last = cells.last {
+                Path { path in
+                    path.move(to: CGPoint(x: (CGFloat(first % 3) + 0.5) * geometry.size.width / 3, y: (CGFloat(first / 3) + 0.5) * geometry.size.height / 3))
+                    path.addLine(to: CGPoint(x: (CGFloat(last % 3) + 0.5) * geometry.size.width / 3, y: (CGFloat(last / 3) + 0.5) * geometry.size.height / 3))
+                }.stroke(Color(red: 0.67, green: 0.57, blue: 0.79).opacity(0.65), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+            }
+        }.allowsHitTesting(false).accessibilityHidden(true)
+    }
     private func valueLabel(_ cell: Int) -> String {
         if pendingCell == cell { return "move pending" }
         guard let player = room.state["board"][cell].int else { return "empty" }
@@ -40,6 +52,8 @@ struct GamesTicTacToeView: View {
 }
 
 struct GamesConnectFourView: View {
+    @Environment(\.gamesBoardLimit) private var boardLimit
+    @Environment(\.gamesCompact) private var compact
     @ObservedObject var store: GamesStore
     var room: GamesRoom
     @EnvironmentObject private var universe: UniverseStore
@@ -53,42 +67,42 @@ struct GamesConnectFourView: View {
     var body: some View {
         VStack(spacing: 10) {
             Text("Tap any column to drop a disc.").font(.subheadline).foregroundColor(GamesPalette.muted)
-            HStack(spacing: 3) {
+            if !compact { HStack(spacing: 3) {
                 ForEach(0..<7, id: \.self) { column in
                     Button { drop(column) } label: { VStack(spacing: 2) { Image(systemName: "arrow.down"); Text("\(column + 1)").font(.caption2) }.frame(maxWidth: .infinity, minHeight: 44) }
                         .disabled(!canDrop(column)).accessibilityLabel("Drop disc into column \(column + 1)")
                         .accessibilityIdentifier("games.connect4.column.\(column)")
                 }
-            }
+            } }
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 5), count: 7), spacing: 5) {
                 ForEach(0..<42, id: \.self) { cell in
                     Button { drop(cell % 7) } label: { disc(cell) }.disabled(!canDrop(cell % 7))
                         .accessibilityLabel("Row \(cell / 7 + 1), column \(cell % 7 + 1), \(cellLabel(cell)). Drop in this column")
                 }
-            }.padding(10).background(GamesPalette.theme(room).opacity(0.14), in: RoundedRectangle(cornerRadius: 20))
-        }.frame(maxWidth: 600).frame(maxWidth: .infinity)
+            }.padding(12).background(GamesSprite("connect4/board"))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+        }.frame(maxWidth: min(600, boardLimit)).frame(maxWidth: .infinity)
     }
     private func canDrop(_ column: Int) -> Bool { store.myTurn(room) && room.state["board"][column].isNull }
     private func drop(_ column: Int) { store.move(room, ["type": "drop", "column": .int(column)]) }
     private func disc(_ cell: Int) -> some View {
         let player = room.state["board"][cell].int
         let pending = player == nil && pendingCell == cell
-        let color = player.map(GamesPalette.player) ?? (pending ? GamesPalette.player(room.player(universe.actor) ?? 0).opacity(0.4) : GamesPalette.background)
         return ZStack {
-            Circle().fill(GamesPalette.background)
+            Circle().fill(Color(red: 0.96, green: 0.95, blue: 0.99)).shadow(color: Color(red: 0.46, green: 0.35, blue: 0.61).opacity(0.2), radius: 2, y: -2)
             if player != nil || pending {
-                Circle().fill(color)
+                GamesSprite((player ?? room.player(universe.actor) ?? 0) == 0 ? "connect4/rose" : "connect4/mint").scaledToFit().padding(1).opacity(pending ? 0.4 : 1)
                     .overlay(Circle().stroke(room.state["line"].array.contains(.int(cell)) ? .white : .white.opacity(0.08), lineWidth: 2))
-                    .overlay { if let player { Text(player == 0 ? "✦" : "○").font(.caption).foregroundColor(GamesPalette.background) } }
                     .transition(.offset(y: -160).combined(with: .opacity))
             }
-        }.aspectRatio(1, contentMode: .fit)
+        }.aspectRatio(1, contentMode: .fit).contentShape(Rectangle())
             .animation(systemReduced || reduced ? nil : .spring(response: 0.45, dampingFraction: 0.68), value: room.state["board"][cell])
     }
     private func cellLabel(_ cell: Int) -> String { room.state["board"][cell].int.map { "player \($0 + 1)" } ?? (pendingCell == cell ? "move pending" : "empty") }
 }
 
 struct GamesCheckersView: View {
+    @Environment(\.gamesBoardLimit) private var boardLimit
     @ObservedObject var store: GamesStore
     var room: GamesRoom
     @State private var selected: Int?
@@ -106,16 +120,17 @@ struct GamesCheckersView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text(room.state["forced"].isNull ? "Select a piece, then a lit square. Captures are mandatory." : "Keep jumping with the highlighted piece.")
                 .font(.subheadline).foregroundColor(GamesPalette.muted)
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 1), count: 8), spacing: 1) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 8), spacing: 0) {
                 ForEach(0..<64, id: \.self) { cell in
                     Button { select(cell) } label: { square(cell) }
                         .buttonStyle(.plain).disabled(replayStep != nil || !store.myTurn(room) || !interactive(cell))
                         .accessibilityLabel(label(cell)).accessibilityIdentifier("games.checkers.\(cell)")
                 }
-            }.padding(4).background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+            }.background(GamesSprite("checkers/board")).padding(8)
+                .background(LinearGradient(colors: [Color(red: 0.88, green: 0.78, blue: 0.80), Color(red: 0.72, green: 0.61, blue: 0.66)], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 16))
             if let source { Text("Selected: row \(source / 8 + 1), column \(source % 8 + 1)").font(.caption).foregroundColor(GamesPalette.lilac) }
             if !moves.isEmpty { replayControls }
-        }.frame(maxWidth: 600).frame(maxWidth: .infinity)
+        }.frame(maxWidth: min(600, boardLimit)).frame(maxWidth: .infinity)
             .onChange(of: room.seq) { _ in selected = room.state["forced"].int; replayStep = nil }
     }
     private var replayControls: some View {
@@ -153,18 +168,14 @@ struct GamesCheckersView: View {
     }
     private func square(_ cell: Int) -> some View {
         let piece = displayBoard.indices.contains(cell) ? displayBoard[cell] : GamesJSON.null
-        let dark = (cell / 8 + cell % 8) % 2 == 1
         return ZStack {
-            Rectangle().fill(dark ? Color(red: 0.78, green: 0.73, blue: 0.86) : Color(red: 0.97, green: 0.95, blue: 0.99))
+            Color.clear
             if let player = piece["player"].int {
-                Circle().fill(GamesPalette.player(player)).padding(5)
-                    .overlay(Circle().stroke(.black.opacity(0.25), lineWidth: 2).padding(9))
-                if piece["king"].bool { Image(systemName: "crown.fill").font(.caption).foregroundColor(GamesPalette.background) }
-                else { Text(player == 0 ? "1" : "2").font(.caption2.bold()).foregroundColor(GamesPalette.background) }
+                GamesSprite("checkers/\(player == 0 ? "rose" : "mint")\(piece["king"].bool ? "-king" : "")").scaledToFit().padding(4)
             }
             if replayStep == nil && destination(cell) { Circle().fill(GamesPalette.mint.opacity(0.5)).padding(13) }
             if replayStep == nil && (source == cell || pendingTo == cell) { Rectangle().stroke(GamesPalette.theme(room), lineWidth: 3) }
-        }.aspectRatio(1, contentMode: .fit)
+        }.aspectRatio(1, contentMode: .fit).contentShape(Rectangle())
     }
     private func label(_ cell: Int) -> String {
         let piece = displayBoard.indices.contains(cell) ? displayBoard[cell] : GamesJSON.null
@@ -174,6 +185,7 @@ struct GamesCheckersView: View {
 }
 
 struct GamesHangmanView: View {
+    @Environment(\.gamesCompact) private var compact
     @ObservedObject var store: GamesStore
     var room: GamesRoom
     @EnvironmentObject private var universe: UniverseStore
@@ -184,7 +196,7 @@ struct GamesHangmanView: View {
     private var guessing: Bool { store.canAct(room) && !setter && room.state["phase"].string == "guess" }
     private var pendingLetter: String { store.pending.first { $0.room == room.id }?.action["letter"].string ?? "" }
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: compact ? 8 : 18) {
             if room.state["phase"].string == "choose" {
                 if setter { choose }
                 else { GamesCover(kind: .hangman).aspectRatio(1.5, contentMode: .fit); Text("A secret is on its way. Your keyboard appears when your person chooses a word.").foregroundColor(GamesPalette.muted) }
@@ -205,11 +217,17 @@ struct GamesHangmanView: View {
         }
     }
     private var guessingBoard: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: compact ? 8 : 16) {
             HStack { Text(room.state["category"].string.capitalized).font(.headline); Spacer(); Text("\(room.state["remaining"].int ?? 6) chances").font(.subheadline).foregroundColor(GamesPalette.rose) }
-            GamesWordProgress(remaining: room.state["remaining"].int ?? 6).frame(height: 100).accessibilityHidden(true)
-            Text(room.state["pattern"].string.uppercased().map(String.init).joined(separator: " "))
-                .font(.system(.title, design: .monospaced).bold()).fixedSize(horizontal: false, vertical: true)
+            GamesWordProgress(remaining: room.state["remaining"].int ?? 6).aspectRatio(1.5, contentMode: .fit).frame(maxHeight: compact ? 110 : nil).accessibilityHidden(true)
+            ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 4) {
+                let letters = Array(room.state["pattern"].string.uppercased()).map(String.init)
+                ForEach(letters.indices, id: \.self) { index in
+                    Text(letters[index]).font(.system(.headline, design: .monospaced)).minimumScaleFactor(0.6)
+                        .frame(width: letters[index] == " " ? 14 : 34, height: 42)
+                        .background { if letters[index] != " " { GamesSprite("hangman/key") } }
+                }
+            } }.accessibilityElement(children: .ignore)
                 .accessibilityLabel("Word pattern: " + room.state["pattern"].string.replacingOccurrences(of: "_", with: " blank "))
             if let deadline = room.state["deadline"].double, !room.finished {
                 TimelineView(.periodic(from: .now, by: 1)) { context in
@@ -230,7 +248,9 @@ struct GamesHangmanView: View {
                     let guessed = room.state["guesses"].array.contains(.string(letter))
                     Button { store.move(room, ["type": "guess", "letter": .string(letter)]) } label: {
                         Text(letter.uppercased()).font(.headline).frame(maxWidth: .infinity, minHeight: 44)
-                            .background(guessed || pendingLetter == letter ? GamesPalette.lilac.opacity(0.18) : .white.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                            .foregroundColor(guessed && room.state["pattern"].string.contains(letter) ? GamesPalette.mint : guessed ? GamesPalette.rose : GamesPalette.ink)
+                            .background(GamesSprite("hangman/key"))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(pendingLetter == letter ? GamesPalette.lilac : .clear, lineWidth: 2))
                     }.disabled(!guessing || guessed).opacity(guessed ? 0.4 : 1)
                         .accessibilityLabel("Guess \(letter.uppercased())\(guessed ? ", already guessed" : pendingLetter == letter ? ", pending" : "")")
                 }
@@ -244,17 +264,17 @@ struct GamesHangmanView: View {
 struct GamesWordProgress: View {
     var remaining: Int
     var body: some View {
-        Canvas { context, size in
-            let missing = max(0, 6 - remaining)
-            let radius = min(size.width / 3, size.height / 2 - 8)
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            for i in 0..<6 {
-                let angle = Double(i) * .pi / 3 - .pi / 2
-                let point = CGPoint(x: center.x + CGFloat(cos(angle)) * radius, y: center.y + CGFloat(sin(angle)) * radius)
-                let dot = CGRect(x: point.x - 7, y: point.y - 7, width: 14, height: 14)
-                context.fill(Path(ellipseIn: dot), with: .color(i < missing ? GamesPalette.rose.opacity(0.18) : GamesPalette.rose))
+        GeometryReader { geometry in
+            ZStack {
+                GamesSprite("hangman/book")
+                VStack(spacing: 12) {
+                    ForEach(0..<5, id: \.self) { _ in Capsule().fill(Color(red: 0.79, green: 0.72, blue: 0.87)).frame(height: 3) }
+                }.frame(width: geometry.size.width * 0.28).position(x: geometry.size.width * 0.28, y: geometry.size.height * 0.48)
+                GamesSprite("common/heart").frame(width: geometry.size.width * 0.16, height: geometry.size.width * 0.16)
+                    .opacity(remaining == 0 ? 0.25 : 1).position(x: geometry.size.width * 0.70, y: geometry.size.height * 0.43)
+                HStack(spacing: 5) { ForEach(0..<6, id: \.self) { index in Circle().fill(index < remaining ? GamesPalette.rose : GamesPalette.rose.opacity(0.15)).frame(width: 8, height: 8) } }
+                    .position(x: geometry.size.width * 0.70, y: geometry.size.height * 0.69)
             }
-            context.draw(Text("♡").font(.system(size: 36)).foregroundColor(GamesPalette.rose), at: center)
         }
     }
 }

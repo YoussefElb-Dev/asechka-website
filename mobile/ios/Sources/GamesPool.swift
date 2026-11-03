@@ -3,6 +3,8 @@ import SwiftUI
 struct GamesPoolView: View {
     @ObservedObject var store: GamesStore
     var room: GamesRoom
+    var compact = false
+    @State private var manualControls = false
     @EnvironmentObject private var universe: UniverseStore
     @Environment(\.accessibilityReduceMotion) private var systemReduced
     @AppStorage("games.reduceMotion") private var reduced = false
@@ -27,6 +29,21 @@ struct GamesPoolView: View {
         return !balls.contains { $0.id != 0 && !$0.pocketed && hypot($0.x - cueX, $0.y - cueY) < 22 }
     }
     var body: some View {
+        Group {
+            if compact {
+                GeometryReader { geometry in
+                    HStack(spacing: 12) {
+                        table.frame(maxWidth: .infinity, maxHeight: .infinity)
+                        ScrollView { compactControls }.frame(width: min(200, geometry.size.width * 0.29))
+                    }
+                }
+            } else { standardBody }
+        }.task(id: "\(room.id)|\(room.seq)|\(reduced)|\(systemReduced)") { await prepareShot() }
+            .sheet(isPresented: $manualControls) {
+                NavigationStack { ScrollView { VStack(spacing: 12) { groups; if inHand { placementControls } else { shotControls }; pocketedSummary }.padding(18) }.navigationTitle("Shot controls").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { manualControls = false } } } }
+            }
+    }
+    private var standardBody: some View {
         VStack(alignment: .leading, spacing: 16) {
             groups
             table
@@ -37,7 +54,26 @@ struct GamesPoolView: View {
                 else { shotControls }
             }
             pocketedSummary
-        }.task(id: "\(room.id)|\(room.seq)|\(reduced)|\(systemReduced)") { await prepareShot() }
+        }
+    }
+    private var compactControls: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if room.finished {
+                Text(GamesRoomView.resultText(room)).font(.headline)
+                Button { store.rematch(room) } label: { Text("Another round").gamesAction() }.disabled(!store.connected || store.working || room.rematchReady.contains(universe.actor))
+            } else if playing || serverBusy { Text("Balls settling…").foregroundColor(GamesPalette.mint) }
+            else if inHand {
+                Text("Ball in hand · tap a clear spot, then confirm.").font(.caption)
+                Button { store.move(room, ["type": "place", "x": .number(cueX), "y": .number(cueY)]) } label: { Text("Place cue").gamesAction() }.disabled(!canControl || !cueValid)
+            } else {
+                Text("Drag to aim. Pull back from the cue ball to shoot.").font(.caption).foregroundColor(GamesPalette.muted)
+                Text("Power · \(Int(power * 100))%").font(.caption.bold())
+                Slider(value: $power, in: 0...1, step: 0.01).accessibilityLabel("Shot power").disabled(!canControl)
+                Picker("Call eight pocket", selection: $pocket) { ForEach(0..<6, id: \.self) { Text(pocketNames[$0]).tag($0) } }.pickerStyle(.menu).disabled(!canControl)
+                Button { takeShot() } label: { Text("Shoot").gamesAction() }.disabled(!canControl)
+            }
+            Button("Fine controls") { manualControls = true }.font(.caption).frame(minHeight: 44)
+        }
     }
     private var groups: some View {
         HStack {
@@ -150,11 +186,9 @@ struct GamesPoolCanvas: View {
             var c = context
             c.translateBy(x: (size.width - 1000 * scale) / 2, y: (size.height - 500 * scale) / 2)
             c.scaleBy(x: scale, y: scale)
-            let rail = CGRect(x: -30, y: -30, width: 1060, height: 560)
-            c.fill(Path(roundedRect: rail, cornerRadius: 35), with: .linearGradient(Gradient(colors: [Color(red: 0.24, green: 0.17, blue: 0.29), Color(red: 0.12, green: 0.11, blue: 0.2)]), startPoint: .zero, endPoint: CGPoint(x: 1000, y: 500)))
-            c.fill(Path(CGRect(x: 0, y: 0, width: 1000, height: 500)), with: .linearGradient(Gradient(colors: [Color(red: 0.05, green: 0.28, blue: 0.27), Color(red: 0.025, green: 0.15, blue: 0.18)]), startPoint: .zero, endPoint: CGPoint(x: 1000, y: 500)))
+            c.draw(Image(uiImage: GamesAssets.image("pool/board")), in: CGRect(x: -40, y: -40, width: 1080, height: 580))
             for (index, point) in Self.pockets.enumerated() {
-                c.fill(Path(ellipseIn: CGRect(x: point.x - 28, y: point.y - 28, width: 56, height: 56)), with: .color(Color(red: 0.05, green: 0.08, blue: 0.12)))
+                c.draw(Image(uiImage: GamesAssets.image("pool/pocket")), in: CGRect(x: point.x - 28, y: point.y - 28, width: 56, height: 56))
                 let offset: CGFloat = point.y == 0 ? -24 : 24
                 c.draw(Text("\(index + 1)").font(.system(size: 17, weight: .bold)).foregroundColor(index == pocket ? Color(red: 1, green: 0.78, blue: 0.86) : .white.opacity(0.75)), at: CGPoint(x: point.x, y: point.y + offset))
                 if index == pocket { c.stroke(Path(ellipseIn: CGRect(x: point.x - 30, y: point.y - 30, width: 60, height: 60)), with: .color(Color(red: 1, green: 0.78, blue: 0.86)), lineWidth: 3) }
@@ -162,7 +196,8 @@ struct GamesPoolCanvas: View {
             if aiming, let cue = balls.first(where: { $0.id == 0 && !$0.pocketed }) {
                 var aim = Path(); aim.move(to: CGPoint(x: cue.x, y: cue.y)); aim.addLine(to: CGPoint(x: cue.x + cos(angle) * 220, y: cue.y + sin(angle) * 220))
                 c.stroke(aim, with: .color(.white.opacity(0.5)), style: StrokeStyle(lineWidth: 2, dash: [9, 7]))
-                var stick = Path(); stick.move(to: CGPoint(x: cue.x - cos(angle) * 24, y: cue.y - sin(angle) * 24)); stick.addLine(to: CGPoint(x: cue.x - cos(angle) * 160, y: cue.y - sin(angle) * 160)); c.stroke(stick, with: .color(Color(red: 0.83, green: 0.69, blue: 0.48)), lineWidth: 6)
+                var stick = c; stick.translateBy(x: cue.x, y: cue.y); stick.rotate(by: .radians(angle))
+                stick.draw(Image(uiImage: GamesAssets.image("pool/cue")), in: CGRect(x: -220, y: -4, width: 195, height: 8))
             }
             for ball in balls where !ball.pocketed {
                 if placement != nil && ball.id == 0 { continue }
@@ -175,18 +210,11 @@ struct GamesPoolCanvas: View {
         }
     }
     private func drawBall(_ ball: GamesBall, in c: GraphicsContext) {
-        let colors: [Color] = [.white, .yellow, .blue, .red, .purple, .orange, .green, Color(red: 0.55, green: 0.15, blue: 0.2), .black]
-        let color = colors[ball.id == 0 ? 0 : ball.id == 8 ? 8 : (ball.id - 1) % 8 + 1]
         let circle = CGRect(x: ball.x - 11, y: ball.y - 11, width: 22, height: 22)
-        c.fill(Path(ellipseIn: circle.offsetBy(dx: 2, dy: 3)), with: .color(.black.opacity(0.35)))
-        c.fill(Path(ellipseIn: circle), with: .color(ball.id > 8 ? .white : color))
-        if ball.id > 8 {
-            var stripe = c; stripe.clip(to: Path(ellipseIn: circle)); stripe.fill(Path(CGRect(x: ball.x - 11, y: ball.y - 6, width: 22, height: 12)), with: .color(color))
-        }
+        c.fill(Path(ellipseIn: circle.offsetBy(dx: 1, dy: 2)), with: .color(GamesPalette.ink.opacity(0.16)))
+        c.draw(Image(uiImage: GamesAssets.image("pool/ball-\(ball.id)-small")), in: circle)
         if ball.id != 0 {
-            c.fill(Path(ellipseIn: CGRect(x: ball.x - 6, y: ball.y - 6, width: 12, height: 12)), with: .color(.white))
-            c.draw(Text("\(ball.id)").font(.system(size: 8, weight: .bold)).foregroundColor(.black), at: CGPoint(x: ball.x, y: ball.y))
+            c.draw(Text("\(ball.id)").font(.system(size: 8, weight: .bold)).foregroundColor(GamesPalette.ink), at: CGPoint(x: ball.x, y: ball.y))
         }
-        c.fill(Path(ellipseIn: CGRect(x: ball.x - 6, y: ball.y - 7, width: 5, height: 4)), with: .color(.white.opacity(0.6)))
     }
 }
