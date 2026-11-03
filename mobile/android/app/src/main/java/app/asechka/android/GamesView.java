@@ -176,7 +176,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if("pool".equals(game)){
       LinearLayout table=row();board.maxBoardHeight=Math.max(dp(150),available-dp(92));table.addView(board,new LinearLayout.LayoutParams(0,board.maxBoardHeight,1));LinearLayout controls=column();controls.setPadding(dp(8),0,0,0);table.addView(controls,new LinearLayout.LayoutParams(dp(190),-2));add(table,4);controlsHost=controls;compactPoolControls(s,finished);controlsHost=null;
     }else{
-      int reserve="hangman".equals(game)?dp(s.optInt("setter")==me?210:440):"battleship".equals(game)?dp("placement".equals(s.optString("phase"))?310:175):dp(finished?170:130);
+      int reserve="hangman".equals(game)?dp(s.optInt("setter")==me?210:560):"battleship".equals(game)?dp("placement".equals(s.optString("phase"))?310:175):dp(finished?170:130);
       board.maxBoardHeight=Math.max(dp("hangman".equals(game)?80:180),available-reserve);add(board,6);
       if("battleship".equals(game))fleetControls(s,finished,me);
       if("hangman".equals(game))hangmanControls(s,finished,me);
@@ -193,14 +193,14 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if("checkers".equals(current.optString("game"))&&GamesData.array(GamesData.state(current),"moves").length()>0){checkersReplay(current);return;}
     LinearLayout options=column();options.setPadding(dp(16),dp(8),dp(16),dp(12));controlsHost=options;JSONObject state=GamesData.state(current);
     if("pool".equals(current.optString("game")))poolControls(state,"finished".equals(current.optString("status")));else if("battleship".equals(current.optString("game")))coordinateControls(board.placing());else if("checkers".equals(current.optString("game")))accessibleCheckers(state);else add(text("Tap the board to play. All squares also support your screen reader.",14,MUTED,false),6);controlsHost=null;
-    ScrollView scroll=new ScrollView(activity);scroll.addView(options);dialog=new AlertDialog.Builder(activity).setTitle("Extra controls").setView(scroll).setPositiveButton("Done",null).create();dialog.show();
+    ScrollView scroll=new ScrollView(activity);scroll.addView(options);dialog=new AlertDialog.Builder(activity).setTitle("Extra controls").setView(scroll).setPositiveButton("Done",null).create();dialog.setOnDismissListener(d->{aimBar=null;powerBar=null;signature="";refresh();});dialog.show();
   }
   private void compactPoolControls(JSONObject state,boolean finished){
     if(finished)return;
     if(state.optBoolean("ballInHand")){add(text("Ball in hand. Tap a clear spot on the table to place it.",14,INK,true),6);add(button("Set coordinates",false,this::extraControls),8);return;}
     if(board.moving()){add(text("Balls settling…",14,ACCENT,true),6);postDelayed(()->{signature="";refresh();},Math.max(50,current.optLong("availableAt")-System.currentTimeMillis()+50));return;}
-    add(text("Drag the table to aim. Pull back from the cue ball to shoot.",12,MUTED,false),3);
-    aimLabel=text("Power · "+Math.round(power*100)+"%",13,INK,true);add(aimLabel,5);powerBar=slider("Shot power",100,Math.round(power*100));powerBar.setEnabled(board.myTurn());powerBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int n,boolean user){power=Math.max(.01f,n/100f);aimLabel.setText("Power · "+n+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(powerBar,0);
+    JSONArray groups=GamesData.array(state,"groups");int me=GamesData.player(current,client.actor);String group=groups.isNull(me)?"Open table":groups.optString(me);
+    aimLabel=text(group+" · "+Math.round(power*100)+"%",13,INK,true);add(aimLabel,5);powerBar=slider("Shot power",100,Math.round(power*100));powerBar.setEnabled(board.myTurn());powerBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int n,boolean user){power=Math.max(.01f,n/100f);aimLabel.setText(group+" · "+n+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(powerBar,0);
     Spinner pockets=spinner(new String[]{"Top left","Top middle","Top right","Bottom right","Bottom middle","Bottom left"});pockets.setContentDescription("Called pocket for the eight ball");pockets.setSelection(pocket);pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;}public void onNothingSelected(AdapterView<?> a){}});add(pockets,3);
     add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"callPocket",pocket))),5);
   }

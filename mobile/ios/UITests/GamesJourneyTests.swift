@@ -15,7 +15,19 @@ final class GamesJourneyTests: XCTestCase {
                 XCTAssertTrue(app.buttons["Fine controls"].isHittable)
             }
             if game == "tictactoe" { XCTAssertTrue(app.buttons["games.tictactoe.8"].isHittable) }
-            if game == "battleship" { XCTAssertTrue(app.buttons["games.battleship.commit"].exists) }
+            if game == "battleship" {
+                XCTAssertTrue(app.buttons["games.battleship.commit"].exists)
+                app.buttons["Arrange"].tap()
+                app.buttons["Rotate selected ship to vertical"].tap()
+                XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Cannot rotate here:")).firstMatch.waitForExistence(timeout: 3))
+                let start = app.buttons["games.battleship.own.0"], target = app.buttons["games.battleship.own.5"]
+                start.press(forDuration: 0.1, thenDragTo: target)
+                app.buttons["Rotate selected ship to vertical"].tap()
+                XCTAssertTrue(app.buttons["games.battleship.own.15"].label.contains("ship"), "Rotate changes the placed ship immediately")
+                target.press(forDuration: 0.1, thenDragTo: app.buttons["games.battleship.own.95"])
+                XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "stayed in its last position")).firstMatch.waitForExistence(timeout: 3))
+                XCTAssertTrue(app.buttons["games.battleship.own.15"].label.contains("ship"), "Invalid drop retains the last valid position")
+            }
             if game == "hangman" { XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Guess Z")).firstMatch.isHittable) }
             capture(app, "Games-focused-\(game)")
             app.buttons["games.play.back"].tap()

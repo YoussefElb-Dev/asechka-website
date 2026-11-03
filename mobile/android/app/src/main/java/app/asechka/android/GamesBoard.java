@@ -143,7 +143,7 @@ final class GamesBoard extends View {
   }
 
   private void drawHangman(Canvas c) {
-    float h=getHeight(),w=Math.min(getWidth(),h*1.5f);c.save();c.translate((getWidth()-w)/2,0);
+    float h=Math.min(getHeight(),getWidth()/1.5f),w=h*1.5f;c.save();c.translate((getWidth()-w)/2,(getHeight()-h)/2);
     int remaining=state.optInt("remaining",6);
     art(c,"hangman/book",new RectF(0,0,w,h));
     for(int i=0;i<5;i++)line(c,w*.14f,h*(.27f+i*.105f),w*.42f,h*(.27f+i*.105f),Math.max(2,w*.005f),0xffc7b6df);
@@ -157,7 +157,7 @@ final class GamesBoard extends View {
     field.left=(getWidth()-side)/2;field.right=field.left+side;
     field.top=getWidth()*.08f;field.bottom=field.top+side;
     boolean own=showingOwnOcean();
-    String label=placing()?draggingFleet?(fleet.candidate(dragCell)!=null?"RELEASE TO PLACE · VALID":"CANNOT PLACE · MOVE TO A CLEAR SPACE"):"YOUR OCEAN · PLACE SHIPS":own?"YOUR FLEET · INCOMING FIRE":"HER WATERS · TAP TO FIRE";
+    String label=placing()?draggingFleet?(fleet.candidate(dragCell)!=null?"RELEASE TO PLACE · VALID":"CANNOT PLACE · MOVE TO A CLEAR SPACE"):"YOUR OCEAN · PLACE SHIPS":own?"YOUR FLEET · INCOMING FIRE":"THEIR WATERS · TAP TO FIRE";
     caption(c,label,field.left,field.top-getWidth()*.027f,Math.min(getWidth()*.029f,side*.033f),0xff64708b);
     ocean(c,field,own,!placing()&&own);ownField.setEmpty();
   }
@@ -241,7 +241,6 @@ final class GamesBoard extends View {
       }
     }
     if(pending!=null&&"place".equals(pending.optString("type")))ring(c,left+(float)pending.optDouble("x")/1000*width,top+(float)pending.optDouble("y")/500*height,width*.017f,2,0xffe0d0ff);
-    caption(c,moving()?"SHOT IN MOTION":"TABLE 01 · JUST THE TWO OF US",left,field.bottom+getHeight()*.09f,getWidth()*.029f,0xff64708b);
   }
 
   boolean motion() { return Motion.enabled(getContext()) && !getContext().getSharedPreferences("games-settings",0).getBoolean("reduce-motion",false); }

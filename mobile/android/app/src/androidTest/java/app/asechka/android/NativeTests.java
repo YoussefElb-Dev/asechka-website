@@ -2333,7 +2333,7 @@ public final class NativeTests extends Instrumentation {
       await(() -> !views(games, GamesBoard.class).isEmpty()
           && views(games, GamesBoard.class).get(0).getHeight() > 0, "Native board lays out");
       GamesBoard board = views(games, GamesBoard.class).get(0);
-      if ("battleship".equals(room.optString("game"))) ui(() -> { board.fleet.automatic(); board.invalidate(); });
+      if ("battleship".equals(room.optString("game"))) ui(() -> { board.fleet.automatic(); games.selection(); });
       ui(() -> games.scrollTo(0, 0));
       await(() -> board.getBottom() <= games.getHeight(), "Board stays in the play viewport");
       check(board.getWidth() <= games.getWidth() && board.getWidth() > 0,
@@ -2341,6 +2341,11 @@ public final class NativeTests extends Instrumentation {
       screenshot("games-board-" + room.optString("game"));
       check(((View)inner(games,"body")).getHeight()<=games.getHeight()+2,"Primary play controls fit without page scrolling: "+room.optString("game"));
     }
+    JSONObject guessing=new JSONObject(layouts.getJSONObject(2).toString());JSONObject guessState=GamesData.state(guessing);guessState.put("setter",1);guessState.put("turn",0);guessState.remove("word");
+    ui(()->{games.client.rooms.put(guessing.optString("id"),guessing);games.client.selectedRoom=guessing.optString("id");games.changed();});
+    await(()->text("Z")!=null&&text("Z").getHeight()>0,"Hangman keyboard lays out");
+    check(((View)inner(games,"body")).getHeight()<=games.getHeight()+2,"Hangman book, word and keyboard fit together");
+    android.graphics.Rect visible=new android.graphics.Rect();check(text("Z").getGlobalVisibleRect(visible)&&visible.height()>0,"Last alphabet key is visible without scrolling");screenshot("games-hangman-keyboard");
     ui(() -> {
       games.client.connected = false;
       games.client.rooms.clear();
@@ -2397,6 +2402,19 @@ public final class NativeTests extends Instrumentation {
     check(fleet.rotate()&&fleet.place(75),"Ship can move near the lower edge horizontally");
     check(!fleet.rotate()&&!fleet.vertical&&fleet.ships[0][0]==75,"Out-of-bounds rotation keeps the last valid placement");
     check(!fleet.place(20)&&fleet.ships[0][0]==75&&fleet.message.contains("overlaps"),"Invalid drops preserve the last valid ship and explain why");
+    ui(()->{
+      GamesBoard board=surface[0];JSONObject state=GamesData.obj("turn",0,"winner",JSONObject.NULL,"phase","battle","fleets",new JSONArray().put(new JSONArray()).put(JSONObject.NULL),"shots",new JSONArray().put(new JSONArray()).put(new JSONArray()));
+      JSONObject room=GamesData.obj("id","turn-fleet","game","battleship","status","playing","players",new JSONArray().put(GamesData.obj("actor","asnat")).put(GamesData.obj("actor","youssef")),"state",state);
+      board.update(room,null,true);check(!board.showingOwnOcean(),"Your turn automatically shows the target ocean");
+      action[0]=null;board.activate(55);check(action[0]!=null&&action[0].optString("type").equals("fire"),"Target chart accepts firing on your turn");
+      board.showOcean(true);action[0]=null;board.activate(55);check(action[0]==null,"Inspecting your own ocean never fires a shot");
+      state=GamesData.obj("turn",1,"winner",JSONObject.NULL,"phase","battle","fleets",new JSONArray().put(new JSONArray()).put(JSONObject.NULL));
+      try{room=new JSONObject(room.toString());room.put("state",state);}catch(JSONException error){throw new RuntimeException(error);}
+      board.update(room,null,true);check(board.showingOwnOcean(),"Partner's turn automatically shows incoming fire on your fleet");
+      board.showOcean(false);action[0]=null;board.activate(55);check(action[0]==null,"Inspecting their ocean on the partner's turn cannot fire");
+      try{room=new JSONObject(room.toString());GamesData.state(room).put("turn",0);}catch(JSONException error){throw new RuntimeException(error);}
+      board.update(room,null,true);check(!board.showingOwnOcean(),"The next turn resumes automatic chart selection");
+    });
     ui(() -> {
       GamesBoard board=surface[0];
       for(String game:new String[]{"tictactoe","connect4"}) {

@@ -58,6 +58,7 @@ struct GamesPoolView: View {
     }
     private var compactControls: some View {
         VStack(alignment: .leading, spacing: 6) {
+            Text(room.state["groups"][room.player(universe.actor) ?? 0].isNull ? "Open table" : room.state["groups"][room.player(universe.actor) ?? 0].string.capitalized).font(.caption.bold())
             if room.finished {
                 Text(GamesRoomView.resultText(room)).font(.headline)
                 Button { store.rematch(room) } label: { Text("Another round").gamesAction() }.disabled(!store.connected || store.working || room.rematchReady.contains(universe.actor))
