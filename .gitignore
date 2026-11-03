@@ -7,3 +7,4 @@ node_modules/
 publisher/.local/
 .games-data/
 benchmark-results/
+mobile/ios/package/

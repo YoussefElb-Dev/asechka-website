@@ -45,7 +45,9 @@ final class GamesBoard extends View {
   void update(JSONObject room, JSONObject pending, boolean online) {
     String oldId = this.room.optString("id");
     int oldTurn=this.state.optInt("turn",-1);
-    if (!oldId.equals(room.optString("id"))) { selected = -1; fleet.reset(); }
+    boolean newRound=this.room.optInt("round",1)!=room.optInt("round",1);
+    String oldPhase=this.state.optString("phase");
+    if (!oldId.equals(room.optString("id"))||newRound) { selected = -1; fleet.reset(); }
     if(oldId.equals(room.optString("id"))&&this.room.optLong("seq")!=room.optLong("seq")&&motion()){
       JSONArray before=GamesData.array(this.state,"board"),after=GamesData.array(GamesData.state(room),"board");
       animatedCell=animatedFrom=-1;
@@ -59,7 +61,7 @@ final class GamesBoard extends View {
     this.room = room; this.state = GamesData.state(room); this.game = room.optString("game");
     if(!game.equals(warmedGame)){GamesTextures.warm(getContext(),game);warmedGame=game;}
     this.player = GamesData.player(room, actor);
-    if(!oldId.equals(room.optString("id"))||oldTurn!=this.state.optInt("turn",-1))ownOcean=null;
+    if(!oldId.equals(room.optString("id"))||newRound||oldTurn!=this.state.optInt("turn",-1)||!oldPhase.equals(this.state.optString("phase")))ownOcean=null;
     this.pending = pending != null && room.optString("id").equals(pending.optString("room")) ? pending.optJSONObject("action") : null;
     canMove = online && pending == null && "playing".equals(room.optString("status")) && !GamesData.finished(state) && player >= 0;
     if ("checkers".equals(game) && !state.isNull("forced") && state.has("forced")) selected = state.optInt("forced",-1);

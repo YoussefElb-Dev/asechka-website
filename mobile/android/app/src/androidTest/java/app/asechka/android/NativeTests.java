@@ -2414,6 +2414,12 @@ public final class NativeTests extends Instrumentation {
       board.showOcean(false);action[0]=null;board.activate(55);check(action[0]==null,"Inspecting their ocean on the partner's turn cannot fire");
       try{room=new JSONObject(room.toString());GamesData.state(room).put("turn",0);}catch(JSONException error){throw new RuntimeException(error);}
       board.update(room,null,true);check(!board.showingOwnOcean(),"The next turn resumes automatic chart selection");
+      board.fleet.automatic();board.showOcean(true);
+      try{room=new JSONObject(room.toString());room.put("round",2);GamesData.state(room).put("phase","placement");}catch(JSONException error){throw new RuntimeException(error);}
+      board.update(room,null,true);check(!board.fleet.complete()&&board.ownOcean==null,"A rematch clears the old fleet and manual chart choice");
+      board.showOcean(true);
+      try{room=new JSONObject(room.toString());GamesData.state(room).put("phase","battle");}catch(JSONException error){throw new RuntimeException(error);}
+      board.update(room,null,true);check(!board.showingOwnOcean(),"Locking a new fleet resumes the correct turn chart");
     });
     ui(() -> {
       GamesBoard board=surface[0];

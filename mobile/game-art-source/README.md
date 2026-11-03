@@ -22,10 +22,16 @@ every position, private fleet reveal, guessed letter, result, and animation.
 ## Validation — November 3, 2026
 
 - 93 bundled resources, about 3.4 MiB per platform; exact hashes match both copies.
-- Android debug APK builds, installs and passes archive integrity checks.
-- Android emulator: 102 Games/Photography assertions pass, including every
-  Tic-tac-toe cell and Connect Four slot, cue pulling, ship dragging and bounds.
+- Android release 2.6.1 (26) builds, verifies and updates the existing installation
+  with the original signing identity.
+- Android emulator: 128 Games/Photography assertions pass at 1080×2400 and
+  1080×1920, including all six focused layouts, the complete Hangman keyboard,
+  every Tic-tac-toe cell and Connect Four slot, cue pulling, atomic fleet rotation,
+  invalid-drop retention, automatic turn-aware Battleship charts and fresh
+  fleet/chart state for a rematch.
 - Full Node suite: 250 pass, 4 Redis integration tests skipped (no local Redis).
-- Actual emulator captures: `../android/qa/gameplay-polish/`.
-- iOS artwork and rendering are integrated. An Xcode build and device check have
-  not been run on this Windows machine.
+- Actual emulator captures: `../android/qa/focused-play/`.
+- iOS arm64 Release 2.6.1 (26) compiles on the hosted Mac and passes IPA, embedded
+  WidgetKit-extension and exact Games-payload verification. Apple-ID signing is
+  required before installation. The 33 iOS unit tests pass; the complete focused
+  gameplay screen checks run in the separate hosted simulator job.
