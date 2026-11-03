@@ -18,8 +18,8 @@
   <script type="module" src="app.js"></script>
   <script type="module" src="memory-gallery.js"></script>
   <script type="module" src="shared-moments.js"></script>
-<link rel="stylesheet" href="translation.css"><link rel="stylesheet" href="keepsakes.css"><link rel="stylesheet" href="soft-orbit.css"></head>
-<body>
+<link rel="stylesheet" href="translation.css"><link rel="stylesheet" href="keepsakes.css"><link rel="stylesheet" href="soft-orbit.css"><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="home-dashboard.css"><script src="vendor/leaflet.js" defer></script><script type="module" src="live-location.js"></script></head>
+<body class="home-dashboard">
   <a class="skip-link" href="#main">Skip to the love letter</a>
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <symbol id="star" viewBox="0 0 32 32"><path d="m16 2 4.3 9.2L30 13l-7 7 1.5 10L16 25l-8.5 5L9 20l-7-7 9.7-1.8Z"/></symbol>
@@ -41,6 +41,11 @@
       <a class="since-strip-link" href="/us.html">Our little beginning ↗</a>
     </section>
 
+    <section class="home-overview wrap" aria-label="Home choices and our locations">
+      <div class="home-heading"><h1>Our little us.</h1><span>wherever we are ♡</span></div>
+      <nav class="home-choices" aria-label="Our choices"><a href="/camera.html">◉ Camera</a><a href="/vault.html">◇ Time vault</a><a href="/journal.html#vocab">Secret vocab</a><a href="/us.html#letters">Open when…</a><a href="/journal.html#victories">Tiny victories</a><a href="/journal.html#recipes">Recipes for two</a><a href="/music.html">♫ Music</a><a href="/together.html">Our days</a></nav>
+      <section class="location-card" data-live-location aria-label="Our live locations"><div class="location-heading"><h2>⌖ Find each other</h2><select aria-label="Your location profile"><option value="">I’m here as…</option><option value="asnat">Asnat</option><option value="youssef">Youssef</option></select><button type="button" data-location-toggle>Share location</button></div><div class="location-map" data-location-map role="region" aria-label="Map of our shared locations"></div><div class="location-people" data-location-people></div><p class="location-status" data-location-status>Off until you choose. The apps can keep sharing in the background.</p></section>
+    </section>
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow"><span></span> FOR ASNAT. MY ASECHKA.</p>

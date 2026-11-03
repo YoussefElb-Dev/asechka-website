@@ -29,6 +29,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private GamesView games;
   private String gameInvite = "";
   private HomeExtras homeExtras;
+  private LiveLocationCard liveLocationCard;
+  LiveLocationCard locationCard(){liveLocationCard=new LiveLocationCard(this,api);return liveLocationCard;}
+  @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results){super.onRequestPermissionsResult(request,permissions,results);if(request==LiveLocationCard.PERMISSION&&liveLocationCard!=null)liveLocationCard.permission(results);}
+
   private HomeExtras.HeartRain heartRain;
 
   HomeExtras.HeartRain hearts() {
@@ -214,6 +218,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   protected void onResume() {
     super.onResume();
     started = true;
+    if(api!=null&&api.canOpen())LiveLocationCard.resumeService(this,api);
     if (root != null) {
       if (!biometrics.enabled()) appUnlocked = true;
       else if (!appUnlocked) {

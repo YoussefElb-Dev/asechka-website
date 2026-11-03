@@ -193,6 +193,8 @@ public final class ApiClient {
     throw new ApiError("Connect once to save this content on your phone.", 0);
   }
 
+  public JSONObject location(JSONObject body) throws Exception {return json("/api/location",body==null?"GET":"POST",body==null?null:body.toString(),body==null?null:"application/json");}
+  synchronized String webCookie(){return signedIn()?cookie:"";}
   public JSONObject post(String path, JSONObject body) throws Exception {
     if (!canOpen()) throw new ApiError("Open our little door again.", 401);
     if (path.equals("/api/music")
@@ -506,6 +508,7 @@ public final class ApiClient {
       sentCookie = signedIn() ? cookie : "";
       if (!sentCookie.isEmpty()) connection.setRequestProperty("Cookie", sentCookie);
     }
+    if (path.equals("/api/location")) connection.setRequestProperty("X-Asechka-Location", "1");
     if (path.equals("/api/camera")) connection.setRequestProperty("X-Asechka-Camera", "1");
     if (path.equals("/api/journal")) connection.setRequestProperty("X-Asechka-Journal", "1");
     if (path.equals("/api/keepsakes")) connection.setRequestProperty("X-Asechka-Keepsakes", "1");

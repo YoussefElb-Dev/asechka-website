@@ -13,6 +13,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
 }
 @MainActor final class UniverseStore: ObservableObject {
     let games = GamesStore()
+    lazy var liveLocation=LiveLocationModel(universe:self)
     static let site="https://asechka-website.vercel.app"
     @Published var actor=UserDefaults.standard.string(forKey:"person") ?? ""
     @Published var unlocked=false
@@ -158,7 +159,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/2.2.8",forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
-        for (endpoint,header) in [("/api/camera","X-Asechka-Camera"),("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation"),("/api/games-session","X-Asechka-Games")] {
+        for (endpoint,header) in [("/api/location","X-Asechka-Location"),("/api/camera","X-Asechka-Camera"),("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation"),("/api/games-session","X-Asechka-Games")] {
             if path==endpoint {request.setValue("1",forHTTPHeaderField:header)}
         }
         let (data,response)=try await session.data(for:request)
@@ -176,6 +177,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         }
         return data
     }
+    func browserCookie()->HTTPCookie?{guard !cookie.isEmpty,let value=cookie.split(separator:"=",maxSplits:1).last else{return nil};return HTTPCookie(properties:[.domain:"asechka-website.vercel.app",.path:"/",.name:"asechka_session",.value:String(value),.secure:"TRUE",.expires:Date().addingTimeInterval(3600)])}
     func requireCode(background:Bool=false){
         guard biometricEnabled else{if background{accessEpoch += 1};requiresCode=false;return}
         if biometricPrompt && !background{HeartRain.shared.stop();return}

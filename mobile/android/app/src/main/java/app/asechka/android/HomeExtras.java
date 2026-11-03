@@ -21,6 +21,7 @@ final class HomeExtras {
   final Open open;
   final Handler main = new Handler(Looper.getMainLooper());
   TextView counts, streak, elapsed, sinceLabel;
+  LiveLocationCard locationCard;
   LinearLayout root;
   HeartRain rain;
   JSONObject bundledKeepsakes;
@@ -157,7 +158,9 @@ final class HomeExtras {
     clock.addView(timeRow);
     clock.setContentDescription("Our time together. Open Since us.");
     clock.setOnClickListener(v -> open.open(0));
-    u.add(root, u.button("Our disposable camera · 24 secret moments", false, () -> activity.startActivity(new android.content.Intent(activity, DisposableCameraActivity.class))), 10);
+    LinearLayout special=u.row(7);
+    Button camera=u.button("Our disposable camera",false,()->activity.startActivity(new android.content.Intent(activity,DisposableCameraActivity.class)));camera.setTextSize(12);special.addView(camera,new LinearLayout.LayoutParams(0,u.dp(44),1));
+    Button vault=u.button("Time vault",false,()->activity.startActivity(new android.content.Intent(activity,TimeVaultActivity.class)));vault.setTextSize(12);special.addView(vault,new LinearLayout.LayoutParams(0,u.dp(44),1));u.add(root,special,6);
     String[] names = {
       "Secret vocab",
       "Open when…",
@@ -178,8 +181,8 @@ final class HomeExtras {
       }
       final int destination = destinations[i];
       LinearLayout tile = u.column();
-      tile.setPadding(u.dp(6), u.dp(8), u.dp(6), u.dp(8));
-      tile.setMinimumHeight(u.dp(56));
+      tile.setPadding(u.dp(6), u.dp(4), u.dp(6), u.dp(4));
+      tile.setMinimumHeight(u.dp(44));
       tile.setGravity(Gravity.CENTER);
       android.graphics.drawable.GradientDrawable shape = u.shape(Color.WHITE, 18);
       shape.setStroke(u.dp(1), 0xffe6e2f1);
@@ -417,6 +420,7 @@ final class HomeExtras {
   void close() {
     if (closed) return;
     closed = true;
+    if(locationCard!=null)locationCard.close();
     main.removeCallbacksAndMessages(null);
     heartWriter.execute(
         () ->

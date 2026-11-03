@@ -15,6 +15,9 @@
 <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
 <key>UISupportedInterfaceOrientations~ipad</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationPortraitUpsideDown</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
 <key>UIAppFonts</key><array><string>DM-Sans-Regular.ttf</string><string>DM-Sans-Semibold.ttf</string><string>Manrope-Bold.ttf</string><string>Manrope-Regular.ttf</string><string>Caveat-Medium.ttf</string></array>
+<key>NSLocationWhenInUseUsageDescription</key><string>Share your live position with your partner until you turn sharing off.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key><string>Keep sharing your live location with your partner when Asechka is in the background. Sharing stays on until you stop it.</string>
+<key>UIBackgroundModes</key><array><string>location</string></array>
 <key>NSCameraUsageDescription</key><string>Take a secret photo for our shared disposable camera. Pictures stay hidden until the roll is developed.</string>
 <key>NSPhotoLibraryUsageDescription</key><string>Choose a photo to share in our private little universe.</string>
 <key>NSFaceIDUsageDescription</key><string>Use Face ID to open our private little universe when optional biometric locking is enabled.</string>

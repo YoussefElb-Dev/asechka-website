@@ -18,6 +18,7 @@ enum HeartLedger {
 
 struct HomeHub:View {
     @State private var filmCamera=false
+    @State private var timeVault=false
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.accessibilityReduceMotion) private var reduced
     @AppStorage("motion-paused") private var paused=false
@@ -34,15 +35,16 @@ struct HomeHub:View {
         ("Little things","Things we love about us","heart",true,2),
         ("Our beginning","Since that little yes","infinity",true,0)]}
     var body:some View {
-        VStack(alignment:.leading,spacing:8){
+        VStack(alignment:.leading,spacing:6){
             heartCard
             sinceCard
-            Button { filmCamera=true;Touch.tap() } label: { HStack { Image(systemName:"camera.fill");VStack(alignment:.leading,spacing:3){Text("Our disposable camera").font(.system(size:14,weight:.semibold));Text("24 moments. A little surprise.").font(.system(size:11))};Spacer();Image(systemName:"arrow.up.right") }.foregroundColor(Palette.purple).padding(14).background(Palette.lavender,in:RoundedRectangle(cornerRadius:18)) }
+            HStack(spacing:7){Button { filmCamera=true;Touch.tap() } label: { HStack { Image(systemName:"camera.fill");VStack(alignment:.leading,spacing:3){Text("Our disposable camera").font(.system(size:14,weight:.semibold));Text("24 secret moments").font(.system(size:10))};Spacer();Image(systemName:"arrow.up.right") }.foregroundColor(Palette.purple).padding(10).frame(maxWidth:.infinity).background(Palette.lavender,in:RoundedRectangle(cornerRadius:16)) };Button{timeVault=true}label:{Label("Time vault",systemImage:"lock.shield").font(.system(size:13,weight:.semibold)).frame(maxWidth:.infinity,minHeight:48).background(Palette.blue,in:RoundedRectangle(cornerRadius:16))}}
             LazyVGrid(columns:Array(repeating:GridItem(.flexible(),spacing:7),count:textSize.isAccessibilitySize ? 2:3),spacing:7){ForEach(routes.indices,id:\.self){index in
                 let route=routes[index]
-                Button{Touch.tap();open(BookRoute(personal:route.3,chapter:route.4))}label:{Label(route.0,systemImage:route.2).font(.system(size:12,weight:.medium)).foregroundColor(Palette.purple).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:48).padding(.horizontal,5).background(.white,in:RoundedRectangle(cornerRadius:16,style:.continuous)).overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.09),lineWidth:1))}.accessibilityLabel(route.0).accessibilityHint(route.1)
+                Button{Touch.tap();open(BookRoute(personal:route.3,chapter:route.4))}label:{Label(route.0,systemImage:route.2).font(.system(size:12,weight:.medium)).foregroundColor(Palette.purple).multilineTextAlignment(.center).frame(maxWidth:.infinity,minHeight:44).padding(.horizontal,5).background(.white,in:RoundedRectangle(cornerRadius:16,style:.continuous)).overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.09),lineWidth:1))}.accessibilityLabel(route.0).accessibilityHint(route.1)
             }}
-        }.padding(.horizontal,16).sheet(isPresented:$filmCamera){FilmView()}
+            HomeLocationCard(model:universe.liveLocation)
+        }.padding(.horizontal,16).sheet(isPresented:$filmCamera){FilmView()}.sheet(isPresented:$timeVault){TimeVaultWebView()}
     }
     private var heartCard:some View {
         HStack(spacing:12){

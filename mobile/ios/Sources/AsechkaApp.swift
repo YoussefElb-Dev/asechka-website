@@ -89,6 +89,7 @@ struct RootView:View {
         }
         .task(id:"\(universe.actor)|\(universe.unlocked)|\(universe.requiresCode)|\(universe.online)|\(phase == .active)"){
             universe.games.configure(universe,active:phase == .active)
+            universe.liveLocation.configure(active:phase == .active)
         }
         .alert("A little moment",isPresented:Binding(get:{universe.error != nil},set:{if !$0{universe.error=nil}})) {
             Button("OK",role:.cancel){universe.error=nil}
