@@ -55,7 +55,7 @@ struct GamesView: View {
             VStack(alignment: .leading, spacing: 20) {
                 header
                 GamesConnectionBanner(store: store)
-                if let room = store.selectedRoom {
+                if let room = store.selectedRoom, room.status == "lobby" {
                     Button { store.activeRoomID = nil } label: { Label("All games", systemImage: "arrow.left").frame(minHeight: 44) }
                     GamesRoomView(store: store, room: room)
                 } else {
