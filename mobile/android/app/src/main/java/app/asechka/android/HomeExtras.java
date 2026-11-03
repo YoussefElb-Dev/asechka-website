@@ -90,124 +90,37 @@ final class HomeExtras {
             main.removeCallbacks(tick);
           }
         });
-    LinearLayout heart = u.card(root, Ui.PALE);
-    ((LinearLayout.LayoutParams) heart.getLayoutParams()).topMargin = 0;
-    heart.setPadding(u.dp(12), u.dp(8), u.dp(12), u.dp(8));
-    LinearLayout title = u.row();
-    LinearLayout summary = u.column();
-    summary.setMinimumHeight(u.dp(48));
-    summary.setGravity(Gravity.CENTER_VERTICAL);
-    counts = u.text("", 12, Ui.MUTED);
-    summary.addView(counts);
-    streak = u.text("", 12, Ui.PURPLE);
-    summary.addView(streak);
-    streak.setContentDescription("Heart streak. Long press for our heart history.");
-    summary.setOnLongClickListener(
-        v -> {
-          history();
-          return true;
-        });
-    title.addView(summary, new LinearLayout.LayoutParams(0, -2, 1));
-    Button send = u.button("Send a heart", false, null);
-    send.setTextSize(14);
-    send.setTextColor(Ui.INK);
-    send.setSingleLine(true);
-    send.setIncludeFontPadding(false);
-    send.setMinWidth(0);
-    send.setMinimumWidth(0);
-    send.setPadding(u.dp(14), 0, u.dp(14), 0);
-    android.graphics.drawable.Drawable heartIcon = activity.getDrawable(R.drawable.ic_send_heart);
-    heartIcon.setBounds(0, 0, u.dp(18), u.dp(18));
-    send.setCompoundDrawablesRelative(heartIcon, null, null, null);
-    send.setCompoundDrawablePadding(u.dp(8));
-    android.graphics.drawable.GradientDrawable sendSurface = u.shape(Color.WHITE, 24);
-    sendSurface.setStroke(u.dp(1), 0xffdfdaef);
-    send.setBackground(
-        new android.graphics.drawable.RippleDrawable(
-            android.content.res.ColorStateList.valueOf(0x196b5cb5), sendSurface, null));
-    send.setContentDescription("Send a heart to " + partner());
-    send.setOnClickListener(v -> send(v));
-    title.addView(send, new LinearLayout.LayoutParams(-2, -2));
-    heart.addView(title);
-    LinearLayout clock = u.card(root, Ui.BLUE);
-    ((LinearLayout.LayoutParams) clock.getLayoutParams()).topMargin = u.dp(7);
-    clock.setPadding(u.dp(12), u.dp(6), u.dp(12), u.dp(6));
-    clock.setMinimumHeight(u.dp(48));
-    android.graphics.drawable.GradientDrawable clockSurface =
-        new android.graphics.drawable.GradientDrawable(
-            android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
-            new int[] {Ui.BLUE, 0xfff0edfb});
-    clockSurface.setCornerRadius(u.dp(20));
-    clock.setBackground(clockSurface);
-    LinearLayout timeRow = u.row(10);
-    timeRow.addView(
-        new HomeGlyph(activity, 5, Ui.PURPLE, Color.WHITE),
-        new LinearLayout.LayoutParams(u.dp(32), u.dp(32)));
-    LinearLayout timeCopy = u.column();
-    elapsed = u.title("", 18);
-    elapsed.setFontFeatureSettings("tnum");
-    elapsed.setIncludeFontPadding(false);
-    timeCopy.addView(elapsed);
-    sinceLabel = u.text("", 10, Ui.MUTED);
-    sinceLabel.setTextSize(9.5f);
-    sinceLabel.setIncludeFontPadding(false);
-    sinceLabel.setSingleLine(true);
-    sinceLabel.setEllipsize(android.text.TextUtils.TruncateAt.END);
-    u.add(timeCopy, sinceLabel, 2);
-    timeRow.addView(timeCopy, new LinearLayout.LayoutParams(0, -2, 1));
-    clock.addView(timeRow);
-    clock.setContentDescription("Our time together. Open Since us.");
-    clock.setOnClickListener(v -> open.open(0));
+    LinearLayout heart=u.card(root,Ui.PALE);((LinearLayout.LayoutParams)heart.getLayoutParams()).topMargin=0;
+    heart.setBackground(u.shape(Ui.PALE,22));heart.setPadding(u.dp(12),u.dp(8),u.dp(12),u.dp(8));
+    LinearLayout title=u.row(12),summary=u.column();summary.setMinimumHeight(u.dp(48));summary.setGravity(Gravity.CENTER_VERTICAL);
+    counts=u.text("",12,Ui.MUTED);summary.addView(counts);streak=u.text("",12,Ui.PURPLE);Compat.font(streak,R.font.dm_sans,600);u.add(summary,streak,3);
+    summary.setContentDescription("Our heart history");summary.setOnClickListener(v->history());summary.setOnLongClickListener(v->{history();return true;});
+    title.addView(summary,new LinearLayout.LayoutParams(0,-2,1));
+    Button send=u.button("Send a heart",false,null);send.setTextSize(14);send.setTextColor(Ui.INK);send.setSingleLine(true);send.setPadding(u.dp(14),0,u.dp(14),0);
+    android.graphics.drawable.Drawable heartIcon=activity.getDrawable(R.drawable.ic_send_heart);heartIcon.setBounds(0,0,u.dp(18),u.dp(18));send.setCompoundDrawablesRelative(heartIcon,null,null,null);send.setCompoundDrawablePadding(u.dp(8));
+    android.graphics.drawable.GradientDrawable sendSurface=u.shape(Color.WHITE,100);sendSurface.setStroke(u.dp(1),0xffdfdaef);send.setBackground(new android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x196b5cb5),sendSurface,null));
+    send.setContentDescription("Send a heart to "+partner());send.setOnClickListener(v->send(v));title.addView(send,new LinearLayout.LayoutParams(-2,u.dp(48)));heart.addView(title);
+    LinearLayout clock=u.card(root,Ui.BLUE);((LinearLayout.LayoutParams)clock.getLayoutParams()).topMargin=u.dp(6);clock.setPadding(u.dp(12),u.dp(10),u.dp(12),u.dp(10));
+    LinearLayout timeRow=u.row(8);TextView together=u.text("Together ♡",12,Ui.PURPLE);timeRow.addView(together);
+    elapsed=u.title("",18);elapsed.setFontFeatureSettings("tnum");elapsed.setSingleLine(true);elapsed.setEllipsize(android.text.TextUtils.TruncateAt.END);timeRow.addView(elapsed,new LinearLayout.LayoutParams(0,-2,1));clock.addView(timeRow);
+    sinceLabel=u.text("",10,Ui.MUTED);sinceLabel.setSingleLine(true);sinceLabel.setEllipsize(android.text.TextUtils.TruncateAt.END);u.add(clock,sinceLabel,4);clock.setContentDescription("Our time together. Open Since us.");clock.setOnClickListener(v->open.open(0));
     LinearLayout special=u.row(7);
-    Button camera=u.button("Our disposable camera",false,()->activity.startActivity(new android.content.Intent(activity,DisposableCameraActivity.class)));camera.setTextSize(12);special.addView(camera,new LinearLayout.LayoutParams(0,u.dp(44),1));
-    Button vault=u.button("Time vault",false,()->activity.startActivity(new android.content.Intent(activity,TimeVaultActivity.class)));vault.setTextSize(12);special.addView(vault,new LinearLayout.LayoutParams(0,u.dp(44),1));u.add(root,special,6);
-    String[] names = {
-      "Secret vocab",
-      "Open when…",
-      "Tiny victories",
-      "Recipes for two",
-      "Little things",
-      "Our beginning"
-    };
-    int[] accents = {Ui.PURPLE, 0xff9373ab, 0xff748bc1, 0xff8b80b1, 0xffaa759d, 0xff6f92b7};
-    int[] tints = {Ui.PALE, 0xfff3ebf7, Ui.BLUE, 0xffeeecf7, 0xfff7ecf3, 0xffeaf1f8};
-    int[] destinations = {3, 1, 4, 5, 2, 0};
-    int columns = activity.getResources().getConfiguration().fontScale > 1.3f ? 2 : 3;
-    LinearLayout row = null;
-    for (int i = 0; i < names.length; i++) {
-      if (i % columns == 0) {
-        row = u.row(7);
-        u.add(root, row, 7);
-      }
-      final int destination = destinations[i];
-      LinearLayout tile = u.column();
-      tile.setPadding(u.dp(6), u.dp(4), u.dp(6), u.dp(4));
-      tile.setMinimumHeight(u.dp(44));
-      tile.setGravity(Gravity.CENTER);
-      android.graphics.drawable.GradientDrawable shape = u.shape(Color.WHITE, 18);
-      shape.setStroke(u.dp(1), 0xffe6e2f1);
-      tile.setBackground(
-          new android.graphics.drawable.RippleDrawable(
-              android.content.res.ColorStateList.valueOf(0x196b5cb5), shape, null));
-      LinearLayout heading = u.row(5);
-      heading.addView(
-          new HomeGlyph(activity, i, accents[i], tints[i]),
-          new LinearLayout.LayoutParams(u.dp(26), u.dp(30)));
-      TextView label = u.text(names[i].replaceFirst(" ", "\n"), 13, Ui.INK);
-      label.setTextSize(Build.VERSION.SDK_INT < 26 ? 12f : 12.5f);
-      label.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_SIMPLE);
-      label.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
-      Compat.font(label, R.font.dm_sans, 650);
-      label.setGravity(Gravity.CENTER_VERTICAL);
-      label.setIncludeFontPadding(false);
-      label.setLineSpacing(0, 1.04f);
-      label.setMaxLines(2);
-      heading.addView(label, new LinearLayout.LayoutParams(0, -2, 1));
-      tile.addView(heading);
-      tile.setContentDescription(names[i]);
-      tile.setOnClickListener(v -> open.open(destination));
-      row.addView(tile, new LinearLayout.LayoutParams(0, -1, 1));
+    LinearLayout camera=u.row(8);camera.setGravity(Gravity.CENTER_VERTICAL);camera.setPadding(u.dp(10),u.dp(10),u.dp(10),u.dp(10));camera.setBackground(u.shape(Ui.PALE,16));camera.setMinimumHeight(u.dp(64));camera.addView(Glyph.view(activity,"camera",Ui.PURPLE),new LinearLayout.LayoutParams(u.dp(23),u.dp(23)));
+    LinearLayout cameraCopy=u.column();TextView cameraName=u.text("Our disposable camera",14,Ui.PURPLE);Compat.font(cameraName,R.font.dm_sans,600);cameraCopy.addView(cameraName);u.add(cameraCopy,u.text("24 secret moments",10,Ui.PURPLE),3);camera.addView(cameraCopy,new LinearLayout.LayoutParams(0,-2,1));camera.addView(Glyph.view(activity,"arrow.up.right",Ui.PURPLE),new LinearLayout.LayoutParams(u.dp(16),u.dp(16)));
+    camera.setContentDescription("Our disposable camera");camera.setOnClickListener(v->activity.startActivity(new android.content.Intent(activity,DisposableCameraActivity.class)));special.addView(camera,new LinearLayout.LayoutParams(0,-2,1));
+    LinearLayout vault=u.row(8);vault.setGravity(Gravity.CENTER);vault.setBackground(u.shape(Ui.BLUE,16));vault.addView(Glyph.view(activity,"vault",Ui.INK),new LinearLayout.LayoutParams(u.dp(18),u.dp(18)));TextView vaultName=u.text("Time vault",13,Ui.INK);Compat.font(vaultName,R.font.dm_sans,600);vault.addView(vaultName);vault.setContentDescription("Time vault");vault.setOnClickListener(v->activity.startActivity(new android.content.Intent(activity,TimeVaultActivity.class)));special.addView(vault,new LinearLayout.LayoutParams(0,u.dp(48),1));u.add(root,special,6);
+    String[] names={"Secret vocab","Open when…","Tiny victories","Recipes for two","Little things","Our beginning"};
+    String[] symbols={"book","envelope","sparkles","fork","heart","infinity"};int[] destinations={3,1,4,5,2,0};
+    int columns=activity.getResources().getConfiguration().fontScale>1.3f?2:3;LinearLayout row=null;
+    for(int i=0;i<names.length;i++){
+      if(i%columns==0){row=u.row(7);u.add(root,row,7);}
+      final int destination=destinations[i];LinearLayout tile=u.row(7);tile.setGravity(Gravity.CENTER);tile.setMinimumHeight(u.dp(44));tile.setPadding(u.dp(5),0,u.dp(5),0);
+      android.graphics.drawable.GradientDrawable surface=u.shape(Color.WHITE,16);surface.setStroke(u.dp(1),0x176b5cb5);tile.setBackground(new android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x196b5cb5),surface,null));
+      tile.addView(Glyph.view(activity,symbols[i],Ui.PURPLE),new LinearLayout.LayoutParams(u.dp(16),u.dp(18)));
+      TextView label=u.text(names[i],12,Ui.PURPLE);Compat.font(label,R.font.dm_sans,500);label.setGravity(Gravity.CENTER);label.setMaxLines(2);label.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_SIMPLE);label.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);tile.addView(label,new LinearLayout.LayoutParams(0,-2,1));
+      tile.setContentDescription(names[i]);tile.setOnClickListener(v->open.open(destination));row.addView(tile,new LinearLayout.LayoutParams(0,u.dp(44),1));
     }
+    locationCard=((MainActivity)activity).locationCard();u.add(root,locationCard.view(),6);
     update();
     return root;
   }
@@ -363,14 +276,14 @@ final class HomeExtras {
                 sinceLabel.setText(
                     start <= 0
                         ? "Set our beginning in Since us"
-                        : "Together since " + shortBeginning(start) + " ET");
+                        : "Since " + shortBeginning(start) + " · Eastern");
               });
         });
   }
 
   private String shortBeginning(long start) {
     java.text.SimpleDateFormat format =
-        new java.text.SimpleDateFormat("MMM d, yyyy · h:mm a", Locale.US);
+        new java.text.SimpleDateFormat("MMMM d, yyyy 'at' h:mm a", Locale.US);
     format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
     return format.format(new Date(start));
   }

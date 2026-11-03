@@ -63,12 +63,12 @@ final class BookViews {
     LinearLayout header = u.row();
     header.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(8));
     header.addView(
-        u.title(personal ? "Since us" : "Our little book", 23),
+        u.title(personal ? "Since us" : "Our little book", 17),
         new LinearLayout.LayoutParams(0, -2, 1));
-    header.addView(u.button("Done", false, () -> window.dismiss()));
+    header.addView(u.textButton("Done", () -> window.dismiss()));
     outer.addView(header);
     content = u.column();
-    content.setPadding(u.dp(20), 0, u.dp(20), u.dp(28));
+    content.setPadding(u.dp(22), 0, u.dp(22), u.dp(28));
     outer.addView(u.scroll(content), new LinearLayout.LayoutParams(-1, 0, 1));
     window.setContentView(outer);
     window.setOnDismissListener(
@@ -159,11 +159,11 @@ final class BookViews {
             : new String[] {"Tiny victories", "Recipes for two", "Inside jokes"};
     u.add(
         content,
-        u.handwritten(personal ? "All the days that became ours. ♡" : "Still being written. ♡", 30),
+        u.title(personal ? "All the days\nthat became ours." : "Our little book.\nStill being written.", 30),
         15);
     u.add(
         content,
-        u.text("Saved for both of us. Add your own words, whenever you like.", 14, Ui.MUTED),
+        u.text("Saved for both of us. Add your own words, whenever you like.", 17, Ui.MUTED),
         8);
     HorizontalScrollView tabs = new HorizontalScrollView(activity);
     tabs.setHorizontalScrollBarEnabled(false);

@@ -15,7 +15,7 @@ $sources=@(Get-ChildItem -LiteralPath "$projectRoot\app\src\androidTest\java" -R
 Run-Tool "$env:JAVA_HOME\bin\javac.exe" @('--release','17','-encoding','UTF-8','-classpath',$cp,'-d',"$dir\classes","@$dir\sources.txt")
 Run-Tool "$env:JAVA_HOME\bin\jar.exe" @('--create','--file',"$dir\classes.jar",'-C',"$dir\classes",'.')
 Run-Tool "$bt\d8.bat" @('--lib',$platform,'--classpath',"$projectRoot\build\debug\classes.jar",'--min-api','23','--output',"$dir\dex","$dir\classes.jar")
-Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression,System.IO.Compression.FileSystem
 $archive=[IO.Compression.ZipFile]::Open("$dir\unsigned.apk",[IO.Compression.ZipArchiveMode]::Update)
 try{[IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive,"$dir\dex\classes.dex",'classes.dex')|Out-Null}finally{$archive.Dispose()}
 Run-Tool "$bt\zipalign.exe" @('-f','4',"$dir\unsigned.apk","$dir\aligned.apk")

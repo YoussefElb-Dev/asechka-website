@@ -332,7 +332,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               root == view ? (keyboard ? ime.bottom : 0) : Math.max(sys.bottom, ime.bottom));
           if (root == view && bottom != null) {
             bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-            bottom.setPadding(u.dp(10), u.dp(6), u.dp(10), u.dp(6) + sys.bottom);
+            bottom.setPadding(u.dp(8), u.dp(7), u.dp(8), sys.bottom);
           }
           return insets;
         });
@@ -351,7 +351,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             navigationInset = systemBottom;
             if (root == view && bottom != null) {
               bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-              bottom.setPadding(u.dp(10), u.dp(6), u.dp(10), u.dp(6) + navigationInset);
+              bottom.setPadding(u.dp(8), u.dp(7), u.dp(8), navigationInset);
             }
             return insets;
           });
@@ -678,57 +678,37 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void showShell() {
-    boolean shortScreen = getResources().getConfiguration().screenHeightDp < 700;
     if (messages == null)
-      messages =
-          new Messages(
-              this,
-              api,
-              () -> actor(),
-              () -> started && appUnlocked && hasProfile() && !isFinishing() && !isDestroyed());
+      messages = new Messages(this, api, () -> actor(), () -> started && appUnlocked && hasProfile() && !isFinishing() && !isDestroyed());
     root = u.column();
     root.setFocusableInTouchMode(true);
     root.setDescendantFocusability(android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS);
     LinearLayout toolbar = u.row(8);
-    toolbar.setPadding(u.dp(20), u.dp(shortScreen ? 4 : 6), u.dp(16), u.dp(shortScreen ? 4 : 6));
-    // Keep room for the native message action, including 320dp-wide phones.
-    TextView brand = u.title("asechka.", 23);
-    toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(shortScreen ? 44 : 54), 1));
+    toolbar.setPadding(u.dp(20), u.dp(7), u.dp(20), u.dp(7));
+    TextView brand = u.title("asechka.", 25);
     brand.setGravity(Gravity.CENTER_VERTICAL);
-    SocialFeed.Icon create = new SocialFeed.Icon(this, "plus");
+    toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(44), 1));
+    SocialFeed.Icon create = new SocialFeed.Icon(this, "plus.square");
     create.setContentDescription("Create a post");
     create.setOnClickListener(v -> choosePost());
-    toolbar.addView(create, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
-    SocialFeed.Icon envelope = new SocialFeed.Icon(this, "send");
+    toolbar.addView(create, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
+    SocialFeed.Icon envelope = new SocialFeed.Icon(this, "envelope");
     envelope.setContentDescription("Messages");
     envelope.setOnClickListener(v -> messages.open());
-    toolbar.addView(envelope, new LinearLayout.LayoutParams(u.dp(42), u.dp(48)));
-    Button refresh = u.button("↻", false, null);
-    refresh.setOnClickListener(
-        v -> {
-          if (motion())
-            refresh.animate().rotationBy(360).setDuration(650).setInterpolator(Motion.EASE).start();
-          connectionMenu();
-        });
-    refresh.setTextSize(24);
-    refresh.setPadding(0, 0, 0, 0);
+    toolbar.addView(envelope, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
+    SocialFeed.Icon refresh = new SocialFeed.Icon(this, "refresh");
+    refresh.setOnClickListener(v -> {if(motion())refresh.animate().rotationBy(360).setDuration(650).setInterpolator(Motion.EASE).start();connectionMenu();});
     refresh.setContentDescription("Refresh shared memories");
-    toolbar.addView(refresh, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
-    Button menu = u.button(person().substring(0, 1), false, null);
-    menu.setTextSize(16);
-    menu.setPadding(0, 0, 0, 0);
+    toolbar.addView(refresh, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
+    TextView menu = SocialFeed.avatar(this, actor(), 38);
     menu.setContentDescription("Settings and sign out");
     menu.setOnClickListener(v -> settings(menu));
-    LinearLayout.LayoutParams mp = new LinearLayout.LayoutParams(u.dp(48), u.dp(48));
-    mp.leftMargin = u.dp(6);
-    toolbar.addView(menu, mp);
+    toolbar.addView(menu, new LinearLayout.LayoutParams(u.dp(38), u.dp(38)));
     root.addView(toolbar);
-    toolbar.setMinimumHeight(u.dp(shortScreen ? 56 : 64));
-    notice = u.text(connectionMessage, 12, Ui.MUTED);
-    notice.setMaxLines(2);
+    notice = u.text(connectionMessage, 11, Ui.MUTED);
+    notice.setMaxLines(1);
     notice.setEllipsize(android.text.TextUtils.TruncateAt.END);
-    if (shortScreen) notice.setVisibility(View.GONE);
-    notice.setPadding(u.dp(24), u.dp(2), u.dp(24), u.dp(9));
+    notice.setPadding(u.dp(23), 0, u.dp(23), u.dp(9));
     notice.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     notice.setOnClickListener(v -> connectionMenu());
     root.addView(notice);
@@ -740,8 +720,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
     feed = null;
     bottom = u.row(0);
-    bottom.setPadding(u.dp(10), u.dp(6), u.dp(10), u.dp(6) + navigationInset);
-    bottom.setElevation(u.dp(8));
+    bottom.setPadding(u.dp(8), u.dp(7), u.dp(8), navigationInset);
+    bottom.setElevation(u.dp(3));
     bottom.setBackgroundColor(Color.WHITE);
     root.addView(bottom);
     scroll.setOnScrollChangeListener((v, x, y, oldX, oldY) -> Motion.reveal(content, scroll));
@@ -752,7 +732,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void settings(View anchor) {
-    Ui.Sheet sheet = u.sheet("Our little settings", person() + " · a space made for the two of us");
+    Ui.Sheet sheet = u.sheet("Our little settings", "");
+    LinearLayout profile=u.row(14);profile.setPadding(u.dp(16),u.dp(16),u.dp(16),u.dp(16));profile.setBackground(u.shape(Color.WHITE,16));profile.addView(SocialFeed.avatar(this,actor(),50),new LinearLayout.LayoutParams(u.dp(50),u.dp(50)));LinearLayout copy=u.column();copy.addView(u.title(person(),17));u.add(copy,u.text("Our little universe",15,Ui.MUTED),4);profile.addView(copy);sheet.items.addView(profile);
+    sheet.section("Feel a little more");sheet.toggle("Haptic feedback",prefs().getBoolean("haptics",true),on->prefs().edit().putBoolean("haptics",on).apply());sheet.toggle("Pause gentle animations",prefs().getBoolean("motion-paused",false),on->{prefs().edit().putBoolean("motion-paused",on).apply();render(true);});
+    sheet.section("Our little door");
     if (biometrics.available() || biometrics.enabled())
       sheet.item(
           biometrics.enabled() ? "Turn off biometric unlock" : "Enable biometric unlock",
@@ -798,23 +781,6 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                         + "Remembered every year, even offline.")
                 .setPositiveButton("Lovely ♡", null)
                 .show());
-    boolean paused = prefs().getBoolean("motion-paused", false),
-        haptics = prefs().getBoolean("haptics", true);
-    sheet.item(
-        paused ? "Resume gentle animations" : "Pause gentle animations",
-        "Choose how much things move",
-        "∞",
-        false,
-        () -> {
-          prefs().edit().putBoolean("motion-paused", !paused).apply();
-          render(true);
-        });
-    sheet.item(
-        haptics ? "Turn off haptic feedback" : "Turn on haptic feedback",
-        "A little feeling with every tap",
-        "✧",
-        false,
-        () -> prefs().edit().putBoolean("haptics", !haptics).apply());
     sheet.item(
         "Lock our little door",
         "Open it again with our code",
@@ -918,21 +884,22 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       boolean selected = screen == i;
       LinearLayout tab = u.column();
       tab.setGravity(Gravity.CENTER);
-      tab.setPadding(u.dp(2), u.dp(3), u.dp(2), u.dp(3));
+      tab.setPadding(u.dp(2), 0, u.dp(2), 0);
       tab.setContentDescription(labels[i]);
       tab.setFocusable(true);
       tab.setSelected(selected);
       tab.setBackground(
           new android.graphics.drawable.RippleDrawable(
               android.content.res.ColorStateList.valueOf(0x226b5cb5),
-              u.shape(selected ? Ui.PALE : Color.WHITE, 20),
+              u.shape(selected ? Ui.PALE : Color.WHITE, 18),
               u.shape(Color.WHITE, 20)));
       FrameLayout iconFrame = new FrameLayout(this);
       iconFrame.setBackground(u.shape(selected ? Ui.PRIMARY : Color.TRANSPARENT, 17));
       FrameLayout.LayoutParams iconParams =
           new FrameLayout.LayoutParams(u.dp(23), u.dp(23), Gravity.CENTER);
-      iconFrame.addView(i == 6 ? new HomeGlyph(this, 6, selected ? Color.WHITE : Ui.MUTED, Color.TRANSPARENT) : new Ui.Icon(this, i, selected ? Color.WHITE : Ui.MUTED), iconParams);
-      tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(46), u.dp(34)));
+      String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
+      iconFrame.addView(Glyph.view(this, tabSymbols[i], selected ? Color.WHITE : Ui.MUTED), iconParams);
+      tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(46), u.dp(32)));
       if (selected && motion()) {
         iconFrame.setScaleX(.8f);
         iconFrame.setScaleY(.8f);
@@ -953,8 +920,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       label.setEllipsize(android.text.TextUtils.TruncateAt.END);
       label.setGravity(Gravity.CENTER);
       Compat.font(label, R.font.dm_sans, selected ? 700 : 500);
-      u.add(tab, label, 3);
-      tab.setMinimumHeight(u.dp(compact() ? 48 : 60));
+      u.add(tab, label, 4);
+      tab.setMinimumHeight(u.dp(compact() ? 48 : 59));
       tab.setOnClickListener(v -> select(target));
       bottom.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
     }
@@ -1026,65 +993,30 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     stories.setHorizontalScrollBarEnabled(false);
     stories.setClipChildren(false);
     stories.setClipToPadding(false);
-    LinearLayout row = u.row(14);
-    row.setPadding(u.dp(16), u.dp(7), u.dp(16), u.dp(home ? 8 : 14));
-    row.setClipChildren(false);
-    row.setClipToPadding(false);
-    String[] titles = {"Create", "Our corner", "Our days", "Music", "Saved"};
-    String[] symbols = {"＋", "♡", "✦", "♫", "☆"};
-    for (int i = 0; i < titles.length; i++) {
-      if (home && (i == 2 || i == 3)) continue;
-      final int action = i;
-      LinearLayout story = u.column();
-      story.setGravity(Gravity.CENTER);
-      TextView circle = u.text(symbols[i], 27, Ui.PURPLE);
-      circle.setGravity(Gravity.CENTER);
-      circle.setBackground(
-          new android.graphics.drawable.GradientDrawable(
-              android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
-              new int[] {Ui.PALE, Ui.BLUE}));
-      ((android.graphics.drawable.GradientDrawable) circle.getBackground())
-          .setCornerRadius(u.dp(100));
-      ((android.graphics.drawable.GradientDrawable) circle.getBackground())
-          .setStroke(u.dp(2), 0xffd1c5ec);
-      if (!home) story.addView(circle, new LinearLayout.LayoutParams(u.dp(62), u.dp(62)));
-      TextView label = u.text(titles[i], 11, Ui.INK);
-      label.setGravity(Gravity.CENTER);
-      if (home) {
-        label.setText(symbols[i] + "  " + titles[i]);
-        label.setTextSize(13);
-        label.setMinHeight(u.dp(44));
-        label.setPadding(u.dp(6), 0, u.dp(6), 0);
-        label.setBackground(u.shape(Ui.PALE, 18));
+    LinearLayout row = u.row(home ? 10 : 18);
+    row.setPadding(u.dp(home ? 16 : 22), u.dp(home ? 0 : 7), u.dp(home ? 16 : 22), u.dp(home ? 8 : 14));
+    String[] titles = {"Create", "Our corner", "Our days", "Music", savedPosts ? "All posts" : "Saved"};
+    String[] symbols = {"plus", "heart", "sparkles", "music", "bookmark"};
+    for(int i=0;i<titles.length;i++){
+      if(home && (i==2 || i==3))continue;
+      final int action=i;
+      LinearLayout story=u.column();story.setGravity(Gravity.CENTER);
+      if(home){
+        LinearLayout pill=u.row(6);pill.setGravity(Gravity.CENTER);pill.setPadding(u.dp(6),0,u.dp(6),0);pill.setBackground(u.shape(Ui.PALE,100));
+        pill.addView(Glyph.view(this,symbols[i],Ui.INK),new LinearLayout.LayoutParams(u.dp(16),u.dp(16)));
+        TextView name=u.text(titles[i],13,Ui.INK);Compat.font(name,R.font.dm_sans,500);pill.addView(name);
+        story.addView(pill,new LinearLayout.LayoutParams(-1,u.dp(44)));
+      }else{
+        FrameLayout circle=new FrameLayout(this);android.graphics.drawable.GradientDrawable surface=new android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TL_BR,new int[]{Ui.PALE,Ui.BLUE});surface.setCornerRadius(u.dp(100));surface.setStroke(u.dp(2),0x406b5cb5);circle.setBackground(surface);
+        circle.addView(Glyph.view(this,symbols[i],Ui.INK),new FrameLayout.LayoutParams(u.dp(25),u.dp(25),Gravity.CENTER));
+        story.addView(circle,new LinearLayout.LayoutParams(u.dp(62),u.dp(62)));
+        TextView name=u.text(titles[i],11,Ui.INK);name.setGravity(Gravity.CENTER);u.add(story,name,8);
       }
-      u.add(story, label, home ? 0 : 7);
       story.setContentDescription(titles[i]);
-      story.setOnClickListener(
-          v -> {
-            if (action == 0) choosePost();
-            if (action == 1) ourCorner();
-            if (action == 2) select(3);
-            if (action == 3) select(2);
-            if (action == 4) {
-              savedPosts = !savedPosts;
-              if (feed != null) {
-                stage.removeView(feed);
-                feed = null;
-              }
-              render(false);
-            }
-          });
-      row.addView(
-          story,
-          home
-              ? new LinearLayout.LayoutParams(0, -2, 1)
-              : new LinearLayout.LayoutParams(u.dp(72), -2));
+      story.setOnClickListener(v->{if(action==0)choosePost();if(action==1)ourCorner();if(action==2)select(3);if(action==3)select(2);if(action==4){savedPosts=!savedPosts;if(feed!=null){stage.removeView(feed);feed=null;}render(false);}});
+      row.addView(story,home?new LinearLayout.LayoutParams(0,-2,1):new LinearLayout.LayoutParams(u.dp(70),-2));
     }
-    if (home) header.addView(row);
-    else {
-      stories.addView(row);
-      header.addView(stories);
-    }
+    if(home)header.addView(row);else{stories.addView(row);header.addView(stories);}
     LinearLayout intro = u.column();
     intro.setPadding(u.dp(22), u.dp(7), u.dp(22), u.dp(16));
     intro.addView(
@@ -1094,7 +1026,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                 : screen == 1
                     ? (photoSection.equals("photography") ? "Photography." : "Our camera roll.")
                     : screen == 5 ? "Words to keep." : "Our little us.",
-            27));
+            28));
     u.add(
         intro,
         u.text(
@@ -1103,24 +1035,24 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                 : screen == 1 && photoSection.equals("photography")
                     ? "Everyday frames, small details, and things that catch our eye."
                     : "A little life together, one moment at a time.",
-            13,
+            15,
             Ui.MUTED),
         4);
     if (screen == 1) {
-      LinearLayout sections = u.row(5);
+      LinearLayout sections = u.row(2);sections.setBackground(u.shape(Ui.PALE,9));sections.setPadding(u.dp(2),u.dp(2),u.dp(2),u.dp(2));
       String[] values = {"all", "memories", "photography"};
       String[] names = {"All", "Memories", "Photography"};
       for (int i = 0; i < values.length; i++) {
         final String section = values[i];
-        Button choice = u.button(names[i], section.equals(photoSection), () -> {
+        Button choice = u.textButton(names[i], () -> {
           photoSection = section;
           if (feed != null) { stage.removeView(feed); feed = null; }
           render(false);
         });
-        choice.setTextSize(12);
+        choice.setTextSize(12);choice.setTextColor(Ui.INK);choice.setMinHeight(u.dp(30));choice.setMinimumHeight(u.dp(30));choice.setPadding(u.dp(4),0,u.dp(4),0);choice.setBackground(u.shape(section.equals(photoSection)?Color.WHITE:Color.TRANSPARENT,7));
         choice.setContentDescription("Photo collection: " + names[i]);
         choice.setSelected(section.equals(photoSection));
-        sections.addView(choice, new LinearLayout.LayoutParams(0, u.dp(48), 1));
+        sections.addView(choice, new LinearLayout.LayoutParams(0, u.dp(30), 1));
       }
       u.add(intro, sections, 14);
     }
@@ -1199,8 +1131,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     outer.setBackgroundColor(Ui.BG);
     LinearLayout bar = u.row();
     bar.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(8));
-    bar.addView(u.title("Our corner", 22), new LinearLayout.LayoutParams(0, -2, 1));
-    bar.addView(u.button("Done", false, dialog::dismiss));
+    bar.addView(u.title("Our corner", 17), new LinearLayout.LayoutParams(0, -2, 1));
+    bar.addView(u.textButton("Done", dialog::dismiss));
     outer.addView(bar);
     outer.addView(u.scroll(body), new LinearLayout.LayoutParams(-1, 0, 1));
     dialog.setContentView(outer);
@@ -1515,9 +1447,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void heading(String eyebrow, String title, String description) {
-    u.add(content, u.label(eyebrow), 6);
-    u.add(content, u.title(title, 30), 10);
-    if (!description.isEmpty()) u.add(content, u.text(description, 14, Ui.MUTED), 10);
+    if (!eyebrow.isEmpty()) u.add(content, u.label(eyebrow), 6);
+    u.add(content, u.title(title, 30), eyebrow.isEmpty() ? 0 : 10);
+    if (!description.isEmpty()) u.add(content, u.text(description, 17, Ui.MUTED), 8);
   }
 
   private void restoreSaved() {
@@ -2437,100 +2369,54 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void music() {
-    heading(
-        "THE SOUNDTRACK OF US", "Our shared\ntop ten.", "A few songs that sound like you + me.");
-    u.add(content, u.button("＋  Find a song", true, this::searchMusic), 20);
-    if (music == null) {
-      empty(content, "Gathering our soundtrack…", "Your saved songs will appear here.");
-      return;
-    }
-    if (!writable(music))
-      u.add(
-          content,
-          u.text(
-              "Shared saving is being connected. You can still search and listen.", 13, Ui.MUTED),
-          16);
-    for (int rank = 1; rank <= 10; rank++) {
-      final int spot = rank;
-      JSONObject song = trackAt(rank);
-      LinearLayout c = u.card(content, song == null ? Ui.PALE : Color.WHITE);
-      u.add(c, u.label(String.format(Locale.US, "OUR SONG  %02d", rank)), 0);
-      if (song != null && song.optBoolean("pending"))
-        u.add(c, u.text("Saved on phone · waiting to sync", 12, Ui.PURPLE), 8);
-      if (song == null) {
-        u.add(c, u.title("A little space for a favorite.", 18), 10);
-        Button choose = u.button("Choose a song  ＋", false, () -> searchMusic(spot));
-        choose.setEnabled(writable(music));
-        u.add(c, choose, 14);
-        continue;
+    heading("", "Our soundtrack.", "Ten little places for the songs that sound like us.");
+    Button find=u.button("Find our next favorite",true,this::searchMusic);
+    Glyph.leading(find,"search",Color.WHITE,17,8);
+    u.add(content,find,20);
+    if(music==null){empty(content,"Gathering our soundtrack…","Your saved songs will appear here.");return;}
+    if(!writable(music))u.add(content,u.text("Shared saving is being connected. You can still search and listen.",13,Ui.MUTED),16);
+    for(int rank=1;rank<=10;rank++){
+      final int spot=rank;
+      JSONObject song=trackAt(rank);
+      LinearLayout card=u.card(content,Color.WHITE),row=u.row(14);
+      TextView number=u.text(String.format(Locale.US,"%02d",rank),13,Ui.PURPLE);
+      Compat.font(number,R.font.dm_sans,700);
+      row.addView(number,new LinearLayout.LayoutParams(u.dp(22),-2));
+      if(song==null){
+        row.addView(Glyph.view(this,"music",Ui.PURPLE),new LinearLayout.LayoutParams(u.dp(24),u.dp(32)));
+        row.addView(u.text("A little space for our next favorite",15,Ui.MUTED),new LinearLayout.LayoutParams(0,-2,1));
+        View add=Glyph.view(this,"plus",Ui.PURPLE);add.setContentDescription("Choose a song for spot "+rank);
+        add.setEnabled(writable(music));add.setOnClickListener(v->searchMusic(spot));
+        row.addView(add,new LinearLayout.LayoutParams(u.dp(32),u.dp(44)));
+        row.setOnClickListener(v->{if(writable(music))searchMusic(spot);});
+        u.add(card,row,0);continue;
       }
-      LinearLayout row = u.row();
-      ImageView art = new ImageView(this);
-      art.setContentDescription(song.optString("album") + " album artwork");
-      art.setScaleType(ImageView.ScaleType.CENTER_CROP);
-      art.setBackground(u.shape(Ui.PALE, 14));
-      art.setClipToOutline(true);
-      row.addView(art, new LinearLayout.LayoutParams(u.dp(78), u.dp(78)));
-      images.load(song.optString("artworkUrl"), art);
-      art.setOnClickListener(v -> openLink(song.optString("trackUrl")));
-      LinearLayout copy = u.column();
-      copy.setPadding(0, 0, 0, 0);
-      u.add(copy, u.title(song.optString("title"), 18), 0);
-      u.add(copy, u.text(song.optString("artist"), 14, Ui.MUTED), 4);
-      long duration = song.optLong("durationMs") / 1000;
-      u.add(
-          copy,
-          u.text(
-              song.optString("album")
-                  + " · "
-                  + duration / 60
-                  + ":"
-                  + String.format(Locale.US, "%02d", duration % 60),
-              11,
-              Ui.MUTED),
-          5);
-      row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
-      u.add(c, row, 14);
-      if (!song.optString("note").isEmpty())
-        u.add(c, u.text(song.optString("note"), 15, Ui.INK), 14);
-      LinearLayout listen = u.actions();
-      listen.addView(
-          u.button("Apple Music ↗", false, () -> openLink(song.optString("trackUrl"))),
-          new LinearLayout.LayoutParams(0, -2, 1));
-      listen.addView(
-          u.button(
-              "Spotify ↗",
-              false,
-              () -> {
-                try {
-                  openLink(
-                      "https://open.spotify.com/search/"
-                          + URLEncoder.encode(
-                              song.optString("title") + " " + song.optString("artist"), "UTF-8"));
-                } catch (Exception ignored) {
-                }
-              }),
-          new LinearLayout.LayoutParams(0, -2, 1));
-      u.add(c, listen, 14);
-      LinearLayout edits = u.actions();
-      Button note = u.button("Edit note", false, () -> chooseSong(song, spot));
-      note.setEnabled(writable(music));
-      edits.addView(note, new LinearLayout.LayoutParams(0, -2, 1));
-      Button replace = u.button("Replace", false, () -> searchMusic(spot));
-      replace.setEnabled(writable(music));
-      edits.addView(replace, new LinearLayout.LayoutParams(0, -2, 1));
-      Button remove = u.button("Remove", false, () -> removeSong(song));
-      remove.setEnabled(writable(music));
-      edits.addView(remove, new LinearLayout.LayoutParams(0, -2, 1));
-      u.add(c, edits, 8);
+      ImageView art=new ImageView(this);art.setContentDescription(song.optString("album")+" album artwork");
+      art.setScaleType(ImageView.ScaleType.CENTER_CROP);art.setBackground(u.shape(Ui.PALE,15));art.setClipToOutline(true);
+      row.addView(art,new LinearLayout.LayoutParams(u.dp(70),u.dp(70)));images.load(song.optString("artworkUrl"),art);
+      art.setOnClickListener(v->openLink(song.optString("trackUrl")));
+      LinearLayout copy=u.column();u.add(copy,u.title(song.optString("title"),17),0);
+      u.add(copy,u.text(song.optString("artist"),15,Ui.MUTED),4);
+      row.addView(copy,new LinearLayout.LayoutParams(0,-2,1));
+      ImageView more=Glyph.view(this,"more",Ui.PURPLE);more.setPadding(u.dp(9),u.dp(11),u.dp(9),u.dp(11));more.setContentDescription("Song options");
+      more.setOnClickListener(v->{
+        Ui.Sheet menu=u.sheet("Our song",song.optString("title"));
+        menu.item("Edit note","","words",false,()->chooseSong(song,spot));
+        menu.item("Replace","Choose a different song","music",false,()->searchMusic(spot));
+        menu.item("Remove","","close",true,()->removeSong(song));
+        if(writable(music)){track(menu);menu.show();}
+      });
+      row.addView(more,new LinearLayout.LayoutParams(u.dp(40),u.dp(44)));u.add(card,row,0);
+      if(song.optBoolean("pending"))u.add(card,u.text("Saved on phone · waiting to sync",12,Ui.PURPLE),14);
+      if(!song.optString("note").isEmpty())u.add(card,u.text(song.optString("note"),15,Ui.INK),14);
+      if(!song.optString("album").isEmpty())u.add(card,u.text(song.optString("album"),12,Ui.MUTED),12);
+      Button apple=u.textButton("Listen on Apple Music",()->openLink(song.optString("trackUrl")));
+      apple.setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);apple.setPadding(0,0,0,0);u.add(card,apple,5);
+      Button spotify=u.textButton("Find on Spotify",()->{
+        try{openLink("https://open.spotify.com/search/"+URLEncoder.encode(song.optString("title")+" "+song.optString("artist"),"UTF-8"));}catch(Exception ignored){}
+      });
+      spotify.setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);spotify.setPadding(0,0,0,0);u.add(card,spotify,0);
     }
-    u.add(
-        content,
-        u.text(
-            "Song information from the iTunes catalog. Full playback opens your music service.",
-            12,
-            Ui.MUTED),
-        22);
   }
 
   private void searchMusic() {
@@ -2754,21 +2640,21 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void days() {
     heading(
-        "FOR ALL THE DAYS STILL AHEAD",
-        "You + me,\nsomeday.",
-        "The places we’ll go. The little memories we’ll make.");
+        "",
+        "Our little days.",
+        "Places to go. Things to try. A little more us.");
     u.add(
         content,
-        u.button("Our little book · victories, recipes & jokes", true, () -> book.show(false)),
+        u.button("Our little book", true, () -> book.show(false)),
         18);
     u.add(
-        content, u.button("Since us · letters & little things", false, () -> book.show(true)), 10);
+        content, u.button("Since us · letters & little things", true, () -> book.show(true)), 20);
     heartCard();
-    birthdayCard(content);
     LinearLayout top = u.row();
-    TextView title = u.title("Our shared bucket list", 21);
+    TextView title = u.title("Our wish list", 20);
     top.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
-    Button add = u.button("＋ Add", true, () -> editPlan(null, false));
+    Button add = u.textButton("＋", () -> editPlan(null, false));
+    add.setContentDescription("Add a wish");
     add.setEnabled(writable(together));
     top.addView(add);
     u.add(content, top, 28);
@@ -2784,21 +2670,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           content,
           u.text("Shared saving is being connected. Our memories are safe.", 13, Ui.MUTED),
           14);
-    LinearLayout filters = u.row();
-    String[] choices = {"All", "Dreaming", "We did it"};
+    LinearLayout filters = u.row(2);filters.setBackground(u.shape(Ui.PALE,9));filters.setPadding(u.dp(2),u.dp(2),u.dp(2),u.dp(2));
+    String[] choices = {"All", "Still dreaming", "Made memories"};
     for (int i = 0; i < 3; i++) {
       final int pick = i;
-      filters.addView(
-          u.button(
-              choices[i],
-              filter == i,
-              () -> {
-                filter = pick;
-                render(true);
-              }),
-          new LinearLayout.LayoutParams(0, -2, 1));
+      Button segment=u.textButton(choices[i],()->{filter=pick;render(true);});segment.setTextSize(12);segment.setTextColor(Ui.INK);segment.setMinHeight(u.dp(30));segment.setMinimumHeight(u.dp(30));segment.setPadding(u.dp(4),0,u.dp(4),0);segment.setBackground(u.shape(filter==i?Color.WHITE:Color.TRANSPARENT,7));filters.addView(segment,new LinearLayout.LayoutParams(0,u.dp(30),1));
     }
-    u.add(content, filters, 18);
+    u.add(content,filters,20);
     JSONArray plans = array(together, "bucketList");
     int shown = 0;
     for (int i = 0; i < plans.length(); i++) {
@@ -2806,66 +2684,18 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       boolean done = item.optBoolean("completed");
       if (filter == 1 && done || filter == 2 && !done) continue;
       shown++;
-      LinearLayout c = u.card(content, Color.WHITE);
-      u.add(c, u.label(done ? "WE DID IT ♡" : "STILL DREAMING"), 0);
-      if (item.optBoolean("pending"))
-        u.add(c, u.text("Saved on phone · waiting to sync", 12, Ui.PURPLE), 8);
-      if (done && !item.isNull("photoId") && !item.optString("photoId").isEmpty()) {
-        String path = "/api/together-photo?kind=bucket&id=" + item.optString("photoId");
-        ImageView photo = u.image(c, "Our memory: " + item.optString("title"), 200);
-        images.load(path, photo);
-        photo.setOnClickListener(
-            v ->
-                photoViewer(
-                    new JSONArray().put(object("src", path, "caption", item.optString("title"))),
-                    0));
+      LinearLayout c=u.card(content,Color.WHITE),row=u.row(8),copy=u.column();
+      ImageView complete=Glyph.view(this,done?"check.circle":"circle",Ui.PURPLE);complete.setPadding(u.dp(10),u.dp(10),u.dp(10),u.dp(10));complete.setContentDescription("Mark plan complete");complete.setEnabled(writable(together));
+      complete.setOnClickListener(v->{if(done)mutatePlan(object("action","toggleItem","id",item.optString("id"),"expectedRevision",item.optString("revision"),"completed",false,"operationId",UUID.randomUUID().toString()),null,null);else editPlan(item,true);});
+      row.addView(complete,new LinearLayout.LayoutParams(u.dp(44),u.dp(44)));
+      copy.addView(u.title(item.optString("title"),17));if(!item.optString("place").isEmpty())u.add(copy,u.text(item.optString("place"),15,Ui.MUTED),7);row.addView(copy,new LinearLayout.LayoutParams(0,-2,1));
+      ImageView more=Glyph.view(this,"more",Ui.PURPLE);more.setPadding(u.dp(9),u.dp(11),u.dp(9),u.dp(11));more.setContentDescription("Wish options");more.setOnClickListener(v->{Ui.Sheet menu=u.sheet("Our little plan",item.optString("title"));menu.item("Edit","","words",false,()->editPlan(item,false));menu.item("Remove","","close",true,()->removePlan(item));if(writable(together)){track(menu);menu.show();}});row.addView(more,new LinearLayout.LayoutParams(u.dp(40),u.dp(44)));u.add(c,row,0);
+      if(item.optBoolean("pending"))u.add(c,u.text("Saved on phone · waiting to sync",12,Ui.PURPLE),14);
+      if(!item.optString("note").isEmpty())u.add(c,u.text(item.optString("note"),15,Ui.MUTED),14);
+      if(!item.isNull("photoId")&&!item.optString("photoId").isEmpty()){
+        String path="/api/together-photo?kind=bucket&id="+item.optString("photoId");ImageView photo=u.image(c,"Our memory: "+item.optString("title"),200);images.load(path,photo);photo.setOnClickListener(v->photoViewer(new JSONArray().put(object("src",path,"caption",item.optString("title"))),0));
       }
-      u.add(c, u.title(item.optString("title"), 22), 12);
-      if (!item.optString("place").isEmpty())
-        u.add(c, u.text("⌁  " + item.optString("place"), 14, Ui.PURPLE), 8);
-      if (!item.optString("note").isEmpty())
-        u.add(c, u.text(item.optString("note"), 15, Ui.MUTED), 10);
-      if (done && !item.isNull("completedAt"))
-        u.add(
-            c,
-            u.text("Made into a memory · " + date(item.optString("completedAt")), 11, Ui.MUTED),
-            12);
-      Button complete =
-          u.button(
-              done ? "Still dreaming again" : "We did it  ♡",
-              true,
-              () -> {
-                if (done)
-                  mutatePlan(
-                      object(
-                          "action",
-                          "toggleItem",
-                          "id",
-                          item.optString("id"),
-                          "expectedRevision",
-                          item.optString("revision"),
-                          "completed",
-                          false,
-                          "operationId",
-                          UUID.randomUUID().toString()),
-                      null,
-                      null);
-                else editPlan(item, true);
-              });
-      complete.setEnabled(writable(together));
-      u.add(c, complete, 16);
-      LinearLayout edits = u.actions();
-      Button edit =
-          u.button(
-              done && item.isNull("photoId") ? "Add a picture" : "Edit",
-              false,
-              () -> editPlan(item, false));
-      edit.setEnabled(writable(together));
-      edits.addView(edit, new LinearLayout.LayoutParams(0, -2, 1));
-      Button remove = u.button("Remove", false, () -> removePlan(item));
-      remove.setEnabled(writable(together));
-      edits.addView(remove, new LinearLayout.LayoutParams(0, -2, 1));
-      u.add(c, edits, 8);
+      u.add(c,u.text(done?"A memory we made ♡":"Still dreaming together",12,Ui.PURPLE),14);
     }
     if (shown == 0)
       empty(
@@ -2874,14 +2704,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               ? "Our first “we did it” is still ahead."
               : "So many days to look forward to.",
           "A place, a silly idea, or simply something you want to do together.");
-    dailyCard(content);
   }
 
   private void heartCard() {
-    LinearLayout c = u.card(content, Ui.PALE);
-    u.add(c, u.label("A SMALL WAY TO SAY SOMETHING BIG"), 0);
-    u.add(c, u.title("You crossed my mind.", 24), 10);
-    u.add(c, u.text("From " + person() + ", to " + partner() + ".", 14, Ui.MUTED), 10);
+    LinearLayout c = u.card(content, Color.WHITE);
+    u.add(c, u.title("Thinking of you.", 20), 0);
+    u.add(c, u.text("A little heart, from " + person() + " to " + partner() + ".", 17, Ui.MUTED), 8);
     String who = heartSender();
     JSONObject hearts = together == null ? null : together.optJSONObject("hearts");
     JSONObject
@@ -3643,28 +3471,36 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void words() {
     heading(
-        "OUR LOVE TRANSLATION",
-        "Same feeling.\nFive ways to say it.",
-        "A little thought, in words that feel natural.");
+        "",
+        "Our words.",
+        "Written by " + person() + ", for " + partner() + ". The language roles are set for you.");
     LinearLayout c = u.card(content, Color.WHITE);
-    u.add(c, u.label("WRITTEN IN"), 0);
     String[] sources = {
       "Detect the language", "English", "Egyptian Arabic", "Russian", "Hebrew", "French", "Spanish"
     };
     Spinner source = u.spinner(sources, sourceChoice);
-    u.add(c, source, 8);
     EditText input = u.input("A little message, a favorite phrase…", wordDraft, 1500, true);
     input.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
-    u.add(c, input, 12);
-    TextView counter = u.text(wordDraft.length() + " / 1,500", 11, Ui.MUTED);
+    input.setMinimumHeight(u.dp(145));
+    input.setBackgroundColor(Color.TRANSPARENT);input.setPadding(0,u.dp(6),0,u.dp(6));
+    u.add(c, input, 0);
+    TextView counter = u.text(wordDraft.length() + " / 1,500", 12, Ui.MUTED);
+
     u.add(c, counter, 8);
-    u.add(c, u.label("SAY IT IN · CHOOSE ONE OR A FEW"), 18);
-    CheckBox[] targets = new CheckBox[5];
+    LinearLayout sourceRow=u.row(8);sourceRow.addView(u.text("Source",15,Ui.INK));
+    sourceRow.addView(source,new LinearLayout.LayoutParams(0,-2,1));u.add(c,sourceRow,12);
+    Spinner tone=u.spinner(new String[]{"Natural & everyday","A little sweeter","Soft & poetic"},toneChoice);
+    LinearLayout toneRow=u.row(8);toneRow.addView(u.text("Tone",15,Ui.INK));toneRow.addView(tone,new LinearLayout.LayoutParams(0,-2,1));u.add(c,toneRow,15);
+    Switch[] targets = new Switch[5];
     for (int i = 0; i < 5; i++) {
       final int index = i;
-      targets[i] = new CheckBox(this);
+      targets[i] = new Switch(this);
+      targets[i].setMinimumHeight(u.dp(48));targets[i].setSplitTrack(false);
+      targets[i].setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+      targets[i].setTrackTintList(new android.content.res.ColorStateList(new int[][]{new int[]{android.R.attr.state_checked},new int[]{}},new int[]{0xff34c759,0xffe4e5ea}));
       targets[i].setText(languageNames[i]);
-      targets[i].setTextSize(14);
+      targets[i].setTextSize(15);
+      Compat.font(targets[i],R.font.dm_sans,400);
       targets[i].setTextColor(Ui.INK);
       targets[i].setChecked(targetChoices[i]);
       targets[i].setOnCheckedChangeListener(
@@ -3674,23 +3510,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           });
       u.add(c, targets[i], 0);
     }
-    u.add(c, u.label("THE FEELING"), 16);
-    Spinner tone =
-        u.spinner(
-            new String[] {"Natural & everyday", "A little sweeter", "Soft & poetic"}, toneChoice);
-    u.add(c, tone, 4);
     applyProfile();
-    u.add(
-        c,
-        u.text(
-            "Written by "
-                + person()
-                + ", for "
-                + partner()
-                + ". The language roles are set for you.",
-            13,
-            Ui.MUTED),
-        16);
     input.addTextChangedListener(
         new android.text.TextWatcher() {
           public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -3713,8 +3533,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     translatorStatus = u.text("Opening our little phrasebook…", 13, Ui.MUTED);
     translatorStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     u.add(c, translatorStatus, 12);
-    u.add(c, u.button("Check the connection", false, this::checkTranslator), 8);
-    u.add(c, u.button("Saved translations", false, this::translationHistory), 8);
+    u.add(c, u.textButton("Check the connection", this::checkTranslator), 8);
+    u.add(c, u.textButton("Saved translations", this::translationHistory), 8);
     u.add(
         content,
         u.text(

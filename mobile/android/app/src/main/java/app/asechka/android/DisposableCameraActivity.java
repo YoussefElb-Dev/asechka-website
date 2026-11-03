@@ -48,9 +48,9 @@ public final class DisposableCameraActivity extends Activity {
   private void render() {
     if (isFinishing() || root != null && cameraDialog != null && cameraDialog.isShowing()) return;
     root=u.column(); root.setPadding(u.dp(22),u.dp(24),u.dp(22),u.dp(30)); root.setBackgroundColor(Ui.BG);
-    u.add(root,u.button("← Back to our universe",false,this::finish),0);
-    u.add(root,u.title("24 moments.\nA little surprise.",32),18);
-    u.add(root,u.text("One camera for both of us. No previews. No retakes. Keep a little of your day for each other.",15,Ui.MUTED),12);
+    LinearLayout bar=u.row();bar.addView(u.title("Our disposable camera",17),new LinearLayout.LayoutParams(0,-2,1));bar.addView(u.textButton("Done",this::finish));u.add(root,bar,0);
+    u.add(root,u.title("24 moments.\nA little surprise.",33),18);
+    u.add(root,u.text("One camera for both of us. No previews. No retakes. Keep a little of your day for each other.",17,Ui.MUTED),12);
     JSONObject roll=current(); int count=roll == null ? 0 : shots(roll).length();
     LinearLayout shell=u.card(root,Ui.PALE);
     u.add(shell,u.label("ASECHKA / 24"),0);

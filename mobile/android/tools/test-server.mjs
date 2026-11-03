@@ -51,7 +51,8 @@ createServer(async(req,res)=>{
     else{
       response=await authorize(request);
       if(!response){
-        if(path==='/memories.json')response=json(memories);
+        if(path==='/api/location')response=json({people:[{actor:'asnat',sharing:false,position:null},{actor:'youssef',sharing:false,position:null}]});
+        else if(path==='/memories.json')response=json(memories);
         else if(path==='/api/translation'){
           if(request.method==='GET')response=json({ready:true,languages:{'ar-EG':'Egyptian Arabic',ru:'Russian',he:'Hebrew',fr:'French',es:'Spanish'}});
           else{const input=checkedTranslation(await request.json());response=input.text==='simulate failure'?json({error:'Our test translator needs a moment.'},503):json({translations:input.targets.map(language=>({language,text:language==='he'?'אני אוהבת אותך':language==='ru'?'Я тебя люблю':language==='ar-EG'?'بحبك':language==='fr'?'Je t’aime':'Te quiero',pronunciation:['ar-EG','ru','he'].includes(language)?'A natural pronunciation guide':'',backTranslation:'I love you.',note:''}))});}

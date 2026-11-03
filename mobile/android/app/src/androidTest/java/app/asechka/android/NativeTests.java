@@ -18,7 +18,7 @@ public final class NativeTests extends Instrumentation {
   private ApiClient api;
   private int assertions;
   private boolean featuresOnly;
-  private boolean widgetsOnly;
+  private boolean widgetsOnly, designOnly;
   private boolean convert, motionOnly, compatOnly, socialOnly, bookOnly, homeOnly, gateOnly, gamesOnly;
   private String upgrade;
   private boolean gamesTlsOnly;
@@ -26,6 +26,7 @@ public final class NativeTests extends Instrumentation {
   @Override
   public void onCreate(Bundle args) {
     super.onCreate(args);
+    designOnly = "true".equals(args.getString("designOnly"));
     featuresOnly = "true".equals(args.getString("featuresOnly"));
     widgetsOnly = "true".equals(args.getString("widgetsOnly"));
     convert = "true".equals(args.getString("convert"));
@@ -69,7 +70,9 @@ public final class NativeTests extends Instrumentation {
         }
         result.putString("stream", "QA previews ready\n");
       } else {
-        if (gamesOnly) {
+        if (designOnly) {
+          designTests();
+        } else if (gamesOnly) {
           gamesAndPhotographyTests();
         } else if (widgetsOnly) {
           widgetTests();
@@ -92,7 +95,7 @@ public final class NativeTests extends Instrumentation {
         } else tests();
         result.putString(
             "stream",
-            widgetsOnly
+            designOnly ? "PASS: " + assertions + " Android design and screen-rendering assertions.\n" : widgetsOnly
                 ? "PASS: " + assertions + " real widget-host assertions.\n"
                 : "PASS: "
                     + assertions
@@ -245,9 +248,7 @@ public final class NativeTests extends Instrumentation {
       check(((ViewGroup) get("bottom")).getChildCount() == 7, "Native screen renders: " + screen);
     }
     call("select", new Class[] {int.class}, 3);
-    check(
-        text("Asnat · August 5") != null && text("Youssef · January 25") != null,
-        "Birthday cards render on this Android version");
+    verifyBirthdaySettings();
     screenshot("compat-" + Build.VERSION.SDK_INT);
     File file = new File(getTargetContext().getCacheDir(), "compat-rotated.jpg");
     Bitmap original = Bitmap.createBitmap(1200, 900, Bitmap.Config.ARGB_8888);
@@ -487,6 +488,9 @@ public final class NativeTests extends Instrumentation {
     api.clearSession();
     api.store.lock();
     api.store.remove("outbox");
+    // The isolated server was reset; discard snapshots from the previous test journey too.
+    api.store.remove("data:/api/together");
+    api.store.remove("data:/api/music");
     set("api", api);
     set("images", new Images(api));
     ui(() -> views(decor(), EditText.class).get(0).setText("wrong-code"));
@@ -548,7 +552,7 @@ public final class NativeTests extends Instrumentation {
     call("select", new Class[] {int.class}, 2);
     check(text("Our favorite song") != null, "Music metadata shown");
     screenshot("04-music");
-    click("＋  Find a song");
+    click("Find our next favorite");
     await(() -> get("activeDialog") != null, "Music search dialog missing");
     AlertDialog search = (AlertDialog) get("activeDialog");
     ui(
@@ -1077,12 +1081,17 @@ public final class NativeTests extends Instrumentation {
     }
   }
 
+  private void verifyBirthdaySettings() throws Exception {
+    call("settings",new Class[]{View.class},(View)null);
+    Dialog settings=(Dialog)get("activeDialog");
+    check(hasText(settings.getWindow().getDecorView(),"Asnat · August 5   /   Youssef · January 25"),"Both birthdays remembered in Settings, including offline");
+    ui(settings::dismiss);Thread.sleep(300);
+  }
+
   private void profileTests() throws Exception {
     call("chooseProfile", new Class[] {String.class}, "youssef");
     call("select", new Class[] {int.class}, 3);
-    check(
-        text("Asnat · August 5") != null && text("Youssef · January 25") != null,
-        "Both birthdays remembered and shown offline");
+    verifyBirthdaySettings();
     check(text("♡  Send a heart to Asnat") != null, "Youssef heart recipient automatic");
     check(
         (int) get("speakerChoice") == 0 && (int) get("recipientChoice") == 0,
@@ -1576,9 +1585,9 @@ public final class NativeTests extends Instrumentation {
 
   private void verifyHomeActionLayout() throws Exception {
     Thread.sleep(150);
-    View createAction = text("＋  Create"),
-        cornerAction = text("♡  Our corner"),
-        savedAction = text("☆  Saved");
+    View createAction = (View)text("Create").getParent(),
+        cornerAction = (View)text("Our corner").getParent(),
+        savedAction = (View)text("Saved").getParent();
     check(
         createAction != null && cornerAction != null && savedAction != null,
         "All three Home actions are visible");
@@ -1677,6 +1686,28 @@ public final class NativeTests extends Instrumentation {
         "An older refresh cannot erase a newer shared heart");
   }
 
+  private void designTests() throws Exception {
+    prepareMotionFixture();
+    int[] order={0,1,5,2,3,4,6};
+    String[] names={"home","photos","quotes","music","days","words","games"};
+    for(int i=0;i<order.length;i++){
+      call("select",new Class[]{int.class},order[i]);
+      Thread.sleep(900);
+      screenshot("design-"+names[i]);
+      check(decor().getWidth()>0,"Native "+names[i]+" screen renders");
+    }
+    call("select",new Class[]{int.class},0);
+    LiveLocationCard map=(LiveLocationCard)get("liveLocationCard");
+    check(map!=null && map.map.getHeight()>0,"Home map renders below shortcuts");
+    ui(map::expand);
+    screenshot("design-map");
+    check(map.expandedMap!=null && map.expanded.isShowing(),"Map expands without changing sharing consent");
+    check(!map.enabled(),"Viewing the map leaves sharing off");
+    ui(map.expanded::dismiss);
+    call("settings",new Class[]{View.class},(View)null);
+    screenshot("design-settings");
+  }
+
   private void homeTests() throws Exception {
     prepareMotionFixture();
     api.get("/api/journal");
@@ -1704,13 +1735,13 @@ public final class NativeTests extends Instrumentation {
           "Little things",
           "Our beginning"
         }) {
-      String displayName = title.replaceFirst(" ", "\n");
+      String displayName = title;
       TextView shortcut = text(displayName);
       check(
           shortcut != null
               && shortcut
                       .getPaint()
-                      .measureText(displayName.substring(displayName.indexOf('\n') + 1))
+                      .measureText(java.util.Arrays.stream(displayName.split(" ")).max(java.util.Comparator.comparingInt(String::length)).orElse(displayName))
                   <= shortcut.getWidth() + 1,
           "Home shortcut is readable without breaking words: " + title);
     }
@@ -1810,13 +1841,11 @@ public final class NativeTests extends Instrumentation {
     ListView homeFeed = (ListView) get("feed");
     ui(() -> homeFeed.setSelection(0));
     Thread.sleep(350);
-    View firstPost = homeFeed.getChildAt(1);
-    android.graphics.Rect visiblePost = new android.graphics.Rect();
+    android.graphics.Rect visibleMap = new android.graphics.Rect();
     check(
-        firstPost != null
-            && firstPost.getGlobalVisibleRect(visiblePost)
-            && visiblePost.height() >= activity.getResources().getDisplayMetrics().density * 100,
-        "The first post and some media are visible without scrolling Home");
+        home.locationCard.root.getGlobalVisibleRect(visibleMap)
+            && visibleMap.height() >= home.locationCard.root.getHeight() - 2,
+        "The full map and Home shortcuts are visible without scrolling; posts continue below");
     screenshot("home-hub-hearts");
     Ui.Sheet[] history = {null};
     ui(() -> history[0] = home.history());

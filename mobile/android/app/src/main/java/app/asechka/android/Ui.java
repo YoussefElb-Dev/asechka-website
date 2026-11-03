@@ -10,10 +10,11 @@ import android.view.*;
 import android.widget.*;
 
 final class Ui {
+  interface ToggleChange { void set(boolean checked); }
   static final int INK = Color.rgb(38, 52, 81),
       MUTED = Color.rgb(100, 112, 139),
       PURPLE = Color.rgb(107, 92, 181),
-      PRIMARY = Color.rgb(101, 87, 159);
+      PRIMARY = Color.rgb(107, 92, 181);
   static final int BG = Color.rgb(247, 249, 255),
       PALE = Color.rgb(238, 235, 248),
       BLUE = Color.rgb(234, 241, 252),
@@ -57,8 +58,10 @@ final class Ui {
       panel.addView(handle, hp);
       LinearLayout heading = row(8);
       heading.setPadding(dp(8), 0, 0, dp(4));
-      heading.addView(Ui.this.title(title, 23), new LinearLayout.LayoutParams(0, -2, 1));
-      Button close = button("Close", false, this::dismiss);
+      TextView sheetTitle = Ui.this.title(title, 17);
+      sheetTitle.setGravity(Gravity.CENTER);
+      heading.addView(sheetTitle, new LinearLayout.LayoutParams(0, -2, 1));
+      Button close = textButton("Done", this::dismiss);
       heading.addView(close);
       panel.addView(heading);
       if (!subtitle.isEmpty()) {
@@ -74,6 +77,11 @@ final class Ui {
       setCanceledOnTouchOutside(true);
     }
 
+    Sheet section(String title){TextView label=text(title.toUpperCase(java.util.Locale.ROOT),12,MUTED);label.setPadding(dp(14),dp(20),dp(14),dp(3));add(items,label,0);return this;}
+    Sheet toggle(String title,boolean checked,ToggleChange change){
+      Switch toggle=new Switch(c);toggle.setText(title);toggle.setTextSize(15);toggle.setTextColor(INK);Compat.font(toggle,R.font.dm_sans,400);toggle.setPadding(dp(16),dp(8),dp(16),dp(8));toggle.setMinimumHeight(dp(52));toggle.setBackground(shape(Color.WHITE,16));toggle.setSplitTrack(false);toggle.setThumbTintList(ColorStateList.valueOf(Color.WHITE));toggle.setTrackTintList(new ColorStateList(new int[][]{new int[]{android.R.attr.state_checked},new int[]{}},new int[]{0xff34c759,0xffe4e5ea}));toggle.setChecked(checked);toggle.setOnCheckedChangeListener((v,on)->change.set(on));add(items,toggle,6);return this;
+    }
+
     Sheet note(String text) {
       TextView note = Ui.this.text(text, 14, INK);
       note.setPadding(dp(15), dp(13), dp(15), dp(13));
@@ -86,8 +94,21 @@ final class Ui {
       LinearLayout row = Ui.this.row(13);
       row.setPadding(dp(14), dp(13), dp(14), dp(13));
       row.setMinimumHeight(dp(66));
-      TextView symbol = text(icon, 22, destructive ? 0xffa64e6b : PURPLE);
-      symbol.setGravity(Gravity.CENTER);
+      String glyph;
+      switch(icon){
+        case "♡":case "♥":glyph="heart";break;
+        case "↻":glyph="refresh";break;
+        case "↗":glyph="arrow.up.right";break;
+        case "✦":case "✧":glyph="sparkles";break;
+        case "∞":glyph="infinity";break;
+        case "⌑":glyph="vault";break;
+        case "❞":glyph="quote";break;
+        case "＋":case "+":glyph="plus";break;
+        case "◉":glyph="camera";break;
+        default:glyph=icon;
+      }
+      ImageView symbol=Glyph.view(c,glyph,destructive?0xffa64e6b:PURPLE);
+      symbol.setPadding(dp(5),dp(6),dp(5),dp(6));
       row.addView(symbol, new LinearLayout.LayoutParams(dp(32), dp(35)));
       LinearLayout copy = column();
       TextView name = Ui.this.title(title, 15);
@@ -95,7 +116,7 @@ final class Ui {
       copy.addView(name);
       if (!detail.isEmpty()) add(copy, text(detail, 12, MUTED), 4);
       row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
-      row.addView(text("›", 24, MUTED));
+      row.addView(Glyph.view(c,"chevron",MUTED),new LinearLayout.LayoutParams(dp(10),dp(16)));
       row.setBackground(
           new RippleDrawable(ColorStateList.valueOf(0x226b5cb5), shape(Color.WHITE, 20), null));
       row.setContentDescription(title + (detail.isEmpty() ? "" : ". " + detail));
@@ -225,14 +246,15 @@ final class Ui {
     v.setTextSize(size);
     v.setTextColor(color);
     Compat.font(v, R.font.dm_sans, 400);
-    v.setLineSpacing(dp(3), 1);
+    v.setIncludeFontPadding(false);
+    v.setLineSpacing(0, 1);
     v.setFontFeatureSettings("kern");
     return v;
   }
 
   TextView title(String value, int size) {
     TextView v = text(value, size, INK);
-    Compat.font(v, R.font.manrope, 750);
+    Compat.font(v, size >= 25 ? R.font.manrope : R.font.dm_sans, size >= 25 ? 700 : 600);
     return v;
   }
 
@@ -290,7 +312,7 @@ final class Ui {
         };
     v.setText(title);
     v.setAllCaps(false);
-    v.setTextSize(14);
+    v.setTextSize(15);
     Compat.font(v, R.font.dm_sans, 650);
     v.setTextColor(primary ? Color.WHITE : PURPLE);
     v.setMinHeight(dp(48));
@@ -300,8 +322,20 @@ final class Ui {
         new RippleDrawable(
             ColorStateList.valueOf(0x226b5cb5), shape(primary ? PRIMARY : PALE, 16), null));
     v.setStateListAnimator(null);
+    v.setIncludeFontPadding(false);
+    v.setMinWidth(0);
+    v.setMinimumWidth(0);
     if (action != null) v.setOnClickListener(w -> action.run());
     return v;
+  }
+
+  Button textButton(String title, Runnable action) {
+    Button button = button(title, false, action);
+    button.setBackground(new RippleDrawable(ColorStateList.valueOf(0x126b5cb5), null, shape(Color.WHITE, 16)));
+    button.setMinHeight(dp(44));
+    button.setMinimumHeight(dp(44));
+    button.setPadding(dp(8), 0, dp(8), 0);
+    return button;
   }
 
   EditText input(String hint, String value, int max, boolean multiline) {

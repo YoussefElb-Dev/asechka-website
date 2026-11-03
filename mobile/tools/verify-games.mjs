@@ -58,10 +58,12 @@ if(!process.argv.includes('--assets-only')) {
   const project=await read('mobile/ios/project.yml'),gradle=await read('mobile/android/app/build.gradle'),portable=await read('mobile/android/build.ps1');
   assert(/path: Resources\/default\s+type: folder\s+buildPhase: resources/.test(project),'Xcode must copy the complete default/games folder');
   const version=project.match(/MARKETING_VERSION:\s*'([^']+)'/)[1],build=project.match(/CURRENT_PROJECT_VERSION:\s*'([^']+)'/)[1];
-  assert.equal(gradle.match(/versionName\s+'([^']+)'/)[1],version,'Android/iOS version mismatch');
-  assert.equal(gradle.match(/versionCode\s+(\d+)/)[1],build,'Android/iOS build mismatch');
-  assert(portable.includes(`'--version-code','${build}'`)&&portable.includes(`'--version-name','${version}'`),'Portable Android builder version mismatch');
-  console.log(`Verified all six server modules, native catalogs, bundled resource configuration and matching version ${version} (${build}).`);
+  const androidVersion=gradle.match(/versionName\s+'([^']+)'/)[1],androidBuild=gradle.match(/versionCode\s+(\d+)/)[1];
+  assert(/^\d+\.\d+\.\d+$/.test(version)&&/^\d+$/.test(build),'Invalid iOS version');
+  assert(/^\d+\.\d+\.\d+$/.test(androidVersion)&&/^\d+$/.test(androidBuild),'Invalid Android version');
+  // A platform-only release must not require changing the other app.
+  assert(portable.includes(`'--version-code','${androidBuild}'`)&&portable.includes(`'--version-name','${androidVersion}'`),'Portable Android builder version mismatch');
+  console.log(`Verified all six server modules, native catalogs and bundled resources; Android ${androidVersion} (${androidBuild}), iOS ${version} (${build}).`);
 }
 console.log(`Games asset checks passed: ${manifest.assets.length} assets, ${(bytes/1024).toFixed(1)} KiB, exact Android/iOS copies.`);
 } catch(error) {

@@ -301,7 +301,7 @@ final class SocialFeed extends ListView {
       post.setClipToOutline(true);
       post.setElevation(u.dp(2));
       root.addView(post);
-      header = u.row(10);
+      header = u.row(11);
       header.setPadding(u.dp(14), u.dp(8), u.dp(6), u.dp(8));
       avatar = avatar(getContext(), "us", 38);
       header.addView(avatar, new LinearLayout.LayoutParams(u.dp(38), u.dp(38)));
@@ -315,7 +315,7 @@ final class SocialFeed extends ListView {
       Icon more = new Icon(getContext(), "more");
       more.setContentDescription("Post options");
       more.setOnClickListener(v -> host.more(item, more));
-      header.addView(more, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
+      header.addView(more, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
       post.addView(header);
       photo = new Motion.LivingImage(getContext());
       photo.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -393,8 +393,8 @@ final class SocialFeed extends ListView {
             }
           });
       Motion.customTouch(media);
-      LinearLayout actions = u.row(0);
-      actions.setPadding(u.dp(8), u.dp(5), u.dp(8), 0);
+      LinearLayout actions = u.row(6);
+      actions.setPadding(u.dp(10), 0, u.dp(10), 0);
       like = new Icon(getContext(), "heart");
       like.setOnClickListener(v -> host.react(item, !item.liked(host.actor()), like));
       Icon comment = new Icon(getContext(), "comment");
@@ -403,16 +403,16 @@ final class SocialFeed extends ListView {
       Icon share = new Icon(getContext(), "send");
       share.setContentDescription("Share post");
       share.setOnClickListener(v -> share(item));
-      actions.addView(like, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
-      actions.addView(comment, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
-      actions.addView(share, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
+      actions.addView(like, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
+      actions.addView(comment, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
+      actions.addView(share, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
       actions.addView(new View(getContext()), new LinearLayout.LayoutParams(0, 1, 1));
       bookmark = new Icon(getContext(), "bookmark");
       bookmark.setOnClickListener(v -> host.savePost(item));
-      actions.addView(bookmark, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
+      actions.addView(bookmark, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
       post.addView(actions);
       captionBox = u.column();
-      captionBox.setPadding(u.dp(18), 0, u.dp(18), u.dp(16));
+      captionBox.setPadding(u.dp(20), 0, u.dp(20), u.dp(20));
       post.addView(captionBox);
       likes = u.text("", 13, Ui.INK);
       Compat.font(likes, R.font.dm_sans, 650);
@@ -550,20 +550,15 @@ final class SocialFeed extends ListView {
 
   static TextView avatar(Context context, String actor, int size) {
     Ui ui = new Ui(context);
-    TextView avatar = ui.text("", size > 40 ? 20 : 14, Ui.PRIMARY);
+    TextView avatar = ui.text("", Math.round(size * .37f), Ui.PRIMARY);
     avatar.setGravity(Gravity.CENTER);
-    Compat.font(avatar, R.font.dm_sans, 650);
+    Compat.font(avatar, R.font.dm_sans, 600);
     setAvatar(avatar, actor);
     return avatar;
   }
 
   static void setAvatar(TextView view, String actor) {
-    GradientDrawable circle =
-        new GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            actor.equals("youssef")
-                ? new int[] {0xffdceafa, 0xffeeeafa}
-                : new int[] {0xffe6ddf7, 0xfff4eaf5});
+    GradientDrawable circle = new GradientDrawable(GradientDrawable.Orientation.TL_BR,new int[]{Ui.PALE,Ui.BLUE});
     circle.setShape(GradientDrawable.OVAL);
     view.setBackground(circle);
     view.setText(actor.equals("asnat") ? "A" : actor.equals("youssef") ? "Y" : "♡");
@@ -589,84 +584,8 @@ final class SocialFeed extends ListView {
     }
 
     protected void onDraw(Canvas canvas) {
-      super.onDraw(canvas);
-      int save = canvas.save();
-      float size = Math.min(getWidth(), getHeight()) * .52f;
-      canvas.translate((getWidth() - size) / 2, (getHeight() - size) / 2);
-      canvas.scale(size / 24, size / 24);
-      paint.setColor(on ? Ui.PURPLE : Ui.INK);
-      paint.setStrokeWidth(1.75f);
-      paint.setStrokeCap(Paint.Cap.ROUND);
-      paint.setStrokeJoin(Paint.Join.ROUND);
-      paint.setStyle(Paint.Style.STROKE);
-      Path path = new Path();
-      switch (kind) {
-        case "heart":
-          path.moveTo(12, 21);
-          path.cubicTo(9, 18, 2, 13, 2, 7.5f);
-          path.cubicTo(2, 1, 9, 1, 12, 6);
-          path.cubicTo(15, 1, 22, 1, 22, 7.5f);
-          path.cubicTo(22, 13, 15, 18, 12, 21);
-          path.close();
-          if (on) paint.setStyle(Paint.Style.FILL_AND_STROKE);
-          canvas.drawPath(path, paint);
-          break;
-        case "comment":
-          path.moveTo(5, 19);
-          path.lineTo(2, 22);
-          path.lineTo(3, 15);
-          path.cubicTo(-2, 4, 8, -1, 16, 3);
-          path.cubicTo(27, 9, 19, 23, 5, 19);
-          canvas.drawPath(path, paint);
-          break;
-        case "bookmark":
-          path.moveTo(5, 2);
-          path.lineTo(19, 2);
-          path.lineTo(19, 22);
-          path.lineTo(12, 17);
-          path.lineTo(5, 22);
-          path.close();
-          if (on) paint.setStyle(Paint.Style.FILL_AND_STROKE);
-          canvas.drawPath(path, paint);
-          break;
-        case "send":
-          path.moveTo(2, 10);
-          path.lineTo(22, 2);
-          path.lineTo(15, 22);
-          path.lineTo(11, 13);
-          path.close();
-          canvas.drawPath(path, paint);
-          canvas.drawLine(11, 13, 22, 2, paint);
-          break;
-        case "plus":
-          canvas.drawRoundRect(2, 2, 22, 22, 6, 6, paint);
-          canvas.drawLine(12, 7, 12, 17, paint);
-          canvas.drawLine(7, 12, 17, 12, paint);
-          break;
-        case "close":
-          canvas.drawLine(5, 5, 19, 19, paint);
-          canvas.drawLine(19, 5, 5, 19, paint);
-          break;
-        case "more":
-          paint.setStyle(Paint.Style.FILL);
-          for (int x = 4; x <= 20; x += 8) canvas.drawCircle(x, 12, 1.7f, paint);
-          break;
-        case "camera":
-          canvas.drawRoundRect(2, 5, 22, 21, 4, 4, paint);
-          canvas.drawCircle(12, 13, 4, paint);
-          canvas.drawLine(8, 2, 16, 2, paint);
-          break;
-        case "quote":
-          canvas.drawRoundRect(3, 5, 10, 13, 2, 2, paint);
-          canvas.drawRoundRect(14, 5, 21, 13, 2, 2, paint);
-          path.moveTo(10, 12);
-          path.quadTo(10, 19, 5, 20);
-          path.moveTo(21, 12);
-          path.quadTo(21, 19, 16, 20);
-          canvas.drawPath(path, paint);
-          break;
-      }
-      canvas.restoreToCount(save);
+      super.onDraw(canvas);canvas.save();float size=Math.min(getWidth(),getHeight())*.52f;canvas.translate((getWidth()-size)/2,(getHeight()-size)/2);canvas.scale(size/24,size/24);
+      Glyph.draw(canvas,kind+(on && (kind.equals("heart")||kind.equals("bookmark"))?".fill":""),on?Ui.PURPLE:Ui.INK);canvas.restore();
     }
   }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
-        <item name="android:fontFamily">@font/dm_sans</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:colorAccent">#6B5CB5</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
@@ -14,7 +14,7 @@
         <item name="android:alertDialogTheme">@style/SoftDialog</item>
     </style>
     <style name="SoftDialog" parent="android:style/Theme.Material.Light.Dialog.Alert">
-        <item name="android:fontFamily">@font/dm_sans</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:colorAccent">#6B5CB5</item>
         <item name="android:windowBackground">@drawable/dialog_surface</item>
         <item name="android:backgroundDimAmount">0.32</item>

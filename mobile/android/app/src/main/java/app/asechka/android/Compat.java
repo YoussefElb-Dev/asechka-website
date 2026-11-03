@@ -29,6 +29,13 @@ final class Compat {
 
   static void font(TextView view, int resource, int weight) {
     Context context = view.getContext();
+    if (resource == R.font.dm_sans) {
+      // The iPhone uses system type for controls and body copy, not the display face.
+      String family = weight >= 600 ? "sans-serif-medium" : "sans-serif";
+      Typeface base = Typeface.create(family, Typeface.NORMAL);
+      view.setTypeface(Build.VERSION.SDK_INT >= 28 ? Typeface.create(base, weight, false) : base);
+      return;
+    }
     if (Build.VERSION.SDK_INT >= 26) {
       view.setTypeface(context.getResources().getFont(resource));
       view.setFontVariationSettings("'wght' " + weight);
