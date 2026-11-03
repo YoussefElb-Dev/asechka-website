@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-02T23:09:00.386Z",
+  "updatedAt": "2026-11-03T16:15:04.908Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -495,13 +495,18 @@
       "text": "If I could leave one thing behind in this world, I would want it to be the certainty that you were loved beyond anything words could ever hold. That even on the days you felt ordinary, someone saw an entire miracle in you. And that in a world where everything eventually fades, my heart found something in yours worth holding onto forever.",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "52c60eec-1d7a-49df-88ee-b4998acd684d",
             "hash": "e2bdd65af5919dc710f25ae8e4d87765e9eb52667a324763e31a49b7247cc102"
+          },
+          {
+            "id": "777b718e-0c88-470c-b088-fed39d9cec94",
+            "hash": "efa4b127bdf7f99b3e1920c51d1b15309448f45b57ed0610aa6fe5aeaaaf5985"
           }
         ]
       }
@@ -515,13 +520,18 @@
       "note": "Created with Shakespeare",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "b0ca6dcf-eccb-4d0e-9dcd-c3565c2c1513",
             "hash": "4cf8e892e1c7794f243ab46306fd9b67b7cee41f8b379191396ca1335f288da1"
+          },
+          {
+            "id": "f102b805-bde2-4a0e-94e2-4e35f419ca7e",
+            "hash": "a235c71a7930b24591ff9f07341f368e15b0fce8fbac8832555d4c30936bf40b"
           }
         ]
       }
@@ -1005,13 +1015,18 @@
       "collection": "memories",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "39896a31-17e1-4199-a0cf-11714bc41f49",
             "hash": "ba6167b449ce027ab5fc195422836bd9f0312f57e0c37403d915b9f3fdf5799c"
+          },
+          {
+            "id": "c706a9fd-af29-49b8-823d-911e7d80e048",
+            "hash": "364b670d4223f1e4d0995992b8f8df4b285d45919f4bc2d7cbf9d130cff702d3"
           }
         ]
       }
@@ -1028,13 +1043,18 @@
       "collection": "memories",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "6fc6a267-1f98-4474-a62e-e0cc831b5ba9",
             "hash": "de6fc6cca13d8f2bf61722c97b2243159634731cddee838b5d3fb2710536f769"
+          },
+          {
+            "id": "2ed55d11-e50e-4e6e-85de-21b302b320bb",
+            "hash": "f2f9133a7cb5ee5252e878a83a99e990ebb66cdf1f459e70990a3837bb227237"
           }
         ]
       }
