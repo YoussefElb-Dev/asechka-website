@@ -2282,7 +2282,14 @@ public final class NativeTests extends Instrumentation {
     check(views(match.getWindow().getDecorView(), GamesArt.class).size() == 1, "Match sheet shares the bundled card artwork");
     screenshot("games-create");
     ui(match::dismiss);
-    click("Settings");
+    View settingsAction = null;
+    for (View candidate : views(games, View.class))
+      if ("Games sound, haptics and motion settings".contentEquals(
+          candidate.getContentDescription() == null ? "" : candidate.getContentDescription()))
+        settingsAction = candidate;
+    check(settingsAction != null, "Games preferences have an accessible action");
+    final View openSettings = settingsAction;
+    ui(openSettings::performClick);
     Dialog preferences = (Dialog) inner(games, "dialog");
     check(preferences.isShowing(), "Native game preferences open");
     screenshot("games-settings");
