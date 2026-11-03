@@ -22,6 +22,7 @@ export class VaultPresence {
     const p=validatePosition(input,this.now()),c=await this.storage.connect(),key=this.storage.prefix+':vault:'+input.challenge;
     for(let i=0;i<5;i++){
       const raw=await c.get(key);if(!raw)throw new LocationError('The together check expired. Scan a fresh QR code.',409);const data=this.storage.open(raw),now=this.now();
+      if(data.expiresAt<=now)throw new LocationError('The together check expired. Scan a fresh QR code.',409);
       let member=data.host.session===session&&data.host.actor===input.actor&&data.host.deviceId===input.deviceId?data.host:data.guest?.session===session&&data.guest.actor===input.actor&&data.guest.deviceId===input.deviceId?data.guest:null;
       if(input.action==='join'&&!member){if(data.expiresAt<=now||now-data.createdAt>120_000||data.guest||typeof input.secret!=='string'||digest(input.secret)!==data.secretHash||data.host.actor===input.actor||data.host.deviceId===input.deviceId||data.host.session===session)throw new LocationError('Use your own profile on the other phone and scan a fresh QR.',403);if(!nearby(data.host.position,p,now))throw new LocationError('Both phones need fresh locations within 100 m, with GPS accuracy within 50 m.',409);data.guest={actor:input.actor,deviceId:input.deviceId,session,position:p,at:now};member=data.guest;}
       if(!member)throw new LocationError('This check belongs to another phone.',403);
