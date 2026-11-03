@@ -32,6 +32,11 @@ final class GamesJourneyTests: XCTestCase {
             capture(app, "Games-focused-\(game)")
             app.buttons["games.play.back"].tap()
             XCTAssertTrue(app.staticTexts["Our game room."].waitForExistence(timeout: 5))
+            if game == "pool" {
+                let portrait = NSPredicate { _, _ in app.frame.height > app.frame.width }
+                expectation(for: portrait, evaluatedWith: app)
+                waitForExpectations(timeout: 8)
+            }
             app.terminate()
         }
     }

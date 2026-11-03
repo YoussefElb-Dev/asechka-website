@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 private struct GamesCompactKey: EnvironmentKey { static let defaultValue = false }
 private struct GamesBoardLimitKey: EnvironmentKey { static let defaultValue: CGFloat = 600 }
@@ -12,7 +11,6 @@ extension EnvironmentValues {
 struct GamesPlayView: View {
     @ObservedObject var store: GamesStore
     @EnvironmentObject private var universe: UniverseStore
-    @Environment(\.scenePhase) private var scenePhase
     @State private var details = false
     @State private var preferences = false
     var body: some View {
@@ -34,23 +32,11 @@ struct GamesPlayView: View {
                 }.padding(.horizontal, 12).padding(.vertical, 6)
                     .environment(\.gamesCompact, true)
                     .environment(\.gamesBoardLimit, boardLimit(room, geometry.size))
-                    .onAppear { orient(room.kind == .pool) }
-                    .onChange(of: room.game) { _ in orient(room.kind == .pool) }
-                    .task(id: room.game) {
-                        // The scene and full-screen presentation can still be activating
-                        // during onAppear, especially when restoring a saved match.
-                        do { try await Task.sleep(nanoseconds: 500_000_000) } catch { return }
-                        orient(room.kind == .pool)
-                    }
             }
         }.background(GamesPalette.background.ignoresSafeArea())
             .foregroundColor(GamesPalette.ink).tint(GamesPalette.lilac)
             .sheet(isPresented: $details) { if let room = store.selectedRoom { detailsSheet(room) } }
             .sheet(isPresented: $preferences) { GamesPreferencesView() }
-            .onDisappear { orient(false) }
-            .onChange(of: scenePhase) { phase in
-                if phase == .active { orient(store.selectedRoom?.kind == .pool) }
-            }
     }
     private func boardLimit(_ room: GamesRoom, _ size: CGSize) -> CGFloat {
         let reserve: CGFloat = room.kind == .battleship ? 290 : room.kind == .hangman ? 450 : room.kind == .checkers ? 190 : room.kind == .connect4 ? 170 : 105
@@ -102,19 +88,6 @@ struct GamesPlayView: View {
                 }
                 Button("Sound and motion") { details = false; DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { preferences = true } }
             }.navigationTitle("Our game").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { details = false } } }
-        }
-    }
-    private func orient(_ pool: Bool) {
-        guard let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive }) else { return }
-        guard let root = scene.windows.first(where: { !$0.isHidden && $0.windowLevel == .normal })?.rootViewController else { return }
-        var visible = root
-        while let presented = visible.presentedViewController { visible = presented }
-        root.setNeedsUpdateOfSupportedInterfaceOrientations()
-        visible.setNeedsUpdateOfSupportedInterfaceOrientations()
-        scene.requestGeometryUpdate(.iOS(interfaceOrientations: pool ? .landscape : .portrait)) { error in
-            #if DEBUG
-            print("Game orientation request: \(error.localizedDescription)")
-            #endif
         }
     }
 }
