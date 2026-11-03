@@ -81,32 +81,40 @@ struct GamesBattleshipView: View {
         }
     }
     private func chart(own: Bool) -> some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 2) { Text(" ").frame(width: 18); ForEach(1...10, id: \.self) { Text("\($0)").frame(maxWidth: .infinity) } }.font(.system(size: 10, weight: .medium, design: .monospaced)).foregroundColor(GamesPalette.muted)
-            HStack(spacing: 4) {
-                VStack(spacing: 2) { ForEach(0..<10, id: \.self) { Text(String(UnicodeScalar(65 + $0)!)).font(.system(size: 10, weight: .medium, design: .monospaced)).frame(maxHeight: .infinity) } }.frame(width: 18).foregroundColor(GamesPalette.muted)
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 10), spacing: 0) {
-                    ForEach(0..<100, id: \.self) { cell in
-                        Button {
-                            row = cell / 10; column = cell % 10
-                            if own { place(cell) } else { fire(cell) }
-                        } label: { seaCell(cell, own: own) }.buttonStyle(.plain)
-                            .disabled(own ? !canPlace : !canFire(cell))
-                            .accessibilityLabel(cellLabel(cell, own: own))
-                            .accessibilityIdentifier("games.battleship.\(own ? "own" : "target").\(cell)")
-                            .dropDestination(for: String.self) { items, _ in
-                                guard own && canPlace, let item = items.first, item.hasPrefix("asechka-ship:"), let index = Int(item.dropFirst(13)), (0..<5).contains(index) else { return false }
-                                selectedShip = index
-                                if ships[index].count > 1 { vertical = ships[index][1] - ships[index][0] == 10 }
-                                place(cell)
-                                return ships[index].first == cell
-                            }
-                    }
-                }.background { fleetArtwork(own: own) }.background(GamesSprite("battleship/board"))
+        GeometryReader { geometry in
+            let side = max(0, min(geometry.size.width - 22, geometry.size.height - 18))
+            let cellSide = side / 10
+            VStack(spacing: 4) {
+                HStack(spacing: 4) {
+                    Color.clear.frame(width: 18)
+                    HStack(spacing: 0) { ForEach(1...10, id: \.self) { Text("\($0)").frame(width: cellSide) } }
+                }.frame(height: 14).font(.system(size: 10, weight: .medium, design: .monospaced)).foregroundColor(GamesPalette.muted)
+                HStack(spacing: 4) {
+                    VStack(spacing: 0) { ForEach(0..<10, id: \.self) { Text(String(UnicodeScalar(65 + $0)!)).font(.system(size: 10, weight: .medium, design: .monospaced)).frame(width: 18, height: cellSide) } }.foregroundColor(GamesPalette.muted)
+                    LazyVGrid(columns: Array(repeating: GridItem(.fixed(cellSide), spacing: 0), count: 10), spacing: 0) {
+                        ForEach(0..<100, id: \.self) { cell in
+                            Button {
+                                row = cell / 10; column = cell % 10
+                                if own { place(cell) } else { fire(cell) }
+                            } label: { seaCell(cell, own: own).frame(width: cellSide, height: cellSide) }.buttonStyle(.plain)
+                                .disabled(own ? !canPlace : !canFire(cell))
+                                .accessibilityLabel(cellLabel(cell, own: own))
+                                .accessibilityIdentifier("games.battleship.\(own ? "own" : "target").\(cell)")
+                                .dropDestination(for: String.self) { items, _ in
+                                    guard own && canPlace, let item = items.first, item.hasPrefix("asechka-ship:"), let index = Int(item.dropFirst(13)), (0..<5).contains(index) else { return false }
+                                    selectedShip = index
+                                    if ships[index].count > 1 { vertical = ships[index][1] - ships[index][0] == 10 }
+                                    place(cell)
+                                    return ships[index].first == cell
+                                }
+                        }
+                    }.frame(width: side, height: side)
+                    .background { fleetArtwork(own: own) }.background(GamesSprite("battleship/board"))
                     .overlay { if own && canPlace { placementGesture } }
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-            }.aspectRatio(1.055, contentMode: .fit)
-        }.frame(maxWidth: min(600, boardLimit)).frame(maxWidth: .infinity)
+                }
+            }
+        }.aspectRatio(1, contentMode: .fit).frame(maxWidth: min(600, boardLimit)).frame(maxWidth: .infinity)
     }
     private func seaCell(_ cell: Int, own: Bool) -> some View {
         let attacker = own ? 1 - me : me

@@ -17,6 +17,13 @@ final class GamesJourneyTests: XCTestCase {
             if game == "tictactoe" { XCTAssertTrue(app.buttons["games.tictactoe.8"].isHittable) }
             if game == "battleship" {
                 XCTAssertTrue(app.buttons["games.battleship.commit"].exists)
+                let firstCell = app.buttons["games.battleship.own.0"].frame
+                let lastCell = app.buttons["games.battleship.own.99"].frame
+                XCTAssertGreaterThan(firstCell.width, 24, "Fleet cells remain large enough to place ships")
+                XCTAssertGreaterThan(lastCell.maxX - firstCell.minX, app.frame.width * 0.7, "The ocean fills the available play area")
+                XCTAssertEqual(firstCell.width, firstCell.height, accuracy: 1, "Fleet cells remain square")
+                XCTAssertTrue(app.buttons["games.battleship.own.99"].isHittable)
+                XCTAssertTrue(app.buttons["games.battleship.commit"].isHittable, "Placement fits without scrolling")
                 app.buttons["Arrange"].tap()
                 app.buttons["Rotate selected ship to vertical"].tap()
                 XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Cannot rotate here:")).firstMatch.waitForExistence(timeout: 3))
