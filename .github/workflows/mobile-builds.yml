@@ -25,7 +25,7 @@ concurrency:
 jobs:
   backend:
     timeout-minutes: 5
-    name: Shared tests and all-six Games verification
+    name: Shared tests and all-seven Games verification
     runs-on: ubuntu-latest
     services:
       redis:
@@ -46,7 +46,7 @@ jobs:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: node --test tests/*.test.mjs
-      - name: Verify six modules, original assets, native catalogs and versions
+      - name: Verify seven modules, original assets, native catalogs and versions
         run: node mobile/tools/verify-games.mjs
   android:
     permissions:

@@ -16,7 +16,7 @@ enum GamesPalette {
         switch kind {
         case .pool, .battleship: return mint
         case .tictactoe, .hangman: return rose
-        case .connect4, .checkers: return lilac
+        case .connect4, .checkers, .drawing: return lilac
         }
     }
     static func theme(_ room: GamesRoom) -> Color {
@@ -222,6 +222,10 @@ struct GamesCreateView: View {
     @State private var setter = 0
     @State private var timed = false
     @State private var seconds = 120
+    @State private var drawRounds=3
+    @State private var drawSeconds=80
+    @State private var customWords=""
+    @State private var customOnly=false
     var body: some View {
         NavigationStack {
             Form {
@@ -233,7 +237,8 @@ struct GamesCreateView: View {
                     }.padding(.vertical, 4)
                 }
                 Section("Make it ours") {
-                    Picker("Series", selection: $bestOf) { Text("One round").tag(1); Text("Best of three").tag(3); Text("Best of five").tag(5) }
+                    if kind != .drawing {Picker("Series", selection: $bestOf) { Text("One round").tag(1); Text("Best of three").tag(3); Text("Best of five").tag(5) }}
+                    if kind == .drawing {Stepper("\(drawRounds) rounds",value:$drawRounds,in:1...5);Stepper("\(drawSeconds) seconds to draw",value:$drawSeconds,in:30...180,step:10);TextField("Custom words, separated by commas",text:$customWords);Toggle("Only our custom words",isOn:$customOnly)}
                     Picker("Board accent", selection: $theme) { Text("Violet").tag("violet"); Text("Ocean").tag("ocean"); Text("Rose").tag("rose") }
                     if kind == .hangman {
                         Picker("First word setter", selection: $setter) { Text("Room creator").tag(0); Text("Joining player").tag(1) }
@@ -246,6 +251,7 @@ struct GamesCreateView: View {
                     Button {
                         var settings: [String: GamesJSON] = ["bestOf": .int(bestOf), "theme": .string(theme), "setter": .int(setter)]
                         if kind == .hangman && timed { settings["timedSeconds"] = .int(seconds) }
+                        if kind == .drawing {settings["rounds"] = .int(drawRounds);settings["drawSeconds"] = .int(drawSeconds);settings["customWords"] = .array(customWords.split(separator:",").map{.string($0.trimmingCharacters(in:.whitespacesAndNewlines))});settings["customOnly"] = .bool(customOnly)}
                         store.create(kind, settings: .object(settings)); dismiss()
                     } label: { Text("Create our room").gamesAction() }
                         .buttonStyle(.plain).listRowBackground(Color.clear)
@@ -357,6 +363,7 @@ struct GamesRoomView: View {
         case .checkers: GamesCheckersView(store: store, room: room)
         case .hangman: GamesHangmanView(store: store, room: room)
         case .battleship: GamesBattleshipView(store: store, room: room)
+        case .drawing: GamesDrawingView(store:store,room:room)
         case .pool: GamesPoolView(store: store, room: room)
         case nil: Text("This game is not supported by this version.")
         }
@@ -405,6 +412,9 @@ struct GamesArtwork: View {
             c.scaleBy(x: unit, y: unit)
             let accent = GamesPalette.accent(kind)
             switch kind {
+            case .drawing:
+                c.fill(Path(roundedRect:CGRect(x:-1,y:-0.8,width:2,height:1.6),cornerRadius:0.12),with:.color(.white))
+                var doodle=Path();doodle.move(to:CGPoint(x:-0.7,y:0.3));doodle.addCurve(to:CGPoint(x:0.7,y:-0.2),control1:CGPoint(x:-0.7,y:-1),control2:CGPoint(x:0.5,y:1));c.stroke(doodle,with:.color(accent),style:StrokeStyle(lineWidth:0.09,lineCap:.round))
             case .pool:
                 c.fill(Path(roundedRect: CGRect(x: -1.25, y: -0.76, width: 2.5, height: 1.52), cornerRadius: 0.2), with: .color(accent.opacity(0.2)))
                 c.stroke(Path(roundedRect: CGRect(x: -1.25, y: -0.76, width: 2.5, height: 1.52), cornerRadius: 0.2), with: .color(accent), lineWidth: 0.045)

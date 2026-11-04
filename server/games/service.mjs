@@ -2,6 +2,7 @@ import { randomBytes, createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { games, createGame, applyAction, publicState, expireGame } from './engine.mjs';
+import { settings as drawingSettings } from './rules/drawing.mjs';
 import { generateHangmanHint } from './ai-hints.mjs';
 
 const actors=['asnat','youssef'];
@@ -16,14 +17,14 @@ export class GamesService {
   emit(actor,event){for(const fn of this.listeners)fn(actor,event);}
   online(actor,delta){this.presence.set(actor,Math.max(0,(this.presence.get(actor)||0)+delta));this.announce();}
   present(){return actors.filter(a=>(this.presence.get(a)||0)>0);}
-  roomView(room,actor){const player=room.players.findIndex(p=>p.actor===actor);return {id:room.id,code:room.code,game:room.game,settings:room.settings,players:room.players.map(p=>({...p,online:(this.presence.get(p.actor)||0)>0})),status:room.status,seq:room.seq,state:room.state?publicState(room.game,room.state,player):null,scores:room.scores,result:room.result,seriesWinner:room.seriesWinner,rematchReady:room.rematchReady,round:room.round,updatedAt:room.updatedAt,availableAt:room.availableAt||0};}
+  roomView(room,actor){const player=room.players.findIndex(p=>p.actor===actor);return {id:room.id,code:room.code,game:room.game,settings:room.game==='drawing'?Object.fromEntries(Object.entries(room.settings).filter(([key])=>!['customWords','customOnly'].includes(key))):room.settings,players:room.players.map(p=>({...p,online:(this.presence.get(p.actor)||0)>0})),status:room.status,seq:room.seq,state:room.state?publicState(room.game,room.state,player):null,scores:room.scores,result:room.result,seriesWinner:room.seriesWinner,rematchReady:room.rematchReady,round:room.round,updatedAt:room.updatedAt,availableAt:room.availableAt||0};}
   rooms(actor){return this.data.rooms.filter(r=>r.expiresAt>this.now() && (r.players.some(p=>p.actor===actor)||r.status==='lobby')).map(r=>this.roomView(r,actor));}
   announce(){for(const actor of actors)this.emit(actor,{type:'rooms',rooms:this.rooms(actor),presence:this.present()});}
   publish(room){for(const p of room.players)this.emit(p.actor,{type:'room',room:this.roomView(room,p.actor)});if(room.status==='lobby')this.announce();}
   limit(actor,kind,max,window){const key=actor+':'+kind,now=this.now();const entry=this.rates.get(key)||{count:0,until:now+window};if(entry.until<=now){entry.count=0;entry.until=now+window;}if(++entry.count>max)fail('Please give that a moment.','RATE_LIMIT');this.rates.set(key,entry);}
   command(actor,input){const result=this.queue.then(()=>this.execute(actor,input));this.queue=result.catch(()=>{});return result;}
   settle(room){if(room.state.winner!==null && room.state.winner!==undefined){room.result=room.state.winner;room.status='finished';if(room.result===0||room.result===1)room.scores[room.result]++;const needed=Math.floor(room.settings.bestOf/2)+1;room.seriesWinner=room.scores.findIndex(s=>s>=needed);if(room.seriesWinner<0)room.seriesWinner=null;}}
-  tick(){const task=this.queue.then(async()=>{const expired=this.data.rooms.filter(r=>r.status==='playing'&&r.state?.deadline!==undefined&&r.state.deadline<=this.now());if(!expired.length)return;const next=structuredClone(this.data),changed=[];for(const room of next.rooms){if(!expired.some(r=>r.id===room.id))continue;room.state=expireGame(room.game,room.state,this.now());if(room.state.winner!==null){this.settle(room);room.seq++;room.updatedAt=this.now();changed.push(room);}}if(changed.length){await this.persist(next);for(const room of changed)this.publish(room);}});this.queue=task.catch(()=>{});return task;}
+  tick(){const task=this.queue.then(async()=>{const expired=this.data.rooms.filter(r=>r.status==='playing'&&r.state?.deadline!==undefined&&(r.state.deadline<=this.now()||(r.game==='drawing'&&r.state.phase==='draw'&&r.state.revealed.length<Math.min(r.state.config.hints,r.state.word.replace(/[^a-z0-9]/gi,'').length-1)&&r.state.nextHint<=this.now())));if(!expired.length)return;const next=structuredClone(this.data),changed=[];for(const room of next.rooms){if(!expired.some(r=>r.id===room.id))continue;room.state=expireGame(room.game,room.state,this.now());if(room.game==='drawing'||room.state.winner!==null){this.settle(room);room.seq++;room.updatedAt=this.now();changed.push(room);}}if(changed.length){await this.persist(next);for(const room of changed)this.publish(room);}});this.queue=task.catch(()=>{});return task;}
   async execute(actor,input){
     if(!actors.includes(actor))fail('Sign in to play.','AUTH');
     if(!input||typeof input!=='object'||Array.isArray(input)||typeof input.type!=='string')fail('Invalid command.');
@@ -43,6 +44,7 @@ export class GamesService {
       if(next.rooms.filter(r=>r.status!=='finished').length>=50)fail('Finish an existing match first.');
       const raw=input.settings||{};if(typeof raw!=='object'||Array.isArray(raw))fail('Invalid match settings.');
       const settings={bestOf:[1,3,5].includes(raw.bestOf)?raw.bestOf:1,theme:['violet','ocean','rose'].includes(raw.theme)?raw.theme:'violet',setter:raw.setter===1?1:0};
+      if(input.game==='drawing')Object.assign(settings,drawingSettings(raw),{bestOf:1});
       if(raw.timedSeconds!==undefined){if(!Number.isInteger(raw.timedSeconds)||raw.timedSeconds<30||raw.timedSeconds>600)fail('Choose a timer between 30 and 600 seconds.');settings.timedSeconds=raw.timedSeconds;}
       let code;do{code=randomBytes(4).toString('hex').slice(0,6).toUpperCase();}while(next.rooms.some(r=>r.code===code));
       room={id:randomBytes(16).toString('hex'),code,game:input.game,settings,players:[{actor,ready:false}],status:'lobby',seq:0,state:null,scores:[0,0],result:null,seriesWinner:null,round:1,rematchReady:[],updatedAt:now,expiresAt:now+30*86400_000};next.rooms.push(room);
@@ -61,6 +63,7 @@ export class GamesService {
           room.state=createGame(room.game,{...room.settings,now,seed:randomBytes(16).toString('hex')});room.status='playing';
         }else if(type==='move'){
           if(room.status!=='playing')fail('This match is not in progress.');
+          if(room.game==='drawing')this.limit(actor,'draw',100,10000);
           if(room.game==='pool' && (room.availableAt||0)>now)fail('The balls are still moving.','SHOT_IN_PROGRESS');
           if(!Number.isInteger(input.seq)||input.seq!==room.seq)fail('Your board changed. Synchronize and try again.','STALE_STATE');
           if(!input.action||typeof input.action!=='object'||Array.isArray(input.action)||JSON.stringify(input.action).length>8000)fail('Invalid move.');

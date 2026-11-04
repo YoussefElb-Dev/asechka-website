@@ -9,7 +9,8 @@
     "hangman",
     "connect4",
     "checkers",
-    "battleship"
+    "battleship",
+    "drawing"
   ],
   "bundleRoots": [
     "mobile/ios/Resources/default/games",
@@ -91,6 +92,32 @@
       "destination": "Games hub cover / scalable master",
       "bytes": 9376,
       "sha256": "ccbf75f690892408d11c49e78b904d35bdfcd404cab307ae38c80eff780d98b2",
+      "source": "mobile/tools/games-assets.mjs",
+      "attribution": "Original project artwork and synthesized audio; no third-party media."
+    },
+    {
+      "path": "covers/drawing.svg",
+      "game": "drawing",
+      "kind": "vector",
+      "width": 960,
+      "height": 640,
+      "format": "svg",
+      "destination": "Games hub cover / scalable master",
+      "bytes": 5095,
+      "sha256": "78bc5b0d2df9a13b4930c27d9c19a5eaf0617e2ea402989f48322f060ddf329e",
+      "source": "mobile/tools/games-assets.mjs",
+      "attribution": "Original project artwork and synthesized audio; no third-party media."
+    },
+    {
+      "path": "covers/drawing.png",
+      "game": "drawing",
+      "kind": "cover",
+      "width": 960,
+      "height": 640,
+      "format": "png",
+      "destination": "Native Games hub cover",
+      "bytes": 25474,
+      "sha256": "aa2ef74ce9023623061a2da18b36277637f55051ee01b52635d1213457f303bc",
       "source": "mobile/tools/games-assets.mjs",
       "attribution": "Original project artwork and synthesized audio; no third-party media."
     },
@@ -1217,6 +1244,19 @@
       "source": "mobile/game-art-source/kits/hangman.png",
       "cell": 0,
       "attribution": "Original built-in imagegen artwork / project vector boards; approved Soft Orbit style."
+    },
+    {
+      "path": "gameplay/drawing/board.png",
+      "game": "drawing",
+      "kind": "board",
+      "width": 960,
+      "height": 640,
+      "format": "png",
+      "destination": "Drawing game paper artwork",
+      "bytes": 25474,
+      "sha256": "aa2ef74ce9023623061a2da18b36277637f55051ee01b52635d1213457f303bc",
+      "source": "mobile/tools/games-assets.mjs",
+      "attribution": "Original project artwork and synthesized audio; no third-party media."
     }
   ]
 }

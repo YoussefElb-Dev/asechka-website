@@ -56,11 +56,11 @@ export class RedisGamesService extends GamesService {
   tick(){
     // Pub/sub and the periodic reconciliation keep this snapshot current. Avoid a
     // paid Redis read every second when no timed round is due to expire.
-    if(!this.data.rooms.some(room=>room.status==='playing'&&room.state?.deadline!==undefined&&room.state.deadline<=this.now()))return Promise.resolve();
+    if(!this.data.rooms.some(room=>room.status==='playing'&&room.state?.deadline!==undefined&&(room.state.deadline<=this.now()||(room.game==='drawing'&&room.state.phase==='draw'&&room.state.revealed.length<Math.min(room.state.config.hints,room.state.word.replace(/[^a-z0-9]/gi,'').length-1)&&room.state.nextHint<=this.now()))))return Promise.resolve();
     const task=this.queue.then(async()=>{
     for(let attempt=0;attempt<8;attempt++){
       await this.load();const next=structuredClone(this.data),changed=[];
-      for(const room of next.rooms){if(room.status!=='playing'||room.state?.deadline===undefined||room.state.deadline>this.now())continue;room.state=expireGame(room.game,room.state,this.now());if(room.state.winner!==null){this.settle(room);room.seq++;room.updatedAt=this.now();changed.push(room);}}
+      for(const room of next.rooms){if(room.status!=='playing'||room.state?.deadline===undefined||(room.state.deadline>this.now()&&!(room.game==='drawing'&&room.state.phase==='draw'&&room.state.revealed.length<Math.min(room.state.config.hints,room.state.word.replace(/[^a-z0-9]/gi,'').length-1)&&room.state.nextHint<=this.now())))continue;room.state=expireGame(room.game,room.state,this.now());if(room.game==='drawing'||room.state.winner!==null){this.settle(room);room.seq++;room.updatedAt=this.now();changed.push(room);}}
       if(!changed.length)return;
       try{await this.persist(next);for(const room of changed)this.publish(room);return;}catch(error){if(error.code!=='CAS_RETRY')throw error;}
     }

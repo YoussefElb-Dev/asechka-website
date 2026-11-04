@@ -20,7 +20,7 @@ public final class UpdaterChecks extends Instrumentation {
     OfflineStore store=new OfflineStore(context,"updater-qa");
     if("after".equals(mode)){
       check("keep-me".equals(store.read("sentinel").getString("value")),"Encrypted content survived the update");
-      check(AppUpdater.code(context.getPackageManager().getPackageInfo(context.getPackageName(),0))==29,"Updated version installed");
+      check(AppUpdater.code(context.getPackageManager().getPackageInfo(context.getPackageName(),0))==31,"Updated version installed");
     }else{
       MainActivity activity=(MainActivity)startActivitySync(new Intent(context,MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
       AppUpdater updater=new AppUpdater(activity);

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { create, apply, view, simulate, TABLE, POCKETS } from '../server/games/rules/pool.mjs';
+import { create, apply, view, simulate, TABLE, POCKETS, shotSpeed } from '../server/games/rules/pool.mjs';
 
 const copy = value => JSON.parse(JSON.stringify(value));
 function freeze(value) {
@@ -10,7 +10,7 @@ function freeze(value) {
   }
   return value;
 }
-const ball = (id, x, y) => ({ id, x, y, pocketed: false });
+const ball = (id, x, y) => ({ id, x, y, pocketed: false, q: [1,0,0,0] });
 function table(liveBalls, extra = {}) {
   const state = create();
   state.balls = state.balls.map(old => ({ ...old, pocketed: true, ...liveBalls.find(b => b.id === old.id) }));
@@ -20,6 +20,22 @@ const shoot = (state, shot = {}, player = state.turn) => apply(state, player, { 
 const pot = (id, extra = [], settings = {}) => table([ball(0, 500, 180), ball(id, 500, 75), ...extra], settings);
 const up = { angle: -Math.PI / 2, power: 0.2 };
 const groups = ['solids', 'stripes'];
+
+test('soft-shot curve, rolling orientation and follow/draw respond to the actual cue tip',()=>{
+  assert.ok(shotSpeed(.1)<shotSpeed(.2)/2);
+  const objects=[ball(0,500,250),ball(1,560,250)];
+  const draw=simulate(objects,{angle:0,power:.4,spinY:-1});
+  const follow=simulate(objects,{angle:0,power:.4,spinY:1});
+  assert.equal(draw.firstContact,1);assert.equal(follow.firstContact,1);
+  assert.ok(draw.balls[0].x<500,'backspin draws the cue back after impact');
+  assert.ok(follow.balls[0].x>draw.balls[0].x+100,'topspin follows the object ball');
+  for(const r of [draw,follow])for(const frame of r.frames)for(const b of frame.balls)assert.ok(Math.abs(Math.hypot(...b.q)-1)<.000003);
+  assert.notDeepEqual(draw.frames[0].balls[0].q,draw.frames[5].balls[0].q);
+  const left=simulate([ball(0,850,250)],{angle:0,power:.5,spinX:-1});
+  const right=simulate([ball(0,850,250)],{angle:0,power:.5,spinX:1});
+  assert.ok((left.balls[0].y-250)*(right.balls[0].y-250)<0,'side spin changes cushion exit direction');
+  for(const shot of [{spinX:NaN},{spinY:Infinity},{spinX:2},{spinY:'1'},{spinX:1,spinY:1}])assert.throws(()=>simulate(objects,{angle:0,power:.5,...shot}));
+});
 
 test('pool starts with a deterministic legal rack, eight in the center and opposite rear groups', () => {
   const state = create();
@@ -41,11 +57,11 @@ test('pool starts with a deterministic legal rack, eight in the center and oppos
 
 test('free rolling stops under friction at the expected distance without mutating input', () => {
   const input = freeze([ball(0, 200, 200)]);
-  const result = simulate(input, freeze({ angle: 0, power: 0.1 }));
-  // v=180 units/s, friction=100 units/s^2: d=v^2/(2a), within one integrator step.
-  assert.ok(Math.abs(result.balls[0].x - (200 + 162)) < 0.4);
+  const result = simulate(input, freeze({ angle: 0, power: 0.1, spinY:1/1.8 }));
+  // Pure rolling: v²/(2a) stopping distance, a=70 table units/s².
+  assert.ok(Math.abs(result.balls[0].x - (200 + shotSpeed(.1)**2/140)) < 0.4);
   assert.equal(result.balls[0].y, 200);
-  assert.ok(Math.abs(result.duration - 1.8) < 0.003);
+  assert.ok(Math.abs(result.duration - shotSpeed(.1)/70) < 0.003);
   assert.deepEqual(result.rails, []);
   assert.deepEqual(result.contacts, []);
   assert.deepEqual(result.pockets, []);
@@ -56,16 +72,16 @@ test('free rolling stops under friction at the expected distance without mutatin
 });
 
 test('head-on and glancing collisions transfer momentum in two dimensions', () => {
-  const direct = simulate([ball(0, 200, 200), ball(1, 300, 200)], { angle: 0, power: 0.12 });
+  const direct = simulate([ball(0, 200, 200), ball(1, 300, 200)], { angle: 0, power: 0.22 });
   assert.equal(direct.firstContact, 1);
   assert.deepEqual(direct.firstContacts, [1]);
-  assert.ok(direct.balls[0].x < 290);
-  assert.ok(direct.balls[1].x > 400);
+  assert.ok(direct.balls[0].x < direct.balls[1].x-50);
+  assert.ok(direct.balls[1].x > 370);
   assert.equal(direct.balls[1].y, 200);
-  const glance = simulate([ball(0, 200, 200), ball(1, 300, 210)], { angle: 0, power: 0.16 });
+  const glance = simulate([ball(0, 200, 200), ball(1, 300, 210)], { angle: 0, power: 0.28 });
   assert.equal(glance.firstContact, 1);
   assert.ok(glance.balls[0].y < 180);
-  assert.ok(glance.balls[1].y > 280);
+  assert.ok(glance.balls[1].y > 270);
   assert.ok(glance.balls[1].x > 400);
 });
 
@@ -77,7 +93,7 @@ test('maximum-power shots collide rather than tunneling through a nearby ball', 
 });
 
 test('cushions reflect balls and dissipate speed', () => {
-  const result = simulate([ball(0, 900, 150)], { angle: 0, power: 0.2 });
+  const result = simulate([ball(0, 900, 150)], { angle: 0, power: 0.3 });
   assert.deepEqual(result.rails.map(event => event.rail), ['right']);
   assert.ok(result.balls[0].x < 800);
   assert.equal(result.balls[0].y, 150);
@@ -200,7 +216,7 @@ test('a miss or zero-power shot fouls and requires the incoming player to place 
 });
 
 test('correct contact without a later rail or pot fouls; a later rail makes a legal safety', () => {
-  const foul = shoot(table([ball(0, 200, 200), ball(1, 300, 200)]), { power: 0.1 });
+  const foul = shoot(table([ball(0, 200, 200), ball(1, 300, 200)]), { power: 0.18 });
   assert.equal(foul.lastShot.firstContact, 1);
   assert.match(foul.foul, /No pocket or rail/);
   const legal = shoot(table([ball(0, 700, 200), ball(1, 850, 200)], { groups }), { power: 0.4 });
@@ -210,7 +226,7 @@ test('correct contact without a later rail or pot fouls; a later rail makes a le
 });
 
 test('a rail before first object contact does not satisfy the rail requirement', () => {
-  const next = shoot(table([ball(0, 50, 200), ball(1, 100, 200)]), { angle: Math.PI, power: 0.15 });
+  const next = shoot(table([ball(0, 50, 200), ball(1, 100, 200)]), { angle: Math.PI, power: 0.26 });
   assert.equal(next.lastShot.firstContact, 1);
   assert.equal(next.lastShot.rails.length, 1);
   assert.ok(next.lastShot.rails[0].order < next.lastShot.contacts[0].order);
@@ -218,11 +234,11 @@ test('a rail before first object contact does not satisfy the rail requirement',
 });
 
 test('a post-contact cushion in the same physics step counts, but a frozen ball on its original rail does not', () => {
-  const near = shoot(table([ball(0, 950, 200), ball(1, 988.9, 200)]), { power: 0.2 });
+  const near = shoot(table([ball(0, 950, 200), ball(1, 988.9999, 200)]), { power: 0.2 });
   const contact = near.lastShot.contacts[0];
   assert.ok(near.lastShot.rails.some(event => event.t === contact.t && event.order > contact.order));
   assert.equal(near.foul, null);
-  const frozen = shoot(table([ball(0, 950, 200), ball(1, 989, 200)]), { power: 0.08 });
+  const frozen = shoot(table([ball(0, 950, 200), ball(1, 989, 200)]), { power: 0.18 });
   assert.ok(frozen.lastShot.rails.some(event => !event.counts));
   assert.match(frozen.foul, /No pocket or rail/);
 });
@@ -233,7 +249,7 @@ test('first contact must match the assigned group, and the eight is illegal firs
   assert.equal(wrong.turn, 1);
   assert.equal(wrong.ballInHand, true);
   assert.equal(wrong.balls[9].pocketed, true);
-  const open = shoot(table([ball(0, 200, 200), ball(8, 300, 200)]), { power: 0.12 });
+  const open = shoot(table([ball(0, 200, 200), ball(8, 300, 200)]), { power: 0.22 });
   assert.match(open.foul, /Wrong first/);
   assert.equal(open.winner, null);
   assert.deepEqual(open.groups, [null, null]);
@@ -270,7 +286,7 @@ test('scratches persist the cue as pocketed and do not assign a group', () => {
   assert.equal(next.turn, 1);
   assert.deepEqual(next.groups, [null, null]);
   const placed = apply(freeze(next), 1, { type: 'place', x: 300, y: 250 });
-  assert.deepEqual(placed.balls[0], ball(0, 300, 250));
+  assert.deepEqual(placed.balls[0], {...ball(0,300,250),q:next.balls[0].q});
   assert.equal(placed.ballInHand, false);
   assert.equal(placed.turn, 1);
   assert.throws(() => apply(placed, 1, { type: 'place', x: 350, y: 250 }), /ball in hand/);
@@ -325,8 +341,8 @@ test('eight eligibility is determined before the stroke, even when the last grou
 });
 
 test('scratching while potting a correctly called eight loses, but scratching without potting it only fouls', () => {
-  const state = table([ball(0, 480, 160), ball(8, 490, 30)], { groups });
-  const next = shoot(state, { angle: -Math.PI / 2, power: 1, callPocket: 1 });
+  const state = table([ball(0, 505, 160), ball(8, 505, 60)], { groups });
+  const next = shoot(state, { angle: -Math.PI / 2, power: 1, spinY:-1, callPocket: 1 });
   assert.equal(next.lastShot.firstContact, 8);
   assert.ok(next.lastShot.pocketed.includes(0) && next.lastShot.pocketed.includes(8));
   assert.equal(next.winner, 1);
@@ -341,10 +357,10 @@ test('eight on the break is spotted with groups open, including a scratched brea
   assert.equal(legal.winner, null);
   assert.equal(legal.foul, null);
   assert.equal(legal.turn, 0);
-  assert.deepEqual(legal.balls[8], ball(8, 700, 250));
+  assert.deepEqual(legal.balls[8], {...ball(8,700,250),q:legal.lastShot.frames.at(-1).balls.find(b=>b.id===8).q});
   assert.deepEqual(legal.groups, [null, null]);
-  const scratch = shoot(table([ball(0, 480, 160), ball(8, 490, 30)], { breakShot: true }),
-    { angle: -Math.PI / 2, power: 1 });
+  const scratch = shoot(table([ball(0, 505, 160), ball(8, 505, 60)], { breakShot: true }),
+    { angle: -Math.PI / 2, power: 1, spinY:-1 });
   assert.equal(scratch.winner, null);
   assert.equal(scratch.balls[8].pocketed, false);
   assert.equal(scratch.ballInHand, true);

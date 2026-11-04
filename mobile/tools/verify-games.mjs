@@ -37,7 +37,7 @@ if(!process.argv.includes('--assets-only')) {
   const functions=(await readdir(resolve(root,'api'))).filter(name=>name.endsWith('.js'));
   assert(functions.length+1<=12,'Vercel Hobby permits 12 functions including routing middleware');
   const engine=await import(pathToFileURL(resolve(root,'server/games/engine.mjs')));
-  assert.deepEqual([...engine.games].sort(),[...games].sort(),'All six authoritative modules must be registered');
+  assert.deepEqual([...engine.games].sort(),[...games].sort(),'All seven authoritative modules must be registered');
   for(const game of games) {
     const rule=await import(pathToFileURL(resolve(root,`server/games/rules/${game}.mjs`)));
     for(const name of ['create','apply','view'])assert.equal(typeof rule[name],'function',`${game}.${name} missing`);
@@ -65,7 +65,7 @@ if(!process.argv.includes('--assets-only')) {
   assert(/^\d+\.\d+\.\d+$/.test(androidVersion)&&/^\d+$/.test(androidBuild),'Invalid Android version');
   // A platform-only release must not require changing the other app.
   assert(portable.includes(`'--version-code','${androidBuild}'`)&&portable.includes(`'--version-name','${androidVersion}'`),'Portable Android builder version mismatch');
-  console.log(`Verified all six server modules, native catalogs and bundled resources; Android ${androidVersion} (${androidBuild}), iOS ${version} (${build}).`);
+  console.log(`Verified all seven server modules, native catalogs and bundled resources; Android ${androidVersion} (${androidBuild}), iOS ${version} (${build}).`);
 }
 console.log(`Games asset checks passed: ${manifest.assets.length} assets, ${(bytes/1024).toFixed(1)} KiB, exact Android/iOS copies.`);
 } catch(error) {

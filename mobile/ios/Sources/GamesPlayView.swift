@@ -66,6 +66,7 @@ struct GamesPlayView: View {
         case .checkers: GamesCheckersView(store: store, room: room)
         case .hangman: GamesHangmanView(store: store, room: room)
         case .battleship: GamesBattleshipView(store: store, room: room)
+        case .drawing: GamesDrawingView(store:store,room:room)
         case .pool: EmptyView()
         case nil: Text("This game is unavailable.")
         }

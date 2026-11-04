@@ -20,6 +20,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   final GamesClient client;
   private final GamesAudio audio;
   private GamesBoard board;
+  private GamesDrawingView drawing;
   private Dialog dialog;
   private String signature="",invite="",lastResult="";
   private boolean foreground;
@@ -27,7 +28,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   private SeekBar aimBar;
   private SeekBar powerBar;
   private float power=.55f;
-  private int pocket;
+  private int pocket; private float spinX,spinY;
   private JSONObject current;
   private LinearLayout controlsHost;
   private boolean focusedPlay;
@@ -61,6 +62,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     else {key.append(client.presence);for(JSONObject r:client.rooms.values())key.append(r.optString("id")).append(r.optLong("seq")).append(GamesData.array(r,"players"));}
     if(board!=null&&current!=null)board.update(current,client.pending,client.connected);
     if(key.toString().equals(signature))return;signature=key.toString();
+    if(current!=null&&"drawing".equals(current.optString("game"))&&drawing!=null&&drawing.getParent()!=null&&drawing.roomId().equals(current.optString("id"))){drawing.update(current);return;}
     int y=getScrollY();if(board!=null&&board.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)board.getParent()).removeView(board);
     body.removeAllViews();
     if(current==null)hub();else{
@@ -103,9 +105,9 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     Button join=button("Join with a room code",false,()->joinDialog(""));join.setBackground(shape(PANEL,24));join.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);join.setPadding(dp(20),dp(20),dp(20),dp(20));add(join,20);
     add(text("A little competition. A lot of us.",22,INK,true),20);
     boolean two=getResources().getConfiguration().screenWidthDp>=350&&getResources().getConfiguration().fontScale<=1.25f;
-    for(int start=0;start<6;start+=two?2:1){
+    for(int start=0;start<GamesData.IDS.length;start+=two?2:1){
       LinearLayout row=row();
-      for(int j=start;j<Math.min(6,start+(two?2:1));j++){
+      for(int j=start;j<Math.min(GamesData.IDS.length,start+(two?2:1));j++){
         final int index=j;
         LinearLayout card=column();card.setPadding(dp(10),dp(8),dp(10),dp(14));card.setBackground(new RippleDrawable(android.content.res.ColorStateList.valueOf(0x33c5afff),shape(PANEL,20),null));card.setClipToOutline(true);card.setFocusable(true);card.setClickable(true);card.setContentDescription(GamesData.TAGS[j]+". "+GamesData.NOTES[j]+". Create a room.");
         card.addView(new GamesArt(activity,j),new LinearLayout.LayoutParams(-1,dp(two?134:210)));
@@ -149,6 +151,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     String turn=finished?GamesData.result(r,client.actor):"battleship".equals(game)&&"placement".equals(s.optString("phase"))?"Arrange your fleet":"hangman".equals(game)&&"choose".equals(s.optString("phase"))?(s.optInt("setter")==me?"Choose their secret word":"Your partner is choosing a word"):s.optInt("turn")==me?"Your move. Take your time.":"Your partner’s turn";
     TextView turnLabel=text(turn,20,GamesData.COLORS[index],true);turnLabel.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);add(turnLabel,14);
     if(client.pending!=null)add(text("Sending your move… · saved safely for reconnect",12,ACCENT,false),8);
+    if("drawing".equals(game)){drawing=new GamesDrawingView(activity,client);add(drawing,6);drawing.update(r);return;}
     if(board==null)board=new GamesBoard(activity,client.actor,this);board.update(r,client.pending,client.connected);add(board,16);
     if("pool".equals(game))poolControls(s,finished);
     if("hangman".equals(game))hangmanControls(s,finished,me);
@@ -200,9 +203,10 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if(state.optBoolean("ballInHand")){add(text("Ball in hand. Tap a clear spot on the table to place it.",14,INK,true),6);add(button("Set coordinates",false,this::extraControls),8);return;}
     if(board.moving()){add(text("Balls settling…",14,ACCENT,true),6);postDelayed(()->{signature="";refresh();},Math.max(50,current.optLong("availableAt")-System.currentTimeMillis()+50));return;}
     JSONArray groups=GamesData.array(state,"groups");int me=GamesData.player(current,client.actor);String group=groups.isNull(me)?"Open table":groups.optString(me);
-    aimLabel=text(group+" · "+Math.round(power*100)+"%",13,INK,true);add(aimLabel,5);powerBar=slider("Shot power",100,Math.round(power*100));powerBar.setEnabled(board.myTurn());powerBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int n,boolean user){power=Math.max(.01f,n/100f);aimLabel.setText(group+" · "+n+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(powerBar,0);
+    aimLabel=text(group+" · "+Math.round(power*100)+"%",13,INK,true);add(aimLabel,5);powerBar=slider("Shot power",100,Math.round(power*100));powerBar.setEnabled(board.myTurn());powerBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int n,boolean user){power=n/100f;board.shotPower=power;board.invalidate();aimLabel.setText(group+" · "+n+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(powerBar,0);
     Spinner pockets=spinner(new String[]{"Top left","Top middle","Top right","Bottom right","Bottom middle","Bottom left"});pockets.setContentDescription("Called pocket for the eight ball");pockets.setSelection(pocket);pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;}public void onNothingSelected(AdapterView<?> a){}});add(pockets,3);
-    add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"callPocket",pocket))),5);
+    add(button("Cue-ball spin",false,this::spinDialog),3);
+    add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"spinX",spinX,"spinY",spinY,"callPocket",pocket))),5);
   }
 
   private void checkersReplay(JSONObject room){
@@ -240,12 +244,17 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     }
     aimLabel=text("Aim · "+Math.round(Math.toDegrees(board.angle))+"°",13,MUTED,false);add(aimLabel,12);
     aimBar=slider("Aim in degrees",359,(int)((Math.toDegrees(board.angle)+360)%360));aimBar.setEnabled(board.myTurn());aimBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){if(user){board.angle=(float)Math.toRadians(value);board.invalidate();aimLabel.setText("Aim · "+value+"°");}}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(aimBar,0);
-    TextView powerLabel=text("Power · "+Math.round(power*100)+"%",13,MUTED,false);add(powerLabel,8);SeekBar strength=slider("Shot power percent",100,Math.round(power*100));powerBar=strength;strength.setEnabled(board.myTurn());strength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){power=Math.max(.01f,value/100f);powerLabel.setText("Power · "+Math.round(power*100)+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(strength,0);
+    TextView powerLabel=text("Power · "+Math.round(power*100)+"%",13,MUTED,false);add(powerLabel,8);SeekBar strength=slider("Shot power percent",100,Math.round(power*100));powerBar=strength;strength.setEnabled(board.myTurn());strength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){power=value/100f;board.shotPower=power;board.invalidate();powerLabel.setText("Power · "+Math.round(power*100)+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(strength,0);
     add(text("Drag the cloth to aim. Then pull back from the cue ball and release to shoot, or use the sliders and Shoot button.",13,MUTED,false),8);
     Spinner pockets=spinner(new String[]{"Top left pocket","Top middle pocket","Top right pocket","Bottom right pocket","Bottom middle pocket","Bottom left pocket"});pockets.setSelection(pocket);pockets.setContentDescription("Called pocket for the eight ball");pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;}public void onNothingSelected(AdapterView<?> a){}});add(pockets,8);
-    add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"callPocket",pocket))),12);
+    add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"spinX",spinX,"spinY",spinY,"callPocket",pocket))),12);
   }
 
+  private void spinDialog(){
+    LinearLayout content=column();content.setPadding(dp(18),dp(12),dp(18),dp(12));add(content,text("Top adds follow. Bottom adds draw. Left / right changes cushion rebound.",14,MUTED,false),4);
+    add(content,new GamesSpinView(activity,spinX,spinY,(x,y)->{spinX=x;spinY=y;}),8);
+    new AlertDialog.Builder(activity).setTitle("Cue-ball spin").setView(content).setNeutralButton("Center",(d,w)->{spinX=spinY=0;}).setPositiveButton("Done",null).show();
+  }
   private void hangmanControls(JSONObject s,boolean finished,int me){
     String phase=s.optString("phase");
     if("choose".equals(phase)&&s.optInt("setter")==me&&!finished){
@@ -266,7 +275,12 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
       if(!finished&&s.optInt("setter")!=me){
         JSONArray guesses=GamesData.array(s,"guesses");String pendingLetter=client.pending==null||client.pending.optJSONObject("action")==null?"":client.pending.optJSONObject("action").optString("letter");
         for(int start=0;start<26;start+=7){LinearLayout row=row();for(int i=start;i<Math.min(start+7,26);i++){final String letter=""+(char)('a'+i);boolean used=false;for(int j=0;j<guesses.length();j++)used|=letter.equalsIgnoreCase(guesses.optString(j));Button key=action(letter.toUpperCase(Locale.US),false,board.myTurn()&&!used,()->move(GamesData.obj("type","guess","letter",letter)));key.setBackground(new BitmapDrawable(getResources(),GamesTextures.image(activity,"hangman/key")));key.setTextColor(used?(pattern.contains(letter)?0xff2e746a:0xff9f4b6f):INK);key.setAlpha(used?.55f:pendingLetter.equals(letter)?.4f:1);key.setContentDescription("Guess letter "+letter+(used?", already guessed":pendingLetter.equals(letter)?", sending":""));key.setPadding(0,dp(4),0,dp(4));row.addView(key,new LinearLayout.LayoutParams(0,dp(48),1));}add(row,6);}
-        add(action("Reveal one free hint",false,board.myTurn()&&!s.optBoolean("hintUsed"),()->move(GamesData.obj("type","hint"))),10);
+        boolean hintPending=client.pending!=null&&client.pending.optJSONObject("action")!=null&&"hint".equals(client.pending.optJSONObject("action").optString("type"));
+        if(hintPending){
+          LinearLayout loading=row();loading.setGravity(Gravity.CENTER);loading.setPadding(dp(12),dp(12),dp(12),dp(12));
+          ProgressBar spinner=new ProgressBar(activity);spinner.setIndeterminateTintList(android.content.res.ColorStateList.valueOf(ACCENT));loading.addView(spinner,new LinearLayout.LayoutParams(dp(24),dp(24)));
+          TextView label=text(!client.connected?"Waiting for connection…":s.optBoolean("personal")?"Revealing a letter…":"Thinking of a hint…",14,INK,true);label.setPadding(dp(10),0,0,0);loading.addView(label);loading.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);add(loading,10);
+        }else add(action("Reveal one free hint",false,board.myTurn()&&!s.optBoolean("hintUsed"),()->move(GamesData.obj("type","hint"))),10);
       }
     }
   }
@@ -299,7 +313,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   public void move(JSONObject action){if(current==null)return;feedback("pool".equals(current.optString("game"))?"pocket":"battleship".equals(current.optString("game"))?"splash":"connect4".equals(current.optString("game"))?"drop":"move");client.move(current,action);if(board!=null)board.update(current,client.pending,client.connected);refresh();}
   public void selection(){feedback("tap");signature="";refresh();}
   public void aim(float radians){if(aimLabel!=null)aimLabel.setText("Aim · "+Math.round((Math.toDegrees(radians)+360)%360)+"°");if(aimBar!=null)aimBar.setProgress((int)((Math.toDegrees(radians)+360)%360));}
-  public void charge(float value,boolean release){power=value;if(powerBar!=null)powerBar.setProgress(Math.round(value*100));if(release&&value>=.03f&&board.myTurn())move(GamesData.obj("type","shot","angle",board.angle,"power",value,"callPocket",pocket));}
+  public void charge(float value,boolean release){power=value;if(powerBar!=null)powerBar.setProgress(Math.round(value*100));if(release&&value>=.03f&&board.myTurn())move(GamesData.obj("type","shot","angle",board.angle,"power",value,"spinX",spinX,"spinY",spinY,"callPocket",pocket));}
   private void feedback(String sound){if(getContext().getSharedPreferences("games-settings",0).getBoolean("haptics",true))Motion.haptic(this,false);audio.play(sound);}
 
   private void createDialog(int game){
@@ -307,10 +321,13 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     Spinner best=spinner(new String[]{"One round","Best of three","Best of five"});best.setContentDescription("Series length");add(content,best,12);
     Spinner theme=spinner(new String[]{"Violet","Ocean","Rose"});theme.setContentDescription("Board color theme");add(content,theme,10);
     Spinner setter=spinner(new String[]{"I choose the first word","My partner chooses the first word"}),timer=spinner(new String[]{"No timer","60 seconds","120 seconds","300 seconds"});
+    Spinner drawRounds=spinner(new String[]{"1 round","2 rounds","3 rounds","4 rounds","5 rounds"}),drawTime=spinner(new String[]{"60 seconds","80 seconds","120 seconds"});drawRounds.setSelection(2);drawTime.setSelection(1);EditText words=input("Custom words, separated by commas (optional)");Switch only=new Switch(activity);only.setText("Only our custom words");
+    if(game==6){best.setVisibility(View.GONE);drawRounds.setContentDescription("Drawing rounds");drawTime.setContentDescription("Drawing time");add(content,drawRounds,8);add(content,drawTime,8);add(content,words,8);add(content,only,8);}
     if(game==2){setter.setContentDescription("First word setter");timer.setContentDescription("Hangman timer");add(content,setter,10);add(content,timer,10);}
     dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle(GamesData.TITLES[game]).setView(content).setNegativeButton("Cancel",null).setPositiveButton("Create room",(d,w)->{
       JSONObject settings=GamesData.obj("bestOf",new int[]{1,3,5}[best.getSelectedItemPosition()],"theme",new String[]{"violet","ocean","rose"}[theme.getSelectedItemPosition()],"setter",setter.getSelectedItemPosition());
       try{if(game==2&&timer.getSelectedItemPosition()>0)settings.put("timedSeconds",new int[]{0,60,120,300}[timer.getSelectedItemPosition()]);}catch(JSONException ignored){}
+      if(game==6){try{JSONArray pool=new JSONArray();for(String word:words.getText().toString().split(","))if(!word.trim().isEmpty())pool.put(word.trim());settings.put("rounds",drawRounds.getSelectedItemPosition()+1);settings.put("drawSeconds",new int[]{60,80,120}[drawTime.getSelectedItemPosition()]);settings.put("customWords",pool);settings.put("customOnly",only.isChecked());}catch(JSONException ignored){}}
       client.command("create",GamesData.obj("game",GamesData.IDS[game],"settings",settings));refresh();audio.play("invite");
     }).create();dialog.show();
   }

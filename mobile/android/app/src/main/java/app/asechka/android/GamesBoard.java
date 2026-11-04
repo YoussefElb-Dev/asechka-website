@@ -22,7 +22,7 @@ final class GamesBoard extends View {
   private boolean canMove;
   private int player, selected = -1, focused = -1, hovered = -1;
   final GamesFleet fleet = new GamesFleet();
-  float angle = 0;
+  float angle = 0; float shotPower=.55f;
   private float downX, downY;
   private boolean draggingFleet, charging;
   private int dragCell = -1, dragOffset;
@@ -231,16 +231,15 @@ final class GamesBoard extends View {
     for(int i=0;i<balls.length();i++) {
       JSONObject ball=balls.optJSONObject(i);if(ball==null||ball.optBoolean("pocketed"))continue;
       double x=ball.optDouble("x"),y=ball.optDouble("y");
-      if(next!=null)for(int j=0;j<next.length();j++){JSONObject b=next.optJSONObject(j);if(b!=null&&b.optInt("id")==ball.optInt("id")){x+=(b.optDouble("x")-x)*blend;y+=(b.optDouble("y")-y)*blend;break;}}
+      double[] rotation=GamesPoolVisual.q(ball);
+      if(next!=null)for(int j=0;j<next.length();j++){JSONObject b=next.optJSONObject(j);if(b!=null&&b.optInt("id")==ball.optInt("id")){x+=(b.optDouble("x")-x)*blend;y+=(b.optDouble("y")-y)*blend;rotation=GamesPoolVisual.blend(rotation,GamesPoolVisual.q(b),blend);break;}}
       float px=left+(float)x/1000*width,py=top+(float)y/500*height,r=width*.011f;
       int id=ball.optInt("id");
-      circle(c,px+r*.12f,py+r*.2f,r,0x22263451);
-      art(c,"pool/ball-"+id+"-small",new RectF(px-r,py-r,px+r,py+r));
-      if(id>0){p.setTextAlign(Paint.Align.CENTER);p.setTypeface(Typeface.DEFAULT_BOLD);p.setTextSize(r*.76f);p.setStyle(Paint.Style.FILL);p.setColor(0xff263451);c.drawText(""+id,px,py-(p.ascent()+p.descent())/2,p);p.setTextAlign(Paint.Align.LEFT);}
-      if(id==0&&myTurn()) {
-        line(c,px,py,px+(float)Math.cos(angle)*width*.27f,py+(float)Math.sin(angle)*width*.27f,1.5f,0x99e9f5df);
-        float pull=charging?gesturePower*width*.04f:0;c.save();c.translate(px,py);c.rotate((float)Math.toDegrees(angle));art(c,"pool/cue",new RectF(-width*.22f-pull,-width*.004f,-width*.025f-pull,width*.004f));c.restore();
-      }
+      c.save();c.translate(left,top);c.scale(width/1000,width/1000);GamesPoolVisual.ball(c,x,y,id,rotation,p);c.restore();
+    }
+    if(myTurn()&&!state.optBoolean("ballInHand")){
+      c.save();c.translate(left,top);c.scale(width/1000,width/1000);GamesPoolVisual.guide(c,p,GamesData.array(state,"balls"),angle,player,GamesData.array(state,"groups"));c.restore();
+      for(int i=0;i<balls.length();i++){JSONObject b=balls.optJSONObject(i);if(b.optInt("id")!=0||b.optBoolean("pocketed"))continue;float px=left+(float)b.optDouble("x")/1000*width,py=top+(float)b.optDouble("y")/500*height;float pull=(charging?gesturePower:shotPower)*width*.10f;c.save();c.translate(px,py);c.rotate((float)Math.toDegrees(angle));art(c,"pool/cue",new RectF(-width*.22f-pull,-width*.004f,-width*.025f-pull,width*.004f));c.restore();}
     }
     if(pending!=null&&"place".equals(pending.optString("type")))ring(c,left+(float)pending.optDouble("x")/1000*width,top+(float)pending.optDouble("y")/500*height,width*.017f,2,0xffe0d0ff);
   }

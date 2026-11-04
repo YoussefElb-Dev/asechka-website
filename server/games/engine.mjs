@@ -4,7 +4,8 @@ import * as hangman from './rules/hangman.mjs';
 import * as connect4 from './rules/connect4.mjs';
 import * as checkers from './rules/checkers.mjs';
 import * as battleship from './rules/battleship.mjs';
-const modules={pool,tictactoe,hangman,connect4,checkers,battleship};
+import * as drawing from './rules/drawing.mjs';
+const modules={pool,tictactoe,hangman,connect4,checkers,battleship,drawing};
 export const games=Object.freeze(Object.keys(modules));
 function rule(game){if(!Object.hasOwn(modules,game))throw new Error('Unknown game.');return modules[game];}
 export const createGame=(game,settings={})=>rule(game).create(settings);

@@ -1,0 +1,6 @@
+mobile/games-assets/**/*.svg text eol=lf
+mobile/games-assets/manifest.json text eol=lf
+mobile/ios/Resources/default/games/**/*.svg text eol=lf
+mobile/ios/Resources/default/games/manifest.json text eol=lf
+mobile/android/app/src/main/assets/default/games/**/*.svg text eol=lf
+mobile/android/app/src/main/assets/default/games/manifest.json text eol=lf

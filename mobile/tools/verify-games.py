@@ -12,7 +12,7 @@ import re
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-GAMES = {"pool", "tictactoe", "hangman", "connect4", "checkers", "battleship"}
+GAMES = {"pool", "tictactoe", "hangman", "connect4", "checkers", "battleship", "drawing"}
 
 
 def verify(path, kind, badging=None):
@@ -61,7 +61,7 @@ def verify(path, kind, badging=None):
         assert actual == expected, f"Incomplete or stale Games payload: {actual ^ expected}"
         for game in GAMES:
             assert {f"covers/{game}.svg", f"covers/{game}.png"} <= actual
-    print(f"Verified {kind.upper()} Games payload: all six covers, ten sounds, exact manifest/content hashes: {path}")
+    print(f"Verified {kind.upper()} Games payload: all seven covers, ten sounds, exact manifest/content hashes: {path}")
     if kind == "ipa":
         print("Payload integrity only; this does not establish Apple provisioning or device installability.")
 

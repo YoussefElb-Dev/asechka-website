@@ -8,8 +8,8 @@ import { createHash } from 'node:crypto';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const master = 'mobile/games-assets';
 const bundles = ['mobile/ios/Resources/default/games', 'mobile/android/app/src/main/assets/default/games'];
-export const games = ['pool', 'tictactoe', 'hangman', 'connect4', 'checkers', 'battleship'];
-const titles = ['8-Ball Pool', 'Tic-Tac-Toe', 'Hangman', 'Connect Four', 'Checkers', 'Battleship'];
+export const games = ['pool', 'tictactoe', 'hangman', 'connect4', 'checkers', 'battleship', 'drawing'];
+const titles = ['8-Ball Pool', 'Tic-Tac-Toe', 'Hangman', 'Connect Four', 'Checkers', 'Battleship', 'Draw & Guess'];
 const palettes = { ink: '#263451', rose: '#cd8ca7', teal: '#76b4ab', lilac: '#a292cf', pearl: '#fffdf8', gold: '#c5a576' };
 const gradients = { background: ['#f3effa', '#e8eff9'], rose: ['#f5d4e0', '#c781a1'], teal: ['#c1e5dc', '#6aa49e'], lilac: ['#dcd3ee', '#9683c4'], pearl: ['#ffffff', '#d1dce6'], wood: ['#dfd0c6', '#ad929d'], felt: ['#6b9d97', '#3b6e71'], ocean: ['#d5e8f0', '#a5c8d8'] };
 const round = n => Math.round(n * 1000) / 1000;
@@ -41,7 +41,12 @@ function scene(id) {
   for (let r=260;r>=80;r-=30) circle(730,135,r,'#bba7d8',.016);
   for (let r=240;r>=60;r-=30) circle(150,530,r,'#b2d8d5',.022);
   for (const [x,y,r] of [[82,92,3],[857,540,3],[798,72,2],[112,501,2]]) circle(x,y,r,'#8e81b4',.3);
-  if (id === 'pool') {
+  if (id === 'drawing') {
+    shadow(480,500,290,45);rect(190,90,580,455,30,'lilac');rect(200,77,560,445,24,'#fffdf8');
+    for(let i=0;i<5;i++)line(235,150+i*65,720,150+i*65,2,'#e5ddec');
+    line(300,360,400,220,18,'rose');line(400,220,510,365,18,'rose');line(510,365,650,230,18,'teal');circle(570,170,34,'gold');
+    line(165,545,580,150,25,'lilac');line(565,165,605,125,25,'wood');polygon([[605,125],[625,105],[615,135]],'#263451');
+  } else if (id === 'pool') {
     shadow(486,460,346,90); rect(115,102,730,425,72,'wood'); rect(132,116,696,397,59,'#c2b3c4'); rect(151,134,658,361,45,'felt');
     for (const [x,y] of [[160,147],[480,143],[800,147],[160,482],[480,487],[800,482]]) { circle(x,y,22,'#101828'); circle(x,y-3,15,'#060c17'); }
     for (let i=0;i<25;i++) line(190,164+i*12,774,164+i*12,.7,'#d7fff1',.028);
@@ -178,6 +183,7 @@ export async function buildAssets(check=false) {
     add(asset.path,data,{...asset,source:asset.source,attribution:'Original built-in imagegen artwork / project vector boards; approved Soft Orbit style.'});
     Object.assign(entries.at(-1),{source:asset.source,attribution:'Original built-in imagegen artwork / project vector boards; approved Soft Orbit style.'});
   }
+  add('gameplay/drawing/board.png',raster(scene('drawing')),{game:'drawing',kind:'board',width:960,height:640,format:'png',destination:'Drawing game paper artwork'});
   const manifest={schema:1,collection:'Soft Orbit Games',license:'Original assets created for this project. No external attribution required.',generator:'node mobile/tools/games-assets.mjs',games,bundleRoots:bundles,assets:entries};
   outputs.set('manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
   let size=0;

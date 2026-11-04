@@ -44,7 +44,7 @@ extension GamesJSON: ExpressibleByStringLiteral, ExpressibleByIntegerLiteral, Ex
 }
 
 enum GamesKind: String, CaseIterable, Identifiable, Codable {
-    case pool, tictactoe, hangman, connect4, checkers, battleship
+    case pool, tictactoe, hangman, connect4, checkers, battleship, drawing
     var id: String { rawValue }
     var title: String {
         switch self {
@@ -53,6 +53,7 @@ enum GamesKind: String, CaseIterable, Identifiable, Codable {
         case .hangman: return "Between the Letters"
         case .connect4: return "Four in Orbit"
         case .checkers: return "Crown & Capture"
+        case .drawing: return "Scribble Together"
         case .battleship: return "Midnight Fleet"
         }
     }
@@ -63,6 +64,7 @@ enum GamesKind: String, CaseIterable, Identifiable, Codable {
         case .hangman: return "A secret word, just between us."
         case .connect4: return "Find a line in our little universe."
         case .checkers: return "Small steps. Beautiful strategy."
+        case .drawing: return "A little doodle. A very good guess."
         case .battleship: return "Two captains under the same stars."
         }
     }
@@ -73,6 +75,7 @@ enum GamesKind: String, CaseIterable, Identifiable, Codable {
         case .hangman: return "textformat.abc"
         case .connect4: return "circle.grid.3x3.fill"
         case .checkers: return "crown.fill"
+        case .drawing: return "paintbrush.pointed.fill"
         case .battleship: return "sailboat.fill"
         }
     }
@@ -83,13 +86,14 @@ enum GamesKind: String, CaseIterable, Identifiable, Codable {
         case .hangman: return "Hangman"
         case .connect4: return "Connect four"
         case .checkers: return "American checkers"
+        case .drawing: return "Draw & guess"
         case .battleship: return "Battleship"
         }
     }
     var rules: String {
         switch self {
         case .pool:
-            return "Aim by dragging on the table or use the angle control, then set power. Angles run clockwise from right. Only the eight requires a called pocket: the numbered pockets run clockwise, 1 top-left, 2 top-middle, 3 top-right, 4 bottom-right, 5 bottom-middle, 6 bottom-left (sent as indices 0–5).\n\nOn the break, pocket a ball or drive four object balls to cushions. Groups stay open after the break; an eight on the break is spotted. The first legal numbered ball potted after the break assigns solids and stripes. A legal pot of your group keeps the turn.\n\nContact your own group first (any numbered ball except the eight on an open table); a pocket or cushion contact must follow. Missing, wrong contact, scratching or an illegal break gives the opponent full-table ball in hand. Tap a clear spot or use X/Y controls and confirm placement.\n\nClear your group before shooting the eight: eligibility is checked before the shot. Potting your last group ball and the eight together loses. The eight must enter the called pocket without a foul. There is no spin, jump, rerack or kitchen option. The server resolves the shot; native sampled playback runs until the table is available."
+            return "Aim by dragging on the table or use the angle control, then set power. Angles run clockwise from right. Only the eight requires a called pocket: the numbered pockets run clockwise, 1 top-left, 2 top-middle, 3 top-right, 4 bottom-right, 5 bottom-middle, 6 bottom-left (sent as indices 0–5).\n\nOn the break, pocket a ball or drive four object balls to cushions. Groups stay open after the break; an eight on the break is spotted. The first legal numbered ball potted after the break assigns solids and stripes. A legal pot of your group keeps the turn.\n\nContact your own group first (any numbered ball except the eight on an open table); a pocket or cushion contact must follow. Missing, wrong contact, scratching or an illegal break gives the opponent full-table ball in hand. Tap a clear spot or use X/Y controls and confirm placement.\n\nClear your group before shooting the eight: eligibility is checked before the shot. Potting your last group ball and the eight together loses. The eight must enter the called pocket without a foul. Cue-ball tip position adds follow, draw and side spin. There is no jump, rerack or kitchen option. The server resolves the shot; native sampled playback runs until the table is available."
         case .tictactoe:
             return "Take turns placing a spark on an empty square. Complete a row, column or diagonal of three to win. A full board without a line is a draw. Choose a single round, best of three or best of five before creating the room. Rematch continues the series."
         case .hangman:
@@ -98,6 +102,8 @@ enum GamesKind: String, CaseIterable, Identifiable, Codable {
             return "Choose a column to drop your disc into its lowest empty space. Connect four horizontally, vertically or diagonally. A full board without a line is a draw."
         case .checkers:
             return "American checkers on the dark squares. Select a piece, then a highlighted destination. Captures are mandatory; continue with the same piece when another jump is available. Ordinary pieces move and capture forward, kings in both directions. Promotion ends the turn. Win when your opponent has no pieces or legal moves. Threefold repetition or 80 quiet half-moves is a draw."
+        case .drawing:
+            return "Take turns choosing a secret word and drawing it. Your partner guesses against the clock. Fast guesses earn more points, and the artist earns points too. Letter hints appear as time passes. Use the pen, eraser, bucket fill, brush sizes, undo and clear. Each round gives both of you a turn to draw. Most points wins. Custom words, rounds and drawing time can be chosen before creating the room."
         case .battleship:
             return "Place ships of lengths 5, 4, 3, 3 and 2 on your private 10×10 chart. Select a ship, rotate it, then tap its starting cell; ships must stay in bounds and cannot overlap. Confirm the entire fleet to lock it in. Once both fleets are ready, take turns firing on the opponent’s chart. Red marks hits, small dots mark misses. Sink all five ships to win. Your opponent’s unsunk fleet stays private."
         }
@@ -225,6 +231,7 @@ enum GamesFleet {
 }
 
 struct GamesBall: Equatable, Identifiable {
+    var q: [Double] = [1,0,0,0]
     var id: Int
     var x: Double
     var y: Double
@@ -232,6 +239,7 @@ struct GamesBall: Equatable, Identifiable {
     init?(_ value: GamesJSON) {
         guard let id = value["id"].int, let x = value["x"].double, let y = value["y"].double, x.isFinite, y.isFinite else { return nil }
         self.id = id; self.x = x; self.y = y; pocketed = value["pocketed"].bool
+        let rotation=value["q"].array.compactMap(\.double);if rotation.count==4 {q=rotation}
     }
 }
 struct GamesPoolFrame: Equatable {
@@ -262,6 +270,7 @@ struct GamesPoolFrame: Equatable {
         return a.balls.map { ball in
             guard let next = b.balls.first(where: { $0.id == ball.id }), !ball.pocketed else { return ball }
             var result = ball; result.x += (next.x - ball.x) * fraction; result.y += (next.y - ball.y) * fraction
+            result.q = GamesPoolVisual.blend(ball.q,next.q,fraction)
             result.pocketed = next.pocketed && fraction >= 1
             return result
         }

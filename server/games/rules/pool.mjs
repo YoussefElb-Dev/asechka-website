@@ -7,7 +7,7 @@
  * callBall action); on an open table the first legally potted numbered ball
  * determines groups. A break leaves groups open. An eight on the break is
  * automatically spotted; an illegal break gives full-table ball in hand.
- * There are no rerack/kitchen options, spin, jumps, pocket jaws or cloth nap.
+ * Tip offsets provide follow/draw and side spin. No jumps or masse shots.
  */
 export const TABLE = Object.freeze({ width: 1000, height: 500, radius: 11 });
 export const POCKETS = Object.freeze([
@@ -21,12 +21,13 @@ const STEP = 1 / 480;
 const SAMPLE_STEPS = 16; // 30 Hz, timestamps in seconds.
 const MAX_STEPS = 24 * 480;
 const MAX_SPEED = 1800;
-const FRICTION = 100;
+const ROLLING_FRICTION = 70;
+const SLIDING_FRICTION = 600;
 const BALL_RESTITUTION = 0.98;
 const CUSHION_RESTITUTION = 0.82;
 const EPS = 1e-8;
 const clone = value => JSON.parse(JSON.stringify(value));
-const rounded = value => Math.round(value * 1e6) / 1e6;
+const rounded = value => Math.round(value * 1e6) / 1e6 || 0;
 const groupOf = id => id >= 1 && id <= 7 ? 'solids' : id >= 9 && id <= 15 ? 'stripes' : null;
 
 function checkPlayer(player) {
@@ -42,6 +43,10 @@ function checkShot(shot) {
     && (!Number.isInteger(shot.callPocket) || shot.callPocket < 0 || shot.callPocket > 5)) {
     throw new Error('Called pocket must be an integer from 0 to 5');
   }
+  for (const key of ['spinX', 'spinY']) {
+    if (shot[key] !== undefined && (!Number.isFinite(shot[key]) || Math.abs(shot[key]) > 1)) throw new Error('Spin must be from -1 to 1');
+  }
+  if (Math.hypot(shot.spinX || 0, shot.spinY || 0) > 1.001) throw new Error('Keep the cue tip inside the cue ball');
 }
 
 function pocketAt(x, y) {
@@ -49,7 +54,35 @@ function pocketAt(x, y) {
 }
 
 function positions(balls) {
-  return balls.map(({ id, x, y, pocketed }) => ({ id, x: rounded(x), y: rounded(y), pocketed }));
+  return balls.map(({ id, x, y, pocketed, q }) => ({ id, x: rounded(x), y: rounded(y), pocketed, q: q.map(rounded) }));
+}
+
+export const shotSpeed = power => MAX_SPEED * Math.pow(power, 1.35);
+
+function rotate(ball) {
+  const speed = Math.hypot(ball.wx, ball.wy, ball.wz);
+  if (speed < EPS) return;
+  const half = speed * STEP / 2, k = Math.sin(half) / speed;
+  const a = Math.cos(half), b = ball.wx * k, c = ball.wy * k, d = ball.wz * k;
+  const [w,x,y,z] = ball.q;
+  const q = [a*w-b*x-c*y-d*z, a*x+b*w+c*z-d*y, a*y-b*z+c*w+d*x, a*z+b*y-c*x+d*w];
+  const length = Math.hypot(...q); ball.q = q.map(v => v / length);
+}
+
+function cloth(ball) {
+  const sx = ball.vx - R * ball.wy, sy = ball.vy + R * ball.wx, slip = Math.hypot(sx, sy);
+  if (slip > 0.001) {
+    // A solid sphere has I=2/5 mR²: slip decays at 7/2 times the friction impulse.
+    const dv = Math.min(SLIDING_FRICTION * STEP, slip / 3.5), fx = sx / slip * dv, fy = sy / slip * dv;
+    ball.vx -= fx; ball.vy -= fy; ball.wx -= 2.5 * fy / R; ball.wy += 2.5 * fx / R;
+  } else {
+    const speed = Math.hypot(ball.vx, ball.vy), remaining = Math.max(0, speed - ROLLING_FRICTION * STEP);
+    if (speed > 0) { ball.vx *= remaining / speed; ball.vy *= remaining / speed; }
+    ball.wx = -ball.vy / R; ball.wy = ball.vx / R;
+  }
+  ball.wz = Math.sign(ball.wz) * Math.max(0, Math.abs(ball.wz) - 8 * STEP);
+  if (Math.hypot(ball.vx, ball.vy) < 0.06 && Math.hypot(ball.wx, ball.wy) < 0.006) ball.vx = ball.vy = ball.wx = ball.wy = 0;
+  rotate(ball);
 }
 
 /**
@@ -72,7 +105,8 @@ export function simulate(ballsOrState, shot) {
       throw new Error('Invalid ball id, position or pocketed flag');
     }
     ids.add(ball.id);
-    return { id: ball.id, x: ball.x, y: ball.y, pocketed: ball.pocketed, vx: 0, vy: 0 };
+    const q = Array.isArray(ball.q) && ball.q.length === 4 && ball.q.every(Number.isFinite) && Math.hypot(...ball.q) > .5 ? ball.q : [1,0,0,0];
+    return { id: ball.id, x: ball.x, y: ball.y, pocketed: ball.pocketed, q: [...q], vx: 0, vy: 0, wx: 0, wy: 0, wz: 0 };
   }).sort((a, b) => a.id - b.id);
   const cue = balls.find(ball => ball.id === 0);
   if (!cue || cue.pocketed) throw new Error('Place the cue ball before shooting');
@@ -83,8 +117,11 @@ export function simulate(ballsOrState, shot) {
     ...(ball.y <= R + EPS ? ['top'] : []),
     ...(ball.y >= TABLE.height - R - EPS ? ['bottom'] : []),
   ])]));
-  cue.vx = Math.cos(shot.angle) * shot.power * MAX_SPEED;
-  cue.vy = Math.sin(shot.angle) * shot.power * MAX_SPEED;
+  const speed = shotSpeed(shot.power), follow = (shot.spinY || 0) * 1.8;
+  cue.vx = Math.cos(shot.angle) * speed;
+  cue.vy = Math.sin(shot.angle) * speed;
+  cue.wx = -cue.vy / R * follow; cue.wy = cue.vx / R * follow;
+  cue.wz = -(shot.spinX || 0) * speed / R * 1.5;
   const frames = [{ t: 0, balls: positions(balls) }];
   const rails = [];
   const pockets = [];
@@ -100,6 +137,7 @@ export function simulate(ballsOrState, shot) {
     if (pocket < 0) return false;
     ball.pocketed = true;
     ball.vx = ball.vy = 0;
+    ball.wx = ball.wy = ball.wz = 0;
     // Keep centers on the cloth even for pocketed balls, for consistent views.
     ball.x = Math.min(TABLE.width - R, Math.max(R, ball.x));
     ball.y = Math.min(TABLE.height - R, Math.max(R, ball.y));
@@ -118,19 +156,25 @@ export function simulate(ballsOrState, shot) {
         ball[axis] = low;
         if (ball[velocity] < 0) {
           ball[velocity] *= -CUSHION_RESTITUTION;
+          const tangent = axis === 'x' ? 'vy' : 'vx';
+          ball[tangent] += ball.wz * R * .12 * (axis === 'x' ? -1 : 1); ball.wz *= .65;
+          ball.wx = -ball.vy / R * .7; ball.wy = ball.vx / R * .7;
           rails.push({ id: ball.id, rail: lowRail, t, order: eventOrder++, counts: !frozen.get(ball.id).has(lowRail) });
         }
       } else if (ball[axis] > high) {
         ball[axis] = high;
         if (ball[velocity] > 0) {
           ball[velocity] *= -CUSHION_RESTITUTION;
+          const tangent = axis === 'x' ? 'vy' : 'vx';
+          ball[tangent] -= ball.wz * R * .12 * (axis === 'x' ? -1 : 1); ball.wz *= .65;
+          ball.wx = -ball.vy / R * .7; ball.wy = ball.vx / R * .7;
           rails.push({ id: ball.id, rail: highRail, t, order: eventOrder++, counts: !frozen.get(ball.id).has(highRail) });
         }
       }
     }
   }
 
-  while (balls.some(ball => !ball.pocketed && (ball.vx !== 0 || ball.vy !== 0))) {
+  while (balls.some(ball => !ball.pocketed && (ball.vx !== 0 || ball.vy !== 0 || ball.wx !== 0 || ball.wy !== 0))) {
     if (steps >= MAX_STEPS) throw new Error('Pool simulation did not settle');
     steps++;
     const t = rounded(steps * STEP);
@@ -185,13 +229,7 @@ export function simulate(ballsOrState, shot) {
         if (!ball.pocketed && !capture(ball, t)) cushion(ball, t);
       }
     }
-    for (const ball of balls) {
-      const speed = Math.hypot(ball.vx, ball.vy);
-      if (speed === 0) continue;
-      const remaining = Math.max(0, speed - FRICTION * STEP);
-      ball.vx *= remaining / speed;
-      ball.vy *= remaining / speed;
-    }
+    for (const ball of balls) if (!ball.pocketed) cloth(ball);
     if (steps % SAMPLE_STEPS === 0) frames.push({ t, balls: positions(balls) });
   }
   const duration = rounded(steps * STEP);
@@ -203,12 +241,12 @@ export function simulate(ballsOrState, shot) {
 }
 
 export function create(settings = {}) {
-  const balls = [{ id: 0, x: 250, y: 250, pocketed: false }];
+  const balls = [{ id: 0, x: 250, y: 250, pocketed: false, q: [1,0,0,0] }];
   // Eight in the center; opposite groups at the rear corners; no RNG needed.
   const rack = [[1], [9, 2], [3, 8, 10], [11, 4, 12, 5], [6, 13, 7, 14, 15]];
   for (let row = 0; row < rack.length; row++) {
     rack[row].forEach((id, column) => balls.push({
-      id, x: rounded(700 + row * Math.sqrt(3) * 11.05),
+      q: [1,0,0,0], id, x: rounded(700 + row * Math.sqrt(3) * 11.05),
       y: rounded(250 + (column - row / 2) * 22.1), pocketed: false,
     }));
   }

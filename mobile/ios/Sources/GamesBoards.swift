@@ -196,6 +196,7 @@ struct GamesHangmanView: View {
     private var setter: Bool { room.player(universe.actor) == room.state["setter"].int }
     private var guessing: Bool { store.canAct(room) && !setter && room.state["phase"].string == "guess" }
     private var pendingLetter: String { store.pending.first { $0.room == room.id }?.action["letter"].string ?? "" }
+    private var hintPending: Bool { store.pending.contains { $0.room == room.id && $0.action["type"].string == "hint" } }
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 8 : 18) {
             if room.state["phase"].string == "choose" {
@@ -258,7 +259,12 @@ struct GamesHangmanView: View {
                         .accessibilityLabel("Guess \(letter.uppercased())\(guessed ? ", already guessed" : pendingLetter == letter ? ", pending" : "")")
                 }
             }
-            Button { store.move(room, ["type": "hint"]) } label: { Label("One free hint · reveals a letter", systemImage: "lightbulb").gamesAction(false) }
+            Button { store.move(room, ["type": "hint"]) } label: {
+                HStack {
+                    if hintPending { ProgressView().tint(GamesPalette.lilac); Text(!store.connected ? "Waiting for connection…" : room.state["personal"].bool ? "Revealing a letter…" : "Thinking of a hint…") }
+                    else { Label("One free hint · reveals a letter", systemImage: "lightbulb") }
+                }.gamesAction(false)
+            }
                 .disabled(!guessing || room.state["hintUsed"].bool)
         }
     }

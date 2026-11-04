@@ -11,6 +11,9 @@ struct GamesPoolView: View {
     @State private var angle = 0.0
     @State private var power = 0.65
     @State private var pocket = 0
+    @State private var spinX=0.0
+    @State private var spinY=0.0
+    @State private var spinSheet=false
     @State private var cueX = 250.0
     @State private var cueY = 250.0
     @State private var frames: [GamesPoolFrame] = []
@@ -39,6 +42,7 @@ struct GamesPoolView: View {
                 }
             } else { standardBody }
         }.task(id: "\(room.id)|\(room.seq)|\(reduced)|\(systemReduced)") { await prepareShot() }
+            .sheet(isPresented:$spinSheet){GamesSpinControl(x:$spinX,y:$spinY).presentationDetents([.medium])}
             .sheet(isPresented: $manualControls) {
                 NavigationStack { ScrollView { VStack(spacing: 12) { groups; if inHand { placementControls } else { shotControls }; pocketedSummary }.padding(18) }.navigationTitle("Shot controls").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { manualControls = false } } } }
             }
@@ -71,6 +75,7 @@ struct GamesPoolView: View {
                 Text("Power · \(Int(power * 100))%").font(.caption.bold())
                 Slider(value: $power, in: 0...1, step: 0.01).accessibilityLabel("Shot power").disabled(!canControl)
                 Picker("Call eight pocket", selection: $pocket) { ForEach(0..<6, id: \.self) { Text(pocketNames[$0]).tag($0) } }.pickerStyle(.menu).disabled(!canControl)
+                Button("Cue-ball spin"){spinSheet=true}.frame(minHeight:44)
                 Button { takeShot() } label: { Text("Shoot").gamesAction() }.disabled(!canControl)
             }
             Button("Fine controls") { manualControls = true }.font(.caption).frame(minHeight: 44)
@@ -90,7 +95,7 @@ struct GamesPoolView: View {
         GeometryReader { geometry in
             TimelineView(.animation(minimumInterval: 1.0 / 60, paused: !playing)) { timeline in
                 let visible = playing ? GamesPoolFrame.sample(frames, at: room.poolElapsed(at: timeline.date)) : balls
-                GamesPoolCanvas(balls: visible, angle: angle * .pi / 180, aiming: canControl && !inHand, placement: inHand && canControl ? CGPoint(x: cueX, y: cueY) : nil, pocket: pocket)
+                GamesPoolCanvas(balls: visible, angle: angle * .pi / 180, aiming: canControl && !inHand, placement: inHand && canControl ? CGPoint(x: cueX, y: cueY) : nil, pocket: pocket, pull: power)
             }
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0).onChanged { value in
@@ -144,7 +149,7 @@ struct GamesPoolView: View {
     }
     private func takeShot() {
         guard canControl else { return }
-        store.move(room, ["type": "shot", "angle": .number(angle * .pi / 180), "power": .number(power), "callPocket": .int(pocket)])
+        store.move(room, ["type": "shot", "angle": .number(angle * .pi / 180), "power": .number(power), "spinX": .number(spinX), "spinY": .number(spinY), "callPocket": .int(pocket)])
     }
     private var pocketedSummary: some View {
         let ids = room.state["lastShot"]["pocketed"].array.compactMap(\.int)
@@ -176,6 +181,7 @@ struct GamesPoolCanvas: View {
     var aiming: Bool
     var placement: CGPoint?
     var pocket: Int
+    var pull: Double = 0
     private static let pockets: [CGPoint] = [CGPoint(x: 0, y: 0), CGPoint(x: 500, y: 0), CGPoint(x: 1000, y: 0), CGPoint(x: 1000, y: 500), CGPoint(x: 500, y: 500), CGPoint(x: 0, y: 500)]
     static func tablePoint(_ point: CGPoint, size: CGSize) -> (x: Double, y: Double) {
         let scale = max(0.001, min(size.width / 1080, size.height / 580))
@@ -195,14 +201,13 @@ struct GamesPoolCanvas: View {
                 if index == pocket { c.stroke(Path(ellipseIn: CGRect(x: point.x - 30, y: point.y - 30, width: 60, height: 60)), with: .color(Color(red: 1, green: 0.78, blue: 0.86)), lineWidth: 3) }
             }
             if aiming, let cue = balls.first(where: { $0.id == 0 && !$0.pocketed }) {
-                var aim = Path(); aim.move(to: CGPoint(x: cue.x, y: cue.y)); aim.addLine(to: CGPoint(x: cue.x + cos(angle) * 220, y: cue.y + sin(angle) * 220))
-                c.stroke(aim, with: .color(.white.opacity(0.5)), style: StrokeStyle(lineWidth: 2, dash: [9, 7]))
+                GamesPoolVisual.guide(balls,angle:angle,in:c)
                 var stick = c; stick.translateBy(x: cue.x, y: cue.y); stick.rotate(by: .radians(angle))
-                stick.draw(Image(uiImage: GamesAssets.image("pool/cue")), in: CGRect(x: -220, y: -4, width: 195, height: 8))
+                stick.draw(Image(uiImage: GamesAssets.image("pool/cue")), in: CGRect(x: -220-pull*100, y: -4, width: 195, height: 8))
             }
             for ball in balls where !ball.pocketed {
                 if placement != nil && ball.id == 0 { continue }
-                drawBall(ball, in: c)
+                GamesPoolVisual.ball(ball,c)
             }
             if let placement {
                 c.fill(Path(ellipseIn: CGRect(x: placement.x - 11, y: placement.y - 11, width: 22, height: 22)), with: .color(.white.opacity(0.5)))

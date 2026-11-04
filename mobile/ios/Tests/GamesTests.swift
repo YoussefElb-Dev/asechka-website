@@ -2,6 +2,27 @@ import XCTest
 @testable import Asechka
 
 final class GamesTests: XCTestCase {
+    func testSeventhGameAndPredictiveContact() throws {
+        XCTAssertEqual(GamesKind.allCases.count,7)
+        XCTAssertEqual(GamesKind.drawing.title,"Scribble Together")
+        let state = try JSONDecoder().decode(GamesJSON.self,from:Data(#"[{"id":0,"x":200,"y":200,"pocketed":false},{"id":1,"x":300,"y":200,"pocketed":false},{"id":2,"x":400,"y":200,"pocketed":false}]"#.utf8))
+        let balls=state.array.compactMap(GamesBall.init),hit=GamesPoolVisual.hit(balls,200,200,1,0,0,2000)
+        XCTAssertEqual(hit.id,1);XCTAssertEqual(hit.x,278,accuracy:0.001);XCTAssertEqual(hit.nx,1,accuracy:0.001)
+        let rail=GamesPoolVisual.hit([],200,200,0,-1,0,2000)
+        XCTAssertEqual(rail.y,11,accuracy:0.001);XCTAssertEqual(rail.ny,1)
+        let q=GamesPoolVisual.blend([1,0,0,0],[-1,0,0,0],0.5)
+        XCTAssertEqual(q,[1,0,0,0])
+    }
+    func testBucketFillRespectsAnEnclosedBoundary() throws {
+        let data=Data(#"[{"tool":"pen","color":"#263451","width":0.015,"points":[[0.2,0.2],[0.8,0.2],[0.8,0.8],[0.2,0.8],[0.2,0.2]]},{"tool":"fill","color":"#cd8ca7","width":0.01,"points":[[0.5,0.5]]}]"#.utf8)
+        let strokes=try JSONDecoder().decode([GamesJSON].self,from:data)
+        let image=GamesDrawingBitmap.render(strokes)
+        XCTAssertEqual(image.size.width,640);XCTAssertEqual(image.size.height,480)
+        let cg=try XCTUnwrap(image.cgImage),provider=try XCTUnwrap(cg.dataProvider),bytes=try XCTUnwrap(provider.data)
+        let p=CFDataGetBytePtr(bytes)!,stride=cg.bytesPerRow
+        let middle=240*stride+320*4,outer=20*stride+20*4
+        XCTAssertNotEqual(Array(UnsafeBufferPointer(start:p+middle,count:3)),Array(UnsafeBufferPointer(start:p+outer,count:3)))
+    }
     private func room(_ state: String = "null", status: String = "lobby", extra: String = "") throws -> GamesRoom {
         let source = """
         {"id":"room-1","code":"ABC123","game":"tictactoe","settings":{"bestOf":3,"theme":"violet"},"players":[{"actor":"asnat","ready":true,"online":true},{"actor":"youssef","ready":true,"online":false}],"status":"\(status)","seq":7,"state":\(state),"scores":[0,0],"result":null,"updatedAt":100000\(extra)}
