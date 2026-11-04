@@ -353,6 +353,7 @@ final class Ui {
     v.setSingleLine(!multiline);
     v.setInputType(
         android.text.InputType.TYPE_CLASS_TEXT
+            | android.text.InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
             | (multiline
                 ? android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
                     | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES

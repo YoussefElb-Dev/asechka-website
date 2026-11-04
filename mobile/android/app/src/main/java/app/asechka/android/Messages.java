@@ -269,6 +269,7 @@ final class Messages {
     TextView note = ui.text("3 per day · full text disappears after closing", 12, Ui.MUTED);
     ui.add(box, note, 10);
     EditText text = new EditText(activity);
+    text.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | android.text.InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
     text.setHint("Something only you could say…");
     text.setMinLines(4);
     text.setMaxLines(8);

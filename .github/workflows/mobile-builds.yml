@@ -49,6 +49,8 @@ jobs:
       - name: Verify six modules, original assets, native catalogs and versions
         run: node mobile/tools/verify-games.mjs
   android:
+    permissions:
+      contents: write
     needs: backend
     if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
     timeout-minutes: 15
@@ -126,6 +128,20 @@ jobs:
             mobile/android/build.log
             mobile/android/app/build/reports
           retention-days: 3
+      - name: Publish verified release to the in-app update feed
+        if: ${{ steps.signing.outputs.variant == 'release' && github.ref == 'refs/heads/main' }}
+        env:
+          ANDROID_RELEASE_NOTES: 'A new Asechka release is ready. Install it here to receive the latest improvements.'
+        run: |
+          node mobile/tools/publish-android-update.mjs output/Asechka-Android.apk
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dist/updates
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish verified Android in-app update [skip ci]'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
       - name: Remove temporary signing material
         if: always()
         run: rm -f "$RUNNER_TEMP/asechka-release.jks"

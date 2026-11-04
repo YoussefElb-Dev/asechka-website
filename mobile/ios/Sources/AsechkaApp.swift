@@ -41,7 +41,7 @@ struct Avatar:View {
 }
 @main struct AsechkaApp:App {
     @StateObject private var universe=UniverseStore()
-    var body:some Scene {WindowGroup{RootView().environmentObject(universe).tint(Palette.purple).preferredColorScheme(.light).buttonStyle(SoftPress())}}
+    var body:some Scene {WindowGroup{RootView().autocorrectionDisabled(false).environmentObject(universe).tint(Palette.purple).preferredColorScheme(.light).buttonStyle(SoftPress())}}
 }
 struct ComposeRequest:Identifiable {let id=UUID();var photo:Bool;var post:Post?;var collection:PhotoCollection = .memories}
 struct PostSelection:Identifiable {var post:Post;var id:String{post.key}}

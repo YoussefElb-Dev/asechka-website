@@ -218,16 +218,16 @@ struct GamesHangmanView: View {
     }
     private var guessingBoard: some View {
         VStack(alignment: .leading, spacing: compact ? 8 : 16) {
-            HStack { Text(room.state["category"].string.capitalized).font(.headline); Spacer(); Text("\(room.state["remaining"].int ?? 6) chances").font(.subheadline).foregroundColor(GamesPalette.rose) }
+            HStack { Text(room.state["category"].string.capitalized).font(.headline); Spacer(); Text("\(room.state["remaining"].int ?? 6) \((room.state["remaining"].int ?? 6) == 1 ? "chance" : "chances")").font(.subheadline).foregroundColor(GamesPalette.rose) }
             GamesWordProgress(remaining: room.state["remaining"].int ?? 6).aspectRatio(1.5, contentMode: .fit).frame(maxHeight: compact ? 110 : nil).accessibilityHidden(true)
-            ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 4) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 28, maximum: 34), spacing: 4)], alignment: .center, spacing: 5) {
                 let letters = Array(room.state["pattern"].string.uppercased()).map(String.init)
                 ForEach(letters.indices, id: \.self) { index in
-                    Text(letters[index]).font(.system(.headline, design: .monospaced)).minimumScaleFactor(0.6)
-                        .frame(width: letters[index] == " " ? 14 : 34, height: 42)
+                    Text(letters[index]).font(.system(.headline, design: .monospaced)).lineLimit(1).minimumScaleFactor(0.6)
+                        .frame(maxWidth: .infinity).frame(height: 42)
                         .background { if letters[index] != " " { GamesSprite("hangman/key") } }
                 }
-            } }.accessibilityElement(children: .ignore)
+            }.accessibilityElement(children: .ignore)
                 .accessibilityLabel("Word pattern: " + room.state["pattern"].string.replacingOccurrences(of: "_", with: " blank "))
             if let deadline = room.state["deadline"].double, !room.finished {
                 TimelineView(.periodic(from: .now, by: 1)) { context in
@@ -272,7 +272,8 @@ struct GamesWordProgress: View {
                 }.frame(width: geometry.size.width * 0.28).position(x: geometry.size.width * 0.28, y: geometry.size.height * 0.48)
                 GamesSprite("common/heart").frame(width: geometry.size.width * 0.16, height: geometry.size.width * 0.16)
                     .opacity(remaining == 0 ? 0.25 : 1).position(x: geometry.size.width * 0.70, y: geometry.size.height * 0.43)
-                HStack(spacing: 5) { ForEach(0..<6, id: \.self) { index in Circle().fill(index < remaining ? GamesPalette.rose : GamesPalette.rose.opacity(0.15)).frame(width: 8, height: 8) } }
+                HStack(spacing: geometry.size.width * 0.015) { ForEach(0..<6, id: \.self) { index in Circle().fill(index < remaining ? GamesPalette.rose : GamesPalette.rose.opacity(0.15)).frame(width: geometry.size.width * 0.025, height: geometry.size.width * 0.025) } }
+                    .frame(width: geometry.size.width * 0.225, height: geometry.size.width * 0.025)
                     .position(x: geometry.size.width * 0.70, y: geometry.size.height * 0.69)
             }
         }

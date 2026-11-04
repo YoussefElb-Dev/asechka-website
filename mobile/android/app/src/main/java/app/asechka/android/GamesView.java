@@ -257,9 +257,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if(!"choose".equals(phase)){
       add(text(s.optString("category","WORD CHALLENGE").toUpperCase(Locale.US),12,ACCENT,true),12);
       String pattern=s.optString("pattern","");
-      HorizontalScrollView wordStrip=new HorizontalScrollView(activity);wordStrip.setHorizontalScrollBarEnabled(false);LinearLayout tiles=row();
-      for(int i=0;i<pattern.length();i++){String letter=String.valueOf(pattern.charAt(i));TextView tile=text(letter.toUpperCase(Locale.US),20,INK,true);tile.setGravity(Gravity.CENTER);if(!" ".equals(letter))tile.setBackground(new BitmapDrawable(getResources(),GamesTextures.image(activity,"hangman/key")));LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(dp(" ".equals(letter)?14:34),dp(42));tp.setMargins(dp(2),0,dp(2),0);tiles.addView(tile,tp);}
-      tiles.setContentDescription(pattern.replace("_"," blank "));wordStrip.addView(tiles);add(wordStrip,4);
+      add(new WordTiles(activity,pattern),4);
       add(text(s.optInt("remaining",6)+" guesses left"+(s.has("deadline")&&!finished?" · timed round":""),13,MUTED,false),7);
       if(s.has("deadline")&&!finished){TextView countdown=text("",13,0xff9f4b6f,true);add(countdown,6);long deadline=s.optLong("deadline");Runnable tick=new Runnable(){public void run(){if(countdown.getParent()==null)return;long seconds=Math.max(0,(deadline-System.currentTimeMillis()+999)/1000);countdown.setText(seconds+" seconds remaining");if(seconds>0)countdown.postDelayed(this,1000);}};countdown.post(tick);}
       if(!s.isNull("word")&&s.has("word"))add(text((finished?"The word was ":"Your secret: ")+s.optString("word"),16,INK,true),9);

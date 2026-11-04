@@ -150,7 +150,7 @@ final class GamesBoard extends View {
     art(c,"hangman/book",new RectF(0,0,w,h));
     for(int i=0;i<5;i++)line(c,w*.14f,h*(.27f+i*.105f),w*.42f,h*(.27f+i*.105f),Math.max(2,w*.005f),0xffc7b6df);
     art(c,"common/heart",new RectF(w*.62f,h*.30f,w*.78f,h*.30f+w*.16f),remaining==0?65:255);
-    for(int i=0;i<6;i++)circle(c,w*(.64f+i*.025f),h*.69f,w*.009f,i<remaining?0xffcd8ca7:0xffead7e1);
+    for(int i=0;i<6;i++)circle(c,w*(.60f+i*.04f),h*.69f,w*.0125f,i<remaining?0xffcd8ca7:0xffead7e1);
     c.restore();
   }
 

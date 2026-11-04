@@ -23,6 +23,7 @@ import org.json.*;
 /** Entirely native Android UI. There are no HTML screens or JavaScript bridges. */
 public class MainActivity extends Activity implements SocialFeed.Host {
   private Ui u;
+  private AppUpdater updater;
   private ApiClient api;
   private Images images;
   private BookViews book;
@@ -165,6 +166,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   public void onCreate(Bundle state) {
     super.onCreate(state);
     u = new Ui(this);
+    updater = new AppUpdater(this);
     api = new ApiClient(this);
     biometrics = new BiometricDoor(this, api.store);
     images = new Images(api);
@@ -218,6 +220,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   protected void onResume() {
     super.onResume();
     started = true;
+    if (updater != null) { updater.resume(); main.postDelayed(() -> { if (started && appUnlocked) updater.check(false); }, 5000); }
     if(api!=null&&api.canOpen())LiveLocationCard.resumeService(this,api);
     if (root != null) {
       if (!biometrics.enabled()) appUnlocked = true;
@@ -236,6 +239,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   @Override
   protected void onPause() {
+    if (updater != null) updater.pause();
     started = false;
     if (games != null) games.suspend();
     if (messages != null) messages.suspend();
@@ -254,6 +258,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   @Override
   protected void onDestroy() {
+    if (updater != null) updater.close();
     if (games != null) games.close();
     if (messages != null) messages.close();
     accessEpoch++;
@@ -741,6 +746,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void settings(View anchor) {
     Ui.Sheet sheet = u.sheet("Our little settings", "");
+    sheet.item("App updates", "Version " + updater.version() + " · check for a new release", "↻", false, updater::show);
     LinearLayout profile=u.row(14);profile.setPadding(u.dp(16),u.dp(16),u.dp(16),u.dp(16));profile.setBackground(u.shape(Color.WHITE,16));profile.addView(SocialFeed.avatar(this,actor(),50),new LinearLayout.LayoutParams(u.dp(50),u.dp(50)));LinearLayout copy=u.column();copy.addView(u.title(person(),17));u.add(copy,u.text("Our little universe",15,Ui.MUTED),4);profile.addView(copy);sheet.items.addView(profile);
     sheet.section("Feel a little more");sheet.toggle("Haptic feedback",prefs().getBoolean("haptics",true),on->prefs().edit().putBoolean("haptics",on).apply());sheet.toggle("Pause gentle animations",prefs().getBoolean("motion-paused",false),on->{prefs().edit().putBoolean("motion-paused",on).apply();render(true);});
     sheet.section("Our little door");

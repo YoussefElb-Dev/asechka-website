@@ -2,13 +2,14 @@ import { randomBytes, createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { games, createGame, applyAction, publicState, expireGame } from './engine.mjs';
+import { generateHangmanHint } from './ai-hints.mjs';
 
 const actors=['asnat','youssef'];
 const fail=(message,code='INVALID_ACTION')=>{throw Object.assign(new Error(message),{code});};
 const fingerprint=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const defaultData=()=>({version:1,rooms:[],receipts:[]});
 export class GamesService {
-  constructor({directory,now=Date.now}={}) {this.directory=directory;this.now=now;this.data=defaultData();this.queue=Promise.resolve();this.listeners=new Set();this.presence=new Map();this.rates=new Map();}
+  constructor({directory,now=Date.now,hintGenerator=generateHangmanHint}={}) {this.directory=directory;this.now=now;this.hintGenerator=hintGenerator;this.data=defaultData();this.queue=Promise.resolve();this.listeners=new Set();this.presence=new Map();this.rates=new Map();}
   async init(){if(this.directory){await mkdir(this.directory,{recursive:true,mode:0o700});try{this.data=JSON.parse(await readFile(resolve(this.directory,'matches.json'),'utf8'));if(this.data.version!==1||!Array.isArray(this.data.rooms)||!Array.isArray(this.data.receipts))throw new Error('Invalid match store.');}catch(e){if(e.code!=='ENOENT')throw e;}}return this;}
   async persist(next){if(this.directory){const file=resolve(this.directory,'matches.json');await writeFile(file+'.tmp',JSON.stringify(next),{mode:0o600});await rename(file+'.tmp',file);}this.data=next;}
   onEvent(fn){this.listeners.add(fn);return()=>this.listeners.delete(fn);}
@@ -63,7 +64,15 @@ export class GamesService {
           if(room.game==='pool' && (room.availableAt||0)>now)fail('The balls are still moving.','SHOT_IN_PROGRESS');
           if(!Number.isInteger(input.seq)||input.seq!==room.seq)fail('Your board changed. Synchronize and try again.','STALE_STATE');
           if(!input.action||typeof input.action!=='object'||Array.isArray(input.action)||JSON.stringify(input.action).length>8000)fail('Invalid move.');
-          room.state=applyAction(room.game,room.state,player,input.action,{...room.settings,now});
+          let moved=applyAction(room.game,room.state,player,input.action,{...room.settings,now});
+          if(room.game==='hangman' && input.action.type==='hint' && moved.hintUsed && !room.state.hintUsed){
+            const clue=await this.hintGenerator({word:room.state.word,category:room.state.category});
+            // The timer continues while Google responds. Never resurrect an expired round.
+            const expired=expireGame(room.game,room.state,this.now());
+            if(expired.winner!==null)moved=expired;
+            else if(clue)moved.hint=`AI hint · ${clue} ${moved.hint.slice(moved.hint.lastIndexOf('Revealed letter:'))}`;
+          }
+          room.state=moved;
           if(room.game==='pool' && input.action.type==='shot')room.availableAt=now+Math.ceil((room.state.lastShot?.duration||0)*1000);
           this.settle(room);
         }else if(type==='rematch'){
