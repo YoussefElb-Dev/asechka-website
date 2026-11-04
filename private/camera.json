@@ -1,1 +1,13 @@
-{"version":1,"rolls":[]}
+{
+  "version": 1,
+  "rolls": [
+    {
+      "id": "22ee4ff9-1952-404f-8545-67ceb01b6b96",
+      "title": "Roll #1",
+      "actor": "youssef",
+      "createdAt": "2026-11-03T23:38:41.465Z",
+      "developedAt": null,
+      "shots": []
+    }
+  ]
+}
