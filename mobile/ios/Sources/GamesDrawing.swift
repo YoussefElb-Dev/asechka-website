@@ -59,7 +59,7 @@ final class GamesDrawingPadView:UIView {
     private var strokes:[GamesJSON]=[],optimistic:[GamesJSON]=[],draft:[CGPoint]=[];private var image:UIImage?;private var key="";private var lastBatch=Date.distantPast
     override init(frame:CGRect){super.init(frame:frame);backgroundColor = .white;isMultipleTouchEnabled=false;isOpaque=true}
     required init?(coder:NSCoder){fatalError("init(coder:) has not been implemented")}
-    func update(_ values:[GamesJSON],key:String){if key != self.key{self.key=key;optimistic=[];draft=[]};if values != strokes {let added=values.count-strokes.count;if added>0{optimistic=Array(optimistic.dropFirst(min(added,optimistic.count)))}else if added<0{optimistic=[]};strokes=values;image=GamesDrawingBitmap.render(values);setNeedsDisplay()}}
+    func update(_ values:[GamesJSON],key:String){if key != self.key{self.key=key;optimistic=[];draft=[]};if values != strokes {let added=values.count-strokes.count;let appending=values.count>=strokes.count && Array(values.prefix(strokes.count))==strokes;if added>0{optimistic=Array(optimistic.dropFirst(min(added,optimistic.count)))}else if added<0{optimistic=[]};image=appending ? GamesDrawingBitmap.render(Array(values.dropFirst(strokes.count)),startingWith:image) : GamesDrawingBitmap.render(values);strokes=values;setNeedsDisplay()}}
     override func draw(_ rect:CGRect){let c=UIGraphicsGetCurrentContext()!;c.saveGState();c.scaleBy(x:bounds.width/640,y:bounds.height/480);image?.draw(in:CGRect(x:0,y:0,width:640,height:480));for stroke in optimistic{GamesDrawingBitmap.stroke(stroke,in:c)};if !draft.isEmpty{GamesDrawingBitmap.stroke(action(),in:c)};c.restoreGState()}
     private func action()->GamesJSON{.object(["type":"stroke","tool":.string(strokeTool),"color":.string(strokeColor),"width":.number(strokeWidth),"points":.array(draft.map{.array([.number($0.x),.number($0.y)])})])}
     override func touchesBegan(_ touches:Set<UITouch>,with event:UIEvent?){guard canDraw else{return};draft=[];strokeTool=tool;strokeColor=color;strokeWidth=brushWidth;lastBatch=Date();append(touches,ended:false)}
@@ -73,8 +73,8 @@ final class GamesDrawingPadView:UIView {
 
 enum GamesDrawingBitmap {
     static func color(_ hex:String)->UIColor {let v=Int(hex.dropFirst(),radix:16) ?? 0x263451;return UIColor(red:Double((v>>16)&255)/255,green:Double((v>>8)&255)/255,blue:Double(v&255)/255,alpha:1)}
-    static func render(_ strokes:[GamesJSON])->UIImage {
-        var image=UIGraphicsImageRenderer(size:CGSize(width:640,height:480),format:format).image{ctx in UIColor.white.setFill();ctx.fill(CGRect(x:0,y:0,width:640,height:480))}
+    static func render(_ strokes:[GamesJSON],startingWith base:UIImage? = nil)->UIImage {
+        var image=base ?? UIGraphicsImageRenderer(size:CGSize(width:640,height:480),format:format).image{ctx in UIColor.white.setFill();ctx.fill(CGRect(x:0,y:0,width:640,height:480))}
         for value in strokes {if value["tool"].string=="fill"{image=fill(image,at:value["points"][0],hex:value["color"].string)}else{let old=image;image=UIGraphicsImageRenderer(size:CGSize(width:640,height:480),format:format).image{ctx in old.draw(at:.zero);stroke(value,in:ctx.cgContext)}}};return image
     }
     private static var format:UIGraphicsImageRendererFormat {let f=UIGraphicsImageRendererFormat();f.scale=1;f.opaque=true;return f}

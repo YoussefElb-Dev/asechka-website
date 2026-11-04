@@ -2,7 +2,7 @@ import XCTest
 
 final class GamesJourneyTests: XCTestCase {
     func testFocusedGamesKeepPrimaryActionsVisible() {
-        for game in ["tictactoe", "connect4", "checkers", "hangman", "battleship", "pool"] {
+        for game in ["tictactoe", "connect4", "checkers", "hangman", "battleship", "pool", "drawing"] {
             let app = XCUIApplication()
             app.launchArguments = ["--preview-fixture", "--games-preview", "--games-play=\(game)"]
             app.launch()
@@ -35,6 +35,7 @@ final class GamesJourneyTests: XCTestCase {
                 XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "stayed in its last position")).firstMatch.waitForExistence(timeout: 3))
                 XCTAssertTrue(app.buttons["games.battleship.own.15"].label.contains("ship"), "Invalid drop retains the last valid position")
             }
+            if game == "drawing" {XCTAssertTrue(app.buttons["Undo"].exists);XCTAssertTrue(app.staticTexts["rainbow"].exists)}
             if game == "hangman" { XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Guess Z")).firstMatch.isHittable) }
             capture(app, "Games-focused-\(game)")
             app.buttons["games.play.back"].tap()

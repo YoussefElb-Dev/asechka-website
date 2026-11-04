@@ -14,7 +14,7 @@ final class GamesTests: XCTestCase {
         XCTAssertEqual(q,[1,0,0,0])
     }
     func testBucketFillRespectsAnEnclosedBoundary() throws {
-        let data=Data(#"[{"tool":"pen","color":"#263451","width":0.015,"points":[[0.2,0.2],[0.8,0.2],[0.8,0.8],[0.2,0.8],[0.2,0.2]]},{"tool":"fill","color":"#cd8ca7","width":0.01,"points":[[0.5,0.5]]}]"#.utf8)
+        let data=Data(##"[{"tool":"pen","color":"#263451","width":0.015,"points":[[0.2,0.2],[0.8,0.2],[0.8,0.8],[0.2,0.8],[0.2,0.2]]},{"tool":"fill","color":"#cd8ca7","width":0.01,"points":[[0.5,0.5]]}]"##.utf8)
         let strokes=try JSONDecoder().decode([GamesJSON].self,from:data)
         let image=GamesDrawingBitmap.render(strokes)
         XCTAssertEqual(image.size.width,640);XCTAssertEqual(image.size.height,480)

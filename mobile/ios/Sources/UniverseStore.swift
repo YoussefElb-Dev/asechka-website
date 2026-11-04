@@ -125,6 +125,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                let data = try? Data(contentsOf: url),
                let rooms = try? JSONDecoder().decode([GamesRoom].self, from: data),
                var room = rooms.first(where: { $0.game == String(argument.dropFirst(13)) }) {
+                if room.game == "drawing" {var state=room.state.object;state["deadline"] = .number(Date().timeIntervalSince1970*1000+80000);room.state = .object(state)}
                 if room.game == "hangman" {
                     var state = room.state.object
                     state["setter"] = .int(1); state["turn"] = .int(0); state["word"] = .null
