@@ -16,7 +16,7 @@ test('Gemini clue uses the existing server key, structured response, and bounded
   assert.equal(calls[1].options.headers['x-goog-api-key'],'fixture-key');
   assert.equal(JSON.parse(body.contents[0].parts[0].text).answer,'anniversary');
 });
-test('authenticated game command uses AI clue once and keeps the secret out of the guesser view',async()=>{
+for(const personal of [false,true])test(`authenticated hint respects personal=${personal} and keeps the secret out of the guesser view`,async()=>{
   let calls=0;
   const service=await new GamesService({hintGenerator:async input=>{calls++;assert.equal(input.word,'anniversary');return 'A special date that celebrates an important event returning each year.';}}).init();
   const cmd=(type,fields={})=>({type,id:randomUUID(),...fields});
@@ -25,17 +25,18 @@ test('authenticated game command uses AI clue once and keeps the secret out of t
   await service.command('youssef',cmd('join',{code:room().code}));
   for(const actor of ['asnat','youssef'])await service.command(actor,cmd('ready',{room:created.room,ready:true}));
   await service.command('asnat',cmd('start',{room:created.room}));
-  await service.command('asnat',cmd('move',{room:created.room,seq:room().seq,action:{type:'word',word:'anniversary',category:'romance'}}));
+  await service.command('asnat',cmd('move',{room:created.room,seq:room().seq,action:{type:'word',word:'anniversary',category:'romance',personal}}));
   const denied=cmd('move',{room:created.room,seq:room().seq,action:{type:'hint'}});
   await assert.rejects(service.command('asnat',denied));assert.equal(calls,0);
   const hint=cmd('move',{room:created.room,seq:room().seq,action:{type:'hint'}});
   await service.command('youssef',hint);
   const view=service.roomView(room(),'youssef');
-  assert.match(view.state.hint,/^AI hint · A special date/);
+  if(personal)assert.equal(view.state.hint,'Revealed letter: A.');
+  else assert.match(view.state.hint,/^AI hint · A special date/);
   assert.match(view.state.hint,/Revealed letter: A/);
   assert.equal(view.state.remaining,6);assert.equal(view.state.word,undefined);
   assert.equal(view.state.secretHint,undefined);
-  assert.equal((await service.command('youssef',hint)).duplicate,true);assert.equal(calls,1);
+  assert.equal((await service.command('youssef',hint)).duplicate,true);assert.equal(calls,personal?0:1);
 });
 test('answer leaks and provider failures fall back without exposing the secret',async()=>{
   for(const clue of ['The answer is anniversary, a recurring celebration.','You send a letter to someone you care about.']) {

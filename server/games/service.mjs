@@ -65,7 +65,7 @@ export class GamesService {
           if(!Number.isInteger(input.seq)||input.seq!==room.seq)fail('Your board changed. Synchronize and try again.','STALE_STATE');
           if(!input.action||typeof input.action!=='object'||Array.isArray(input.action)||JSON.stringify(input.action).length>8000)fail('Invalid move.');
           let moved=applyAction(room.game,room.state,player,input.action,{...room.settings,now});
-          if(room.game==='hangman' && input.action.type==='hint' && moved.hintUsed && !room.state.hintUsed){
+          if(room.game==='hangman' && input.action.type==='hint' && !room.state.personal && moved.hintUsed && !room.state.hintUsed){
             const clue=await this.hintGenerator({word:room.state.word,category:room.state.category});
             // The timer continues while Google responds. Never resurrect an expired round.
             const expired=expireGame(room.game,room.state,this.now());

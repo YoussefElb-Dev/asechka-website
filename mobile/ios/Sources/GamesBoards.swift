@@ -191,6 +191,7 @@ struct GamesHangmanView: View {
     @EnvironmentObject private var universe: UniverseStore
     @State private var word = ""
     @State private var category = "romance"
+    @State private var personal = false
     private let categories = ["romance", "movies", "animals", "science", "geography", "food", "technology", "general"]
     private var setter: Bool { room.player(universe.actor) == room.state["setter"].int }
     private var guessing: Bool { store.canAct(room) && !setter && room.state["phase"].string == "guess" }
@@ -201,7 +202,7 @@ struct GamesHangmanView: View {
                 if setter { choose }
                 else { GamesCover(kind: .hangman).aspectRatio(1.5, contentMode: .fit); Text("A secret is on its way. Your keyboard appears when your person chooses a word.").foregroundColor(GamesPalette.muted) }
             } else { guessingBoard }
-        }.gamesPanel().onChange(of: room.round) { _ in word = "" }
+        }.gamesPanel().onChange(of: room.round) { _ in word = ""; personal = false }
     }
     private var choose: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -210,7 +211,9 @@ struct GamesHangmanView: View {
             SecureField("Your secret English word or phrase", text: $word).textInputAutocapitalization(.never).autocorrectionDisabled()
                 .padding(14).background(.black.opacity(0.2), in: RoundedRectangle(cornerRadius: 12))
                 .accessibilityIdentifier("games.hangman.word")
-            Button { store.move(room, ["type": "word", "word": .string(word), "category": .string(category)]); word = "" } label: { Text("Keep this word between us").gamesAction() }
+            Toggle("Personal reference", isOn: $personal).accessibilityIdentifier("games.hangman.personal")
+            if personal { Text("Only letter hints. AI and descriptive clues are turned off for this word.").font(.caption).foregroundColor(GamesPalette.muted) }
+            Button { store.move(room, ["type": "word", "word": .string(word), "category": .string(category), "personal": .bool(personal)]); word = "" } label: { Text("Keep this word between us").gamesAction() }
                 .disabled(!store.canAct(room) || word.trimmingCharacters(in: .whitespaces).count < 2 || word.count > 64)
             Button { store.move(room, ["type": "category", "category": .string(category)]) } label: { Text("Choose a server word for me").gamesAction(false) }.disabled(!store.canAct(room))
             Text("English letters, spaces, apostrophes and hyphens. Your person only sees the hidden pattern.").font(.caption).foregroundColor(GamesPalette.muted)
@@ -218,7 +221,7 @@ struct GamesHangmanView: View {
     }
     private var guessingBoard: some View {
         VStack(alignment: .leading, spacing: compact ? 8 : 16) {
-            HStack { Text(room.state["category"].string.capitalized).font(.headline); Spacer(); Text("\(room.state["remaining"].int ?? 6) \((room.state["remaining"].int ?? 6) == 1 ? "chance" : "chances")").font(.subheadline).foregroundColor(GamesPalette.rose) }
+            HStack { Text(room.state["personal"].bool ? "Personal reference" : room.state["category"].string.capitalized).font(.headline); Spacer(); Text("\(room.state["remaining"].int ?? 6) \((room.state["remaining"].int ?? 6) == 1 ? "chance" : "chances")").font(.subheadline).foregroundColor(GamesPalette.rose) }
             GamesWordProgress(remaining: room.state["remaining"].int ?? 6).aspectRatio(1.5, contentMode: .fit).frame(maxHeight: compact ? 110 : nil).accessibilityHidden(true)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 28, maximum: 34), spacing: 4)], alignment: .center, spacing: 5) {
                 let letters = Array(room.state["pattern"].string.uppercased()).map(String.init)

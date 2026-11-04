@@ -8,6 +8,19 @@ const choose = (word = 'balloon', settings = {}) => {
 };
 const guess = (state, letter, settings = {}) => apply(state, 1 - state.setter, { type: 'guess', letter }, settings);
 
+test('personal references suppress descriptive hints and retain the free letter reveal',()=>{
+  let state=apply(create(),0,{type:'word',word:'our secret place',category:'romance',personal:true});
+  assert.equal(state.personal,true);assert.equal(state.secretHint,null);
+  assert.equal(view(state,1).word,undefined);assert.equal(view(state,1).personal,true);
+  state=apply(state,1,{type:'hint'});
+  assert.equal(state.hint,'Revealed letter: O.');assert.equal(state.remaining,6);
+  assert.match(state.pattern,/o/);assert.equal(state.hintUsed,true);
+  assert.throws(()=>apply(state,1,{type:'hint'}),/already/);
+  const normal=apply(create(),0,{type:'category',category:'romance',personal:true},{seed:0});
+  assert.equal(normal.personal,false);
+  assert.throws(()=>apply(create(),0,{type:'word',word:'anniversary',personal:'true'}),/on or off/);
+});
+
 test('hangman creates JSON choose-phase state with configurable setter and validated settings', () => {
   const state = create();
   assert.equal(state.phase, 'choose');

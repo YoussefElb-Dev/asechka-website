@@ -252,10 +252,11 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
       String[] categories={"romance","movies","animals","science","geography","food","technology","general"};Spinner category=spinner(categories);category.setContentDescription("Secret word category");add(category,14);
       add(action("Choose a surprise word",true,board.myTurn(),()->move(GamesData.obj("type","category","category",categories[category.getSelectedItemPosition()]))),8);
       EditText word=input("Or enter your own secret word");word.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);if(Build.VERSION.SDK_INT>=26)word.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);add(word,12);
-      add(action("Send secret word",false,board.myTurn(),()->move(GamesData.obj("type","word","word",word.getText().toString().trim(),"category",categories[category.getSelectedItemPosition()]))),8);return;
+      Switch personal=new Switch(activity);personal.setText("Personal reference · letter hints only");personal.setTextSize(15);personal.setTextColor(INK);personal.setMinHeight(dp(48));personal.setContentDescription("Personal reference. Letter hints only; no AI or descriptive clues.");add(personal,8);
+      add(action("Send secret word",false,board.myTurn(),()->move(GamesData.obj("type","word","word",word.getText().toString().trim(),"category",categories[category.getSelectedItemPosition()],"personal",personal.isChecked()))),8);return;
     }
     if(!"choose".equals(phase)){
-      add(text(s.optString("category","WORD CHALLENGE").toUpperCase(Locale.US),12,ACCENT,true),12);
+      add(text(s.optBoolean("personal")?"PERSONAL REFERENCE":s.optString("category","WORD CHALLENGE").toUpperCase(Locale.US),12,ACCENT,true),12);
       String pattern=s.optString("pattern","");
       add(new WordTiles(activity,pattern),4);
       add(text(s.optInt("remaining",6)+" guesses left"+(s.has("deadline")&&!finished?" · timed round":""),13,MUTED,false),7);

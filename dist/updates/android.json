@@ -1,10 +1,10 @@
 {
   "packageName": "app.asechka.android",
-  "versionCode": 28,
-  "versionName": "2.6.3",
+  "versionCode": 29,
+  "versionName": "2.6.4",
   "minSdk": 23,
-  "url": "https://asechka-website.vercel.app/updates/Asechka-Android-2.6.3.apk",
+  "url": "https://asechka-website.vercel.app/updates/Asechka-Android-2.6.4.apk",
   "bytes": 11963721,
-  "sha256": "5fbed9963110e20afb0f17aa1ffd0a991389b5eeeee773817a55fbb1a66228a6",
-  "notes": "Update inside Asechka; spelling suggestions across writing fields; word tiles fit the screen; centered chance dots; Google AI hints with a built-in fallback."
+  "sha256": "25e5a1c9e89b20c1bffc794317bb296712ac87a5b81b48f1536af25d2590342d",
+  "notes": "Update inside Asechka; fitted word tiles and chance dots; spelling suggestions; Google AI hints; Personal reference mode with letter hints only."
 }

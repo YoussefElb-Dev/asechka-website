@@ -153,6 +153,8 @@ export function apply(state, player, action, settings = {}) {
       throw new Error('The setter must choose a word or category.');
     }
     const category = categoryName(action.category ?? (action.type === 'word' ? 'general' : undefined));
+    if(action.personal!==undefined && typeof action.personal!=='boolean')throw new Error('Personal reference must be on or off.');
+    const personal=action.type==='word' && action.personal===true;
     let word;
     let secretHint;
     if (action.type === 'word') {
@@ -169,7 +171,8 @@ export function apply(state, player, action, settings = {}) {
     const next = structuredClone(state);
     next.category = category;
     next.word = word;
-    next.secretHint = secretHint;
+    next.personal = personal;
+    next.secretHint = personal ? null : secretHint;
     next.pattern = patternFor(word, []);
     next.phase = 'guess';
     next.turn = 1 - state.setter;
@@ -197,7 +200,7 @@ export function apply(state, player, action, settings = {}) {
     // Add it to guesses so keyboard, pattern, repeated-letter, and victory rules
     // are identical for a hinted letter and an ordinary correct guess.
     letter = [...state.word].find(character => /[a-z]/.test(character) && !state.guesses.includes(character));
-    next.hint = `${state.secretHint} Revealed letter: ${letter.toUpperCase()}.`;
+    next.hint = `${state.personal ? '' : state.secretHint + ' '}Revealed letter: ${letter.toUpperCase()}.`;
     next.hintUsed = true;
   }
   next.guesses.push(letter);
@@ -213,6 +216,7 @@ export function view(state, player) {
     language: state.language, category: state.category, pattern: state.pattern,
     guesses: [...state.guesses], remaining: state.remaining, hint: state.hint,
     hintUsed: state.hintUsed,
+    personal: state.personal === true,
   };
   for (const key of ['timedSeconds', 'deadline', 'reason']) {
     if (state[key] !== undefined) result[key] = state[key];
