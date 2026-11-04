@@ -19,8 +19,12 @@ if(packageName!=='app.asechka.android'||!code||!versionName)throw new Error('Inv
 const gradle=await readFile(join(root,'mobile/android/app/build.gradle'),'utf8');
 if(!gradle.includes(`versionCode ${code}`)||!gradle.includes(`versionName '${versionName}'`))throw new Error('APK does not match the source version.');
 const folder=join(root,'dist/updates');await mkdir(folder,{recursive:true});
-try { const old=JSON.parse(await readFile(join(folder,'android.json'),'utf8'));if(old.versionCode>Number(code))throw new Error('Refusing an update downgrade.'); }catch(e){if(e.code!=='ENOENT')throw e;}
 const bytes=await readFile(apk),sha256=createHash('sha256').update(bytes).digest('hex');
+try {
+  const old=JSON.parse(await readFile(join(folder,'android.json'),'utf8'));
+  if(old.versionCode>Number(code))throw new Error('Refusing an update downgrade.');
+  if(old.versionCode===Number(code)&&old.sha256!==sha256)throw new Error('Increase versionCode before publishing a different APK.');
+}catch(e){if(e.code!=='ENOENT')throw e;}
 const name=`Asechka-Android-${versionName}.apk`;
 await copyFile(apk,join(folder,name));
 await writeFile(join(folder,name+'.sha256'),`${sha256}  ${name}\n`);

@@ -60,9 +60,9 @@ public final class UpdaterChecks extends Instrumentation {
         updater.verify(updater.apk(),info);check(true,"Downloaded APK independently verified");
         Thread.sleep(2000);
         android.view.accessibility.AccessibilityNodeInfo screen=getUiAutomation().getRootInActiveWindow();
-        check(screen!=null&&!screen.findAccessibilityNodeInfosByText("Install").isEmpty(),"Android installation confirmation is visible");
         try(FileOutputStream image=new FileOutputStream(new File(context.getExternalFilesDir(null),"installer-preview.png"))){getUiAutomation().takeScreenshot().compress(android.graphics.Bitmap.CompressFormat.PNG,100,image);}
-        for(android.view.accessibility.AccessibilityNodeInfo button:screen.findAccessibilityNodeInfosByText("Install"))if(button.isClickable()&&"Install".contentEquals(button.getText()))button.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK);
+        check(screen!=null&&!screen.findAccessibilityNodeInfosByText("Update").isEmpty(),"Android update confirmation is visible: "+(screen==null?"null":screen.getPackageName()));
+        for(android.view.accessibility.AccessibilityNodeInfo button:screen.findAccessibilityNodeInfosByText("Update"))if(button.isClickable()&&"Update".contentEquals(button.getText()))button.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK);
         Thread.sleep(5000);
       }else runOnMainSync(updater::close);
     }
