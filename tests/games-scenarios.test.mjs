@@ -157,6 +157,8 @@ function assertFilteredState(room, authoritative, player) {
   if (room.game === 'hangman') {
     const allowed = ['phase', 'setter', 'turn', 'winner', 'language', 'category', 'pattern',
       'guesses', 'remaining', 'hint', 'hintUsed', 'timedSeconds', 'deadline', 'reason', 'word'];
+    allowed.push('personal');
+    assert.equal(typeof state.personal, 'boolean', 'Only the mode flag is public, never the personal answer.');
     assert.ok(Object.keys(state).every(key => allowed.includes(key)), 'Unexpected Hangman public field.');
     assert.equal(state.seed, undefined);
     assert.equal(state.secretHint, undefined);
