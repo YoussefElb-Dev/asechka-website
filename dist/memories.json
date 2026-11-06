@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-06T05:29:29.535Z",
+  "updatedAt": "2026-11-06T05:29:39.959Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -538,11 +538,11 @@
     },
     {
       "id": "0bdc1b31-6f4b-4289-b8ae-6d8ca4303269",
-      "date": "2026-11-06",
+      "date": "2026-11-05",
       "createdAt": "2026-11-06T05:28:46.491Z",
       "author": "youssef",
       "text": "True intimacy lives in the quiet cadence of your breathing beside mine in the dark. We do not need grand declarations when a simple touch against my palm tells me everything I have ever searched for has finally arrived.",
-      "revision": "225686b7-0d96-4ede-965d-e8603c98b96e"
+      "revision": "cc86c862-9358-4e56-8f7b-071abe654765"
     }
   ],
   "photos": [
