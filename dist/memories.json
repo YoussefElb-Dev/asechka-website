@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-07T07:12:28.531Z",
+  "updatedAt": "2026-11-08T05:15:15.977Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -567,7 +567,19 @@
       "createdAt": "2026-11-07T07:11:32.897Z",
       "author": "youssef",
       "text": "If every grain of sand on every beach and every drop of water in every ocean represented a piece of my love for you, even the entire world would not be enough to hold it. For the seas have shores and the oceans have depths, but my love for you knows neither limits nor endings.",
-      "revision": "8c2478f2-37c3-4697-ae65-4fdbb8100382"
+      "revision": "8c2478f2-37c3-4697-ae65-4fdbb8100382",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "8798944d-3e6f-43ff-bc7e-7b9fb8b8f299",
+            "hash": "2486314a8c9d1ef755dfef89f803ea0ef018aa8299fbe7bdc3961b72cd770ebb"
+          }
+        ]
+      }
     }
   ],
   "photos": [
