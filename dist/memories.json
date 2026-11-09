@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-09T05:35:02.525Z",
+  "updatedAt": "2026-11-09T05:35:04.327Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -276,13 +276,18 @@
       "note": "Forever and ever يا حياتي",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "5cbcdbd9-9b50-45f5-b9f7-943918b118d5",
             "hash": "016493849163f92bf981cf8c843d1c117ee6d70f35b606b31003a5355c4476ac"
+          },
+          {
+            "id": "cee42d33-c797-47fe-8c0a-634921dce18c",
+            "hash": "cfd0073f7ccec8c69f82cbd61892b603891b866790316115ee12cffcd58e504f"
           }
         ]
       }
