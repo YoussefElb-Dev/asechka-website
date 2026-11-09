@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-09T05:35:09.895Z",
+  "updatedAt": "2026-11-09T05:35:11.668Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -370,13 +370,18 @@
       "note": "I’ll keep every promise, I want you and only you bby",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "07bfa340-7cc8-4951-ac19-ae8b0c66dc63",
             "hash": "16f835063e436053dd25b1aff34bb06df1c050f31b774138ebb9f1bcb61335cc"
+          },
+          {
+            "id": "649b6cdc-9812-4be4-a6d9-60b53882c33d",
+            "hash": "8f7653cd3910626c7f8c364bc32ce8ace72b78534700515e773be8139553cdd1"
           }
         ]
       }
