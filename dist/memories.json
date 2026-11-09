@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-09T02:56:20.666Z",
+  "updatedAt": "2026-11-09T05:34:27.341Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -594,13 +594,18 @@
       "text": "If I could turn every heartbeat into a flower, I would fill the world with gardens bearing your name. And even when the last petal falls and time forgets everything we once were, my love for you would remain, as beautiful and endless as the day my heart first chose yours.",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "56eb65c1-a48a-49f8-9613-89025deb8672",
             "hash": "1c5777201f691f028d1b8afe66faadede424fa361a2913361ef7764e434ede14"
+          },
+          {
+            "id": "5594d5bf-a252-41f7-9157-5fe81d187e22",
+            "hash": "5e1041b01264bae59c8b993ad88cd2f49d4b3ac06f05751fefa22ad37bb6fc23"
           }
         ]
       }
