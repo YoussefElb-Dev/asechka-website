@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-09T05:35:08.076Z",
+  "updatedAt": "2026-11-09T05:35:09.895Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -345,13 +345,18 @@
       "note": "Soooo Forever together bby ❤️",
       "social": {
         "likes": {
-          "asnat": true
+          "asnat": true,
+          "youssef": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "028d967d-303d-46ab-8289-33ba86d5851d",
             "hash": "0c5c91b9e3455bf86e6edf68df1f4d901c86dcc12249511321c9710497b27c5d"
+          },
+          {
+            "id": "9f8b5adf-361c-4ea7-9b46-c597872ebc08",
+            "hash": "c1efed7f6a380983baa837d49b12f93181fa2bda6f91461490f41c2a75b6f7a4"
           }
         ]
       }
