@@ -7,7 +7,19 @@
       "actor": "youssef",
       "createdAt": "2026-11-03T23:38:41.465Z",
       "developedAt": null,
-      "shots": []
+      "shots": [
+        {
+          "id": "93c43ea5-4eb2-46e7-ad55-3f2d036ae3b1",
+          "actor": "asnat",
+          "createdAt": "2026-11-09T05:27:27.265Z",
+          "hash": "b5c32d6bf6bb39d29dcbaa74ed76630cd352b5ebff64b8fada5226f8b939020a",
+          "reactions": {
+            "asnat": "",
+            "youssef": ""
+          },
+          "sealedCaption": "QVNFQ0hLQS1GSUxNLTFQcUV7Hyw8A+J17hlb45Q1/SuLPeWXKIhfeKfl"
+        }
+      ]
     }
   ]
 }
