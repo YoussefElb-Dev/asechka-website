@@ -145,7 +145,8 @@ jobs:
           git add dist/updates
           if ! git diff --cached --quiet; then
             git commit -m 'Publish verified Android in-app update'
-            git pull --rebase origin main
+            git checkout -- mobile/android/gradlew || true
+            git pull --rebase --autostash origin main
             git push origin HEAD:main
           fi
       - name: Remove temporary signing material
