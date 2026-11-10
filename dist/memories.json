@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T20:40:46.035Z",
+  "updatedAt": "2026-11-10T20:40:48.172Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -688,13 +688,18 @@
       "text": "If I could ask time for one kindness, it would be to slow down whenever I'm with you. Because no matter how many years this life gives us, I know I'll always wish for one more sunrise beside you, one more moment in your arms, and one more chance to tell you that loving you has been the most beautiful part of being alive.",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "0dc88c41-b91a-4361-b906-e8646c128247",
             "hash": "ddc417669038a39082f6818fb497a2319bfd87332ae7f57d395e093f9889586e"
+          },
+          {
+            "id": "b7b1850d-b854-4844-b61c-2d5f5e87d956",
+            "hash": "015b75bfd09dabb2302a7f6f98ae651919c250648c52a21c55466c230596e591"
           }
         ]
       }
