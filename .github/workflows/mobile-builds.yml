@@ -1,10 +1,6 @@
 name: Native Android and iPhone apps
-# Builds run on main pushes (excluding automated update-feed commits) and manual dispatch.
+# Builds are manual to avoid spending private-repository minutes on each edit.
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - 'dist/updates/**'
   workflow_dispatch:
     inputs:
       platform:
