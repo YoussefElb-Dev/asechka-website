@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T20:45:51.882Z",
+  "updatedAt": "2026-11-10T20:45:54.262Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1301,7 +1301,19 @@
       "caption": "Matching hoodies (kinda?)",
       "alt": "Matching hoodies (kinda?)",
       "contentHash": "1367764c9925de9916d6d66b81f152107ccb560c375237e0380a4e3a7607dec6",
-      "collection": "memories"
+      "collection": "memories",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "07a15748-abe6-4892-82fe-9232f1f9dd55",
+            "hash": "4a80a27f5e9ad09da180a4fedbc1b34d4ba47e6f0277a8857fce528e44fabe3e"
+          }
+        ]
+      }
     },
     {
       "id": "f7dbd9d9-4dd0-4047-a889-5f034d2cd5ab",
