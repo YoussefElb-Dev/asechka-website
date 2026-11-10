@@ -369,15 +369,7 @@ struct GamesRoomView: View {
         }
     }
     private var finishPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if let winner = room.seriesWinner.int, room.players.indices.contains(winner) {
-                Text("\(Post.name(room.players[winner].actor)) wins the series ♡").font(.headline)
-            }
-            let voted = room.rematchReady.contains(universe.actor)
-            Button { store.rematch(room) } label: { Text(voted ? "Waiting for your person’s vote…" : room.seriesWinner.isNull ? "Ready for the next round" : "Play a new series").gamesAction() }
-                .disabled(!store.connected || store.working || voted || me == nil)
-            if !room.rematchReady.isEmpty { Text(room.rematchReady.map(Post.name).joined(separator: " & ") + " wants to play again.").font(.caption).foregroundColor(GamesPalette.muted) }
-        }.gamesPanel()
+        GamesOutcomeCard(store: store, room: room, compact: false)
     }
     private var reactions: some View {
         VStack(spacing: 8) {
@@ -398,6 +390,159 @@ struct GamesRoomView: View {
         if room.winner.string == "draw" { return "A lovely tie. One more?" }
         if let winner = room.winner.int, room.players.indices.contains(winner) { return "\(Post.name(room.players[winner].actor)) wins this round ♡" }
         return "Round complete"
+    }
+}
+
+struct GamesOutcomeCard: View {
+    @ObservedObject var store: GamesStore
+    var room: GamesRoom
+    var compact = false
+    @EnvironmentObject private var universe: UniverseStore
+    private var me: Int? { room.player(universe.actor) }
+    private var isDraw: Bool { room.winner.string == "draw" }
+    private var iWon: Bool {
+        if let me, let w = room.winner.int { return w == me }
+        if room.kind == .drawing, let me {
+            let myPts = room.state["points"][me].int ?? 0
+            let theirPts = room.state["points"][1 - me].int ?? 0
+            if myPts != theirPts { return myPts > theirPts }
+        }
+        return false
+    }
+    private var accentColor: Color {
+        if isDraw { return GamesPalette.lilac }
+        return iWon ? GamesPalette.mint : GamesPalette.rose
+    }
+    private var badgeText: String {
+        if !room.seriesWinner.isNull, let sw = room.seriesWinner.int, sw == me {
+            return "✦ SERIES CHAMPION · ROUND \(room.round) ✦"
+        }
+        if isDraw { return "✧ A LOVELY TIE · ROUND \(room.round) ✧" }
+        return iWon ? "✦ VICTORY · ROUND \(room.round) ✦" : "♡ CLOSE MATCH · ROUND \(room.round) ♡"
+    }
+    private var personalHeadline: String {
+        if isDraw { return "A lovely tie. One more? ♡" }
+        return iWon ? "You won this round! ♡" : GamesRoomView.resultText(room)
+    }
+    private var personalSubtitle: String {
+        if isDraw { return "Great minds think alike this round." }
+        return iWon ? "Beautifully played, my love." : "Every game with you is my favorite. Ready for a comeback?"
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: compact ? 10 : 14) {
+            HStack {
+                Text(badgeText)
+                    .font(.caption2.bold())
+                    .tracking(1.4)
+                    .foregroundColor(accentColor)
+                Spacer()
+                Text("Round \(room.round) · Best of \(room.settings["bestOf"].int ?? 1)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundColor(GamesPalette.muted)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(personalHeadline)
+                    .font(.system(compact ? .headline : .title3, design: .rounded).bold())
+                    .foregroundColor(GamesPalette.ink)
+                if iWon {
+                    Text(GamesRoomView.resultText(room))
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(accentColor)
+                }
+                Text(personalSubtitle)
+                    .font(.caption)
+                    .foregroundColor(GamesPalette.muted)
+            }
+            if let winner = room.seriesWinner.int, room.players.indices.contains(winner) {
+                Text("\(Post.name(room.players[winner].actor)) wins the series ♡")
+                    .font(.subheadline.bold())
+                    .foregroundColor(GamesPalette.lilac)
+            }
+            HStack(spacing: 10) {
+                ForEach(Array(room.players.enumerated()), id: \.element.actor) { index, player in
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(GamesPalette.player(index).opacity(0.22))
+                            .frame(width: 26, height: 26)
+                            .overlay(Text(String(Post.name(player.actor).prefix(1))).font(.caption.bold()).foregroundColor(GamesPalette.player(index)))
+                        Text(Post.name(player.actor))
+                            .font(.caption.bold())
+                        Spacer(minLength: 2)
+                        Text("\(room.scores.indices.contains(index) ? room.scores[index] : 0)")
+                            .font(.subheadline.monospacedDigit().bold())
+                            .foregroundColor(GamesPalette.player(index))
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(GamesPalette.inset.opacity(0.65), in: RoundedRectangle(cornerRadius: 12))
+                }
+            }
+            Text(summaryText)
+                .font(.caption)
+                .foregroundColor(GamesPalette.muted)
+            let voted = room.rematchReady.contains(universe.actor)
+            Button { store.rematch(room) } label: {
+                Text(voted ? (compact ? "Waiting for your partner" : "Waiting for your person’s vote…") : (compact ? "Play another round" : (room.seriesWinner.isNull ? "Play another round" : "Play a new series"))).gamesAction()
+            }
+            .disabled(!store.connected || store.working || voted || me == nil)
+            .accessibilityIdentifier("games.outcome.rematch")
+            if !room.rematchReady.isEmpty {
+                Text(room.rematchReady.map(Post.name).joined(separator: " & ") + " wants to play again.")
+                    .font(.caption)
+                    .foregroundColor(GamesPalette.mint)
+            }
+            HStack(spacing: 8) {
+                ForEach(["♡", "👏", "🎉", "✨"], id: \.self) { emoji in
+                    Button { store.react(room, emoji: emoji) } label: {
+                        Text(emoji)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 38)
+                            .background(GamesPalette.inset.opacity(0.6), in: RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!store.connected || me == nil)
+                    .accessibilityLabel("Send reaction \(emoji)")
+                }
+            }
+        }
+        .padding(compact ? 14 : 18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(GamesPalette.surface, in: RoundedRectangle(cornerRadius: 22))
+        .overlay(RoundedRectangle(cornerRadius: 22).stroke(accentColor.opacity(0.55), lineWidth: 1.5))
+        .accessibilityElement(children: .contain)
+    }
+    private var summaryText: String {
+        switch room.kind {
+        case .pool:
+            let pocketed = room.state["balls"].array.filter { $0["pocketed"].bool && $0["id"].int != 0 }.count
+            let grp = room.state["groups"][me ?? 0].string
+            return "\(pocketed) balls pocketed · \(grp.isEmpty ? "Open table" : grp.capitalized)"
+        case .tictactoe:
+            let moves = room.state["board"].array.filter { !$0.isNull }.count
+            return "\(moves) moves played · \(isDraw ? "Full board draw" : "Three aligned in orbit")"
+        case .hangman:
+            let word = room.state["word"].string
+            let rem = room.state["remaining"].int ?? 0
+            return (word.isEmpty ? "" : "Secret word: \(word.uppercased()) · ") + "\(rem) / 6 chances left"
+        case .connect4:
+            let discs = room.state["board"].array.filter { !$0.isNull }.count
+            return "\(discs) discs dropped · \(isDraw ? "Full column grid" : "Four connected in orbit")"
+        case .checkers:
+            let moves = room.state["moves"].array.count
+            let kings = room.state["board"].array.filter { $0["king"].bool }.count
+            return "\(moves) moves played · \(kings) crowned \(kings == 1 ? "king" : "kings")"
+        case .battleship:
+            let idx = me ?? 0
+            let shots = room.state["shots"][idx].array.count
+            let hits = room.state["hits"][idx].array.count
+            let acc = shots > 0 ? Int(round(Double(hits) * 100.0 / Double(shots))) : 0
+            return "\(hits)/\(shots) hits (\(acc)% accuracy) · \(room.state["sunkShips"][idx].array.count)/5 ships sunk"
+        case .drawing:
+            let pts = room.players.enumerated().map { "\(Post.name($0.element.actor)): \(room.state["points"][$0.offset].int ?? 0) pts" }.joined(separator: " · ")
+            return pts.isEmpty ? "Sketch & Guess complete" : pts
+        case nil:
+            return "Match complete"
+        }
     }
 }
 

@@ -48,6 +48,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private final Runnable flushHearts = this::flushHeartQueue;
 
   private void flushHeartQueue() {
+    if (api == null || !api.connected() || !api.signedIn()) return;
     socialWrites.execute(
         () -> {
           try {
@@ -142,7 +143,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                       });
                 });
           }
-          main.postDelayed(this, 5000);
+          main.postDelayed(this, 2000);
         }
       };
   private final Runnable clock =
@@ -185,7 +186,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     else showIdentity();
     main.post(clock);
     main.postDelayed(poll, REFRESH_INTERVAL);
-    main.postDelayed(heartPoll, 15000);
+    main.postDelayed(heartPoll, 2000);
     networkCallback =
         new ConnectivityManager.NetworkCallback() {
           @Override
@@ -1033,14 +1034,27 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     if(home)header.addView(row);else{stories.addView(row);header.addView(stories);}
     LinearLayout intro = u.column();
     intro.setPadding(u.dp(22), u.dp(7), u.dp(22), u.dp(16));
-    intro.addView(
+    u.add(
+        intro,
+        u.label(
+            savedPosts
+                ? "SAVED FOR US"
+                : screen == 1
+                    ? (photoSection.equals("photography")
+                        ? "EVERYDAY FRAMES"
+                        : "MOMENTS WORTH KEEPING")
+                    : screen == 5 ? "WORDS WORTH KEEPING" : "OUR LITTLE UNIVERSE"),
+        0);
+    u.add(
+        intro,
         u.title(
             savedPosts
                 ? "Kept close."
                 : screen == 1
                     ? (photoSection.equals("photography") ? "Photography." : "Our camera roll.")
                     : screen == 5 ? "Words to keep." : "Our little us.",
-            28));
+            28),
+        6);
     u.add(
         intro,
         u.text(
@@ -2383,7 +2397,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void music() {
-    heading("", "Our soundtrack.", "Ten little places for the songs that sound like us.");
+    heading("TEN SONGS FOR US", "Our soundtrack.", "Ten little places for the songs that sound like us.");
     Button find=u.button("Find our next favorite",true,this::searchMusic);
     Glyph.leading(find,"search",Color.WHITE,17,8);
     u.add(content,find,20);
@@ -2654,7 +2668,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void days() {
     heading(
-        "",
+        "LITTLE PLANS & WISHES",
         "Our little days.",
         "Places to go. Things to try. A little more us.");
     u.add(
@@ -3485,7 +3499,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void words() {
     heading(
-        "",
+        "BETWEEN OUR LANGUAGES",
         "Our words.",
         "Written by " + person() + ", for " + partner() + ". The language roles are set for you.");
     LinearLayout c = u.card(content, Color.WHITE);

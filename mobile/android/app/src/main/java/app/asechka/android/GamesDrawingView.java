@@ -31,7 +31,17 @@ final class GamesDrawingView extends LinearLayout {
     pad.render();StringBuilder text=new StringBuilder();JSONArray lines=GamesData.array(state,"chat"),players=GamesData.array(room,"players");for(int i=Math.max(0,lines.length()-6);i<lines.length();i++){JSONObject line=lines.optJSONObject(i);int p=line.optInt("player");text.append(p<players.length()?GamesData.name(players.optJSONObject(p).optString("actor")):"Us").append(": ").append(line.optString("text")).append("close".equals(line.optString("kind"))?" · so close!":"").append('\n');}if("reveal".equals(state.optString("phase"))){JSONObject result=state.optJSONObject("lastResult");text.append(result.optBoolean("correct")?"Guessed it! +"+result.optInt("guessPoints")+" / artist +"+result.optInt("drawPoints"):"Time is up. The word was "+state.optString("word")).append("\nNext turn shortly…");}if(!client.error.isEmpty())text.append(client.error);chat.setText(text.toString());flush();
   }
   private void buildControls(){controls.removeAllViews();String phase=state.optString("phase");if("choose".equals(phase)){if(artist()){JSONArray choices=GamesData.array(state,"choices");for(int i=0;i<choices.length();i++){final int index=i;controls.addView(button(choices.optString(i),()->send(GamesData.obj("type","choose","index",index))));}}return;}
-    if("finished".equals(phase)){controls.addView(label(GamesData.result(room,client.actor),18));controls.addView(button("Play again",()->client.command("rematch",GamesData.obj("room",room.optString("id")))));return;}
+    if("finished".equals(phase)){
+      int me=GamesData.player(room,client.actor);
+      Object w=state.opt("winner");boolean draw="draw".equals(w);boolean won=w instanceof Number&&((Number)w).intValue()==me;
+      LinearLayout card=new LinearLayout(getContext());card.setOrientation(VERTICAL);card.setPadding(dp(14),dp(12),dp(14),dp(12));
+      android.graphics.drawable.GradientDrawable bg=ui.shape(Color.WHITE,18);bg.setStroke(dp(2),draw?Ui.PURPLE:won?0xff2e746a:0xff9f4b6f);card.setBackground(bg);
+      TextView badge=label(draw?"✧ A LOVELY TIE ✧":won?"✦ VICTORY · YOU WON! ♡ ✦":"♡ CLOSE MATCH ♡",11);badge.setTextColor(draw?Ui.PURPLE:won?0xff2e746a:0xff9f4b6f);badge.setPadding(0,0,0,dp(2));card.addView(badge);
+      TextView head=label(GamesData.result(room,client.actor),18);head.setPadding(0,0,0,dp(4));card.addView(head);
+      TextView sub=label(draw?"Great minds think alike this round.":won?"Beautifully sketched and guessed, my love.":"Every round with you is my favorite. Ready for a comeback?",12);sub.setTextColor(Ui.MUTED);sub.setPadding(0,0,0,dp(6));card.addView(sub);
+      card.addView(button("Play again",()->client.command("rematch",GamesData.obj("room",room.optString("id")))));
+      controls.addView(card);return;
+    }
     if(!"draw".equals(phase))return;
     if(artist()){
       LinearLayout colors=new LinearLayout(getContext());for(String value:COLORS){Button b=button("●",()->{color=value;tool="pen";});b.setMinimumWidth(0);b.setMinWidth(0);b.setPadding(0,0,0,0);b.setTextColor(Color.parseColor(value));b.setContentDescription("Brush color "+value);colors.addView(b,new LayoutParams(0,dp(44),1));}controls.addView(colors);

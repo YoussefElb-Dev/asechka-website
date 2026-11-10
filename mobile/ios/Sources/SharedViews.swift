@@ -10,11 +10,18 @@ struct DaysView:View {
     @State private var personalBook=false
     var body:some View {
         ScrollView{VStack(alignment:.leading,spacing:20){
-            Text("Our little days.").font(.custom("Manrope-Bold",size:30))
-            Text("Places to go. Things to try. A little more us.").foregroundColor(Palette.muted)
+            VStack(alignment:.leading,spacing:6){
+                Text("LITTLE PLANS & WISHES").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                Text("Our little days.").font(.custom("Manrope-Bold",size:30))
+                Text("Places to go. Things to try. A little more us.").foregroundColor(Palette.muted)
+            }
             Button("Our little book"){littleBook=true}.primary()
             Button("Since us · letters & little things"){personalBook=true}.primary()
             VStack(alignment:.leading,spacing:14){Text("Thinking of you.").font(.title3.weight(.semibold));Text("A little heart, from \(universe.name) to \(universe.partner).").foregroundColor(Palette.muted)
+                let otherKey = universe.actor == "asnat" ? "me" : "asechka"
+                if let incoming = universe.hearts[otherKey] {
+                    Text("\(universe.partner) was thinking of you ♡ · \(String(incoming.prefix(10)))").font(.subheadline).foregroundColor(Palette.purple)
+                }
                 HeartSendButton()
                 ForEach(["asechka","me"],id:\.self){who in if let date=universe.hearts[who]{Text("\(who=="asechka" ? "Asnat":"Youssef") sent a heart · \(String(date.prefix(10))) ♡").font(.caption).foregroundColor(Palette.muted)}}
             }.card()
@@ -77,7 +84,12 @@ struct SoundtrackView:View {
     @State private var search=false
     @State private var editing:SongSelection?
     var body:some View {
-        ScrollView{VStack(alignment:.leading,spacing:20){Text("Our soundtrack.").font(.custom("Manrope-Bold",size:30));Text("Ten little places for the songs that sound like us.").foregroundColor(Palette.muted)
+        ScrollView{VStack(alignment:.leading,spacing:20){
+            VStack(alignment:.leading,spacing:6){
+                Text("TEN SONGS FOR US").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                Text("Our soundtrack.").font(.custom("Manrope-Bold",size:30))
+                Text("Ten little places for the songs that sound like us.").foregroundColor(Palette.muted)
+            }
             Button{search=true}label:{Label("Find our next favorite",systemImage:"magnifyingglass").frame(maxWidth:.infinity).primary()}
             ForEach(1...10,id:\.self){rank in
                 if let song=universe.songs.first(where:{$0.rank==rank}) {VStack(alignment:.leading,spacing:14){

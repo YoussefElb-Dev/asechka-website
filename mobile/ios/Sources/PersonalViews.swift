@@ -13,7 +13,7 @@ struct SettingsView:View {
             Section{HStack(spacing:14){Avatar(actor:universe.actor,size:50);VStack(alignment:.leading){Text(universe.name).font(.headline);Text("Our little universe").foregroundColor(Palette.muted)}}}
             Section("Feel a little more"){Toggle("Haptic feedback",isOn:$haptics);Toggle("Pause gentle animations",isOn:$paused)}
             if BiometricAccess.available || universe.biometricEnabled{Section("Our little door"){Toggle("Unlock with \(BiometricAccess.name)",isOn:Binding(get:{universe.biometricEnabled},set:{enabled in Task{await universe.setBiometrics(enabled)}}));Text("Optional. When enabled, use biometrics or your phone passcode after leaving the app.").font(.caption).foregroundColor(Palette.muted)}}
-            Section("Our favorite dates"){Label("Asnat · August 5",systemImage:"gift");Label("Youssef · January 25",systemImage:"gift")}
+            Section("Our birthdays"){Label("Asnat · August 5",systemImage:"gift");Label("Youssef · January 25",systemImage:"gift")}
             Section("Saved changes"){
                 if universe.pending.isEmpty{Text("Everything is saved on this phone.").foregroundColor(Palette.muted)}
                 ForEach(universe.pending){change in VStack(alignment:.leading,spacing:8){Text(change.error ?? "Waiting for a connection").font(.subheadline);Text(String(change.createdAt.prefix(10))).font(.caption).foregroundColor(Palette.muted)
@@ -24,7 +24,7 @@ struct SettingsView:View {
                 }}
             }
             Section{Button("Refresh our universe"){Task{await universe.forceRefresh()}};Button("Reconnect with our code"){reconnect=true};Button("Switch profile"){universe.choose("");dismiss()};Button("Lock our little door",role:.destructive){universe.lock();dismiss()}}
-            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.2.8 · made for us ♡").font(.caption)}
+            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka 2.7.0 · made for us ♡").font(.caption)}
         }.navigationTitle("Our little settings").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}
             .alert("Reconnect",isPresented:$reconnect){SecureField("Our code",text:$code);Button("Open"){Task{await universe.login(code);code=""}};Button("Cancel",role:.cancel){code=""}}
         }
@@ -40,6 +40,7 @@ struct CornerView:View {
     private let hints=["No spoilers. Just a few butterflies.","It starts with you.","It has a little something to do with us.","Maybe there’s a question I’ve been saving…"]
     var body:some View {
         NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
+            Text(universe.actor=="asnat" ? "FOR ASNAT. MY ASECHKA.":"FOR US. FROM YOUSSEF.").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
             Text(universe.actor=="asnat" ? "My favorite\nlittle universe.":"Our favorite\nlittle universe.").font(.custom("Manrope-Bold",size:33))
             Text("Of all the people, in all the places, somehow my heart keeps finding you.").foregroundColor(Palette.muted)
             Button("Since us · letters & little things"){personalBook=true}.primary()
@@ -88,7 +89,12 @@ struct WordsView:View {
     @State private var history=false
     static let languages=[("ar-EG","Egyptian Arabic · مصري"),("ru","Russian · Русский"),("he","Hebrew · עברית"),("fr","French · Français"),("es","Spanish · Español")]
     var body:some View {
-        ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){Text("Our words.").font(.custom("Manrope-Bold",size:30));Text("Written by \(universe.name), for \(universe.partner). The language roles are set for you.").foregroundColor(Palette.muted)
+        ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
+            VStack(alignment:.leading,spacing:6){
+                Text("BETWEEN OUR LANGUAGES").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                Text("Our words.").font(.custom("Manrope-Bold",size:30))
+                Text("Written by \(universe.name), for \(universe.partner). The language roles are set for you.").foregroundColor(Palette.muted)
+            }
             VStack(alignment:.leading,spacing:15){TextEditor(text:$text).frame(minHeight:145).scrollContentBackground(.hidden);Text("\(text.count) / 1,500").font(.caption).foregroundColor(Palette.muted)
                 Picker("Source",selection:$source){Text("Detect automatically").tag("auto");Text("English").tag("en");ForEach(Self.languages,id:\.0){Text($0.1).tag($0.0)}}
                 Picker("Tone",selection:$tone){Text("Natural & everyday").tag("natural");Text("A little sweeter").tag("sweet");Text("Soft & poetic").tag("poetic")}

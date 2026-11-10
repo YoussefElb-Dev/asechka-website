@@ -186,9 +186,9 @@ final class HomeExtras {
                         .show();
                   }
                   if (pendingWrites == 0) {
-                    if (!closed) main.postDelayed(settle, 120);
+                    if (!closed) main.postDelayed(settle, 80);
                     main.removeCallbacks(flush);
-                    main.postDelayed(flush, closed ? 0 : 1200);
+                    main.postDelayed(flush, closed ? 0 : 35);
                   }
                 });
             writing.set(false);

@@ -26,6 +26,8 @@ struct GamesBattleshipView: View {
         committed ? room.state["fleets"][me].array.map { $0["cells"].array.compactMap(\.int) } : ships
     }
     private var showingOwn: Bool { placement || (oceanOverride ?? (room.state["turn"].int != me)) }
+    private var myAfloatCount: Int { max(0, 5 - room.state["sunkShips"][1 - me].array.count) }
+    private var enemySunkCount: Int { room.state["sunkShips"][me].array.count }
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 8 : 18) {
             if !placement {
@@ -34,7 +36,7 @@ struct GamesBattleshipView: View {
                     Button { oceanOverride = false } label: { Text("Their waters").gamesAction(!showingOwn) }
                 }
             }
-            Text(placement ? "Your ocean · place ships" : showingOwn ? "Your fleet · incoming fire" : "Their waters · tap to fire")
+            Text(placement ? "Your ocean · place ships" : showingOwn ? "Your fleet · \(myAfloatCount)/5 afloat · incoming fire" : "Their waters · \(enemySunkCount)/5 sunk · tap to fire")
                 .font(.caption.bold()).foregroundColor(GamesPalette.muted)
             chart(own: showingOwn)
             if placement { placementControls }

@@ -64,8 +64,7 @@ struct GamesPoolView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(room.state["groups"][room.player(universe.actor) ?? 0].isNull ? "Open table" : room.state["groups"][room.player(universe.actor) ?? 0].string.capitalized).font(.caption.bold())
             if room.finished {
-                Text(GamesRoomView.resultText(room)).font(.headline)
-                Button { store.rematch(room) } label: { Text("Another round").gamesAction() }.disabled(!store.connected || store.working || room.rematchReady.contains(universe.actor))
+                GamesOutcomeCard(store: store, room: room, compact: true)
             } else if playing || serverBusy { Text("Balls settling…").foregroundColor(GamesPalette.mint) }
             else if inHand {
                 Text("Ball in hand · tap a clear spot, then confirm.").font(.caption)
@@ -81,12 +80,18 @@ struct GamesPoolView: View {
             Button("Fine controls") { manualControls = true }.font(.caption).frame(minHeight: 44)
         }
     }
+    private func remainingBalls(for group: String) -> Int {
+        if group == "solids" { return balls.filter { (1...7).contains($0.id) && !$0.pocketed }.count }
+        if group == "stripes" { return balls.filter { (9...15).contains($0.id) && !$0.pocketed }.count }
+        return balls.filter { $0.id != 0 && $0.id != 8 && !$0.pocketed }.count
+    }
     private var groups: some View {
         HStack {
             ForEach(0..<min(2, room.players.count), id: \.self) { index in
+                let grp = room.state["groups"][index].string
                 VStack(alignment: .leading, spacing: 3) {
                     Text(Post.name(room.players[index].actor)).font(.subheadline.bold()).foregroundColor(GamesPalette.player(index))
-                    Text(room.state["groups"][index].isNull ? "Open table" : room.state["groups"][index].string.capitalized).font(.caption).foregroundColor(GamesPalette.muted)
+                    Text(grp.isEmpty ? "Open table" : "\(grp.capitalized) · \(remainingBalls(for: grp)) left").font(.caption).foregroundColor(GamesPalette.muted)
                 }.frame(maxWidth: .infinity, alignment: index == 0 ? .leading : .trailing)
             }
         }

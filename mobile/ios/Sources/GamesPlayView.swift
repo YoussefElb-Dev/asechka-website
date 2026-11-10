@@ -72,8 +72,7 @@ struct GamesPlayView: View {
         }
     }
     private func rematch(_ room: GamesRoom) -> some View {
-        Button { store.rematch(room) } label: { Text(room.rematchReady.contains(universe.actor) ? "Waiting for your partner" : "Play another round").gamesAction() }
-            .disabled(!store.connected || store.working || room.rematchReady.contains(universe.actor))
+        GamesOutcomeCard(store: store, room: room, compact: true)
     }
     private func detailsSheet(_ room: GamesRoom) -> some View {
         NavigationStack {

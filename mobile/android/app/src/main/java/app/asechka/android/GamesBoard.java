@@ -23,6 +23,7 @@ final class GamesBoard extends View {
   private int player, selected = -1, focused = -1, hovered = -1;
   final GamesFleet fleet = new GamesFleet();
   float angle = 0; float shotPower=.55f;
+  int calledPocket = 0;
   private float downX, downY;
   private boolean draggingFleet, charging;
   private int dragCell = -1, dragOffset;
@@ -110,8 +111,9 @@ final class GamesBoard extends View {
     for (int i=0;i<rows*cols;i++) {
       float x=field.left+(i%cols)*size, y=field.top+(i/cols)*size;
       if(cols==7){circle(c,x+size/2,y+size/2-1,size*.405f,0xffa28bbf);circle(c,x+size/2,y+size/2+1,size*.39f,0xfff5f1fa);}
-      if (contains(line,i)) {if(cols==7)ring(c,x+size/2,y+size/2,size*.42f,2,0xfffff5e2);else rect(c,x+3,y+3,x+size-3,y+size-3,8,0x22a58bc6);}
-      if (i==selected) rect(c,x+2,y+2,x+size-2,y+size-2,5,0x99bda3f1);
+      if (cols==8 && (i==animatedFrom || i==animatedCell) && !animating) rect(c,x+2,y+2,x+size-2,y+size-2,4,0x286b5cb5);
+      if (contains(line,i)) {if(cols==7)ring(c,x+size/2,y+size/2,size*.42f,2.5f,0xfffff5e2);else rect(c,x+3,y+3,x+size-3,y+size-3,8,0x22a58bc6);}
+      if (i==selected) rect(c,x+2,y+2,x+size-2,y+size-2,5,themeColor()&0x99ffffff);
       if (cols==8 && myTurn()) {
         boolean source=false, target=false;
         for(int j=0;j<legal.length();j++) { JSONObject move=legal.optJSONObject(j); if(move==null)continue; if(move.optInt("from")==i)source=true; if(move.optInt("from")==selected&&move.optInt("to")==i)target=true; }
@@ -132,7 +134,8 @@ final class GamesBoard extends View {
       else if(cols==8&&value instanceof JSONObject){JSONObject piece=(JSONObject)value;float fromX=field.left+(animatedFrom%cols+.5f)*size,fromY=field.top+(animatedFrom/cols+.5f)*size;disc(c,fromX+(x-fromX)*t,fromY+(y-fromY)*t,size*.36f,piece.optInt("player"),piece.optBoolean("king"));}
     }
     if(animating&&isShown())postInvalidateOnAnimation();
-    if(cols==3&&line.length()>=3){int first=line.optInt(0),last=line.optInt(line.length()-1);float x1=field.left+(first%3+.5f)*size,y1=field.top+(first/3+.5f)*size,x2=field.left+(last%3+.5f)*size,y2=field.top+(last/3+.5f)*size;float reveal=animating?progress:1;line(c,x1,y1,x1+(x2-x1)*reveal,y1+(y2-y1)*reveal,3,0x99a58bc6);}
+    if(cols==3&&line.length()>=3){int first=line.optInt(0),last=line.optInt(line.length()-1);float x1=field.left+(first%3+.5f)*size,y1=field.top+(first/3+.5f)*size,x2=field.left+(last%3+.5f)*size,y2=field.top+(last/3+.5f)*size;float reveal=animating?progress:1;int tc=themeColor();line(c,x1,y1,x1+(x2-x1)*reveal,y1+(y2-y1)*reveal,5,(tc&0x00ffffff)|0xcc000000);circle(c,x1,y1,5,tc);if(reveal>=.95f)circle(c,x2,y2,5,tc);}
+    if(cols==7&&line.length()>=4){int first=line.optInt(0),last=line.optInt(line.length()-1);float x1=field.left+(first%7+.5f)*size,y1=field.top+(first/7+.5f)*size,x2=field.left+(last%7+.5f)*size,y2=field.top+(last/7+.5f)*size;int tc=themeColor();line(c,x1,y1,x2,y2,4.5f,(tc&0x00ffffff)|0xcc000000);}
     if (pending!=null) {
       int cell=pending.optInt("cell",pending.optInt("to",-1));
       if(cols==7) { int col=pending.optInt("column",-1); if(col>=0) for(int r=5;r>=0;r--) if(board.isNull(r*7+col)) {cell=r*7+col;break;} }
@@ -159,7 +162,10 @@ final class GamesBoard extends View {
     field.left=(getWidth()-side)/2;field.right=field.left+side;
     field.top=getWidth()*.08f;field.bottom=field.top+side;
     boolean own=showingOwnOcean();
-    String label=placing()?draggingFleet?(fleet.candidate(dragCell)!=null?"RELEASE TO PLACE · VALID":"CANNOT PLACE · MOVE TO A CLEAR SPACE"):"YOUR OCEAN · PLACE SHIPS":own?"YOUR FLEET · INCOMING FIRE":"THEIR WATERS · TAP TO FIRE";
+    int meIdx=Math.max(0,player);
+    int myAfloat=Math.max(0,5-(GamesData.array(state,"sunkShips").optJSONArray(1-meIdx)!=null?GamesData.array(state,"sunkShips").optJSONArray(1-meIdx).length():0));
+    int theirSunk=GamesData.array(state,"sunkShips").optJSONArray(meIdx)!=null?GamesData.array(state,"sunkShips").optJSONArray(meIdx).length():0;
+    String label=placing()?draggingFleet?(fleet.candidate(dragCell)!=null?"RELEASE TO PLACE · VALID":"CANNOT PLACE · MOVE TO A CLEAR SPACE"):"YOUR OCEAN · PLACE SHIPS":own?"YOUR FLEET · "+myAfloat+"/5 AFLOAT · INCOMING FIRE":"THEIR WATERS · "+theirSunk+"/5 SUNK · TAP TO FIRE";
     caption(c,label,field.left,field.top-getWidth()*.027f,Math.min(getWidth()*.029f,side*.033f),0xff64708b);
     ocean(c,field,own,!placing()&&own);ownField.setEmpty();
   }
@@ -209,7 +215,8 @@ final class GamesBoard extends View {
     field.set(left,top,left+width,top+height);
     float rail=width*.04f;
     art(c,"pool/board",new RectF(left-rail,top-rail,left+width+rail,top+height+rail));
-    for(float[] pocket:new float[][]{{0,0},{.5f,0},{1,0},{1,1},{.5f,1},{0,1}}){float x=left+pocket[0]*width,y=top+pocket[1]*height,r=width*.028f;art(c,"pool/pocket",new RectF(x-r,y-r,x+r,y+r));}
+    float[][] pocketCoords=new float[][]{{0,0},{.5f,0},{1,0},{1,1},{.5f,1},{0,1}};
+    for(int pi=0;pi<pocketCoords.length;pi++){float[] pocket=pocketCoords[pi];float x=left+pocket[0]*width,y=top+pocket[1]*height,r=width*.028f;art(c,"pool/pocket",new RectF(x-r,y-r,x+r,y+r));if(pi==calledPocket)ring(c,x,y,r*1.08f,2.5f,0xffffc7dc);p.setStyle(Paint.Style.FILL);p.setColor(pi==calledPocket?0xffffc7dc:0xbf263451);p.setTextAlign(Paint.Align.CENTER);p.setTypeface(Typeface.DEFAULT_BOLD);p.setTextSize(width*.016f);c.drawText(String.valueOf(pi+1),x,y+(pocket[1]==0?-r*1.15f:r*1.45f),p);p.setTextAlign(Paint.Align.LEFT);}
     JSONArray balls=GamesData.array(state,"balls"),next=null;
     double blend=0;
     JSONObject shot=state.optJSONObject("lastShot");
@@ -244,6 +251,7 @@ final class GamesBoard extends View {
     if(pending!=null&&"place".equals(pending.optString("type")))ring(c,left+(float)pending.optDouble("x")/1000*width,top+(float)pending.optDouble("y")/500*height,width*.017f,2,0xffe0d0ff);
   }
 
+  private int themeColor(){JSONObject settings=room.optJSONObject("settings");String t=settings==null?"violet":settings.optString("theme","violet");return "ocean".equals(t)?0xff2e746a:"rose".equals(t)?0xff9f4b6f:0xff6b5cb5;}
   boolean motion() { return Motion.enabled(getContext()) && !getContext().getSharedPreferences("games-settings",0).getBoolean("reduce-motion",false); }
   private static boolean contains(JSONArray values,int v){if(values==null)return false;for(int i=0;i<values.length();i++)if(values.optInt(i,-999)==v)return true;return false;}
   private void rect(Canvas c,float l,float t,float r,float b,float radius,int color){p.setStyle(Paint.Style.FILL);p.setColor(color);c.drawRoundRect(l,t,r,b,radius,radius,p);}

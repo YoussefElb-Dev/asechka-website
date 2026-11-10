@@ -296,8 +296,8 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         let key=(actor=="asnat" ? "asechka":"me")+"|"+HeartLedger.day()
         heartTaps[key,default:0]+=1
         guard heartCommit==nil else{return}
-        // The particle starts immediately; save/count updates coalesce without rebuilding the feed per tap.
-        heartCommit=Task{try? await Task.sleep(nanoseconds:80_000_000);guard !Task.isCancelled else{return};flushHeartTaps()}
+        // The particle starts immediately; save/count updates coalesce in 16ms and flush immediately.
+        heartCommit=Task{try? await Task.sleep(nanoseconds:16_000_000);guard !Task.isCancelled else{return};flushHeartTaps()}
     }
     private func flushHeartTaps(){
         heartCommit?.cancel();heartCommit=nil
@@ -324,7 +324,9 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                 Task{@MainActor in self?.error="Your phone couldn’t finish saving those hearts. Please keep the app open and try again. "+error.localizedDescription}
             }
             status()
-            heartFlush?.cancel();heartFlush=Task{do{try await Task.sleep(nanoseconds:1_200_000_000)}catch{return};heartFlush=nil;await sync();restore();status()}
+            if heartFlush==nil {
+                heartFlush=Task{do{try await Task.sleep(nanoseconds:35_000_000)}catch{return};heartFlush=nil;await sync();restore();status()}
+            }
         }catch{heartTaps.merge(taps,uniquingKeysWith:+);self.error=error.localizedDescription}
     }
     func finishHeartSaves()async {flushHeartTaps();await vault.drain()}
@@ -358,12 +360,13 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard !syncing,online,!cookie.isEmpty,!locked,Date()>=retryAfter else{return};flushHeartTaps();syncing=true;defer{syncing=false;inFlightChange=nil}
         var batches=0
         while !locked {
+            if !heartTaps.isEmpty { flushHeartTaps() }
             guard let first=pending.first?.error==nil ? pending.first:pending.first(where:{change in
                 guard change.error==nil,change.path=="/api/together",let body=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any] else{return false}
                 return ["sendHeart","sendMessage","closeMessage"].contains(body["action"] as? String ?? "")
             }) else{break}
             let isHeart=((try? JSONSerialization.jsonObject(with:first.body)) as? [String:Any])?["action"] as? String=="sendHeart"
-            if isHeart{batches += 1;if batches>2{break}}
+            if isHeart{batches += 1;if batches>12{break}}
             inFlightChange=first.id
             do {
                 var body=(try JSONSerialization.jsonObject(with:first.body)) as? [String:Any] ?? [:]

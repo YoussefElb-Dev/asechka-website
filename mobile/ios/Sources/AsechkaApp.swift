@@ -27,7 +27,7 @@ struct SoftPress:ButtonStyle {
     }
 }
 extension View {
-    func card()->some View {self.padding(20).frame(maxWidth:.infinity,alignment:.leading).background(.white,in:RoundedRectangle(cornerRadius:24))}
+    func card()->some View {self.padding(20).frame(maxWidth:.infinity,alignment:.leading).background(.white,in:RoundedRectangle(cornerRadius:24)).overlay(RoundedRectangle(cornerRadius:24).stroke(Palette.lavender,lineWidth:1))}
     func primary()->some View {self.font(.system(size:15,weight:.semibold)).padding(.horizontal,20).frame(minHeight:48).foregroundColor(.white).background(Palette.purple,in:RoundedRectangle(cornerRadius:16))}
 }
 struct Avatar:View {
@@ -99,7 +99,7 @@ struct RootView:View {
             guard phase == .active else{return}
             while !Task.isCancelled {
                 if universe.unlocked && !universe.requiresCode{await universe.refreshSharedHearts()}
-                do{try await Task.sleep(nanoseconds:5_000_000_000)}catch{return}
+                do{try await Task.sleep(nanoseconds:2_000_000_000)}catch{return}
             }
         }
         .task(id:phase){
@@ -148,11 +148,13 @@ struct RootView:View {
 struct IdentityView:View {
     @EnvironmentObject private var universe:UniverseStore
     var body:some View {
-        VStack(spacing:22){Spacer();Image(systemName:"sparkles").font(.system(size:40)).foregroundColor(Palette.purple)
+        VStack(spacing:18){Spacer()
+            Image(systemName:"sparkles").font(.system(size:36)).foregroundColor(Palette.purple).frame(width:62,height:62).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22))
+            Text("OUR LITTLE UNIVERSE").font(.system(size:11,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
             Text("Our little us.").font(.custom("Manrope-Bold",size:34))
-            Text("Two people. One little universe.\nWho’s here today?").multilineTextAlignment(.center).foregroundColor(Palette.muted)
+            Text("Two people. One little home.\nWho’s here today?").multilineTextAlignment(.center).foregroundColor(Palette.muted)
             ForEach(["asnat","youssef"],id:\.self){actor in
-                Button{Touch.tap(true);universe.choose(actor)}label:{HStack(spacing:14){Avatar(actor:actor,size:52);VStack(alignment:.leading,spacing:4){Text(Post.name(actor)).font(.headline);Text(actor=="asnat" ? "August 5 · our Asechka":"January 25 · made with love").font(.caption).foregroundColor(Palette.muted)};Spacer();Image(systemName:"arrow.right")}.padding(18).background(.white,in:RoundedRectangle(cornerRadius:24))}
+                Button{Touch.tap(true);universe.choose(actor)}label:{HStack(spacing:14){Avatar(actor:actor,size:52);VStack(alignment:.leading,spacing:4){Text(Post.name(actor)).font(.headline);Text(actor=="asnat" ? "Birthday · August 5 · our Asechka":"Birthday · January 25 · made with love").font(.caption).foregroundColor(Palette.muted)};Spacer();Image(systemName:"arrow.right").foregroundColor(Palette.purple)}.padding(18).background(.white,in:RoundedRectangle(cornerRadius:24)).overlay(RoundedRectangle(cornerRadius:24).stroke(Palette.lavender,lineWidth:1))}
             };Spacer();Text("Made with a whole lot of love. ♡").font(.caption).foregroundColor(Palette.muted)
         }.padding(28)
     }

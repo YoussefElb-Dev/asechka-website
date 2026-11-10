@@ -55,6 +55,7 @@ struct FeedView:View {
             }
             if mode==0 && !savedOnly {HomeHub(open:{shortcut=$0},openHistory:{heartHistory=true})}
             if !home {VStack(alignment:.leading,spacing:6){
+                Text(savedOnly ? "SAVED FOR US":mode==1 ? (photoSection == .photography ? "EVERYDAY FRAMES":"MOMENTS WORTH KEEPING"):"WORDS WORTH KEEPING").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
                 Text(savedOnly ? "Kept close.":mode==1 ? (photoSection == .photography ? "Photography.":"Our camera roll."):mode==2 ? "Words to keep.":"Our little us.").font(.custom("Manrope-Bold",size:28))
                 Text(mode==1 && photoSection == .photography ? "Everyday frames, small details, and things that catch our eye.":"A little life together, one moment at a time.").font(.subheadline).foregroundColor(Palette.muted)
                 if mode==1 {

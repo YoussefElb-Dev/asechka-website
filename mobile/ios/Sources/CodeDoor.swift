@@ -6,13 +6,17 @@ struct DoorView:View {
     @EnvironmentObject private var universe:UniverseStore
     @State private var code=""
     var body:some View {
-        ScrollView{VStack(alignment:.leading,spacing:24){
-            Avatar(actor:universe.actor,size:66).padding(.top,50)
+        ScrollView{VStack(alignment:.leading,spacing:20){
+            Avatar(actor:universe.actor,size:66).padding(.top,42)
+            Text("OUR LITTLE UNIVERSE").font(.system(size:11,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
             Text("Connect our little space.").font(.custom("Manrope-Bold",size:32))
             Text("Connect once with our website code. We’ll keep you signed in on this phone.").foregroundColor(Palette.muted)
-            SecureField("Our website code",text:$code).textContentType(.password).textInputAutocapitalization(.never).autocorrectionDisabled().padding(17).background(.white,in:RoundedRectangle(cornerRadius:16)).onSubmit{Task{await universe.login(code);code=""}}
-            if let error=universe.doorError{Text(error).font(.footnote).foregroundColor(Palette.muted)}
-            Button{Task{await universe.login(code);code=""}}label:{Text(universe.busy ? "Connecting…":"Connect our space ♡").frame(maxWidth:.infinity).primary()}.disabled(universe.busy || code.isEmpty)
+            VStack(alignment:.leading,spacing:12){
+                Text("OUR LITTLE CODE").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                SecureField("Our website code",text:$code).textContentType(.password).textInputAutocapitalization(.never).autocorrectionDisabled().padding(16).background(Palette.background,in:RoundedRectangle(cornerRadius:14)).onSubmit{Task{await universe.login(code);code=""}}
+                if let error=universe.doorError{Text(error).font(.footnote).foregroundColor(Palette.muted)}
+                Button{Task{await universe.login(code);code=""}}label:{Text(universe.busy ? "Connecting…":"Connect our space ♡").frame(maxWidth:.infinity).primary()}.disabled(universe.busy || code.isEmpty)
+            }.card()
             Button("Switch profile"){universe.choose("")}
         }.padding(26)}
     }

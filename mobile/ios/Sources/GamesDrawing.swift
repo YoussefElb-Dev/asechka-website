@@ -40,6 +40,8 @@ struct GamesDrawingView: View {
             HStack{Button("Undo"){enqueue(["type":"undo"])}.frame(maxWidth:.infinity,minHeight:44);Button("Clear"){enqueue(["type":"clear"])}.frame(maxWidth:.infinity,minHeight:44)}.disabled(!store.connected)
         } else if phase=="draw" {
             HStack{TextField("Type your guess",text:$guess).textFieldStyle(.roundedBorder).autocorrectionDisabled(false).submitLabel(.send).onSubmit{submit()}.accessibilityIdentifier("games.drawing.guess");Button("Guess"){submit()}.frame(minHeight:44).disabled(!store.canAct(room)||guess.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty)}
+        } else if phase=="finished" && !room.finished {
+            GamesOutcomeCard(store: store, room: room, compact: true)
         }
     }
     private func submit(){guard store.canAct(room) else{return};let text=guess.trimmingCharacters(in:.whitespacesAndNewlines);guard !text.isEmpty else{return};store.move(room,["type":"guess","text":.string(String(text.prefix(80)))]);guess=""}

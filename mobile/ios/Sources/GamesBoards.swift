@@ -37,10 +37,15 @@ struct GamesTicTacToeView: View {
         GeometryReader { geometry in
             let cells = room.state["line"].array.compactMap(\.int)
             if let first = cells.first, let last = cells.last {
+                let p1 = CGPoint(x: (CGFloat(first % 3) + 0.5) * geometry.size.width / 3, y: (CGFloat(first / 3) + 0.5) * geometry.size.height / 3)
+                let p2 = CGPoint(x: (CGFloat(last % 3) + 0.5) * geometry.size.width / 3, y: (CGFloat(last / 3) + 0.5) * geometry.size.height / 3)
+                let tint = GamesPalette.theme(room)
                 Path { path in
-                    path.move(to: CGPoint(x: (CGFloat(first % 3) + 0.5) * geometry.size.width / 3, y: (CGFloat(first / 3) + 0.5) * geometry.size.height / 3))
-                    path.addLine(to: CGPoint(x: (CGFloat(last % 3) + 0.5) * geometry.size.width / 3, y: (CGFloat(last / 3) + 0.5) * geometry.size.height / 3))
-                }.stroke(Color(red: 0.67, green: 0.57, blue: 0.79).opacity(0.65), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    path.move(to: p1)
+                    path.addLine(to: p2)
+                }.stroke(tint.opacity(0.78), style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                Circle().fill(tint).frame(width: 12, height: 12).position(p1)
+                Circle().fill(tint).frame(width: 12, height: 12).position(p2)
             }
         }.allowsHitTesting(false).accessibilityHidden(true)
     }
@@ -64,9 +69,10 @@ struct GamesConnectFourView: View {
         guard let column = pendingColumn else { return nil }
         return (0..<6).reversed().map { $0 * 7 + column }.first { room.state["board"][$0].isNull }
     }
+    private var droppedCount: Int { room.state["board"].array.filter { !$0.isNull }.count }
     var body: some View {
         VStack(spacing: 10) {
-            Text("Tap any column to drop a disc.").font(.subheadline).foregroundColor(GamesPalette.muted)
+            Text("Tap any column to drop a disc · \(droppedCount) in orbit").font(.subheadline).foregroundColor(GamesPalette.muted)
             if !compact { HStack(spacing: 3) {
                 ForEach(0..<7, id: \.self) { column in
                     Button { drop(column) } label: { VStack(spacing: 2) { Image(systemName: "arrow.down"); Text("\(column + 1)").font(.caption2) }.frame(maxWidth: .infinity, minHeight: 44) }
@@ -81,6 +87,7 @@ struct GamesConnectFourView: View {
                 }
             }.padding(12).background(GamesSprite("connect4/board"))
                 .clipShape(RoundedRectangle(cornerRadius: 20))
+                .overlay { connectFourLine }
         }.frame(maxWidth: min(600, boardLimit)).frame(maxWidth: .infinity)
     }
     private func canDrop(_ column: Int) -> Bool { store.myTurn(room) && room.state["board"][column].isNull }
@@ -99,6 +106,22 @@ struct GamesConnectFourView: View {
             .animation(systemReduced || reduced ? nil : .spring(response: 0.45, dampingFraction: 0.68), value: room.state["board"][cell])
     }
     private func cellLabel(_ cell: Int) -> String { room.state["board"][cell].int.map { "player \($0 + 1)" } ?? (pendingCell == cell ? "move pending" : "empty") }
+    private var connectFourLine: some View {
+        GeometryReader { geometry in
+            let cells = room.state["line"].array.compactMap(\.int)
+            if cells.count >= 4, let first = cells.first, let last = cells.last {
+                let inset: CGFloat = 12
+                let cellW = (geometry.size.width - inset * 2) / 7
+                let cellH = (geometry.size.height - inset * 2) / 6
+                let p1 = CGPoint(x: inset + (CGFloat(first % 7) + 0.5) * cellW, y: inset + (CGFloat(first / 7) + 0.5) * cellH)
+                let p2 = CGPoint(x: inset + (CGFloat(last % 7) + 0.5) * cellW, y: inset + (CGFloat(last / 7) + 0.5) * cellH)
+                Path { path in
+                    path.move(to: p1)
+                    path.addLine(to: p2)
+                }.stroke(GamesPalette.theme(room).opacity(0.85), style: StrokeStyle(lineWidth: 5, lineCap: .round))
+            }
+        }.allowsHitTesting(false).accessibilityHidden(true)
+    }
 }
 
 struct GamesCheckersView: View {
@@ -116,9 +139,15 @@ struct GamesCheckersView: View {
     private var legal: [GamesJSON] { room.state["legal"].array }
     private var source: Int? { room.state["forced"].int ?? selected }
     private var pendingTo: Int? { store.pending.first { $0.room == room.id }?.action["to"].int }
+    private var rosePieces: Int { displayBoard.filter { $0["player"].int == 0 }.count }
+    private var mintPieces: Int { displayBoard.filter { $0["player"].int == 1 }.count }
+    private var lastMoveCells: Set<Int> {
+        guard replayStep == nil, let last = moves.last else { return [] }
+        return Set([last["from"].int, last["to"].int].compactMap { $0 })
+    }
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(room.state["forced"].isNull ? "Select a piece, then a lit square. Captures are mandatory." : "Keep jumping with the highlighted piece.")
+            Text((room.state["forced"].isNull ? "Select a piece, then a lit square." : "Keep jumping with the highlighted piece.") + " · Rose \(rosePieces) : Mint \(mintPieces)")
                 .font(.subheadline).foregroundColor(GamesPalette.muted)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 8), spacing: 0) {
                 ForEach(0..<64, id: \.self) { cell in
@@ -169,7 +198,7 @@ struct GamesCheckersView: View {
     private func square(_ cell: Int) -> some View {
         let piece = displayBoard.indices.contains(cell) ? displayBoard[cell] : GamesJSON.null
         return ZStack {
-            Color.clear
+            if lastMoveCells.contains(cell) { GamesPalette.lilac.opacity(0.18) } else { Color.clear }
             if let player = piece["player"].int {
                 GamesSprite("checkers/\(player == 0 ? "rose" : "mint")\(piece["king"].bool ? "-king" : "")").scaledToFit().padding(4)
             }

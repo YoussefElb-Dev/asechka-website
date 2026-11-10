@@ -152,16 +152,14 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     TextView turnLabel=text(turn,20,GamesData.COLORS[index],true);turnLabel.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);add(turnLabel,14);
     if(client.pending!=null)add(text("Sending your move… · saved safely for reconnect",12,ACCENT,false),8);
     if("drawing".equals(game)){drawing=new GamesDrawingView(activity,client);add(drawing,6);drawing.update(r);return;}
-    if(board==null)board=new GamesBoard(activity,client.actor,this);board.update(r,client.pending,client.connected);add(board,16);
+    if(board==null)board=new GamesBoard(activity,client.actor,this);board.calledPocket=pocket;board.update(r,client.pending,client.connected);add(board,16);
     if("pool".equals(game))poolControls(s,finished);
     if("hangman".equals(game))hangmanControls(s,finished,me);
     if("battleship".equals(game))fleetControls(s,finished,me);
     if("checkers".equals(game)&&!finished){add(text(s.isNull("forced")?"Tap a highlighted piece, then a highlighted destination.":"Continue the capture with the selected piece.",13,MUTED,false),12);accessibleCheckers(s);}
     if("checkers".equals(game)&&GamesData.array(s,"moves").length()>0)add(button("Move history & replay",false,()->checkersReplay(r)),12);
     if(finished){
-      JSONArray votes=GamesData.array(r,"rematchReady");boolean voted=false;ArrayList<String> names=new ArrayList<>();for(int i=0;i<votes.length();i++){String who=votes.optString(i);names.add(GamesData.name(who));if(client.actor.equals(who))voted=true;}
-      if(!names.isEmpty())add(text(TextUtils.join(" & ",names)+" wants another round",13,ACCENT,false),14);
-      add(action(voted?"Waiting for your partner’s rematch vote":"Play another round",true,client.connected&&!voted&&!client.commandBusy(),()->{client.command("rematch",GamesData.obj("room",id));refresh();}),16);
+      add(winnerLoserCard(r,s,me,false),14);
       String resultKey=id+":"+r.optLong("seq");if(!lastResult.equals(resultKey)){lastResult=resultKey;audio.play(s.opt("winner") instanceof Number&&s.optInt("winner")==me?"win":"lose");}
     }
     LinearLayout reactions=row();for(String emoji:new String[]{"♡","👏","🎉","✨"}){Button b=action(emoji,false,client.connected,()->{client.command("react",GamesData.obj("room",id,"emoji",emoji));});b.setContentDescription("Send reaction "+emoji);reactions.addView(b,new LinearLayout.LayoutParams(0,-2,1));}add(reactions,22);
@@ -175,7 +173,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     JSONArray scores=GamesData.array(r,"scores");TextView turn=text(status+"  ·  "+scores.optInt(0)+" : "+scores.optInt(1),14,GamesData.COLORS[index],true);turn.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);add(turn,6);
     if(!client.connected||!client.error.isEmpty()){Button retry=button(client.error.isEmpty()?"Connection interrupted · tap to retry":client.error,false,client::reconnect);add(retry,4);}
     else if(client.pending!=null)add(text("Sending your move…",12,ACCENT,false),4);
-    if(board==null)board=new GamesBoard(activity,client.actor,this);board.update(r,client.pending,client.connected);
+    if(board==null)board=new GamesBoard(activity,client.actor,this);board.calledPocket=pocket;board.update(r,client.pending,client.connected);
     int available=getHeight()>0?getHeight():getResources().getDisplayMetrics().heightPixels;
     if("pool".equals(game)){
       LinearLayout table=row();board.maxBoardHeight=Math.max(dp(150),available-dp(92));table.addView(board,new LinearLayout.LayoutParams(0,board.maxBoardHeight,1));LinearLayout controls=column();controls.setPadding(dp(8),0,0,0);table.addView(controls,new LinearLayout.LayoutParams(dp(190),-2));add(table,4);controlsHost=controls;compactPoolControls(s,finished);controlsHost=null;
@@ -184,10 +182,12 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
       board.maxBoardHeight=Math.max(dp("hangman".equals(game)?80:180),available-reserve);add(board,6);
       if("battleship".equals(game))fleetControls(s,finished,me);
       if("hangman".equals(game))hangmanControls(s,finished,me);
-      if("connect4".equals(game))add(text("Tap a column to drop your disc.",12,MUTED,false),5);
-      if("checkers".equals(game))add(text(s.isNull("forced")?"Select a piece, then a lit square.":"Keep jumping with the highlighted piece.",12,MUTED,false),5);
+      if("connect4".equals(game))add(text("Tap a column to drop your disc · "+countOccupied(GamesData.array(s,"board"))+" in orbit",12,MUTED,false),5);
+      if("checkers".equals(game))add(text((s.isNull("forced")?"Select a piece, then a lit square.":"Keep jumping with the highlighted piece.")+" · "+checkersPieceSummary(GamesData.array(s,"board")),12,MUTED,false),5);
     }
-    if(finished){JSONArray votes=GamesData.array(r,"rematchReady");boolean voted=false;for(int i=0;i<votes.length();i++)voted|=client.actor.equals(votes.optString(i));add(action(voted?"Waiting for your partner":"Play another round",true,!voted&&client.connected&&!client.commandBusy(),()->client.command("rematch",GamesData.obj("room",r.optString("id")))),6);}
+    if(finished){add(winnerLoserCard(r,s,me,true),6);
+      String resultKey=r.optString("id")+":"+r.optLong("seq");if(!lastResult.equals(resultKey)){lastResult=resultKey;audio.play(s.opt("winner") instanceof Number&&s.optInt("winner")==me?"win":"lose");}
+    }
   }
   private void playMenu(){
     String[] options={"Invite / share","Rules & help","Sound and motion","Players and score","React","Extra controls / move history"};
@@ -205,7 +205,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if(board.moving()){add(text("Balls settling…",14,ACCENT,true),6);postDelayed(()->{signature="";refresh();},Math.max(50,current.optLong("availableAt")-System.currentTimeMillis()+50));return;}
     JSONArray groups=GamesData.array(state,"groups");int me=GamesData.player(current,client.actor);String group=groups.isNull(me)?"Open table":groups.optString(me);
     aimLabel=text(group+" · "+Math.round(power*100)+"%",13,INK,true);add(aimLabel,5);powerBar=slider("Shot power",100,Math.round(power*100));powerBar.setEnabled(board.myTurn());powerBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int n,boolean user){power=n/100f;board.shotPower=power;board.invalidate();aimLabel.setText(group+" · "+n+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(powerBar,0);
-    Spinner pockets=spinner(new String[]{"Top left","Top middle","Top right","Bottom right","Bottom middle","Bottom left"});pockets.setContentDescription("Called pocket for the eight ball");pockets.setSelection(pocket);pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;}public void onNothingSelected(AdapterView<?> a){}});add(pockets,3);
+    Spinner pockets=spinner(new String[]{"Top left","Top middle","Top right","Bottom right","Bottom middle","Bottom left"});pockets.setContentDescription("Called pocket for the eight ball");pockets.setSelection(pocket);pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;if(board!=null){board.calledPocket=pos;board.invalidate();}}public void onNothingSelected(AdapterView<?> a){}});add(pockets,3);
     add(button("Cue-ball spin",false,this::spinDialog),3);
     add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"spinX",spinX,"spinY",spinY,"callPocket",pocket))),5);
   }
@@ -247,7 +247,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     aimBar=slider("Aim in degrees",359,(int)((Math.toDegrees(board.angle)+360)%360));aimBar.setEnabled(board.myTurn());aimBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){if(user){board.angle=(float)Math.toRadians(value);board.invalidate();aimLabel.setText("Aim · "+value+"°");}}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(aimBar,0);
     TextView powerLabel=text("Power · "+Math.round(power*100)+"%",13,MUTED,false);add(powerLabel,8);SeekBar strength=slider("Shot power percent",100,Math.round(power*100));powerBar=strength;strength.setEnabled(board.myTurn());strength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onProgressChanged(SeekBar v,int value,boolean user){power=value/100f;board.shotPower=power;board.invalidate();powerLabel.setText("Power · "+Math.round(power*100)+"%");}public void onStartTrackingTouch(SeekBar v){}public void onStopTrackingTouch(SeekBar v){}});add(strength,0);
     add(text("Drag the cloth to aim. Then pull back from the cue ball and release to shoot, or use the sliders and Shoot button.",13,MUTED,false),8);
-    Spinner pockets=spinner(new String[]{"Top left pocket","Top middle pocket","Top right pocket","Bottom right pocket","Bottom middle pocket","Bottom left pocket"});pockets.setSelection(pocket);pockets.setContentDescription("Called pocket for the eight ball");pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;}public void onNothingSelected(AdapterView<?> a){}});add(pockets,8);
+    Spinner pockets=spinner(new String[]{"Top left pocket","Top middle pocket","Top right pocket","Bottom right pocket","Bottom middle pocket","Bottom left pocket"});pockets.setSelection(pocket);pockets.setContentDescription("Called pocket for the eight ball");pockets.setEnabled(board.myTurn());pockets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onItemSelected(AdapterView<?> a,View v,int pos,long id){pocket=pos;if(board!=null){board.calledPocket=pos;board.invalidate();}}public void onNothingSelected(AdapterView<?> a){}});add(pockets,8);
     add(action("Shoot",true,board.myTurn(),()->move(GamesData.obj("type","shot","angle",board.angle,"power",power,"spinX",spinX,"spinY",spinY,"callPocket",pocket))),12);
   }
 
@@ -348,6 +348,45 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     dialog=new AlertDialog.Builder(activity,android.R.style.Theme_Material_Light_Dialog_Alert).setTitle("Make yourself comfortable").setView(options).setPositiveButton("Done",null).create();dialog.show();
   }
 
+  private int countOccupied(JSONArray board){int n=0;for(int i=0;i<board.length();i++)if(!board.isNull(i))n++;return n;}
+  private String checkersPieceSummary(JSONArray board){int r=0,m=0;for(int i=0;i<board.length();i++){JSONObject p=board.optJSONObject(i);if(p!=null){if(p.optInt("player")==0)r++;else m++;}}return "Rose "+r+" : Mint "+m;}
+  private View winnerLoserCard(JSONObject r,JSONObject s,int me,boolean compact){
+    LinearLayout card=column();card.setPadding(dp(compact?14:18),dp(compact?12:16),dp(compact?14:18),dp(compact?12:16));
+    Object w=s.opt("winner");boolean draw="draw".equals(w);boolean won=w instanceof Number&&((Number)w).intValue()==me;
+    int accent=draw?ACCENT:won?0xff2e746a:0xff9f4b6f;
+    GradientDrawable bg=shape(PANEL,22);bg.setStroke(dp(2),accent);card.setBackground(bg);
+    int round=r.optInt("round",1);
+    String badge=!r.isNull("seriesWinner")&&r.optInt("seriesWinner",-1)==me?"✦ SERIES CHAMPION · ROUND "+round+" ✦":draw?"✧ A LOVELY TIE · ROUND "+round+" ✧":won?"✦ VICTORY · ROUND "+round+" ✦":"♡ CLOSE MATCH · ROUND "+round+" ♡";
+    TextView badgeView=text(badge,11,accent,true);badgeView.setLetterSpacing(.12f);card.addView(badgeView);
+    String headline=draw?"A lovely draw ♡":won?"You won this round! ♡":GamesData.result(r,client.actor);
+    add(card,text(headline,compact?18:22,INK,true),4);
+    if(won)add(card,text(GamesData.result(r,client.actor),12,accent,true),2);
+    String sub=draw?"Great minds think alike this round.":won?"Beautifully played, my love.":"Every game with you is my favorite. Ready for a comeback?";
+    add(card,text(sub,12,MUTED,false),3);
+    JSONArray scores=GamesData.array(r,"scores"),players=GamesData.array(r,"players");
+    String p0=players.optJSONObject(0)!=null?GamesData.name(players.optJSONObject(0).optString("actor")):"Asnat";
+    String p1=players.optJSONObject(1)!=null?GamesData.name(players.optJSONObject(1).optString("actor")):"Youssef";
+    add(card,text(p0+" "+scores.optInt(0)+"  :  "+scores.optInt(1)+" "+p1+"  ·  "+matchSummary(r.optString("game"),s,me,draw),12,INK,true),6);
+    JSONArray votes=GamesData.array(r,"rematchReady");boolean voted=false;ArrayList<String> names=new ArrayList<>();
+    for(int i=0;i<votes.length();i++){String who=votes.optString(i);names.add(GamesData.name(who));if(client.actor.equals(who))voted=true;}
+    if(!names.isEmpty())add(card,text(TextUtils.join(" & ",names)+" wants another round",12,0xff2e746a,true),6);
+    String id=r.optString("id");
+    add(card,action(voted?(compact?"Waiting for your partner":"Waiting for your partner’s rematch vote"):"Play another round",true,client.connected&&!voted&&!client.commandBusy(),()->{client.command("rematch",GamesData.obj("room",id));refresh();}),8);
+    if(compact){
+      LinearLayout reactions=row();for(String emoji:new String[]{"♡","👏","🎉","✨"}){Button b=action(emoji,false,client.connected,()->client.command("react",GamesData.obj("room",id,"emoji",emoji)));b.setContentDescription("Send reaction "+emoji);reactions.addView(b,new LinearLayout.LayoutParams(0,dp(40),1));}
+      add(card,reactions,6);
+    }
+    return card;
+  }
+  private String matchSummary(String game,JSONObject s,int me,boolean draw){
+    if("pool".equals(game)){JSONArray balls=GamesData.array(s,"balls");int pock=0;for(int i=0;i<balls.length();i++){JSONObject b=balls.optJSONObject(i);if(b!=null&&b.optInt("id")!=0&&b.optBoolean("pocketed"))pock++;}return pock+" balls pocketed";}
+    if("tictactoe".equals(game))return countOccupied(GamesData.array(s,"board"))+" moves · "+(draw?"Full board draw":"3 in a row");
+    if("hangman".equals(game))return (!s.isNull("word")?"Word: "+s.optString("word").toUpperCase(Locale.US)+" · ":"")+s.optInt("remaining",0)+"/6 chances left";
+    if("connect4".equals(game))return countOccupied(GamesData.array(s,"board"))+" discs · "+(draw?"Full grid":"4 connected");
+    if("checkers".equals(game))return GamesData.array(s,"moves").length()+" moves played";
+    if("battleship".equals(game)){int idx=Math.max(0,me);int shots=GamesData.array(s,"shots").optJSONArray(idx)!=null?GamesData.array(s,"shots").optJSONArray(idx).length():0;int hits=GamesData.array(s,"hits").optJSONArray(idx)!=null?GamesData.array(s,"hits").optJSONArray(idx).length():0;return hits+"/"+shots+" hits landed";}
+    return "Round complete";
+  }
   private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
   private LinearLayout column(){LinearLayout c=new LinearLayout(activity);c.setOrientation(LinearLayout.VERTICAL);return c;}
   private LinearLayout row(){LinearLayout r=new LinearLayout(activity);r.setGravity(Gravity.CENTER_VERTICAL);return r;}

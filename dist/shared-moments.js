@@ -13,17 +13,17 @@ if(!['me','asechka'].includes(side))side='';
 try{shared=JSON.parse(localStorage.getItem('asechka-heart-ledger') || 'null');}catch{}
 let heartSending=false,heartTimer;
 const heartQueue=new HeartOutbox({load:()=>{try{return JSON.parse(localStorage.getItem('asechka-heart-outbox')||'[]')}catch{return []}},save:items=>localStorage.setItem('asechka-heart-outbox',JSON.stringify(items))});
-function queueHeartFlush(){if(!heartTimer)heartTimer=setTimeout(()=>{heartTimer=null;flushHearts();},600);}
+function queueHeartFlush(delay=20){if(heartTimer)return;heartTimer=setTimeout(()=>{heartTimer=null;flushHearts();},delay);}
 async function flushHearts(){
   if(heartSending || !navigator.onLine || !heartQueue.items.length)return;
-  if(busy){queueHeartFlush();return;}
+  if(busy){queueHeartFlush(60);return;}
   heartSending=true;
   const status=$('[data-heart-status]');
   try{
     while(heartQueue.items.length){const body=heartQueue.seal();const result=await api('/api/together',body);installState(result);heartQueue.acknowledge(body.operationId);renderHearts();}
     if(status)status.textContent='Every little heart is saved for both of us. ♡';
   }catch(error){if(status)status.textContent=error.status===401?'Unlock our little door to send your saved hearts.':'Your hearts are saved on this device. We’ll try again when connected.';if(error.status===401)notice(error.message,error);}
-  finally{heartSending=false;}
+  finally{heartSending=false;if(heartQueue.items.length && navigator.onLine)queueHeartFlush(20);}
 }
 window.addEventListener('online',()=>{loadShared({quiet:true});flushHearts();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(heartTimer);heartTimer=null;flushHearts();}else queueHeartFlush();});
