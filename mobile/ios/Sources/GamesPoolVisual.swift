@@ -20,7 +20,7 @@ enum GamesPoolVisual {
         if id>8 {
             for i in 0..<40 {
                 let a=Double(i)*2*Double.pi/40,b=Double(i+1)*2*Double.pi/40
-                let vs=[rotate(ball.q,cos(a)*0.9165,sin(a)*0.9165,-0.4),rotate(ball.q,cos(b)*0.9165,sin(b)*0.9165,-0.4),rotate(ball.q,cos(b)*0.9165,sin(b)*0.9165,0.4),rotate(ball.q,cos(a)*0.9165,sin(a)*0.9165,0.4)]
+                let vs=[rotate(ball.q,cos(a)*0.9165,-0.4,sin(a)*0.9165),rotate(ball.q,cos(b)*0.9165,-0.4,sin(b)*0.9165),rotate(ball.q,cos(b)*0.9165,0.4,sin(b)*0.9165),rotate(ball.q,cos(a)*0.9165,0.4,sin(a)*0.9165)]
                 var points:[CGPoint]=[]
                 for j in 0..<4 {let v=vs[j],u=vs[(j+1)%4];if v.z>=0{points.append(CGPoint(x:v.x*11,y:v.y*11))};if (v.z>=0) != (u.z>=0){let t=v.z/(v.z-u.z);points.append(CGPoint(x:(v.x+(u.x-v.x)*t)*11,y:(v.y+(u.y-v.y)*t)*11))}}
                 if let first=points.first {var path=Path();path.move(to:first);for point in points.dropFirst(){path.addLine(to:point)};path.closeSubpath();c.fill(path,with:.color(color))}

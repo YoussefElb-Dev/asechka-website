@@ -1151,6 +1151,7 @@ public final class NativeTests extends Instrumentation {
     set("images", new Images(api));
     call("restoreSaved", new Class[] {});
     set("messages", null);
+    if(gamesOnly)set("screen",6);
     call("showShell", new Class[] {});
   }
 
@@ -2295,8 +2296,8 @@ public final class NativeTests extends Instrumentation {
     screenshot("games-settings");
     ui(preferences::dismiss);
     nativeGameLayouts();
-    call("select", new Class[] {int.class}, 0);
-    check(get("feed") != null, "Returning home retains the feed");
+    call("select", new Class[] {int.class}, Build.VERSION.SDK_INT>=26&&android.webkit.WebView.getCurrentWebViewPackage()==null?1:0);
+    check(get("feed") != null, "Returning to the feed keeps its content");
     nativeGameGestureTests();
     JSONArray replayMoves = new JSONArray("[{\"from\":17,\"to\":26,\"player\":0},{\"from\":40,\"to\":33,\"player\":1},{\"from\":26,\"to\":40,\"captured\":33,\"player\":0}]");
     JSONArray beforeReplay=GamesReplay.board(replayMoves,0),afterReplay=GamesReplay.board(replayMoves,3);
@@ -2325,11 +2326,13 @@ public final class NativeTests extends Instrumentation {
     });
     for (int i = 0; i < layouts.length(); i++) {
       JSONObject room = layouts.getJSONObject(i);
+      if("drawing".equals(room.optString("game")))GamesData.state(room).put("deadline",System.currentTimeMillis()+80000);
       ui(() -> {
         games.client.rooms.put(room.optString("id"), room);
         games.client.selectedRoom = room.optString("id");
         games.changed();
       });
+      if("drawing".equals(room.optString("game"))){await(()->!views(games,GamesDrawingView.class).isEmpty(),"Drawing game lays out");ui(()->games.scrollTo(0,0));check(((View)inner(games,"body")).getHeight()<=games.getHeight()+2,"Drawing tools fit the viewport");screenshot("games-board-drawing");continue;}
       await(() -> !views(games, GamesBoard.class).isEmpty()
           && views(games, GamesBoard.class).get(0).getHeight() > 0, "Native board lays out");
       GamesBoard board = views(games, GamesBoard.class).get(0);

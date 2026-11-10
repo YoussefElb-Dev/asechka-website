@@ -209,7 +209,7 @@ struct GamesHangmanView: View {
         VStack(alignment: .leading, spacing: 14) {
             Picker("Category", selection: $category) { ForEach(categories, id: \.self) { Text($0.capitalized).tag($0) } }
                 .pickerStyle(.menu)
-            SecureField("Your secret English word or phrase", text: $word).textInputAutocapitalization(.never).autocorrectionDisabled()
+            TextField("Your secret English word or phrase", text: $word).textInputAutocapitalization(.never).autocorrectionDisabled(false)
                 .padding(14).background(.black.opacity(0.2), in: RoundedRectangle(cornerRadius: 12))
                 .accessibilityIdentifier("games.hangman.word")
             Toggle("Personal reference", isOn: $personal).accessibilityIdentifier("games.hangman.personal")

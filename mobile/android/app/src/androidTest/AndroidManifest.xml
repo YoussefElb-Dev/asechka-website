@@ -3,4 +3,5 @@
     <application android:label="Asechka native tests" />
     <instrumentation android:name="app.asechka.android.NativeTests" android:targetPackage="app.asechka.android" />
     <instrumentation android:name="app.asechka.android.UpdaterChecks" android:targetPackage="app.asechka.android" />
+    <instrumentation android:name="app.asechka.android.GamesFeatureChecks" android:targetPackage="app.asechka.android" />
 </manifest>

@@ -1,4 +1,4 @@
-param([string]$SdkRoot="$env:LOCALAPPDATA\AsechkaAndroid\toolchain\sdk")
+param([ValidateSet('debug','release')][string]$Variant='debug',[string]$SdkRoot="$env:LOCALAPPDATA\AsechkaAndroid\toolchain\sdk")
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path $PSScriptRoot -Parent
 $env:JAVA_HOME=(Get-ChildItem -LiteralPath "$env:LOCALAPPDATA\AsechkaAndroid\toolchain" -Directory -Filter 'jdk-*' | Select-Object -First 1).FullName
@@ -9,12 +9,12 @@ $dir=Join-Path $projectRoot 'build\tests'
 New-Item -ItemType Directory -Path "$dir\classes","$dir\generated","$dir\dex" -Force | Out-Null
 function Run-Tool([string]$Exe,[string[]]$ToolArgs){ & $Exe @ToolArgs; if($LASTEXITCODE -ne 0){throw "$Exe failed"} }
 Run-Tool "$bt\aapt2.exe" @('link','-o',"$dir\unsigned.apk",'-I',$platform,'--manifest',"$projectRoot\app\src\androidTest\AndroidManifest.xml",'--java',"$dir\generated",'-A',"$projectRoot\..\shared-test-resources")
-$cp="$platform;$projectRoot\build\debug\classes"
+$cp="$platform;$projectRoot\build\$Variant\classes"
 $sources=@(Get-ChildItem -LiteralPath "$projectRoot\app\src\androidTest\java" -Recurse -Filter '*.java' | ForEach-Object {'"'+$_.FullName.Replace('\','/')+'"'})
 [IO.File]::WriteAllLines("$dir\sources.txt",$sources,[Text.UTF8Encoding]::new($false))
 Run-Tool "$env:JAVA_HOME\bin\javac.exe" @('--release','17','-encoding','UTF-8','-classpath',$cp,'-d',"$dir\classes","@$dir\sources.txt")
 Run-Tool "$env:JAVA_HOME\bin\jar.exe" @('--create','--file',"$dir\classes.jar",'-C',"$dir\classes",'.')
-Run-Tool "$bt\d8.bat" @('--lib',$platform,'--classpath',"$projectRoot\build\debug\classes.jar",'--min-api','23','--output',"$dir\dex","$dir\classes.jar")
+Run-Tool "$bt\d8.bat" @('--lib',$platform,'--classpath',"$projectRoot\build\$Variant\classes.jar",'--min-api','23','--output',"$dir\dex","$dir\classes.jar")
 Add-Type -AssemblyName System.IO.Compression,System.IO.Compression.FileSystem
 $archive=[IO.Compression.ZipFile]::Open("$dir\unsigned.apk",[IO.Compression.ZipArchiveMode]::Update)
 try{[IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive,"$dir\dex\classes.dex",'classes.dex')|Out-Null}finally{$archive.Dispose()}

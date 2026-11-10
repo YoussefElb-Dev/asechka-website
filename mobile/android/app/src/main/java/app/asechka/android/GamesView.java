@@ -62,7 +62,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     else {key.append(client.presence);for(JSONObject r:client.rooms.values())key.append(r.optString("id")).append(r.optLong("seq")).append(GamesData.array(r,"players"));}
     if(board!=null&&current!=null)board.update(current,client.pending,client.connected);
     if(key.toString().equals(signature))return;signature=key.toString();
-    if(current!=null&&"drawing".equals(current.optString("game"))&&drawing!=null&&drawing.getParent()!=null&&drawing.roomId().equals(current.optString("id"))){drawing.update(current);return;}
+    if(current!=null&&"drawing".equals(current.optString("game"))&&drawing!=null&&drawing.getParent()!=null&&drawing.roomId().equals(current.optString("id"))){drawing.viewport(getHeight()-dp(66));drawing.update(current);return;}
     int y=getScrollY();if(board!=null&&board.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)board.getParent()).removeView(board);
     body.removeAllViews();
     if(current==null)hub();else{
@@ -170,6 +170,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
   private void playRoom(){
     JSONObject r=current,s=GamesData.state(r);String game=r.optString("game");boolean finished="finished".equals(r.optString("status"));int me=GamesData.player(r,client.actor),index=GamesData.index(game);
     LinearLayout heading=row();Button back=button("‹",false,()->{client.select("");signature="";refresh();});back.setContentDescription("All games");heading.addView(back,new LinearLayout.LayoutParams(dp(48),dp(48)));TextView title=text(GamesData.TITLES[index],18,INK,true);heading.addView(title,new LinearLayout.LayoutParams(0,-2,1));Button more=button("•••",false,this::playMenu);more.setContentDescription("Game details and controls");heading.addView(more,new LinearLayout.LayoutParams(dp(48),dp(48)));add(heading,0);
+    if("drawing".equals(game)){drawing=new GamesDrawingView(activity,client);add(drawing,6);drawing.viewport((getHeight()>0?getHeight():getResources().getDisplayMetrics().heightPixels)-dp(66));drawing.update(r);return;}
     String status=finished?GamesData.result(r,client.actor):"battleship".equals(game)&&"placement".equals(s.optString("phase"))?"Arrange your secret fleet":s.optInt("turn")==me?"Your move":"Your partner’s move";
     JSONArray scores=GamesData.array(r,"scores");TextView turn=text(status+"  ·  "+scores.optInt(0)+" : "+scores.optInt(1),14,GamesData.COLORS[index],true);turn.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);add(turn,6);
     if(!client.connected||!client.error.isEmpty()){Button retry=button(client.error.isEmpty()?"Connection interrupted · tap to retry":client.error,false,client::reconnect);add(retry,4);}
@@ -260,7 +261,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     if("choose".equals(phase)&&s.optInt("setter")==me&&!finished){
       String[] categories={"romance","movies","animals","science","geography","food","technology","general"};Spinner category=spinner(categories);category.setContentDescription("Secret word category");add(category,14);
       add(action("Choose a surprise word",true,board.myTurn(),()->move(GamesData.obj("type","category","category",categories[category.getSelectedItemPosition()]))),8);
-      EditText word=input("Or enter your own secret word");word.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);if(Build.VERSION.SDK_INT>=26)word.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);add(word,12);
+      EditText word=input("Or enter your own secret word");word.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);if(Build.VERSION.SDK_INT>=26)word.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);add(word,12);
       Switch personal=new Switch(activity);personal.setText("Personal reference · letter hints only");personal.setTextSize(15);personal.setTextColor(INK);personal.setMinHeight(dp(48));personal.setContentDescription("Personal reference. Letter hints only; no AI or descriptive clues.");add(personal,8);
       add(action("Send secret word",false,board.myTurn(),()->move(GamesData.obj("type","word","word",word.getText().toString().trim(),"category",categories[category.getSelectedItemPosition()],"personal",personal.isChecked()))),8);return;
     }
