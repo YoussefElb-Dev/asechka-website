@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T20:40:48.172Z",
+  "updatedAt": "2026-11-10T20:42:47.988Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1269,6 +1269,17 @@
           }
         ]
       }
+    },
+    {
+      "id": "0ffab0e9-5258-4f3e-a289-ff18fb566164",
+      "date": "2026-11-10",
+      "createdAt": "2026-11-10T20:42:47.988Z",
+      "author": "asnat",
+      "src": "assets/photos/2026/11/0ffab0e9-5258-4f3e-a289-ff18fb566164.jpg",
+      "caption": "Look at my man",
+      "alt": "Look at my man",
+      "contentHash": "21fc5eb6942ebfb32948df0907bb1e892fb7d499adf9bd7143c6190efed6ead5",
+      "collection": "memories"
     }
   ]
 }
