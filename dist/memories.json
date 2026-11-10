@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T20:45:18.998Z",
+  "updatedAt": "2026-11-10T20:45:43.881Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1301,6 +1301,17 @@
       "caption": "Matching hoodies (kinda?)",
       "alt": "Matching hoodies (kinda?)",
       "contentHash": "1367764c9925de9916d6d66b81f152107ccb560c375237e0380a4e3a7607dec6",
+      "collection": "memories"
+    },
+    {
+      "id": "f7dbd9d9-4dd0-4047-a889-5f034d2cd5ab",
+      "date": "2026-11-10",
+      "createdAt": "2026-11-10T20:45:43.881Z",
+      "author": "asnat",
+      "src": "assets/photos/2026/11/f7dbd9d9-4dd0-4047-a889-5f034d2cd5ab.jpg",
+      "caption": "My loveeeeew",
+      "alt": "My loveeeeew",
+      "contentHash": "8ec7fa253c4d9d73318de7fbb4efecfd9704811d028e8a3ce38a11b457d7b8f2",
       "collection": "memories"
     }
   ]
