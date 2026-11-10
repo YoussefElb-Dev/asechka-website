@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T18:35:08.443Z",
+  "updatedAt": "2026-11-10T20:40:41.548Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -711,7 +711,19 @@
       "date": "2026-11-09",
       "createdAt": "2026-11-10T18:35:08.443Z",
       "author": "youssef",
-      "text": "If every beautiful memory I have were to fade away, I would pray that the memory of you would be the last to leave me. For there is something about loving you that feels greater than time itself, as though my heart had been searching for yours long before we ever met, and will continue loving you long after the stars have forgotten how to shine."
+      "text": "If every beautiful memory I have were to fade away, I would pray that the memory of you would be the last to leave me. For there is something about loving you that feels greater than time itself, as though my heart had been searching for yours long before we ever met, and will continue loving you long after the stars have forgotten how to shine.",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b86785b1-4bbd-40c1-998f-b4df9352bc44",
+            "hash": "24126ac793d6e6cc1d628cd101a57093ca9af5c6d53aec389b10a78489cec4fb"
+          }
+        ]
+      }
     }
   ],
   "photos": [
