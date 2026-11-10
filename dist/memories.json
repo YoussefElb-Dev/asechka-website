@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T20:45:56.501Z",
+  "updatedAt": "2026-11-10T20:45:59.119Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1279,7 +1279,19 @@
       "caption": "Look at my man",
       "alt": "Look at my man",
       "contentHash": "21fc5eb6942ebfb32948df0907bb1e892fb7d499adf9bd7143c6190efed6ead5",
-      "collection": "memories"
+      "collection": "memories",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a319ed70-0424-4764-9556-34f8c94d5755",
+            "hash": "75a52ede8fbdcf45c97902d47251173ad2fce806098a7d0bf4f9247738ea8134"
+          }
+        ]
+      }
     },
     {
       "id": "c95ec64e-89dd-4f86-acb2-0cadebf271c1",
