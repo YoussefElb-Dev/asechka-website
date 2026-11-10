@@ -1,10 +1,10 @@
 {
   "packageName": "app.asechka.android",
-  "versionCode": 32,
-  "versionName": "2.7.1",
+  "versionCode": 33,
+  "versionName": "2.7.2",
   "minSdk": 23,
-  "url": "https://asechka-website.vercel.app/updates/Asechka-Android-2.7.1.apk",
-  "bytes": 12213849,
-  "sha256": "8c2b3e04d93e8b8d73418b4ab931f5b0bdb1b2d31392ac531851bbdd04e9c39b",
+  "url": "https://asechka-website.vercel.app/updates/Asechka-Android-2.7.2.apk",
+  "bytes": 12213851,
+  "sha256": "45adc2bb3fc28436034f7c619e42bfef3040b60a0a255f8e79b399290b3cd876",
   "notes": "A new Asechka release is ready. Install it here to receive the latest improvements."
 }
