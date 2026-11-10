@@ -1,13 +1,17 @@
 name: Native Android and iPhone apps
-# Builds are manual to avoid spending private-repository minutes on each edit.
+# Builds run on main pushes (excluding automated update-feed commits) and manual dispatch.
 on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'dist/updates/**'
   workflow_dispatch:
     inputs:
       platform:
         description: 'Files to generate (choose only the platform that needs rebuilding)'
         type: choice
         options: [iphone, android, both]
-        default: iphone
+        default: both
       full_checks:
         description: 'Run full iPhone simulator checks (shared tests and Games checks always run)'
         type: boolean
@@ -47,12 +51,14 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: node --test tests/*.test.mjs
       - name: Verify seven modules, original assets, native catalogs and versions
-        run: node mobile/tools/verify-games.mjs
+        run: |
+          node mobile/tools/verify-games.mjs
+          node mobile/tools/critic-games.mjs
   android:
     permissions:
       contents: write
     needs: backend
-    if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
+    if: ${{ github.event_name == 'push' || inputs.platform == 'android' || inputs.platform == 'both' }}
     timeout-minutes: 15
     name: Android APK
     runs-on: ubuntu-latest
@@ -147,7 +153,7 @@ jobs:
         run: rm -f "$RUNNER_TEMP/asechka-release.jks"
   iphone:
     needs: backend
-    if: ${{ inputs.platform == 'iphone' || inputs.platform == 'both' }}
+    if: ${{ github.event_name == 'push' || inputs.platform == 'iphone' || inputs.platform == 'both' }}
     name: iPhone IPA for sideloading
     runs-on: macos-15
     # A fresh hosted simulator can spend more than ten minutes on its first boot.
