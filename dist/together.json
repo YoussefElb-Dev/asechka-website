@@ -11,7 +11,7 @@
       "sentAt": "2026-11-10T20:40:36.497Z"
     }
   },
-  "updatedAt": "2026-11-10T20:42:17.578Z",
+  "updatedAt": "2026-11-10T20:42:36.313Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -1929,7 +1929,7 @@
     "lastResetOn": null,
     "nextLifeOn": "2026-11-12",
     "todayComplete": true,
-    "asOf": "2026-11-10T20:42:17.578Z"
+    "asOf": "2026-11-10T20:42:36.313Z"
   },
   "messages": [
     {
@@ -1981,11 +1981,10 @@
       "id": "535386c9-81b8-4a55-9986-0822fccdda30",
       "from": "youssef",
       "to": "asnat",
-      "text": "I love you so much and I’ll always keep watching that video and sniffing your bracelets and the hoodie and just everything about you.",
       "preview": "I love you so much and I’ll always keep watching that video …",
       "day": "2026-11-10",
       "createdAt": "2026-11-10T20:42:17.578Z",
-      "closedAt": null
+      "closedAt": "2026-11-10T20:42:36.313Z"
     }
   ]
 }
