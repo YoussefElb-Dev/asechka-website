@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T20:44:15.077Z",
+  "updatedAt": "2026-11-10T20:45:18.998Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1290,6 +1290,17 @@
       "caption": "",
       "alt": "A picture of us",
       "contentHash": "04d26a2095830206f873048b81a1e76c8e896cb7abd0d814e53ad54dd1aa3284",
+      "collection": "memories"
+    },
+    {
+      "id": "63a2bdc7-a18f-4f05-a05a-c2a2c5b282b0",
+      "date": "2026-11-10",
+      "createdAt": "2026-11-10T20:45:18.998Z",
+      "author": "asnat",
+      "src": "assets/photos/2026/11/63a2bdc7-a18f-4f05-a05a-c2a2c5b282b0.jpg",
+      "caption": "Matching hoodies (kinda?)",
+      "alt": "Matching hoodies (kinda?)",
+      "contentHash": "1367764c9925de9916d6d66b81f152107ccb560c375237e0380a4e3a7607dec6",
       "collection": "memories"
     }
   ]
