@@ -12,7 +12,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const source = resolve(root, 'mobile/game-art-source');
 const output = resolve(root, 'mobile/games-assets');
 const entries = [];
-const ids = ['pool','tictactoe','hangman','connect4','checkers','battleship','drawing'];
+const ids = ['pool','tictactoe','hangman','connect4','checkers','battleship'];
 async function emit(path, input, width, height, metadata={}) {
   const data = await sharp(input).resize(width,height,{fit:'fill'}).png({compressionLevel:9, palette:true, colours:256, dither:0}).toBuffer();
   await mkdir(dirname(resolve(output,path)),{recursive:true});
