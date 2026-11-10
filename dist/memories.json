@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T20:45:43.881Z",
+  "updatedAt": "2026-11-10T20:45:49.768Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1309,10 +1309,12 @@
       "createdAt": "2026-11-10T20:45:43.881Z",
       "author": "asnat",
       "src": "assets/photos/2026/11/f7dbd9d9-4dd0-4047-a889-5f034d2cd5ab.jpg",
-      "caption": "My loveeeeew",
-      "alt": "My loveeeeew",
+      "caption": "My loveeeee",
+      "alt": "My loveeeee",
       "contentHash": "8ec7fa253c4d9d73318de7fbb4efecfd9704811d028e8a3ce38a11b457d7b8f2",
-      "collection": "memories"
+      "collection": "memories",
+      "revision": "76b79a20-f81b-4459-8443-5fa0eda43573",
+      "revisionFingerprint": "7b2fc9e86938b5ce7464ecb585f72b57becac232dad121b99766a078f1d7971c"
     }
   ]
 }
