@@ -1,10 +1,10 @@
 {
-    "packageName":  "app.asechka.android",
-    "versionCode":  31,
-    "versionName":  "2.7.0",
-    "minSdk":  23,
-    "url":  "https://asechka-website.vercel.app/updates/Asechka-Android-2.7.0.apk",
-    "bytes":  12213848,
-    "sha256":  "da78224cffd70c9b722a6a37e75bd46232cd1e63d5ffb91701ddfe6cd6409557",
-    "notes":  "Winner and loser celebration screens across all 7 games, universal Soft Orbit layout across iOS and Android, and immediate heart syncing."
+  "packageName": "app.asechka.android",
+  "versionCode": 32,
+  "versionName": "2.7.1",
+  "minSdk": 23,
+  "url": "https://asechka-website.vercel.app/updates/Asechka-Android-2.7.1.apk",
+  "bytes": 12213849,
+  "sha256": "8c2b3e04d93e8b8d73418b4ab931f5b0bdb1b2d31392ac531851bbdd04e9c39b",
+  "notes": "A new Asechka release is ready. Install it here to receive the latest improvements."
 }
