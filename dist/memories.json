@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-11T04:33:12.847Z",
+  "updatedAt": "2026-11-12T02:46:59.646Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -747,7 +747,19 @@
       "date": "2026-11-10",
       "createdAt": "2026-11-11T04:33:12.847Z",
       "author": "youssef",
-      "text": "If I could gather all the love that has ever existed in this world and place it in your hands, it would still fall short of what my heart holds for you. For I do not simply wish to love you while the days are beautiful, but to find beauty in every day because you are in it. And when time has taken our youth and the world has forgotten our story, I hope your heart still remembers that somewhere in this lifetime, there was a boy who loved you more deeply than words could ever explain."
+      "text": "If I could gather all the love that has ever existed in this world and place it in your hands, it would still fall short of what my heart holds for you. For I do not simply wish to love you while the days are beautiful, but to find beauty in every day because you are in it. And when time has taken our youth and the world has forgotten our story, I hope your heart still remembers that somewhere in this lifetime, there was a boy who loved you more deeply than words could ever explain.",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "c1bcbf06-be16-4b30-90e7-c2ce7d362474",
+            "hash": "873fac99a1235ce4aa04e2b9d71f52a0d2f390bc58d09b392bbeedfaf97844c3"
+          }
+        ]
+      }
     }
   ],
   "photos": [
