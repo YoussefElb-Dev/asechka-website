@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-13T05:32:04.094Z",
+  "updatedAt": "2026-11-13T18:48:32.494Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -793,13 +793,18 @@
       "text": "If I could gather every beautiful thing this world has ever created, I would still find nothing that compares to you. You are the calm in my chaos, the warmth in my coldest days, and the person my heart would find in every lifetime. Even if the stars went dark and the oceans dried, one thing would never change: I would still choose you, endlessly, in every version of forever.",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "5a7405ec-164c-41a4-844c-4b01497883e4",
             "hash": "4116adb3650214810e31c7264d550c5295cc642acc1a24a32be594f65f6a5d42"
+          },
+          {
+            "id": "33f7b7da-4718-4253-aacc-07c34b1e6ea4",
+            "hash": "3052cb2e4f61360d9dad1bcd9143a2ad91e0e9db473b86b6b18c4cd102ae7331"
           }
         ]
       }
