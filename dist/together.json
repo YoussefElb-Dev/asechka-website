@@ -3,15 +3,15 @@
   "bucketList": [],
   "hearts": {
     "me": {
-      "id": "e2d0f20a-bc28-41a7-86a7-c933817aef76",
-      "sentAt": "2026-11-13T05:31:27.675Z"
+      "id": "91f6a641-3ad6-4ce5-ba5a-18975e5fca7d",
+      "sentAt": "2026-11-13T05:31:29.703Z"
     },
     "asechka": {
       "id": "a7ffe5a5-d47f-4b8f-ae50-66fecdc50858",
       "sentAt": "2026-11-13T04:37:41.068Z"
     }
   },
-  "updatedAt": "2026-11-13T05:31:27.675Z",
+  "updatedAt": "2026-11-13T05:31:29.703Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -94,7 +94,7 @@
       "asechka": 700
     },
     "2026-11-13": {
-      "me": 29,
+      "me": 37,
       "asechka": 0
     }
   },
@@ -2013,7 +2013,8 @@
     "e39abb08-4abd-40a3-a7fd-6e6f095f4d0e": "me|1|2026-11-13",
     "34b6069b-14a4-4e61-96f1-c63a1a657a57": "me|10|2026-11-13",
     "c7a21bd0-8bfa-4bf1-856e-86799e97c30d": "me|9|2026-11-13",
-    "e2d0f20a-bc28-41a7-86a7-c933817aef76": "me|9|2026-11-13"
+    "e2d0f20a-bc28-41a7-86a7-c933817aef76": "me|9|2026-11-13",
+    "91f6a641-3ad6-4ce5-ba5a-18975e5fca7d": "me|8|2026-11-13"
   },
   "heartStreak": {
     "version": 1,
@@ -2035,7 +2036,7 @@
     "lastResetOn": null,
     "nextLifeOn": "2026-12-12",
     "todayComplete": true,
-    "asOf": "2026-11-13T05:31:27.675Z"
+    "asOf": "2026-11-13T05:31:29.703Z"
   },
   "messages": [
     {
