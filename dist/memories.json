@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-14T06:52:43.466Z",
+  "updatedAt": "2026-11-14T06:52:49.728Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -819,7 +819,19 @@
       "date": "2026-11-13",
       "createdAt": "2026-11-14T06:52:43.466Z",
       "author": "youssef",
-      "text": "If time ever tried to take everything away from me, I would ask it to leave me just one thing: the chance to love you. Because no matter how many years pass, how many oceans separate us, or how many stars disappear from the sky, my heart will always know where it belongs. And if forever is real, I hope I get to spend every second of it with you."
+      "text": "If time ever tried to take everything away from me, I would ask it to leave me just one thing: the chance to love you. Because no matter how many years pass, how many oceans separate us, or how many stars disappear from the sky, my heart will always know where it belongs. And if forever is real, I hope I get to spend every second of it with you.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "4ed1c918-ddb8-4d29-a001-8ff981f824a3",
+            "hash": "a3c5dcfd659434030cb143e516e29219437c7465340616bab7afdc754a1bb996"
+          }
+        ]
+      }
     }
   ],
   "photos": [
