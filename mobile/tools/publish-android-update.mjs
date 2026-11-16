@@ -25,7 +25,10 @@ try {
   if(old.versionCode>Number(code))throw new Error('Refusing an update downgrade.');
   if(old.versionCode===Number(code)&&old.sha256!==sha256)throw new Error('Increase versionCode before publishing a different APK.');
 }catch(e){if(e.code!=='ENOENT')throw e;}
-const name=`Asechka-Android-${versionName}.apk`;
+// Keep one stable filename so each release overwrites the previous APK in the
+// deploy bundle. Versioned backups live in GitHub releases, so dist/updates
+// only needs the newest build for the in-app updater download.
+const name='Asechka-Android.apk';
 await copyFile(apk,join(folder,name));
 await writeFile(join(folder,name+'.sha256'),`${sha256}  ${name}\n`);
 const manifest={packageName,versionCode:Number(code),versionName,minSdk:Number(info.match(/sdkVersion:'(\d+)'/)?.[1]||23),url:`https://asechka-website.vercel.app/updates/${name}`,bytes:bytes.length,sha256,notes:process.env.ANDROID_RELEASE_NOTES||'Update inside Asechka; spelling suggestions across writing fields; word tiles fit the screen; centered chance dots; Google AI hints with a built-in fallback.'};

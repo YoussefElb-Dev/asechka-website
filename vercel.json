@@ -25,8 +25,16 @@
     "api/games-socket.js": {
       "maxDuration": 300
     },
+    "api/journal.js": {
+      "includeFiles": "{dist/*.json,dist/assets/recipes/**,private/camera.json,private/vault.json}",
+      "maxDuration": 60
+    },
+    "api/together-photo.js": {
+      "includeFiles": "{dist/*.json,dist/assets/photos/**}",
+      "maxDuration": 60
+    },
     "api/*.js": {
-      "includeFiles": "{dist/*.json,dist/assets/photos/**,dist/assets/recipes/**,private/camera.json,private/vault.json}",
+      "includeFiles": "dist/*.json",
       "maxDuration": 60
     }
   }
