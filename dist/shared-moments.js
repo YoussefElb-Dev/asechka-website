@@ -13,17 +13,30 @@ if(!['me','asechka'].includes(side))side='';
 try{shared=JSON.parse(localStorage.getItem('asechka-heart-ledger') || 'null');}catch{}
 let heartSending=false,heartTimer;
 const heartQueue=new HeartOutbox({load:()=>{try{return JSON.parse(localStorage.getItem('asechka-heart-outbox')||'[]')}catch{return []}},save:items=>localStorage.setItem('asechka-heart-outbox',JSON.stringify(items))});
-function queueHeartFlush(delay=20){if(heartTimer)return;heartTimer=setTimeout(()=>{heartTimer=null;flushHearts();},delay);}
+function queueHeartFlush(){if(!heartTimer)heartTimer=setTimeout(()=>{heartTimer=null;flushHearts();},600);}
 async function flushHearts(){
   if(heartSending || !navigator.onLine || !heartQueue.items.length)return;
-  if(busy){queueHeartFlush(60);return;}
+  if(busy){queueHeartFlush();return;}
   heartSending=true;
   const status=$('[data-heart-status]');
   try{
-    while(heartQueue.items.length){const body=heartQueue.seal();const result=await api('/api/together',body);installState(result);heartQueue.acknowledge(body.operationId);renderHearts();}
+    while(heartQueue.items.length){
+      const body=heartQueue.seal();
+      try{installState(await api('/api/together',body));}
+      catch(error){
+        if(error.status!==409)throw error;
+        // An identical retry was already saved: the server returns the exact
+        // receipt, so acknowledge instead of blocking every later heart behind it.
+        const recovered=await api('/api/together?heartOperation='+encodeURIComponent(body.operationId));
+        const receipt=recovered.heartReceipt;
+        if(!receipt || receipt.operationId!==body.operationId || receipt.from!==body.from || String(receipt.count)!==String(body.count) || receipt.day!==body.day)throw error;
+        installState(recovered);
+      }
+      heartQueue.acknowledge(body.operationId);renderHearts();
+    }
     if(status)status.textContent='Every little heart is saved for both of us. ♡';
   }catch(error){if(status)status.textContent=error.status===401?'Unlock our little door to send your saved hearts.':'Your hearts are saved on this device. We’ll try again when connected.';if(error.status===401)notice(error.message,error);}
-  finally{heartSending=false;if(heartQueue.items.length && navigator.onLine)queueHeartFlush(20);}
+  finally{heartSending=false;}
 }
 window.addEventListener('online',()=>{loadShared({quiet:true});flushHearts();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(heartTimer);heartTimer=null;flushHearts();}else queueHeartFlush();});
@@ -114,7 +127,9 @@ function renderHearts(){
   const incoming=shared?.hearts[side==='me'?'asechka':'me'];
   if(incoming){message.append(node('span','',side==='me'?'Asechka was thinking of you. ♡':'He was thinking of you. ♡'));const time=node('time','',timeText(incoming.sentAt));time.dateTime=incoming.sentAt;message.append(time);}
   else message.append(node('span','',side==='me'?'A little place for a heart from Asechka.':'A little place for a heart from him.'));
-  const sent=shared?.hearts[side];if(own)own.textContent=sent?`Your last little heart: ${timeText(sent.sentAt)}`:'';
+  const pending=heartQueue.items.filter(item=>item.from===side).reduce((sum,item)=>sum+item.count,0);
+  const sent=shared?.hearts[side];
+  if(own)own.textContent=sent || pending?`Your last little heart: ${sent?timeText(sent.sentAt):'just now'}${pending?' ('+pending+' saved on this device)':''}`:'';
 }
 const heartSide=$('[data-heart-side]');
 heartSide?.addEventListener('change',()=>{side=heartSide.value;try{localStorage.setItem('asechka-heart-side',side);}catch{}$('[data-heart-status]').textContent='';renderHearts();});
@@ -122,7 +137,7 @@ $('[data-send-heart]')?.addEventListener('click',event=>{
   if(!side || !isWritable())return;
   floatHearts(event.currentTarget);
   const status=$('[data-heart-status]');
-  try{heartQueue.tap(side);renderStreak();status.textContent='Your little hearts are saved on this device. ♡';queueHeartFlush();}
+  try{heartQueue.tap(side);renderHearts();status.textContent='Your little hearts are saved on this device. ♡';queueHeartFlush();}
   catch{status.textContent='This browser couldn’t save that heart. Please free some storage and try again.';}
 });
 $$('[data-retry-shared]').forEach(button=>button.addEventListener('click',()=>{loadShared();loadMemory();}));
@@ -254,6 +269,6 @@ function openPhoto(item){
 $('#close-bucket-photo')?.addEventListener('click',()=>$('#bucket-lightbox').close());
 $('#bucket-lightbox')?.addEventListener('close',()=>{document.body.classList.remove('shared-dialog-open');returnFocus?.focus({preventScroll:true});});
 loadShared();loadMemory();renderHearts();queueHeartFlush();
-setInterval(()=>{if(!document.hidden && !busy && !dialog?.open){loadShared({quiet:true});queueHeartFlush();}},15000);
+setInterval(()=>{if(!document.hidden && !busy && !heartSending && !dialog?.open){loadShared({quiet:true});queueHeartFlush();}},5000);
 setInterval(()=>{if(!document.hidden && !busy)loadMemory();},60000);
 window.addEventListener('focus',()=>{if(!busy && !dialog?.open){loadShared({quiet:true});loadMemory();}});

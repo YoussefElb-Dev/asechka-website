@@ -1,4 +1,4 @@
-# Asechka 2.7.0 (31)
+# Asechka 2.7.1 (32)
 
 Android: Settings → App updates checks the protected website for a release. Install this APK manually once over the existing app; later releases download inside Asechka and open Android's installation confirmation. On Android 8+, allow installation from Asechka when asked. Reconnect with the existing website code if the session has expired. Updates retain the package, original release certificate, encrypted offline content, drafts, and outbox.
 

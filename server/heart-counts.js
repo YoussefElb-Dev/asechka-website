@@ -1,5 +1,6 @@
 import { sharedStreak, streakPolicy } from '../dist/heart-streak.js';
 const dayPattern = /^\d{4}-\d{2}-\d{2}$/;
+const RECEIPT_LIMIT = 512;
 export function heartDay(now = new Date()) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 }
@@ -23,6 +24,10 @@ export function addHearts(data, change, now) {
   if (!Number.isSafeInteger((values[change.from] || 0) + count)) throw Object.assign(new Error('This heart count could not be saved.'), {status:400});
   values[change.from] = (values[change.from] || 0) + count;
   data.heartOperations[change.operationId] = receipt;
+  // Keep the permanent ledger bounded: the API publishes the newest receipts
+  // for idempotent retries, and endless heart spam must not grow the shared file.
+  const receipts = Object.keys(data.heartOperations);
+  if (receipts.length > RECEIPT_LIMIT) for (const id of receipts.slice(0, receipts.length - RECEIPT_LIMIT)) delete data.heartOperations[id];
   data.hearts[change.from] = {id:change.operationId,sentAt:now.toISOString()};
   return true;
 }

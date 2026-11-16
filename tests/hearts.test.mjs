@@ -31,3 +31,11 @@ test('API responses keep daily counts and bounded acknowledgements without publi
   const data=send(base(),{count:100});const visible=publicTogether(data);
   assert.equal(visible.heartDays['2026-11-02'].me,100);assert.equal(visible.heartReceipts.length,1);assert.equal(visible.heartOperations,undefined);
 });
+test('the permanent receipt ledger stays bounded under endless heart spam',()=>{
+  let data=base();
+  for(let i=0;i<530;i++)data=send(data,{count:1});
+  assert.equal(Object.keys(data.heartOperations).length,512);
+  assert.equal(data.heartDays['2026-11-02'].me,530);
+  const visible=publicTogether(data);
+  assert.equal(visible.heartReceipts.length,512);assert.equal(visible.heartOperations,undefined);
+});
