@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T22:45:13.230Z",
+  "updatedAt": "2026-11-15T04:51:25.141Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -738,6 +738,121 @@
           {
             "id": "b86785b1-4bbd-40c1-998f-b4df9352bc44",
             "hash": "24126ac793d6e6cc1d628cd101a57093ca9af5c6d53aec389b10a78489cec4fb"
+          }
+        ]
+      }
+    },
+    {
+      "id": "18086f03-6d7a-48e0-aa4b-965c24b43e9d",
+      "date": "2026-11-10",
+      "createdAt": "2026-11-11T04:33:12.847Z",
+      "author": "youssef",
+      "text": "If I could gather all the love that has ever existed in this world and place it in your hands, it would still fall short of what my heart holds for you. For I do not simply wish to love you while the days are beautiful, but to find beauty in every day because you are in it. And when time has taken our youth and the world has forgotten our story, I hope your heart still remembers that somewhere in this lifetime, there was a boy who loved you more deeply than words could ever explain.",
+      "social": {
+        "likes": {
+          "asnat": true,
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "c1bcbf06-be16-4b30-90e7-c2ce7d362474",
+            "hash": "873fac99a1235ce4aa04e2b9d71f52a0d2f390bc58d09b392bbeedfaf97844c3"
+          },
+          {
+            "id": "fa30fcf1-4916-485a-94d5-26b5f7f7a9bc",
+            "hash": "2c1821e074ebd30a7e07ae3d494478923c5e94fc0d18bc95c56921ac49c586f3"
+          }
+        ]
+      }
+    },
+    {
+      "id": "c47fa809-f5f5-47e9-bf97-af0092a69522",
+      "date": "2026-11-11",
+      "createdAt": "2026-11-12T04:34:11.550Z",
+      "author": "youssef",
+      "text": "If the universe gave me every treasure it had to offer, I would still consider myself the richest man alive simply because I have you. For gold may lose its shine, flowers may wither, and even the stars may one day disappear, but the love I carry for you is a treasure that time itself could never take away. And if I had to choose between all the wonders of creation and one lifetime by your side, I would choose you without hesitation, a thousand times over.",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "a0e507ce-9fdc-4536-b1bc-9d1b1c03fe86",
+            "hash": "5357e9390edb7eaaa04fb1c4808ba19edbb2e02a5b9d4e724e771b2e55ab8260"
+          },
+          {
+            "id": "01e9ceb4-f190-455c-a17c-2ed649985703",
+            "hash": "82f622a195bd2ec30761480b91ed21ca8d01a1e7724100ad4b98fa1eb6f0a076"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dd8e96df-33e1-4bf8-b8c2-ab1938573532",
+      "date": "2026-11-12",
+      "createdAt": "2026-11-13T05:32:00.903Z",
+      "author": "youssef",
+      "text": "If I could gather every beautiful thing this world has ever created, I would still find nothing that compares to you. You are the calm in my chaos, the warmth in my coldest days, and the person my heart would find in every lifetime. Even if the stars went dark and the oceans dried, one thing would never change: I would still choose you, endlessly, in every version of forever.",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "5a7405ec-164c-41a4-844c-4b01497883e4",
+            "hash": "4116adb3650214810e31c7264d550c5295cc642acc1a24a32be594f65f6a5d42"
+          },
+          {
+            "id": "33f7b7da-4718-4253-aacc-07c34b1e6ea4",
+            "hash": "3052cb2e4f61360d9dad1bcd9143a2ad91e0e9db473b86b6b18c4cd102ae7331"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b479c01e-750f-4863-b8d7-361f438b5a8d",
+      "date": "2026-11-13",
+      "createdAt": "2026-11-14T06:52:43.466Z",
+      "author": "youssef",
+      "text": "If time ever tried to take everything away from me, I would ask it to leave me just one thing: the chance to love you. Because no matter how many years pass, how many oceans separate us, or how many stars disappear from the sky, my heart will always know where it belongs. And if forever is real, I hope I get to spend every second of it with you.",
+      "social": {
+        "likes": {
+          "youssef": true,
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "4ed1c918-ddb8-4d29-a001-8ff981f824a3",
+            "hash": "a3c5dcfd659434030cb143e516e29219437c7465340616bab7afdc754a1bb996"
+          },
+          {
+            "id": "b265160d-3e57-4a1c-b66f-22a70139f452",
+            "hash": "b49aac23c7edea663610774026675ba9ed968d565d54fa8d443b51ade01fc4cd"
+          }
+        ]
+      }
+    },
+    {
+      "id": "75592523-3077-4840-b900-6c0996ac3139",
+      "date": "2026-11-14",
+      "createdAt": "2026-11-15T04:51:21.920Z",
+      "author": "youssef",
+      "text": "Sometimes I wish I could pause the world just to hold you a little longer, to memorize every detail of your smile, and to remind you how deeply you are loved. Because even a thousand lifetimes would never feel like enough time with you. I don't just want the beautiful moments with you; I want the ordinary mornings, the difficult days, the quiet nights, and every little moment in between. I want a lifetime where loving you is simply part of every day.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "b58de876-191f-4617-8c4d-4f6bcb756615",
+            "hash": "05c2bfb3da5ca11eb67eac768b279367bbdc5ba3a1a1bb5465f9e52f4050e467"
           }
         ]
       }
