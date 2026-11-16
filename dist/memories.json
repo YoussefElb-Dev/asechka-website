@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-16T06:57:44.365Z",
+  "updatedAt": "2026-11-16T06:57:48.866Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -862,7 +862,19 @@
       "date": "2026-11-15",
       "createdAt": "2026-11-16T06:57:44.365Z",
       "author": "youssef",
-      "text": "Somewhere beyond the horizon, where the sea meets the sky, I imagine a world untouched by time, where the stars never fade and the waves never stop reaching the shore. And in that endless place, I would still search for you. Not because I am afraid of being alone, but because even an eternity of beautiful things would mean little if I couldn't share it with you."
+      "text": "Somewhere beyond the horizon, where the sea meets the sky, I imagine a world untouched by time, where the stars never fade and the waves never stop reaching the shore. And in that endless place, I would still search for you. Not because I am afraid of being alone, but because even an eternity of beautiful things would mean little if I couldn't share it with you.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "c67ac9ac-37db-46a9-8779-cb5d1eabc6a1",
+            "hash": "dac27430c09a78440bcff029dd6cf2d901456ea7abb3b7d7ad1f9d2e541fa4be"
+          }
+        ]
+      }
     }
   ],
   "photos": [
