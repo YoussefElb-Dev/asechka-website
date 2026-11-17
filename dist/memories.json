@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-17T05:12:16.450Z",
+  "updatedAt": "2026-11-17T05:12:19.376Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -881,7 +881,19 @@
       "date": "2026-11-16",
       "createdAt": "2026-11-17T05:12:16.450Z",
       "author": "youssef",
-      "text": "Your love is alive within me; it gives breath to the parts of me that once felt lifeless. Somehow, by loving you, I have learned what it truly means to be alive."
+      "text": "Your love is alive within me; it gives breath to the parts of me that once felt lifeless. Somehow, by loving you, I have learned what it truly means to be alive.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "cc707e0f-2c67-473f-b873-1d722a5130a0",
+            "hash": "88b28e8ad27f8329abf80f61488bc6e34c562701e82a0264e7f794491f7b58a0"
+          }
+        ]
+      }
     }
   ],
   "photos": [
