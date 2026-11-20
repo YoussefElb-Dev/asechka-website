@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-20T22:40:46.456Z",
+  "updatedAt": "2026-11-20T22:40:48.395Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1692,7 +1692,19 @@
       "caption": "Best trip oat",
       "alt": "Best trip oat",
       "contentHash": "b56379db289ca55d4a0b24f7ca3671d9306a8b4e9fe7dc6d6baccc2f8284824e",
-      "collection": "memories"
+      "collection": "memories",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "9fafadc9-5a4b-48c9-bfb3-1b7b4148700b",
+            "hash": "77366aafa900c0557e5ccee087bf5d51b9ac649cf22ef3f4159eefff205e894e"
+          }
+        ]
+      }
     }
   ]
 }
