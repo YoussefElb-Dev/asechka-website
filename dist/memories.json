@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-20T22:40:39.897Z",
+  "updatedAt": "2026-11-20T22:40:42.286Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1623,7 +1623,19 @@
       "caption": "",
       "alt": "A picture of us",
       "contentHash": "3b0f1502029d64729c42e28124631ee65c1d419cd142987bc43f35e2133bb61f",
-      "collection": "memories"
+      "collection": "memories",
+      "social": {
+        "likes": {
+          "asnat": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "4af04bd4-e748-4202-a4d6-e47bb97256c3",
+            "hash": "7292ef450d22650071fdae7e279eab54067f734063a2e9f66197ca2bf52f83cf"
+          }
+        ]
+      }
     },
     {
       "id": "9228e019-05c0-4ebb-b794-8c534a8a3611",
