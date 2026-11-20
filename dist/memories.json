@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-20T05:27:13.594Z",
+  "updatedAt": "2026-11-20T22:39:59.812Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -846,13 +846,18 @@
       "text": "Sometimes I wish I could pause the world just to hold you a little longer, to memorize every detail of your smile, and to remind you how deeply you are loved. Because even a thousand lifetimes would never feel like enough time with you. I don't just want the beautiful moments with you; I want the ordinary mornings, the difficult days, the quiet nights, and every little moment in between. I want a lifetime where loving you is simply part of every day.",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "b58de876-191f-4617-8c4d-4f6bcb756615",
             "hash": "05c2bfb3da5ca11eb67eac768b279367bbdc5ba3a1a1bb5465f9e52f4050e467"
+          },
+          {
+            "id": "ef970b2c-46e4-4537-a4bd-e96153f63507",
+            "hash": "560cc890edd9e785cbe45148397bd0fd65263ca25f3a8766cfa88cd4319f9614"
           }
         ]
       }
