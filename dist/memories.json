@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-20T00:42:57.537Z",
+  "updatedAt": "2026-11-20T05:27:13.594Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -913,6 +913,13 @@
           }
         ]
       }
+    },
+    {
+      "id": "e85b5727-9d75-4783-b25c-c6dded1c8ebe",
+      "date": "2026-11-19",
+      "createdAt": "2026-11-20T05:27:13.594Z",
+      "author": "youssef",
+      "text": "If the ocean could keep every secret whispered into its waves, I would fill it with all the things I have yet to tell you. Every little reason I adore you, every dream I have of our future, every moment I wish I could relive. And perhaps one day, when the tides have carried a thousand sunsets across the shore, we'll stand together and realize that the most beautiful thing life ever gave us wasn't a place or a moment, but the life we built beside each other."
     }
   ],
   "photos": [
