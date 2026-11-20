@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-18T03:59:39.998Z",
+  "updatedAt": "2026-11-20T00:42:57.537Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -900,7 +900,19 @@
       "date": "2026-11-17",
       "createdAt": "2026-11-18T03:59:39.998Z",
       "author": "youssef",
-      "text": "If my soul had existed before the stars were born, I think some part of it was already searching for yours. Perhaps that's why loving you feels less like discovering something new and more like finding something I've known for eternity. And if the universe begins again a thousand times, I hope every version of it leads me back to you."
+      "text": "If my soul had existed before the stars were born, I think some part of it was already searching for yours. Perhaps that's why loving you feels less like discovering something new and more like finding something I've known for eternity. And if the universe begins again a thousand times, I hope every version of it leads me back to you.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "bb386a7a-297c-4206-babd-d51b8c67c7b0",
+            "hash": "bbef2e1cdac15582fc7fb9137db11bcf7e0fc5e8bfb7886ad5f3bdae575c62af"
+          }
+        ]
+      }
     }
   ],
   "photos": [
