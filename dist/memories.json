@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-20T22:40:17.791Z",
+  "updatedAt": "2026-11-20T22:40:20.981Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1599,6 +1599,17 @@
       "caption": "",
       "alt": "A picture of us",
       "contentHash": "3b0f1502029d64729c42e28124631ee65c1d419cd142987bc43f35e2133bb61f",
+      "collection": "memories"
+    },
+    {
+      "id": "9228e019-05c0-4ebb-b794-8c534a8a3611",
+      "date": "2026-11-19",
+      "createdAt": "2026-11-20T22:40:20.981Z",
+      "author": "asnat",
+      "src": "assets/photos/2026/11/9228e019-05c0-4ebb-b794-8c534a8a3611.jpg",
+      "caption": "",
+      "alt": "A picture of us",
+      "contentHash": "6077cf8973a52da8a372c35ad2e379707b05d61f975e80e15926c17c964c7ebb",
       "collection": "memories"
     }
   ]
