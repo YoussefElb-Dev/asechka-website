@@ -13,8 +13,8 @@
     "games:benchmark": "node server/games/benchmark.mjs"
   },
   "dependencies": {
-    "@vercel/functions": "3.9.11",
-    "redis": "6.3.1",
-    "ws": "8.22.0"
+    "@vercel/functions": "3.11.3",
+    "redis": "6.4.0",
+    "ws": "8.23.0"
   }
 }

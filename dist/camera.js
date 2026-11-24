@@ -5,9 +5,11 @@ const active = () => data.rolls.find(roll => !roll.developedAt);
 function status(text) { $('status').textContent = text; }
 function element(tag, text, className) { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; }
 async function api(body) {
-  const response = await fetch('/api/camera', { credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json', 'X-Asechka-Camera': '1' } : {}) }, ...(body ? { method: 'POST', body: JSON.stringify(body) } : {}) });
+  let response;
+  try { response = await fetch('/api/camera', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(body ? 45000 : 15000), headers: { Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json', 'X-Asechka-Camera': '1' } : {}) }, ...(body ? { method: 'POST', body: JSON.stringify(body) } : {}) }); }
+  catch (error) { if (error?.name === 'TimeoutError' || error?.name === 'AbortError') throw new Error('Our camera took too long to respond. Please try again.'); throw error; }
   if (response.status === 401) throw new Error('Unlock our little door again, then reopen the camera.');
-  const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Our camera needs a moment.'); return result;
+  let result = {}; try { result = await response.json(); } catch {} if (!response.ok) throw new Error(result.error || 'Our camera needs a moment.'); return result;
 }
 function render() {
   const roll = active(), count = roll?.shots.length || 0;
@@ -21,7 +23,7 @@ function render() {
   for (const button of document.querySelectorAll('[data-actor]')) { button.setAttribute('aria-pressed', String(button.dataset.actor === actor)); button.disabled = !!pending || busy; }
   $('sealed-frames').replaceChildren(...Array.from({ length: 24 }, (_, i) => { const shot = roll?.shots[i], node = element('div', shot ? '♡' : String(i + 1).padStart(2, '0'), 'sealed-frame' + (shot ? ' used' : '')); node.title = shot ? `Frame ${i + 1} · ${name(shot.actor)} · sealed` : `Frame ${i + 1} · waiting`; return node; }));
   const albums = [...data.rolls].reverse().filter(roll => roll.developedAt);
-  $('albums').replaceChildren(...(albums.length ? albums.map(roll => { const card = element('article', undefined, 'album-card'), words = element('div'); words.append(element('h3', roll.title), element('p', `24 moments · developed ${new Date(roll.developedAt).toLocaleDateString()}`)); const button = element('button', 'Open our roll ↗'); button.onclick = () => { selected = roll.id; frame = 0; reveal(); $('reveal-dialog').showModal(); }; card.append(words, button); return card; }) : [element('p', 'Your first developed roll will live here. Until then, keep a little surprise.', 'camera-note')]));
+  $('albums').replaceChildren(...(albums.length ? albums.map(roll => { const card = element('article', undefined, 'album-card'), words = element('div'), count = roll.shots?.length || 24; words.append(element('h3', roll.title), element('p', `${count} moments · developed ${new Date(roll.developedAt).toLocaleDateString()}`)); const button = element('button', 'Open our roll ↗'); button.onclick = () => { selected = roll.id; frame = 0; reveal(); $('reveal-dialog').showModal(); }; card.append(words, button); return card; }) : [element('p', 'Your first developed roll will live here. Until then, keep a little surprise.', 'camera-note')]));
 }
 async function refresh() { if (busy || document.hidden) return; try { data = await api(); render(); if ($('reveal-dialog').open) reveal(); status(data.writable ? 'Our camera is connected. Both of you share this roll.' : 'The camera connection needs restoring before saving.'); } catch (error) { status(error.message); } }
 async function save(body) {
@@ -54,15 +56,16 @@ $('shutter').onclick = async () => {
 };
 $('retry').onclick = () => { if (pending) save(pending); };
 function reveal() {
-  const roll = data.rolls.find(roll => roll.id === selected); if (!roll?.developedAt) return;
-  const shot = roll.shots[frame]; $('reveal-title').textContent = roll.title; $('frame-number').textContent = `${frame + 1} / 24`; $('previous-frame').disabled = frame === 0; $('next-frame').disabled = frame === 23;
+  const roll = data.rolls.find(roll => roll.id === selected); if (!roll?.developedAt || !roll.shots?.length) return;
+  const total = roll.shots.length; frame = Math.max(0, Math.min(frame, total - 1));
+  const shot = roll.shots[frame]; if (!shot) return; const shotReactions = shot.reactions || {}; $('reveal-title').textContent = roll.title; $('frame-number').textContent = `${frame + 1} / ${total}`; $('previous-frame').disabled = frame === 0; $('next-frame').disabled = frame >= total - 1;
   const img = element('img'); img.alt = `Frame ${frame + 1} from ${name(shot.actor)}`; img.src = '/api/camera?photo=' + encodeURIComponent(shot.id);
   img.onerror = () => { img.alt = 'This picture couldn’t load. Reopen the roll to retry.'; };
   const reactions = element('div', undefined, 'reaction-row');
-  for (const reaction of ['♡', '😂', '🥹', '✨']) { const button = element('button', reaction); button.setAttribute('aria-label', `React ${reaction}`); button.setAttribute('aria-pressed', String(shot.reactions[actor] === reaction)); button.disabled = busy; button.onclick = async () => { await save({ action: 'react', rollId: roll.id, shotId: shot.id, actor, reaction: shot.reactions[actor] === reaction ? '' : reaction, operationId: crypto.randomUUID() }); reveal(); }; reactions.append(button); }
-  $('reveal-frame').replaceChildren(img, element('p', `From ${name(shot.actor)} · ${new Date(shot.createdAt).toLocaleDateString()}`, 'frame-meta'), element('p', shot.caption), reactions, element('p', `Asnat ${shot.reactions.asnat || '—'} · Youssef ${shot.reactions.youssef || '—'}`, 'reactions-summary'));
+  for (const reaction of ['♡', '😂', '🥹', '✨']) { const button = element('button', reaction); button.setAttribute('aria-label', `React ${reaction}`); button.setAttribute('aria-pressed', String(shotReactions[actor] === reaction)); button.disabled = busy; button.onclick = async () => { await save({ action: 'react', rollId: roll.id, shotId: shot.id, actor, reaction: shotReactions[actor] === reaction ? '' : reaction, operationId: crypto.randomUUID() }); reveal(); }; reactions.append(button); }
+  $('reveal-frame').replaceChildren(img, element('p', `From ${name(shot.actor)} · ${new Date(shot.createdAt).toLocaleDateString()}`, 'frame-meta'), element('p', shot.caption), reactions, element('p', `Asnat ${shotReactions.asnat || '—'} · Youssef ${shotReactions.youssef || '—'}`, 'reactions-summary'));
 }
-$('previous-frame').onclick = () => { frame = Math.max(0, frame - 1); reveal(); }; $('next-frame').onclick = () => { frame = Math.min(23, frame + 1); reveal(); }; $('close-reveal').onclick = () => $('reveal-dialog').close();
+$('previous-frame').onclick = () => { frame = Math.max(0, frame - 1); reveal(); }; $('next-frame').onclick = () => { const roll = data.rolls.find(item => item.id === selected); const maxIndex = Math.max(0, (roll?.shots?.length || 1) - 1); frame = Math.min(maxIndex, frame + 1); reveal(); }; $('close-reveal').onclick = () => $('reveal-dialog').close();
 $('refresh').onclick = refresh; document.addEventListener('visibilitychange', () => { if (document.hidden) { stopCamera(); if ($('capture-dialog').open) $('capture-dialog').close(); } else refresh(); });
 window.addEventListener('beforeunload', event => { if (pending) { event.preventDefault(); event.returnValue = ''; } });
 render(); refresh(); setInterval(refresh, 15000);

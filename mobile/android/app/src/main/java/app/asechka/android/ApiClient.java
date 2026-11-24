@@ -39,6 +39,18 @@ public final class ApiClient {
 
   private String cookie = "";
   private long expires;
+  private String cachedUserAgent;
+
+  String userAgent() {
+    if (cachedUserAgent != null) return cachedUserAgent;
+    String version = "2.7.4";
+    try {
+      String name = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+      if (name != null && !name.isEmpty()) version = name;
+    } catch (Exception ignored) {}
+    cachedUserAgent = "Asechka-Android/" + version;
+    return cachedUserAgent;
+  }
 
   public static final class ApiError extends IOException {
     public final int status;
@@ -500,7 +512,7 @@ public final class ApiClient {
     connection.setUseCaches(false);
     connection.setRequestProperty("Accept", "application/json");
     connection.setRequestProperty("Cache-Control", "no-store");
-    connection.setRequestProperty("User-Agent", "Asechka-Android/2.2.8");
+    connection.setRequestProperty("User-Agent", userAgent());
     connection.setRequestProperty("Origin", base);
     final String sentCookie;
     final String sentSession = prefs.getString("session", "");

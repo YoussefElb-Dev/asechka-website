@@ -1,4 +1,6 @@
-# Asechka 2.7.3 (34)
+# Asechka 2.7.4 (35)
+
+Maintenance and Soft Orbit UI polish across web, Android, and iPhone: updated server dependencies, uniform JSON content-type checks on API routes, resilient request timeouts and safe album bounds in the disposable camera and time vault, rounded live-location accuracy with consistent stale-status handling, subtle Soft Orbit card borders and typography alignment, and dynamic app version reporting.
 
 Android: Settings → App updates checks the protected website for a release. Install this APK manually once over the existing app; later releases download inside Asechka and open Android's installation confirmation. On Android 8+, allow installation from Asechka when asked. Reconnect with the existing website code if the session has expired. Updates retain the package, original release certificate, encrypted offline content, drafts, and outbox.
 

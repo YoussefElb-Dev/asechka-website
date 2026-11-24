@@ -45,6 +45,8 @@ public final class DisposableCameraActivity extends Activity {
   private JSONObject current() { for (int i=0; i<rolls().length(); i++) { JSONObject roll=rolls().optJSONObject(i); if (roll != null && roll.isNull("developedAt")) return roll; } return null; }
   private JSONArray shots(JSONObject roll) { JSONArray shots=roll.optJSONArray("shots"); return shots == null ? new JSONArray() : shots; }
   private String person(String actor) { return actor.equals("asnat") ? "Asnat" : "Youssef"; }
+  private static String shortDate(String value) { return value != null && value.length() >= 10 ? value.substring(0, 10) : (value == null ? "" : value); }
+  private static String reactionText(JSONObject reactions, String key) { if (reactions == null) return "—"; String v = reactions.optString(key, ""); return v.isEmpty() ? "—" : v; }
   private void render() {
     if (isFinishing() || root != null && cameraDialog != null && cameraDialog.isShowing()) return;
     root=u.column(); root.setPadding(u.dp(22),u.dp(24),u.dp(22),u.dp(30)); root.setBackgroundColor(Ui.BG);
@@ -52,7 +54,7 @@ public final class DisposableCameraActivity extends Activity {
     u.add(root,u.title("24 moments.\nA little surprise.",33),18);
     u.add(root,u.text("One camera for both of us. No previews. No retakes. Keep a little of your day for each other.",17,Ui.MUTED),12);
     JSONObject roll=current(); int count=roll == null ? 0 : shots(roll).length();
-    LinearLayout shell=u.card(root,Ui.PALE);
+    LinearLayout shell=u.card(root,Ui.PALE); shell.setBackground(u.shape(Ui.PALE,24,0x1f6b5cb5));
     u.add(shell,u.label("ASECHKA / 24"),0);
     TextView lens=u.text("◉    "+String.format(Locale.US,"%02d",24-count),62,Ui.INK); lens.setGravity(Gravity.CENTER); u.add(shell,lens,14);
     u.add(shell,u.title(roll == null ? "Our next little adventure" : roll.optString("title"),22),12);
@@ -71,7 +73,7 @@ public final class DisposableCameraActivity extends Activity {
     if(pending != null){Button retry=u.button("Retry saving our sealed shot",true,()->submit(pending,true));retry.setEnabled(!busy);u.add(root,retry,10);Button discard=u.button("Discard unsent shot",false,()->new AlertDialog.Builder(this).setTitle("Discard this unsent shot?").setMessage("A server copy, if already saved, stays on the roll.").setNegativeButton("Keep it",null).setPositiveButton("Discard local copy",(d,w)->{api.store.remove("film-pending");pending=null;render();refresh();}).show());discard.setEnabled(!busy);u.add(root,discard,8);}
     u.add(root,u.button("Refresh our camera ↻",false,this::refresh),12);
     u.add(root,u.label("OUR DEVELOPED ROLLS"),28);
-    int albums=0;for(int i=rolls().length()-1;i>=0;i--){JSONObject item=rolls().optJSONObject(i);if(item!=null&&!item.isNull("developedAt")){albums++;LinearLayout card=u.card(root,Color.WHITE);u.add(card,u.title(item.optString("title"),20),0);u.add(card,u.text("24 moments · "+item.optString("developedAt").substring(0,10),12,Ui.MUTED),8);u.add(card,u.button("Open our roll ↗",false,()->album(item,0)),12);}}
+    int albums=0;for(int i=rolls().length()-1;i>=0;i--){JSONObject item=rolls().optJSONObject(i);if(item!=null&&!item.isNull("developedAt")){albums++;LinearLayout card=u.card(root,Color.WHITE);u.add(card,u.title(item.optString("title"),20),0);u.add(card,u.text(shots(item).length()+" moments · "+shortDate(item.optString("developedAt")),12,Ui.MUTED),8);u.add(card,u.button("Open our roll ↗",false,()->album(item,0)),12);}}
     if(albums==0)u.add(root,u.text("Your first developed roll will live here.",14,Ui.MUTED),18);
     setContentView(u.scroll(root));
   }
@@ -79,14 +81,15 @@ public final class DisposableCameraActivity extends Activity {
   private void refresh(){if(busy||!visible)return;busy=true;work.execute(()->{try{if(!api.connected())throw new Exception("Offline · showing our saved rolls. Connect to take a new shot.");JSONObject result=api.get("/api/camera");api.store.write("film-collection",result);main.post(()->{collection=result;busy=false;if(pending==null)notice="Connected. Our ordinary, extraordinary life. ♡";render();});}catch(Exception e){main.post(()->{busy=false;failure(e);});}});}
   private void submit(JSONObject body,boolean shot){if(busy||body==null)return;busy=true;notice="Keeping our moment…";render();work.execute(()->{try{JSONObject result=api.post("/api/camera",body);api.store.write("film-collection",result);if(shot)api.store.remove("film-pending");main.post(()->{collection=result;busy=false;if(shot)pending=null;if(body.optString("action").equals("create"))createId=UUID.randomUUID().toString();notice=shot ? "A moment kept. You’ll see it when we develop the roll. ♡" : body.optString("action").equals("develop") ? "Developed. Open our roll together below. ♡" : "Saved for both of us. ♡";render();});}catch(Exception e){main.post(()->{busy=false;failure(e);});}});}
   private void album(JSONObject roll,int index){
-    JSONObject shot=shots(roll).optJSONObject(index);if(shot==null)return;
-    Ui.Sheet sheet=u.sheet(roll.optString("title"),"FRAME "+(index+1)+" / 24");
+    JSONArray all=shots(roll);int total=all.length();if(total==0)return;int currentIndex=Math.max(0,Math.min(index,total-1));
+    JSONObject shot=all.optJSONObject(currentIndex);if(shot==null)return;
+    Ui.Sheet sheet=u.sheet(roll.optString("title"),"FRAME "+(currentIndex+1)+" / "+total);
     ImageView photo=new ImageView(this);photo.setAdjustViewBounds(true);photo.setScaleType(ImageView.ScaleType.FIT_CENTER);photo.setMinimumHeight(u.dp(220));u.add(sheet.items,photo,0);images.load("/api/camera?photo="+shot.optString("id"),photo);
-    u.add(sheet.items,u.text("From "+person(shot.optString("actor"))+" · "+shot.optString("createdAt").substring(0,10),12,Ui.MUTED),10);
+    u.add(sheet.items,u.text("From "+person(shot.optString("actor"))+" · "+shortDate(shot.optString("createdAt")),12,Ui.MUTED),10);
     if(!shot.optString("caption").isEmpty())u.add(sheet.items,u.text(shot.optString("caption"),18,Ui.INK),12);
-    JSONObject reactions=shot.optJSONObject("reactions");TextView summary=u.text("Asnat "+(reactions==null?"—":reactions.optString("asnat","—"))+" · Youssef "+(reactions==null?"—":reactions.optString("youssef","—")),13,Ui.PURPLE);
-    LinearLayout react=u.row(6);for(String emoji:new String[]{"♡","😂","🥹","✨"}){Button b=u.button(emoji,false,()->{if(busy)return;busy=true;react.setEnabled(false);work.execute(()->{try{JSONObject body=new JSONObject().put("action","react").put("rollId",roll.optString("id")).put("shotId",shot.optString("id")).put("actor",actor()).put("reaction",reactions!=null&&emoji.equals(reactions.optString(actor()))?"":emoji).put("operationId",UUID.randomUUID().toString());JSONObject result=api.post("/api/camera",body);api.store.write("film-collection",result);main.post(()->{busy=false;collection=result;sheet.dismiss();for(int i=0;i<rolls().length();i++)if(rolls().optJSONObject(i).optString("id").equals(roll.optString("id"))){album(rolls().optJSONObject(i),index);break;}render();});}catch(Exception e){main.post(()->{busy=false;summary.setText(e.getMessage());react.setEnabled(true);});}});});react.addView(b,new LinearLayout.LayoutParams(0,-2,1));}u.add(sheet.items,react,12);u.add(sheet.items,summary,10);
-    LinearLayout navigation=u.row(8);Button back=u.button("← Previous",false,()->{sheet.dismiss();album(roll,index-1);}),next=u.button("Next moment →",false,()->{sheet.dismiss();album(roll,index+1);});back.setEnabled(index>0);next.setEnabled(index<23);navigation.addView(back,new LinearLayout.LayoutParams(0,-2,1));navigation.addView(next,new LinearLayout.LayoutParams(0,-2,1));u.add(sheet.items,navigation,18);sheet.show();
+    JSONObject reactions=shot.optJSONObject("reactions");TextView summary=u.text("Asnat "+reactionText(reactions,"asnat")+" · Youssef "+reactionText(reactions,"youssef"),13,Ui.PURPLE);
+    LinearLayout react=u.row(6);for(String emoji:new String[]{"♡","😂","🥹","✨"}){boolean selected=reactions!=null&&emoji.equals(reactions.optString(actor()));Button b=u.button(emoji,selected,()->{if(busy)return;busy=true;react.setEnabled(false);work.execute(()->{try{JSONObject body=new JSONObject().put("action","react").put("rollId",roll.optString("id")).put("shotId",shot.optString("id")).put("actor",actor()).put("reaction",selected?"":emoji).put("operationId",UUID.randomUUID().toString());JSONObject result=api.post("/api/camera",body);api.store.write("film-collection",result);main.post(()->{busy=false;collection=result;sheet.dismiss();for(int i=0;i<rolls().length();i++)if(rolls().optJSONObject(i).optString("id").equals(roll.optString("id"))){album(rolls().optJSONObject(i),currentIndex);break;}render();});}catch(Exception e){main.post(()->{busy=false;summary.setText(e.getMessage());react.setEnabled(true);});}});});react.addView(b,new LinearLayout.LayoutParams(0,-2,1));}u.add(sheet.items,react,12);u.add(sheet.items,summary,10);
+    LinearLayout navigation=u.row(8);Button back=u.button("← Previous",false,()->{sheet.dismiss();album(roll,currentIndex-1);}),next=u.button("Next moment →",false,()->{sheet.dismiss();album(roll,currentIndex+1);});back.setEnabled(currentIndex>0);next.setEnabled(currentIndex<total-1);navigation.addView(back,new LinearLayout.LayoutParams(0,-2,1));navigation.addView(next,new LinearLayout.LayoutParams(0,-2,1));u.add(sheet.items,navigation,18);sheet.show();
   }
   private void openCamera(){
     if(checkSelfPermission(Manifest.permission.CAMERA)!=PackageManager.PERMISSION_GRANTED){requestPermissions(new String[]{Manifest.permission.CAMERA},244);return;}

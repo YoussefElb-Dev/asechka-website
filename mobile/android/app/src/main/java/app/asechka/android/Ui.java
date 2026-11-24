@@ -240,6 +240,12 @@ final class Ui {
     return d;
   }
 
+  GradientDrawable shape(int color, float radius, int strokeColor) {
+    GradientDrawable d = shape(color, radius);
+    d.setStroke(Math.max(1, dp(1)), strokeColor);
+    return d;
+  }
+
   TextView text(String value, int size, int color) {
     TextView v = new TextView(c);
     v.setText(value);
@@ -296,7 +302,7 @@ final class Ui {
   LinearLayout card(LinearLayout parent, int color) {
     LinearLayout v = column();
     v.setPadding(dp(20), dp(20), dp(20), dp(20));
-    v.setBackground(shape(color, 24));
+    v.setBackground(color == Color.WHITE ? shape(color, 24, 0x176b5cb5) : shape(color, 24));
     add(parent, v, 16);
     return v;
   }

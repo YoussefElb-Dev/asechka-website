@@ -106,49 +106,50 @@ export async function authorize(request) {
   if (!auth) return response(gatePage('login', 'Our little door isn’t ready yet. Try again soon.'), 503, { 'Content-Type': 'text/html; charset=utf-8' });
   if (!signedIn) return ['/api/vault','/api/location','/api/camera','/api/games-session','/api/shakespeare','/api/journal','/api/keepsakes','/api/memories','/api/music','/api/music-search','/api/together','/api/together-photo','/api/daily-memory','/api/translation'].includes(path) ? response(JSON.stringify({ error: 'Unlock our little door again to see our memories.' }), 401, { 'Content-Type': 'application/json' }) : redirect('/login');
   if (path === '/welcome') return response(gatePage('welcome'), 200, { 'Content-Type': 'text/html; charset=utf-8' });
+  const isJson = req => req.headers.get('content-type')?.split(';')[0].trim().toLowerCase() === 'application/json';
   if (path === '/api/games-session' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-games') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({error:'Please connect from Asechka.'}),403,{'Content-Type':'application/json'});
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-games') !== '1' || !isJson(request)) return response(JSON.stringify({error:'Please connect from Asechka.'}),403,{'Content-Type':'application/json'});
     return null;
   }
   if (path === '/api/shakespeare') {
     if (request.method !== 'POST') return response(JSON.stringify({ error: 'Use POST to keep a selected quote.' }), 405, { 'Content-Type': 'application/json', Allow: 'POST' });
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-shakespeare') !== '1' || request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return response(JSON.stringify({ error: 'Please send this quote from Shakespeare.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-shakespeare') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please send this quote from Shakespeare.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/vault' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-vault') !== '1' || request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return response(JSON.stringify({error:'Please use our time vault.'}),403,{'Content-Type':'application/json'});
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-vault') !== '1' || !isJson(request)) return response(JSON.stringify({error:'Please use our time vault.'}),403,{'Content-Type':'application/json'});
     return null;
   }
   if (path === '/api/location' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-location') !== '1' || request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return response(JSON.stringify({error:'Please share from Asechka.'}),403,{'Content-Type':'application/json'});
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-location') !== '1' || !isJson(request)) return response(JSON.stringify({error:'Please share from Asechka.'}),403,{'Content-Type':'application/json'});
     return null;
   }
   if (path === '/api/camera' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-camera') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please use our shared camera.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-camera') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please use our shared camera.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/journal' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-journal') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save our little book from the website.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-journal') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please save our little book from the website.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/keepsakes' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-keepsakes') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save our little notes from the website.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-keepsakes') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please save our little notes from the website.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/memories' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-memories') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save memories from our website or app.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-memories') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please save memories from our website or app.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/music' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-music') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please choose our songs from the music page.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-music') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please choose our songs from the music page.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/together' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-together') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please save our little plans from the website.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-together') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please save our little plans from the website.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (path === '/api/translation' && request.method === 'POST') {
-    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-translation') !== '1' || !request.headers.get('content-type')?.startsWith('application/json')) return response(JSON.stringify({ error: 'Please translate our words from the website.' }), 403, { 'Content-Type': 'application/json' });
+    if (!sameOrigin(request) || request.headers.get('origin') !== new URL(request.url).origin || request.headers.get('x-asechka-translation') !== '1' || !isJson(request)) return response(JSON.stringify({ error: 'Please translate our words from the website.' }), 403, { 'Content-Type': 'application/json' });
     return null;
   }
   if (request.method !== 'GET' && request.method !== 'HEAD') return response('Method not allowed', 405, { Allow: 'GET, HEAD' });

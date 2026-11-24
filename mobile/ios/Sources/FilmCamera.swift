@@ -42,7 +42,7 @@ struct FilmView: View {
                 if rolls.allSatisfy({ $0.developedAt == nil }) { Text("Your first developed roll will live here.").foregroundColor(Palette.muted) }
                 ForEach(rolls.reversed().filter { $0.developedAt != nil }) { roll in
                     Button { album = roll; Touch.tap() } label: {
-                        HStack { VStack(alignment: .leading, spacing: 7) { Text(roll.title).font(.headline); Text("24 moments · " + String((roll.developedAt ?? "").prefix(10))).font(.caption).foregroundColor(Palette.muted) }; Spacer(); Image(systemName: "arrow.up.right") }.foregroundColor(Palette.ink).card()
+                        HStack { VStack(alignment: .leading, spacing: 7) { Text(roll.title).font(.headline); Text("\(roll.shots.count) moments · " + String((roll.developedAt ?? "").prefix(10))).font(.caption).foregroundColor(Palette.muted) }; Spacer(); Image(systemName: "arrow.up.right") }.foregroundColor(Palette.ink).card()
                     }.buttonStyle(.plain)
                 }
             }.padding(22) }.background(Palette.background)
@@ -97,7 +97,7 @@ struct FilmView: View {
                 Button("Load a fresh roll ↗") { Task { if await mutate(["action":"create", "title":title, "actor":universe.actor, "operationId":createID]) { title = ""; createID = UUID().uuidString.lowercased() } } }.primary().disabled(busy || !writable || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || title.count > 80 || pending != nil)
             }
             Text("Shooting as \(universe.name). Pictures stay sealed until the roll is full and developed.").font(.caption).foregroundColor(Palette.muted)
-        }.padding(22).background(Palette.lavender, in: RoundedRectangle(cornerRadius: 28))
+        }.padding(22).background(Palette.lavender, in: RoundedRectangle(cornerRadius: 28)).overlay(RoundedRectangle(cornerRadius: 28).stroke(Palette.purple.opacity(0.12), lineWidth: 1))
     }
     private func openCamera() {
         if busy { cameraNotice = "Our camera is saving. Give it a moment, then try again." }
@@ -149,19 +149,26 @@ struct FilmAlbumView: View {
     @State private var reactions: [String:String] = [:]
     @State private var savedReactions: [String:[String:String]] = [:]
     @State private var busy = false
-    private var shot: FilmShot { roll.shots[index] }
+    private var safeIndex: Int { roll.shots.isEmpty ? 0 : min(max(index, 0), roll.shots.count - 1) }
+    private var shot: FilmShot? { roll.shots.isEmpty ? nil : roll.shots[safeIndex] }
+    private func reactionText(_ key: String) -> String { guard let value = reactions[key], !value.isEmpty else { return "—" }; return value }
     var body: some View {
         NavigationStack { ScrollView { VStack(alignment: .leading, spacing: 18) {
-            Text("FRAME \(index + 1) / 24").font(.caption.weight(.semibold)).tracking(2).foregroundColor(Palette.purple)
-            if let image { Image(uiImage: image).resizable().scaledToFit().clipShape(RoundedRectangle(cornerRadius: 16)) } else { ProgressView().frame(maxWidth: .infinity, minHeight: 200) }
-            Text("From \(shot.actor == "asnat" ? "Asnat" : "Youssef") · \(String(shot.createdAt.prefix(10)))").font(.caption).foregroundColor(Palette.muted)
-            if let caption = shot.caption, !caption.isEmpty { Text(caption).font(.title3) }
-            HStack { ForEach(["♡", "😂", "🥹", "✨"], id: \.self) { reaction in Button(reaction) { Task { await react(reaction) } }.font(.title2).frame(minWidth: 48, minHeight: 48).background(reactions[universe.actor] == reaction ? Palette.lavender : .white, in: RoundedRectangle(cornerRadius: 12)).disabled(busy) } }
-            Text("Asnat \(reactions["asnat"] ?? "—") · Youssef \(reactions["youssef"] ?? "—")").font(.caption).foregroundColor(Palette.purple)
-            if !message.isEmpty { Text(message).font(.caption).foregroundColor(Palette.purple) }
-            HStack { Button("← Previous") { index -= 1; Touch.tap() }.disabled(index == 0); Spacer(); Button("Next moment →") { index += 1; Touch.tap() }.disabled(index == 23) }.padding(.vertical, 12)
+            if let shot {
+                Text("FRAME \(safeIndex + 1) / \(roll.shots.count)").font(.caption.weight(.semibold)).tracking(2).foregroundColor(Palette.purple)
+                if let image { Image(uiImage: image).resizable().scaledToFit().clipShape(RoundedRectangle(cornerRadius: 16)) } else { ProgressView().frame(maxWidth: .infinity, minHeight: 200) }
+                Text("From \(shot.actor == "asnat" ? "Asnat" : "Youssef") · \(String(shot.createdAt.prefix(10)))").font(.caption).foregroundColor(Palette.muted)
+                if let caption = shot.caption, !caption.isEmpty { Text(caption).font(.title3) }
+                HStack { ForEach(["♡", "😂", "🥹", "✨"], id: \.self) { reaction in Button(reaction) { Touch.tap(); Task { await react(reaction) } }.font(.title2).frame(minWidth: 48, minHeight: 48).background(reactions[universe.actor] == reaction ? Palette.lavender : .white, in: RoundedRectangle(cornerRadius: 12)).disabled(busy) } }
+                Text("Asnat \(reactionText("asnat")) · Youssef \(reactionText("youssef"))").font(.caption).foregroundColor(Palette.purple)
+                if !message.isEmpty { Text(message).font(.caption).foregroundColor(Palette.purple) }
+                HStack { Button("← Previous") { index = max(0, safeIndex - 1); Touch.tap() }.disabled(safeIndex == 0); Spacer(); Button("Next moment →") { index = min(roll.shots.count - 1, safeIndex + 1); Touch.tap() }.disabled(safeIndex >= roll.shots.count - 1) }.padding(.vertical, 12)
+            } else {
+                Text("No moments found on this roll yet.").foregroundColor(Palette.muted)
+            }
         }.padding(22) }.background(Palette.background).navigationTitle(roll.title).navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } } }
-        .task(id: shot.id) {
+        .task(id: shot?.id ?? "") {
+            guard let shot else { return }
             image = nil; reactions = savedReactions[shot.id] ?? shot.reactions ?? [:]; message = ""
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--film-preview"), let path = Bundle.main.path(forResource: "cats-cuddle", ofType: "jpg", inDirectory: "default") { image = UIImage(contentsOfFile: path); return }
@@ -170,8 +177,9 @@ struct FilmAlbumView: View {
         }
     }
     @MainActor private func react(_ reaction: String) async {
+        guard let shot else { return }
         busy = true; defer { busy = false }; let id = shot.id
-        do { let body: [String:Any] = ["action":"react", "actor":universe.actor, "rollId":roll.id, "shotId":id, "reaction":reactions[universe.actor] == reaction ? "" : reaction, "operationId":UUID().uuidString.lowercased()]; let bytes = try await universe.request("/api/camera", body: JSONSerialization.data(withJSONObject: body)); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); let saved = collection.rolls.first { $0.id == roll.id }?.shots.first { $0.id == id }?.reactions ?? [:]; savedReactions[id] = saved; if shot.id == id { reactions = saved }; await changed() } catch { message = error.localizedDescription }
+        do { let body: [String:Any] = ["action":"react", "actor":universe.actor, "rollId":roll.id, "shotId":id, "reaction":reactions[universe.actor] == reaction ? "" : reaction, "operationId":UUID().uuidString.lowercased()]; let bytes = try await universe.request("/api/camera", body: JSONSerialization.data(withJSONObject: body)); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); let saved = collection.rolls.first { $0.id == roll.id }?.shots.first { $0.id == id }?.reactions ?? [:]; savedReactions[id] = saved; if self.shot?.id == id { reactions = saved }; await changed() } catch { message = error.localizedDescription }
     }
 }
 
