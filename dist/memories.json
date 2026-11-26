@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T00:18:03.323Z",
+  "updatedAt": "2026-11-26T00:18:05.931Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -931,7 +931,19 @@
       "date": "2026-11-20",
       "createdAt": "2026-11-21T04:41:42.838Z",
       "author": "youssef",
-      "text": "Perhaps love is its own little universe, one that exists quietly between two souls, untouched by distance or time. And if I could spend eternity anywhere, I wouldn't ask for a kingdom among the stars or a paradise beyond the clouds. I'd choose a quiet shore, the sound of the waves, the warmth of your hand, and the beautiful simplicity of knowing that, in this vast universe, we found each other."
+      "text": "Perhaps love is its own little universe, one that exists quietly between two souls, untouched by distance or time. And if I could spend eternity anywhere, I wouldn't ask for a kingdom among the stars or a paradise beyond the clouds. I'd choose a quiet shore, the sound of the waves, the warmth of your hand, and the beautiful simplicity of knowing that, in this vast universe, we found each other.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "51034314-0c0d-4ff0-beaf-0c23695bc671",
+            "hash": "15e6d25cc575068d02869b764e11609945948a3d0708c89b24bf774f67f83b13"
+          }
+        ]
+      }
     },
     {
       "id": "fb4edb5e-d5a8-4ef0-b86f-0dcbd01a9713",
