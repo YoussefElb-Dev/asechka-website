@@ -35,8 +35,57 @@ final class HomeExtras {
   final Ui u;
   final Open open;
   final Handler main = new Handler(Looper.getMainLooper());
-  TextView counts, streak, milestoneText, partnerVibeText, elapsed, sinceLabel, cameraSub;
+  TextView counts, streak, milestoneText, partnerVibeText, elapsed, sinceLabel, cameraSub, vaultSub, milestoneNextText;
+  MilestoneRingView milestoneRing;
+  ObjectAnimator heartPulse;
   LinearLayout promptSlot, loveJarSlot, momentSlot, throwbackSlot;
+
+  private static final class MilestoneRingView extends View {
+    private final Paint trackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint arcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF oval = new RectF();
+    private final float stroke;
+    private float progress = 0.08f;
+    private String label = "50d";
+
+    MilestoneRingView(android.content.Context c) {
+      super(c);
+      float d = c.getResources().getDisplayMetrics().density;
+      stroke = 3.5f * d;
+      trackPaint.setStyle(Paint.Style.STROKE);
+      trackPaint.setStrokeWidth(stroke);
+      trackPaint.setColor(0x286b5cb5);
+      arcPaint.setStyle(Paint.Style.STROKE);
+      arcPaint.setStrokeWidth(stroke);
+      arcPaint.setStrokeCap(Paint.Cap.ROUND);
+      arcPaint.setColor(0xff6c5ce7);
+      textPaint.setColor(Ui.INK);
+      textPaint.setTextAlign(Paint.Align.CENTER);
+      textPaint.setTextSize(9.5f * d);
+      textPaint.setFakeBoldText(true);
+    }
+
+    void setState(float p, String lbl) {
+      float clamped = Math.max(0.08f, Math.min(1f, p));
+      String next = lbl == null ? "" : lbl;
+      if (Math.abs(clamped - progress) < 0.005f && next.equals(label)) return;
+      progress = clamped;
+      label = next;
+      invalidate();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+      float pad = stroke / 2f + 1f;
+      oval.set(pad, pad, getWidth() - pad, getHeight() - pad);
+      canvas.drawOval(oval, trackPaint);
+      canvas.drawArc(oval, -90f, 360f * progress, false, arcPaint);
+      Paint.FontMetrics fm = textPaint.getFontMetrics();
+      float cy = getHeight() / 2f - (fm.ascent + fm.descent) / 2f;
+      canvas.drawText(label, getWidth() / 2f, cy, textPaint);
+    }
+  }
   LiveLocationCard locationCard;
   LinearLayout root;
   HeartRain rain;
@@ -110,24 +159,33 @@ final class HomeExtras {
 
           public void onViewDetachedFromWindow(View v) {
             main.removeCallbacks(tick);
+            if (heartPulse != null) heartPulse.cancel();
           }
         });
-    // 1. Heart Card + Vibes + Partner Vibe + Milestone
+    // 1. Centered Heart Card + Hero Send Button + Vibes + Partner Vibe + Milestone
     LinearLayout heart = u.card(root, Ui.PALE);
     ((LinearLayout.LayoutParams) heart.getLayoutParams()).topMargin = 0;
-    heart.setBackground(u.shape(Ui.PALE, 22));
-    heart.setPadding(u.dp(12), u.dp(8), u.dp(12), u.dp(10));
-    LinearLayout title = u.row(12), summary = u.column();
-    summary.setMinimumHeight(u.dp(48));
-    summary.setGravity(Gravity.CENTER_VERTICAL);
-    counts = u.text("", 12, Ui.MUTED);
-    summary.addView(counts);
+    heart.setGravity(Gravity.CENTER_HORIZONTAL);
+    heart.setBackground(u.shape(Ui.PALE, 22, 0x1a6b5cb5));
+    heart.setPadding(u.dp(14), u.dp(13), u.dp(14), u.dp(12));
+    LinearLayout summary = u.column();
+    summary.setMinimumHeight(u.dp(36));
+    summary.setGravity(Gravity.CENTER_HORIZONTAL);
+    LinearLayout statsLine = u.row(8);
+    statsLine.setGravity(Gravity.CENTER);
+    counts = u.text("", 12.5f, Ui.INK);
+    Compat.font(counts, R.font.dm_sans, 500);
+    statsLine.addView(counts);
+    TextView dotSep = u.text("·", 12, Ui.MUTED);
+    statsLine.addView(dotSep);
     streak = u.text("", 12, Ui.PURPLE);
     Compat.font(streak, R.font.dm_sans, 600);
-    u.add(summary, streak, 3);
-    milestoneText = u.text("", 10, Ui.MUTED);
+    statsLine.addView(streak);
+    summary.addView(statsLine);
+    milestoneText = u.text("", 10.5f, Ui.MUTED);
+    milestoneText.setGravity(Gravity.CENTER);
     milestoneText.setVisibility(View.GONE);
-    u.add(summary, milestoneText, 2);
+    u.add(summary, milestoneText, 3);
     summary.setContentDescription("Our heart history");
     summary.setOnClickListener(v -> history());
     summary.setOnLongClickListener(
@@ -135,30 +193,49 @@ final class HomeExtras {
           history();
           return true;
         });
-    title.addView(summary, new LinearLayout.LayoutParams(0, -2, 1));
+    heart.addView(summary, new LinearLayout.LayoutParams(-1, -2));
+
     Button send = u.button("Send a heart", false, null);
-    send.setTextSize(14);
+    send.setTextSize(15);
     send.setTextColor(Ui.INK);
+    send.setGravity(Gravity.CENTER);
     send.setSingleLine(true);
-    send.setPadding(u.dp(14), 0, u.dp(14), 0);
+    send.setPadding(u.dp(20), 0, u.dp(20), 0);
     android.graphics.drawable.Drawable heartIcon = activity.getDrawable(R.drawable.ic_send_heart);
     heartIcon.setBounds(0, 0, u.dp(18), u.dp(18));
     send.setCompoundDrawablesRelative(heartIcon, null, null, null);
-    send.setCompoundDrawablePadding(u.dp(8));
+    send.setCompoundDrawablePadding(u.dp(9));
     android.graphics.drawable.GradientDrawable sendSurface = u.shape(Color.WHITE, 100);
-    sendSurface.setStroke(u.dp(1), 0xffdfdaef);
+    sendSurface.setStroke(u.dp(1), 0x2e6b5cb5);
     send.setBackground(
         new android.graphics.drawable.RippleDrawable(
-            android.content.res.ColorStateList.valueOf(0x196b5cb5), sendSurface, null));
+            android.content.res.ColorStateList.valueOf(0x1f6c5ce7), sendSurface, null));
+    send.setElevation(u.dp(2));
     send.setContentDescription("Send a heart to " + partner());
     send.setOnClickListener(v -> send(v, ""));
-    title.addView(send, new LinearLayout.LayoutParams(-2, u.dp(48)));
-    heart.addView(title);
+    LinearLayout.LayoutParams sendParams = new LinearLayout.LayoutParams(-1, u.dp(48));
+    sendParams.setMargins(u.dp(4), u.dp(10), u.dp(4), 0);
+    heart.addView(send, sendParams);
+    if (Motion.enabled(activity)) {
+      heartPulse = ObjectAnimator.ofPropertyValuesHolder(
+          send,
+          PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.025f),
+          PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.025f));
+      heartPulse.setDuration(900);
+      heartPulse.setRepeatMode(ValueAnimator.REVERSE);
+      heartPulse.setRepeatCount(ValueAnimator.INFINITE);
+      heartPulse.start();
+    }
 
     partnerVibeText = u.text("", 11, Ui.PURPLE);
     Compat.font(partnerVibeText, R.font.dm_sans, 600);
+    partnerVibeText.setGravity(Gravity.CENTER);
+    partnerVibeText.setPadding(u.dp(10), u.dp(4), u.dp(10), u.dp(4));
+    partnerVibeText.setBackground(u.shape(0xb8ffffff, 100));
     partnerVibeText.setVisibility(View.GONE);
-    u.add(heart, partnerVibeText, 6);
+    LinearLayout.LayoutParams vibePillParams = new LinearLayout.LayoutParams(-2, -2);
+    vibePillParams.topMargin = u.dp(8);
+    heart.addView(partnerVibeText, vibePillParams);
 
     HorizontalScrollView vibeScroll = new HorizontalScrollView(activity);
     vibeScroll.setHorizontalScrollBarEnabled(false);
@@ -183,59 +260,99 @@ final class HomeExtras {
     vibeScroll.addView(vibeRow);
     u.add(heart, vibeScroll, 8);
 
-    // 2. Clock Card
+    // 2. Balanced Together Counter Card (Clock left + Milestone Progress Ring right)
     LinearLayout clock = u.card(root, Ui.BLUE);
-    ((LinearLayout.LayoutParams) clock.getLayoutParams()).topMargin = u.dp(6);
-    clock.setPadding(u.dp(12), u.dp(10), u.dp(12), u.dp(10));
-    LinearLayout timeRow = u.row(8);
-    TextView together = u.text("Together ♡", 12, Ui.PURPLE);
-    timeRow.addView(together);
+    ((LinearLayout.LayoutParams) clock.getLayoutParams()).topMargin = u.dp(8);
+    clock.setBackground(u.shape(Ui.BLUE, 20, 0x146b5cb5));
+    clock.setPadding(u.dp(14), u.dp(11), u.dp(14), u.dp(11));
+    LinearLayout clockRow = u.row(10);
+    clockRow.setGravity(Gravity.CENTER_VERTICAL);
+    LinearLayout clockCopy = u.column();
+    TextView together = u.text("Together ♡", 11.5f, Ui.PURPLE);
+    Compat.font(together, R.font.dm_sans, 600);
+    clockCopy.addView(together);
     elapsed = u.title("", 18);
     elapsed.setFontFeatureSettings("tnum");
     elapsed.setSingleLine(true);
     elapsed.setEllipsize(android.text.TextUtils.TruncateAt.END);
-    timeRow.addView(elapsed, new LinearLayout.LayoutParams(0, -2, 1));
-    clock.addView(timeRow);
+    u.add(clockCopy, elapsed, 2);
     sinceLabel = u.text("", 10, Ui.MUTED);
     sinceLabel.setSingleLine(true);
     sinceLabel.setEllipsize(android.text.TextUtils.TruncateAt.END);
-    u.add(clock, sinceLabel, 4);
+    u.add(clockCopy, sinceLabel, 3);
+    clockRow.addView(clockCopy, new LinearLayout.LayoutParams(0, -2, 1));
+
+    LinearLayout milestoneBadge = u.row(7);
+    milestoneBadge.setGravity(Gravity.CENTER_VERTICAL);
+    milestoneBadge.setPadding(u.dp(9), u.dp(6), u.dp(9), u.dp(6));
+    milestoneBadge.setBackground(u.shape(0xc2ffffff, 14, 0x146b5cb5));
+    milestoneRing = new MilestoneRingView(activity);
+    milestoneBadge.addView(milestoneRing, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
+    LinearLayout milestoneCopy = u.column();
+    TextView nextWord = u.text("Next", 9, Ui.MUTED);
+    Compat.font(nextWord, R.font.dm_sans, 600);
+    milestoneCopy.addView(nextWord);
+    milestoneNextText = u.text("in 50d", 11, 0xff6c5ce7);
+    Compat.font(milestoneNextText, R.font.dm_sans, 700);
+    milestoneCopy.addView(milestoneNextText);
+    milestoneBadge.addView(milestoneCopy);
+    clockRow.addView(milestoneBadge, new LinearLayout.LayoutParams(-2, -2));
+    clock.addView(clockRow);
     clock.setContentDescription("Our time together. Open Since us.");
     clock.setOnClickListener(v -> open.open(0));
 
-    // 3. Disposable Camera (8 weekly shots) + Time Vault
-    LinearLayout special = u.row(7);
-    LinearLayout camera = u.row(8);
-    camera.setGravity(Gravity.CENTER_VERTICAL);
-    camera.setPadding(u.dp(10), u.dp(10), u.dp(10), u.dp(10));
-    camera.setBackground(u.shape(Ui.PALE, 16));
-    camera.setMinimumHeight(u.dp(64));
-    camera.addView(Glyph.view(activity, "camera", Ui.PURPLE), new LinearLayout.LayoutParams(u.dp(23), u.dp(23)));
-    LinearLayout cameraCopy = u.column();
-    TextView cameraName = u.text("Our disposable camera", 14, Ui.PURPLE);
+    // 3. Uniform Equal-Height 2-Column Cards: Disposable Camera & Time Vault
+    LinearLayout special = u.row(10);
+    LinearLayout camera = u.column();
+    camera.setPadding(u.dp(13), u.dp(13), u.dp(13), u.dp(13));
+    camera.setBackground(u.shape(Ui.PALE, 20, 0x1a6b5cb5));
+    camera.setMinimumHeight(u.dp(108));
+    LinearLayout camTop = u.row(6);
+    camTop.setGravity(Gravity.CENTER_VERTICAL);
+    FrameLayout camIconWrap = new FrameLayout(activity);
+    camIconWrap.setBackground(u.shape(0xc8ffffff, 100));
+    camIconWrap.addView(Glyph.view(activity, "camera", Ui.PURPLE), new FrameLayout.LayoutParams(u.dp(16), u.dp(16), Gravity.CENTER));
+    camTop.addView(camIconWrap, new LinearLayout.LayoutParams(u.dp(30), u.dp(30)));
+    camTop.addView(new View(activity), new LinearLayout.LayoutParams(0, 1, 1));
+    camTop.addView(Glyph.view(activity, "arrow.up.right", 0x996b5cb5), new LinearLayout.LayoutParams(u.dp(14), u.dp(14)));
+    camera.addView(camTop);
+    TextView cameraName = u.text("Our disposable camera", 13.5f, Ui.INK);
     Compat.font(cameraName, R.font.dm_sans, 600);
-    cameraCopy.addView(cameraName);
-    cameraSub = u.text("8 weekly shots · Sun 8 PM", 10, Ui.PURPLE);
-    u.add(cameraCopy, cameraSub, 3);
-    camera.addView(cameraCopy, new LinearLayout.LayoutParams(0, -2, 1));
-    camera.addView(Glyph.view(activity, "arrow.up.right", Ui.PURPLE), new LinearLayout.LayoutParams(u.dp(16), u.dp(16)));
+    cameraName.setMaxLines(2);
+    u.add(camera, cameraName, 8);
+    cameraSub = u.text("8 weekly shots · Sun 8 PM", 10.5f, Ui.PURPLE);
+    cameraSub.setMaxLines(2);
+    u.add(camera, cameraSub, 3);
     camera.setContentDescription("Our disposable camera");
     camera.setOnClickListener(
         v -> activity.startActivity(new android.content.Intent(activity, DisposableCameraActivity.class)));
-    special.addView(camera, new LinearLayout.LayoutParams(0, -2, 1));
+    special.addView(camera, new LinearLayout.LayoutParams(0, -1, 1));
 
-    LinearLayout vault = u.row(8);
-    vault.setGravity(Gravity.CENTER);
-    vault.setBackground(u.shape(Ui.BLUE, 16));
-    vault.addView(Glyph.view(activity, "vault", Ui.INK), new LinearLayout.LayoutParams(u.dp(18), u.dp(18)));
-    TextView vaultName = u.text("Time vault", 13, Ui.INK);
+    LinearLayout vault = u.column();
+    vault.setPadding(u.dp(13), u.dp(13), u.dp(13), u.dp(13));
+    vault.setBackground(u.shape(Ui.BLUE, 20, 0x1a6b5cb5));
+    vault.setMinimumHeight(u.dp(108));
+    LinearLayout vaultTop = u.row(6);
+    vaultTop.setGravity(Gravity.CENTER_VERTICAL);
+    FrameLayout vaultIconWrap = new FrameLayout(activity);
+    vaultIconWrap.setBackground(u.shape(0xc8ffffff, 100));
+    vaultIconWrap.addView(Glyph.view(activity, "vault", Ui.INK), new FrameLayout.LayoutParams(u.dp(16), u.dp(16), Gravity.CENTER));
+    vaultTop.addView(vaultIconWrap, new LinearLayout.LayoutParams(u.dp(30), u.dp(30)));
+    vaultTop.addView(new View(activity), new LinearLayout.LayoutParams(0, 1, 1));
+    vaultTop.addView(Glyph.view(activity, "arrow.up.right", 0x73263451), new LinearLayout.LayoutParams(u.dp(14), u.dp(14)));
+    vault.addView(vaultTop);
+    TextView vaultName = u.text("Time vault", 13.5f, Ui.INK);
     Compat.font(vaultName, R.font.dm_sans, 600);
-    vault.addView(vaultName);
+    vaultName.setMaxLines(2);
+    u.add(vault, vaultName, 8);
+    vaultSub = u.text("Seal notes for later · Shared vault", 10.5f, Ui.MUTED);
+    vaultSub.setMaxLines(2);
+    u.add(vault, vaultSub, 3);
     vault.setContentDescription("Time vault");
     vault.setOnClickListener(
         v -> activity.startActivity(new android.content.Intent(activity, TimeVaultActivity.class)));
-    special.addView(vault, new LinearLayout.LayoutParams(0, u.dp(48), 1));
-    u.add(root, special, 6);
+    special.addView(vault, new LinearLayout.LayoutParams(0, -1, 1));
+    u.add(root, special, 8);
 
     // 4. Streamlined 4 shortcuts (2x2 grid)
     String[] names = {"Secret vocab", "Open when…", "Little things", "Our beginning"};
@@ -414,11 +531,12 @@ final class HomeExtras {
     heartWriter.execute(
         () -> {
           JSONObject d = data();
-          JSONObject keepsakes = null, music = null, daily = null, camera = null;
+          JSONObject keepsakes = null, music = null, daily = null, camera = null, vaultData = null;
           try { keepsakes = api.cached("/api/keepsakes", !api.connected()); } catch (Exception ignored) {}
           try { music = api.cached("/api/music", !api.connected()); } catch (Exception ignored) {}
           try { daily = api.cached("/api/daily-memory", !api.connected()); } catch (Exception ignored) {}
           try { camera = api.cached("/api/camera", !api.connected()); } catch (Exception ignored) {}
+          try { vaultData = api.cached("/api/vault", !api.connected()); } catch (Exception ignored) {}
           if (camera == null) try { camera = api.store.read("film-collection"); } catch (Exception ignored) {}
           if (keepsakes == null && bundledKeepsakes == null)
             try {
@@ -436,6 +554,7 @@ final class HomeExtras {
           final JSONObject savedMusic = music;
           final JSONObject savedDaily = daily;
           final JSONObject savedCamera = camera;
+          final JSONObject savedVault = vaultData;
           main.post(
               () -> {
                 updating = false;
@@ -507,15 +626,48 @@ final class HomeExtras {
                   }
                 }
 
-                // Clock
+                // Vault subtitle badge
+                if (vaultSub != null && savedVault != null) {
+                  JSONArray vaults = savedVault.optJSONArray("vaults");
+                  int readyCount = 0, lockedCount = 0;
+                  long soonestMs = Long.MAX_VALUE;
+                  if (vaults != null) {
+                    for (int i = 0; i < vaults.length(); i++) {
+                      JSONObject v = vaults.optJSONObject(i);
+                      if (v == null) continue;
+                      if (v.optBoolean("ready")) readyCount++;
+                      else {
+                        lockedCount++;
+                        long ms = Dates.instant(v.optString("opensAt"));
+                        if (ms > 0 && ms < soonestMs) soonestMs = ms;
+                      }
+                    }
+                  }
+                  if (readyCount > 0) vaultSub.setText(readyCount + " ready to open ✨");
+                  else if (lockedCount > 0) {
+                    if (soonestMs < Long.MAX_VALUE) {
+                      long daysLeft = Math.max(0, (long) Math.ceil((soonestMs - System.currentTimeMillis()) / 86400000.0));
+                      if (daysLeft <= 1) vaultSub.setText(lockedCount + " locked · Opens soon");
+                      else if (daysLeft <= 14) vaultSub.setText(lockedCount + " locked · In " + daysLeft + "d");
+                      else {
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMM d", Locale.US);
+                        sdf.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+                        vaultSub.setText(lockedCount + " locked · Opens " + sdf.format(new Date(soonestMs)));
+                      }
+                    } else vaultSub.setText(lockedCount + (lockedCount == 1 ? " capsule sealed" : " capsules sealed"));
+                  } else vaultSub.setText("Seal notes for later · Shared vault");
+                }
+
+                // Clock + Next Milestone Ring
                 JSONObject since = savedKeepsakes == null ? null : savedKeepsakes.optJSONObject("since");
                 long start = since == null ? 0 : Dates.instant(since.optString("startedAt"));
                 long seconds = start <= 0 ? 0 : Math.max(0, (System.currentTimeMillis() - start) / 1000);
+                long days = seconds / 86400;
                 elapsed.setText(
                     String.format(
                         Locale.US,
                         "%d days · %02d:%02d:%02d",
-                        seconds / 86400,
+                        days,
                         seconds / 3600 % 24,
                         seconds / 60 % 60,
                         seconds % 60));
@@ -523,6 +675,19 @@ final class HomeExtras {
                     start <= 0
                         ? "Set our beginning in Since us"
                         : "Since " + shortBeginning(start) + " · Eastern");
+                if (milestoneRing != null && milestoneNextText != null) {
+                  long[] marks = {50, 100, 150, 180, 200, 250, 300, 365, 500, 730, 1000, 1095, 1460, 1825};
+                  long prev = 0, next = ((days / 365) + 1) * 365;
+                  for (long mk : marks) {
+                    if (mk > days) { next = mk; break; }
+                    prev = mk;
+                  }
+                  long rem = Math.max(1, next - days);
+                  float prog = (float) (days - prev) / (float) Math.max(1, next - prev);
+                  String mLbl = next == 365 ? "1 yr" : (next % 365 == 0 ? (next / 365) + "y" : next + "d");
+                  milestoneRing.setState(prog, mLbl);
+                  milestoneNextText.setText("in " + rem + "d");
+                }
 
                 // Dynamic 2.8.0 cards (rebuilt only when their content signature changes)
                 renderDailyPrompt(d);

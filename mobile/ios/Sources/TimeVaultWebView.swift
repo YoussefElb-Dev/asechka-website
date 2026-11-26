@@ -4,7 +4,7 @@ import WebKit
 struct TimeVaultWebView:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.dismiss) private var dismiss
-    var body:some View{NavigationStack{VaultBrowser(universe:universe).ignoresSafeArea(edges:.bottom).navigationTitle("Our time vault").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}}
+    var body:some View{NavigationStack{VaultBrowser(universe:universe).ignoresSafeArea(edges:.bottom).navigationTitle("Our time vault").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}.onDisappear{Task{await universe.refreshVaultBadge()}}}
 }
 struct VaultBrowser:UIViewRepresentable {
     let universe:UniverseStore

@@ -80,17 +80,39 @@ private struct HeartAnchor:PreferenceKey {
 }
 struct HeartSendButton:View {
     @EnvironmentObject private var universe:UniverseStore
+    @Environment(\.accessibilityReduceMotion) private var reduced
+    @AppStorage("motion-paused") private var paused=false
     @State private var anchor=CGRect.zero
+    @State private var beating=false
     var body:some View {
         Button{HeartRain.shared.emit(at:anchor);Touch.tap();do{try universe.sendHeart()}catch{universe.error=error.localizedDescription}}label:{
-            HStack(spacing:8){
-                Image(systemName:"heart.fill").font(.system(size:16,weight:.semibold)).foregroundColor(Color(red:174/255,green:118/255,blue:156/255))
-                Text("Send a heart").font(.system(size:14,weight:.semibold)).foregroundColor(Palette.ink)
-            }.padding(.horizontal,14).frame(minHeight:48).background(.white,in:Capsule())
-                .overlay(Capsule().stroke(Palette.purple.opacity(0.14),lineWidth:1))
-        }.fixedSize(horizontal:true,vertical:false)
-            .accessibilityLabel("Send a heart to \(universe.partner)")
-            .background(GeometryReader{proxy in Color.clear.preference(key:HeartAnchor.self,value:proxy.frame(in:.global))})
-            .onPreferenceChange(HeartAnchor.self){anchor=$0}
+            HStack(spacing:9){
+                Image(systemName:"heart.fill")
+                    .font(.system(size:17,weight:.semibold))
+                    .foregroundColor(Color(red:186/255,green:112/255,blue:160/255))
+                    .scaleEffect(beating && !reduced && !paused ? 1.15 : 1.0)
+                Text("Send a heart")
+                    .font(.system(size:15,weight:.semibold))
+                    .foregroundColor(Palette.ink)
+            }
+            .frame(maxWidth:.infinity,minHeight:48)
+            .padding(.horizontal,20)
+            .background(
+                LinearGradient(colors:[.white,Color(red:251/255,green:249/255,blue:1)],startPoint:.top,endPoint:.bottom),
+                in:Capsule()
+            )
+            .overlay(Capsule().stroke(Palette.purple.opacity(0.18),lineWidth:1))
+            .shadow(color:Palette.purple.opacity(0.14),radius:10,y:4)
+        }
+        .accessibilityLabel("Send a heart to \(universe.partner)")
+        .background(GeometryReader{proxy in Color.clear.preference(key:HeartAnchor.self,value:proxy.frame(in:.global))})
+        .onPreferenceChange(HeartAnchor.self){anchor=$0}
+        .onAppear{
+            if !reduced && !paused {
+                withAnimation(.easeInOut(duration:0.75).repeatForever(autoreverses:true)){beating=true}
+            }
+        }
+        .onChange(of:reduced){ if $0 { beating=false } }
+        .onChange(of:paused){ if $0 { beating=false } }
     }
 }

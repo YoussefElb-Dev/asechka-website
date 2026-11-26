@@ -5,6 +5,7 @@ enum Palette {
     static let ink=Color(red:38/255,green:52/255,blue:81/255)
     static let muted=Color(red:100/255,green:112/255,blue:139/255)
     static let purple=Color(red:107/255,green:92/255,blue:181/255)
+    static let violet=Color(red:108/255,green:92/255,blue:231/255)
     static let background=Color(red:247/255,green:249/255,blue:1)
     static let lavender=Color(red:238/255,green:235/255,blue:248/255)
     static let blue=Color(red:234/255,green:241/255,blue:252/255)
@@ -59,7 +60,7 @@ struct RootView:View {
     @State private var savedOnly=false
     @State private var photoSection:PhotoSection = .all
     @State private var memoryTab=0
-    private let tabs=[("house","Home"),("photo.on.rectangle","Memories"),("sparkles","Our days"),("character.bubble","Words"),("gamecontroller","Games")]
+    private let tabs=[("house","house.fill","Home"),("photo.on.rectangle","photo.on.rectangle.fill","Memories"),("sparkles","sparkles","Our days"),("character.bubble","character.bubble.fill","Words"),("gamecontroller","gamecontroller.fill","Games")]
     var body:some View {
         Group {
             if universe.storageUnavailable {VStack(spacing:20){Image(systemName:"lock.shield").font(.largeTitle);Text("Your saved space is temporarily unavailable.").font(.title2);Text("Restart the app to try again.").foregroundColor(Palette.muted)}.multilineTextAlignment(.center).padding(32)}
@@ -133,15 +134,44 @@ struct RootView:View {
         }
         .safeAreaInset(edge:.bottom,spacing:0){
             HStack(spacing:0){ForEach(0..<tabs.count,id:\.self){index in
-                Button{Touch.tap();withAnimation(reduced ? nil:.easeInOut(duration:0.22)){tab=index}}label:{
-                    VStack(spacing:4){
-                        Image(systemName:tabs[index].0).font(.system(size:21,weight:tab==index ? .semibold:.regular)).foregroundColor(tab==index ? .white:Palette.muted).frame(width:46,height:32)
-                            .background{if tab==index{Capsule().fill(Palette.purple).matchedGeometryEffect(id:"active-tab",in:tabMotion)}}
-                        Text(tabs[index].1).font(.system(size:10,weight:tab==index ? .bold:.medium)).lineLimit(1).minimumScaleFactor(0.8)
+                let active = tab == index
+                Button{Touch.tap();withAnimation(reduced ? nil:.spring(response:0.28,dampingFraction:0.82)){tab=index}}label:{
+                    VStack(spacing:3){
+                        ZStack{
+                            if active {
+                                Capsule().fill(Palette.violet.opacity(0.11)).frame(width:38,height:26)
+                                    .matchedGeometryEffect(id:"active-tab-glow",in:tabMotion)
+                            }
+                            Image(systemName:active ? tabs[index].1 : tabs[index].0)
+                                .font(.system(size:19,weight:active ? .semibold : .regular))
+                                .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.85))
+                        }.frame(height:26)
+                        Text(tabs[index].2)
+                            .font(.system(size:10,weight:active ? .semibold : .medium))
+                            .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.85))
+                            .lineLimit(1).minimumScaleFactor(0.85)
+                        if active {
+                            Capsule().fill(Palette.violet).frame(width:16,height:3)
+                                .shadow(color:Palette.violet.opacity(0.45),radius:4,y:0)
+                                .matchedGeometryEffect(id:"active-tab",in:tabMotion)
+                        } else {
+                            Color.clear.frame(width:16,height:3)
+                        }
                     }
-                        .foregroundColor(tab==index ? Palette.purple:Palette.muted).frame(maxWidth:.infinity,minHeight:59).background(tab==index ? Palette.lavender:.clear,in:RoundedRectangle(cornerRadius:18))
-                }.accessibilityLabel(tabs[index].1).accessibilityAddTraits(tab==index ? .isSelected:[])
-            }}.padding(.horizontal,8).padding(.top,7).background(.white.shadow(.drop(color:.black.opacity(0.05),radius:10,y:-3)))
+                    .frame(maxWidth:.infinity)
+                    .padding(.top,7).padding(.bottom,2)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(tabs[index].2)
+                .accessibilityAddTraits(active ? .isSelected : [])
+            }}
+            .padding(.horizontal,8)
+            .background(.ultraThinMaterial,ignoresSafeAreaEdges:.bottom)
+            .background(Color.white.opacity(0.55).ignoresSafeArea(edges:.bottom))
+            .overlay(alignment:.top){
+                Rectangle().fill(Palette.purple.opacity(0.12)).frame(height:0.5)
+            }
         }
     }
 }

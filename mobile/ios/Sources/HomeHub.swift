@@ -57,20 +57,87 @@ struct HomeHub:View {
         let nextStreak=[7,14,30,50,100,150,200,365].first{$0>streak} ?? (streak+50)
         return "\(total.formatted()) ♡ · \((nextHeart-total).formatted()) to \(nextHeart/1000)k · \(max(0,nextStreak-streak))d to \(nextStreak)d"
     }
+    private func togetherMilestone(days:Int)->(label:String,remaining:Int,progress:CGFloat) {
+        let marks=[50,100,150,180,200,250,300,365,500,730,1000,1095,1460,1825]
+        let next=marks.first{$0>days} ?? (((days/365)+1)*365)
+        let prev=marks.last{$0<=days} ?? 0
+        let remaining=max(1,next-days)
+        let progress=min(1.0,max(0.08,CGFloat(days-prev)/CGFloat(max(1,next-prev))))
+        let label = next==365 ? "1 yr" : (next%365==0 ? "\(next/365)y" : "\(next)d")
+        return (label,remaining,progress)
+    }
     var body:some View {
-        VStack(alignment:.leading,spacing:8){
+        VStack(alignment:.leading,spacing:10){
             heartCard
             vibeRow
             sinceCard
-            HStack(spacing:7){
+            HStack(spacing:10){
                 Button { filmCamera=true;Touch.tap() } label: {
-                    HStack { Image(systemName:"camera.fill");VStack(alignment:.leading,spacing:3){Text("Our disposable camera").font(.system(size:14,weight:.semibold));Text(universe.cameraBadge).font(.system(size:10))};Spacer();Image(systemName:"arrow.up.right") }
-                        .foregroundColor(Palette.purple).padding(10).frame(maxWidth:.infinity).background(Palette.lavender,in:RoundedRectangle(cornerRadius:16)).overlay(RoundedRectangle(cornerRadius:16).stroke(Palette.purple.opacity(0.09),lineWidth:1))
+                    VStack(alignment:.leading,spacing:8){
+                        HStack{
+                            Image(systemName:"camera.fill")
+                                .font(.system(size:14,weight:.semibold))
+                                .foregroundColor(Palette.purple)
+                                .frame(width:30,height:30)
+                                .background(Color.white.opacity(0.78),in:Circle())
+                            Spacer()
+                            Image(systemName:"arrow.up.right")
+                                .font(.system(size:11,weight:.semibold))
+                                .foregroundColor(Palette.purple.opacity(0.6))
+                        }
+                        VStack(alignment:.leading,spacing:3){
+                            Text("Our disposable camera")
+                                .font(.system(size:13.5,weight:.semibold))
+                                .foregroundColor(Palette.ink)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                            Text(universe.cameraBadge)
+                                .font(.system(size:10.5))
+                                .foregroundColor(Palette.purple.opacity(0.85))
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                        }
+                    }
+                    .padding(13)
+                    .frame(maxWidth:.infinity,minHeight:108,maxHeight:.infinity,alignment:.topLeading)
+                    .background(Palette.lavender,in:RoundedRectangle(cornerRadius:20,style:.continuous))
+                    .overlay(RoundedRectangle(cornerRadius:20,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))
                 }
-                Button{timeVault=true;Touch.tap()}label:{
-                    Label("Time vault",systemImage:"lock.shield").font(.system(size:13,weight:.semibold)).foregroundColor(Palette.ink).frame(maxWidth:.infinity,minHeight:48).background(Palette.blue,in:RoundedRectangle(cornerRadius:16)).overlay(RoundedRectangle(cornerRadius:16).stroke(Palette.purple.opacity(0.09),lineWidth:1))
+                Button { timeVault=true;Touch.tap() } label: {
+                    VStack(alignment:.leading,spacing:8){
+                        HStack{
+                            Image(systemName:"lock.shield.fill")
+                                .font(.system(size:14,weight:.semibold))
+                                .foregroundColor(Palette.ink)
+                                .frame(width:30,height:30)
+                                .background(Color.white.opacity(0.78),in:Circle())
+                            Spacer()
+                            Image(systemName:"arrow.up.right")
+                                .font(.system(size:11,weight:.semibold))
+                                .foregroundColor(Palette.ink.opacity(0.45))
+                        }
+                        VStack(alignment:.leading,spacing:3){
+                            Text("Time vault")
+                                .font(.system(size:13.5,weight:.semibold))
+                                .foregroundColor(Palette.ink)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                            Text(universe.vaultBadge)
+                                .font(.system(size:10.5))
+                                .foregroundColor(Palette.muted)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                        }
+                    }
+                    .padding(13)
+                    .frame(maxWidth:.infinity,minHeight:108,maxHeight:.infinity,alignment:.topLeading)
+                    .background(Palette.blue,in:RoundedRectangle(cornerRadius:20,style:.continuous))
+                    .overlay(RoundedRectangle(cornerRadius:20,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))
                 }
+                .accessibilityLabel("Time vault")
+                .accessibilityValue(universe.vaultBadge)
             }
+            .fixedSize(horizontal:false,vertical:true)
             pinnedJarCard
             dailyPromptCard
             momentSongCard
@@ -83,27 +150,45 @@ struct HomeHub:View {
         }.padding(.horizontal,16).sheet(isPresented:$filmCamera){FilmView()}.sheet(isPresented:$timeVault){TimeVaultWebView()}.sheet(isPresented:$musicSearch){MusicSearchView(forMoment:true)}
     }
     private var heartCard:some View {
-        VStack(alignment:.leading,spacing:6){
-            HStack(spacing:12){
-                Button{Touch.tap();openHistory()}label:{VStack(alignment:.leading,spacing:3){
-                    TimelineView(.periodic(from:.now,by:30)){context in let today=universe.sharedHeartStreak(at:context.date).today
-                        Text("You \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)").font(.system(size:12)).foregroundColor(Palette.muted).accessibilityLabel("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)")
+        VStack(alignment:.center,spacing:10){
+            Button{Touch.tap();openHistory()}label:{
+                VStack(alignment:.center,spacing:4){
+                    TimelineView(.periodic(from:.now,by:30)){context in
+                        let today=universe.sharedHeartStreak(at:context.date).today
+                        let shared=universe.sharedHeartStreak(at:context.date)
+                        HStack(spacing:8){
+                            Text("You \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)")
+                                .font(.system(size:12.5,weight:.medium)).foregroundColor(Palette.ink)
+                                .accessibilityLabel("Today · you \(universe.heartDays[today]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[today]?[other] ?? 0)")
+                            Text("·").foregroundColor(Palette.muted.opacity(0.5))
+                            Text("✦ \(shared.days) days · \(shared.lives) \(shared.lives==1 ? "life":"lives")")
+                                .font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple)
+                        }
+                        .lineLimit(1).minimumScaleFactor(0.82)
                     }
-                    TimelineView(.periodic(from:.now,by:30)){context in let shared=universe.sharedHeartStreak(at:context.date)
-                        Text("✦ \(shared.days) days · \(shared.lives) \(shared.lives==1 ? "life":"lives")").font(.system(size:12,weight:.semibold)).foregroundColor(Palette.purple)
-                    }
-                }.frame(maxWidth:.infinity,minHeight:48,alignment:.leading).contentShape(Rectangle())}
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Our heart history")
-                    .accessibilityValue("Today · you \(universe.heartDays[HeartLedger.day()]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[HeartLedger.day()]?[other] ?? 0). Heart streak, \(universe.sharedHeartStreak().days) days, \(universe.sharedHeartStreak().lives) lives")
-                    .accessibilityHint("Tap to see our daily hearts")
-                HeartSendButton()
+                    Text(milestoneHint).font(.system(size:10.5)).foregroundColor(Palette.muted)
+                }
+                .frame(maxWidth:.infinity,minHeight:36,alignment:.center)
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Our heart history")
+            .accessibilityValue("Today · you \(universe.heartDays[HeartLedger.day()]?[from] ?? 0)  ♡  \(universe.partner) \(universe.heartDays[HeartLedger.day()]?[other] ?? 0). Heart streak, \(universe.sharedHeartStreak().days) days, \(universe.sharedHeartStreak().lives) lives")
+            .accessibilityHint("Tap to see our daily hearts")
+
+            HeartSendButton()
+                .padding(.horizontal,4)
+
             if let partnerVibe=universe.heartVibes[other] {
-                Text("\(partnerVibe.symbol) \(universe.partner): \(partnerVibe.label)").font(.system(size:11,weight:.semibold)).foregroundColor(Palette.purple)
+                Text("\(partnerVibe.symbol) \(universe.partner): \(partnerVibe.label)")
+                    .font(.system(size:11,weight:.semibold)).foregroundColor(Palette.purple)
+                    .padding(.horizontal,10).padding(.vertical,4)
+                    .background(Color.white.opacity(0.7),in:Capsule())
             }
-            Text(milestoneHint).font(.system(size:10)).foregroundColor(Palette.muted)
-        }.padding(.horizontal,12).padding(.vertical,8).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
+        }
+        .padding(.horizontal,14).padding(.vertical,13)
+        .background(Palette.lavender,in:RoundedRectangle(cornerRadius:22,style:.continuous))
+        .overlay(RoundedRectangle(cornerRadius:22,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))
     }
     private var vibeRow:some View {
         ScrollView(.horizontal,showsIndicators:false){
@@ -193,14 +278,49 @@ struct HomeHub:View {
     }
     private var sinceCard:some View {
         Button{Touch.tap();open(BookRoute(personal:true,chapter:0))}label:{
-            VStack(alignment:.leading,spacing:3){
+            Group{
                 if let since=universe.keepsakes["since"] as? [String:Any],let start=BookDates.instant(since["startedAt"] as? String ?? "") {
-                    TimelineView(.periodic(from:.now,by:1)){context in let elapsed=max(0,Int(context.date.timeIntervalSince(start)))
-                        HStack(spacing:8){Text("Together ♡").font(.system(size:12)).foregroundColor(Palette.purple);Text("\(elapsed/86400) days · "+String(format:"%02d:%02d:%02d",elapsed/3600%24,elapsed/60%60,elapsed%60)).font(.system(size:18,weight:.semibold)).monospacedDigit().foregroundColor(Palette.ink)}
+                    TimelineView(.periodic(from:.now,by:1)){context in
+                        let elapsed=max(0,Int(context.date.timeIntervalSince(start)))
+                        let days=elapsed/86400
+                        let m=togetherMilestone(days:days)
+                        HStack(alignment:.center,spacing:10){
+                            VStack(alignment:.leading,spacing:3){
+                                Text("Together ♡").font(.system(size:11.5,weight:.semibold)).foregroundColor(Palette.purple)
+                                Text("\(days) days · "+String(format:"%02d:%02d:%02d",elapsed/3600%24,elapsed/60%60,elapsed%60))
+                                    .font(.system(size:18,weight:.bold)).monospacedDigit().foregroundColor(Palette.ink)
+                                    .lineLimit(1).minimumScaleFactor(0.85)
+                                Text("Since "+BookDates.display(start,time:true)+" · Eastern")
+                                    .font(.system(size:10)).foregroundColor(Palette.muted)
+                                    .lineLimit(1).minimumScaleFactor(0.8)
+                            }
+                            Spacer(minLength:6)
+                            HStack(spacing:7){
+                                ZStack{
+                                    Circle().stroke(Palette.purple.opacity(0.16),lineWidth:3.5)
+                                    Circle().trim(from:0,to:m.progress)
+                                        .stroke(Palette.violet,style:StrokeStyle(lineWidth:3.5,lineCap:.round))
+                                        .rotationEffect(.degrees(-90))
+                                    Text(m.label).font(.system(size:9.5,weight:.bold)).foregroundColor(Palette.ink)
+                                }.frame(width:36,height:36)
+                                VStack(alignment:.leading,spacing:1){
+                                    Text("Next").font(.system(size:9,weight:.semibold)).foregroundColor(Palette.muted)
+                                    Text("in \(m.remaining)d").font(.system(size:11,weight:.bold)).foregroundColor(Palette.violet)
+                                }
+                            }
+                            .padding(.horizontal,9).padding(.vertical,6)
+                            .background(Color.white.opacity(0.75),in:RoundedRectangle(cornerRadius:14,style:.continuous))
+                            .overlay(RoundedRectangle(cornerRadius:14,style:.continuous).stroke(Palette.purple.opacity(0.08),lineWidth:1))
+                        }
                     }
-                    Text("Since "+BookDates.display(start,time:true)+" · Eastern").font(.system(size:10)).foregroundColor(Palette.muted)
-                }else {Text("Set our beginning in Since us.").foregroundColor(Palette.muted)}
-            }.frame(maxWidth:.infinity,minHeight:44,alignment:.leading).padding(.horizontal,12).padding(.vertical,7).background(Palette.blue,in:RoundedRectangle(cornerRadius:20,style:.continuous))
+                } else {
+                    Text("Set our beginning in Since us.").foregroundColor(Palette.muted)
+                }
+            }
+            .frame(maxWidth:.infinity,minHeight:58,alignment:.leading)
+            .padding(.horizontal,14).padding(.vertical,11)
+            .background(Palette.blue,in:RoundedRectangle(cornerRadius:20,style:.continuous))
+            .overlay(RoundedRectangle(cornerRadius:20,style:.continuous).stroke(Palette.purple.opacity(0.08),lineWidth:1))
         }.accessibilityLabel("Our time together. Open Since us")
     }
 }

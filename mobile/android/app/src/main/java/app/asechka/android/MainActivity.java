@@ -344,7 +344,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               root == view ? (keyboard ? ime.bottom : 0) : Math.max(sys.bottom, ime.bottom));
           if (root == view && bottom != null) {
             bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-            bottom.setPadding(u.dp(8), u.dp(7), u.dp(8), sys.bottom);
+            bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), Math.max(u.dp(8), sys.bottom));
           }
           return insets;
         });
@@ -363,7 +363,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             navigationInset = systemBottom;
             if (root == view && bottom != null) {
               bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-              bottom.setPadding(u.dp(8), u.dp(7), u.dp(8), navigationInset);
+              bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), Math.max(u.dp(8), navigationInset));
             }
             return insets;
           });
@@ -732,9 +732,15 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
     feed = null;
     bottom = u.row(0);
-    bottom.setPadding(u.dp(8), u.dp(7), u.dp(8), navigationInset);
-    bottom.setElevation(u.dp(3));
-    bottom.setBackgroundColor(Color.WHITE);
+    bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), Math.max(u.dp(8), navigationInset));
+    bottom.setElevation(u.dp(2));
+    android.graphics.drawable.LayerDrawable glassBar = new android.graphics.drawable.LayerDrawable(
+        new android.graphics.drawable.Drawable[] {
+          new android.graphics.drawable.ColorDrawable(0x1f6c5ce7),
+          new android.graphics.drawable.ColorDrawable(0xebffffff)
+        });
+    glassBar.setLayerInset(1, 0, Math.max(1, u.dp(1)), 0, 0);
+    bottom.setBackground(glassBar);
     root.addView(bottom);
     scroll.setOnScrollChangeListener((v, x, y, oldX, oldY) -> Motion.reveal(content, scroll));
     mount(root);
@@ -918,30 +924,31 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       tab.setContentDescription(labels[i]);
       tab.setFocusable(true);
       tab.setSelected(selected);
+      int activeViolet = 0xff6c5ce7;
       tab.setBackground(
           new android.graphics.drawable.RippleDrawable(
-              android.content.res.ColorStateList.valueOf(0x226b5cb5),
-              u.shape(selected ? Ui.PALE : Color.WHITE, 18),
-              u.shape(Color.WHITE, 20)));
+              android.content.res.ColorStateList.valueOf(0x186c5ce7),
+              null,
+              u.shape(Color.WHITE, 14)));
       FrameLayout iconFrame = new FrameLayout(this);
-      iconFrame.setBackground(u.shape(selected ? Ui.PRIMARY : Color.TRANSPARENT, 17));
+      iconFrame.setBackground(u.shape(selected ? 0x1a6c5ce7 : Color.TRANSPARENT, 14));
       FrameLayout.LayoutParams iconParams =
-          new FrameLayout.LayoutParams(u.dp(23), u.dp(23), Gravity.CENTER);
+          new FrameLayout.LayoutParams(u.dp(21), u.dp(21), Gravity.CENTER);
       String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
-      iconFrame.addView(Glyph.view(this, tabSymbols[i], selected ? Color.WHITE : Ui.MUTED), iconParams);
-      tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(46), u.dp(32)));
+      iconFrame.addView(Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.MUTED), iconParams);
+      tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(38), u.dp(26)));
       if (selected && motion()) {
-        iconFrame.setScaleX(.8f);
-        iconFrame.setScaleY(.8f);
+        iconFrame.setScaleX(.88f);
+        iconFrame.setScaleY(.88f);
         iconFrame
             .animate()
             .scaleX(1)
             .scaleY(1)
-            .setDuration(380)
-            .setInterpolator(new android.view.animation.OvershootInterpolator(1.4f))
+            .setDuration(260)
+            .setInterpolator(new android.view.animation.OvershootInterpolator(1.25f))
             .start();
       }
-      TextView label = u.text(labels[i], 10, selected ? Ui.PRIMARY : Ui.MUTED);
+      TextView label = u.text(labels[i], 10, selected ? activeViolet : Ui.MUTED);
       if (Build.VERSION.SDK_INT >= 26)
         label.setAutoSizeTextTypeUniformWithConfiguration(
             8, 10, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
@@ -950,8 +957,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       label.setEllipsize(android.text.TextUtils.TruncateAt.END);
       label.setGravity(Gravity.CENTER);
       Compat.font(label, R.font.dm_sans, selected ? 700 : 500);
-      u.add(tab, label, 4);
-      tab.setMinimumHeight(u.dp(compact() ? 48 : 59));
+      u.add(tab, label, 3);
+      View indicator = new View(this);
+      indicator.setBackground(u.shape(activeViolet, 3));
+      indicator.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
+      LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(u.dp(16), u.dp(3));
+      dotParams.topMargin = u.dp(3);
+      tab.addView(indicator, dotParams);
+      tab.setMinimumHeight(u.dp(compact() ? 42 : 48));
       tab.setOnClickListener(v -> select(target));
       bottom.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
     }
@@ -1660,13 +1673,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             "/api/daily-memory",
             "/api/keepsakes",
             "/api/journal",
-            "/api/camera"
+            "/api/camera",
+            "/api/vault"
           };
           for (String path : paths) {
             try {
               result.put(path, api.get(path));
             } catch (Exception error) {
-              result.put("error", message(error));
+              if (!path.equals("/api/vault")) result.put("error", message(error));
             }
           }
           return result;

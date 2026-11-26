@@ -154,6 +154,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     }
     @Published var dailyText=""
     @Published var cameraBadge="8 weekly shots · Sun 8pm ET"
+    @Published var vaultBadge="Seal notes for later · Shared vault"
     private(set) var storageUnavailable=false
     let vault:Vault
     private let session:URLSession
@@ -363,6 +364,25 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                 else { cameraBadge="\(cap) weekly shots · Sun 8pm ET" }
             } else { cameraBadge="Start a new 8-shot roll · Sun 8pm ET" }
         }
+        if let vaultData=vault.read("snapshot:/api/vault"),let vaultJson=(try? JSONSerialization.jsonObject(with:vaultData)) as? [String:Any],let vaults=vaultJson["vaults"] as? [[String:Any]] {
+            let readyCount=vaults.filter{($0["ready"] as? Bool)==true}.count
+            let locked=vaults.filter{($0["ready"] as? Bool) != true}
+            if readyCount > 0 {
+                vaultBadge="\(readyCount) ready to open ✨"
+            } else if !locked.isEmpty {
+                let now=Date()
+                let soonest=locked.compactMap{BookDates.instant($0["opensAt"] as? String ?? "")}.sorted().first
+                if let nextDate=soonest {
+                    let days=max(0,Int(ceil(nextDate.timeIntervalSince(now)/86400)))
+                    if days <= 1 { vaultBadge="\(locked.count) locked · Opens soon" }
+                    else if days <= 14 { vaultBadge="\(locked.count) locked · In \(days)d" }
+                    else {
+                        let f=DateFormatter();f.locale=Locale(identifier:"en_US");f.timeZone=BookDates.eastern;f.dateFormat="MMM d"
+                        vaultBadge="\(locked.count) locked · Opens \(f.string(from:nextDate))"
+                    }
+                } else { vaultBadge="\(locked.count) \(locked.count==1 ? "capsule":"capsules") sealed" }
+            } else { vaultBadge="Seal notes for later · Shared vault" }
+        }
         journal=restoreBook("/api/journal","journal");keepsakes=restoreBook("/api/keepsakes","keepsakes")
         translations=vault.value("translations:"+actor,as:[Translation].self) ?? []
         for change in pending {if change.error != nil,let body=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any],body["action"] as? String=="sendMessage"{continue};Projection.apply(change,to:&memories);projectOther(change)}
@@ -380,11 +400,15 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         refreshing=true;defer{refreshing=false;status()}
         await sync()
         let togetherPath=actor.isEmpty ? "/api/together":"/api/together?actor="+actor
-        for (key,path) in [("/api/memories","/api/memories"),("/api/music","/api/music"),("/api/together",togetherPath),("/api/daily-memory","/api/daily-memory"),("/api/keepsakes","/api/keepsakes"),("/api/journal","/api/journal"),("/api/camera","/api/camera")] {
+        for (key,path) in [("/api/memories","/api/memories"),("/api/music","/api/music"),("/api/together",togetherPath),("/api/daily-memory","/api/daily-memory"),("/api/keepsakes","/api/keepsakes"),("/api/journal","/api/journal"),("/api/camera","/api/camera"),("/api/vault","/api/vault")] {
             do{let data=try await request(path);guard !locked else{return};if key=="/api/together"{try saveTogether(data)}else{try vault.write("snapshot:"+key,data)}}
-            catch{if vault.read("snapshot:"+key)==nil {self.error=error.localizedDescription}}
+            catch{if key != "/api/vault",vault.read("snapshot:"+key)==nil {self.error=error.localizedDescription}}
         }
         guard !locked else{return};restore();checkForPartnerNotifications();await prefetch()
+    }
+    func refreshVaultBadge()async {
+        guard unlocked,!locked,online else{return}
+        if let data=try? await request("/api/vault") { try? vault.write("snapshot:/api/vault",data); restore() }
     }
     func sendHeart(vibe:String?=nil)throws {
         let from=actor=="asnat" ? "asechka":"me"

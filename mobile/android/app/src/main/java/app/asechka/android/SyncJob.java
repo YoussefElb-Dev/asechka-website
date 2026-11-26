@@ -155,6 +155,7 @@ public final class SyncJob extends JobService {
                 JSONObject res = api.get(path);
                 if (path.equals("/api/together")) together = res;
               }
+              try { if (!stopped.get()) api.get("/api/vault"); } catch (Exception ignored) {}
               notifyPartnerUpdates(this, together);
               UniverseWidgets.updateAll(this);
               retry = api.prefetchMedia() > 0;
