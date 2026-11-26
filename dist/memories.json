@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T02:52:55.979Z",
+  "updatedAt": "2026-11-26T06:23:04.164Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -924,7 +924,19 @@
       "date": "2026-11-19",
       "createdAt": "2026-11-20T05:27:13.594Z",
       "author": "youssef",
-      "text": "If the ocean could keep every secret whispered into its waves, I would fill it with all the things I have yet to tell you. Every little reason I adore you, every dream I have of our future, every moment I wish I could relive. And perhaps one day, when the tides have carried a thousand sunsets across the shore, we'll stand together and realize that the most beautiful thing life ever gave us wasn't a place or a moment, but the life we built beside each other."
+      "text": "If the ocean could keep every secret whispered into its waves, I would fill it with all the things I have yet to tell you. Every little reason I adore you, every dream I have of our future, every moment I wish I could relive. And perhaps one day, when the tides have carried a thousand sunsets across the shore, we'll stand together and realize that the most beautiful thing life ever gave us wasn't a place or a moment, but the life we built beside each other.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "ede09a5a-98c8-4d31-953f-1d56bdca7418",
+            "hash": "6b65e4e3996843461f5a22a78619497ba07d0cb3cd2333d9985be947b2758092"
+          }
+        ]
+      }
     },
     {
       "id": "8fb9eee1-1d78-4958-9505-c6980c4d9492",
