@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T00:24:03.074Z",
+  "updatedAt": "2026-11-26T00:24:06.944Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -995,7 +995,19 @@
       "date": "2026-11-24",
       "createdAt": "2026-11-26T00:24:03.074Z",
       "author": "youssef",
-      "text": "I wonder if the stars ever look down upon the earth and envy us for the things they can never feel: the warmth of a hand, the comfort of an embrace, the quiet happiness of being someone's home. They may have existed for billions of years, but they will never know what it means to love someone so deeply that even the simplest moments become memories worth keeping forever. And if I could offer the universe one thing in return for giving me you, it would be all the time I have left."
+      "text": "I wonder if the stars ever look down upon the earth and envy us for the things they can never feel: the warmth of a hand, the comfort of an embrace, the quiet happiness of being someone's home. They may have existed for billions of years, but they will never know what it means to love someone so deeply that even the simplest moments become memories worth keeping forever. And if I could offer the universe one thing in return for giving me you, it would be all the time I have left.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "3bb5fb52-0eb8-4976-8e26-ccc75edb8811",
+            "hash": "37182fa85b6c54514ffa3e056e44d128f0907c0bf1c22d02c6d1798cfbfc07b3"
+          }
+        ]
+      }
     }
   ],
   "photos": [
