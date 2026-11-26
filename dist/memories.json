@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T06:23:19.534Z",
+  "updatedAt": "2026-11-26T06:23:22.990Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1058,7 +1058,19 @@
       "date": "2026-11-25",
       "createdAt": "2026-11-26T06:23:19.534Z",
       "author": "youssef",
-      "text": "I hope we get to grow old beneath the same skies, watching the world change around us while finding comfort in the things that never do. I want to see a thousand summers pass, walk along unfamiliar shores, collect sunsets in places we've never been, and still reach for your hand as if it's the first time. And when our hair turns silver and the years become stories, I hope I'll look at you and feel the same wonder I feel today, knowing that somehow, in all the endlessness of existence, I got to spend my life with you."
+      "text": "I hope we get to grow old beneath the same skies, watching the world change around us while finding comfort in the things that never do. I want to see a thousand summers pass, walk along unfamiliar shores, collect sunsets in places we've never been, and still reach for your hand as if it's the first time. And when our hair turns silver and the years become stories, I hope I'll look at you and feel the same wonder I feel today, knowing that somehow, in all the endlessness of existence, I got to spend my life with you.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "comments": [],
+        "receipts": [
+          {
+            "id": "47215217-c83c-4b7b-af1c-5df6bac92851",
+            "hash": "6243294cec77e88fb1156e0134b3faed0c80792ce5db885f37596da5e236bdb5"
+          }
+        ]
+      }
     }
   ],
   "photos": [
