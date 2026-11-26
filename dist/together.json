@@ -3,15 +3,15 @@
   "bucketList": [],
   "hearts": {
     "me": {
-      "id": "0f97f2bd-ae2b-4ff9-85fb-05a0a6128f9d",
-      "sentAt": "2026-11-23T04:56:40.938Z"
+      "id": "99187e69-3497-4d4d-953b-0b06c8b6efcd",
+      "sentAt": "2026-11-26T00:18:09.265Z"
     },
     "asechka": {
       "id": "1a86ab24-1c50-46d2-8e67-1cd91f5ac927",
       "sentAt": "2026-11-22T03:51:12.955Z"
     }
   },
-  "updatedAt": "2026-11-23T04:56:40.938Z",
+  "updatedAt": "2026-11-26T00:18:09.265Z",
   "heartDays": {
     "2026-10-24": {
       "me": 85,
@@ -132,10 +132,13 @@
     "2026-11-22": {
       "me": 27,
       "asechka": 0
+    },
+    "2026-11-25": {
+      "me": 4,
+      "asechka": 0
     }
   },
   "heartOperations": {
-    "325db16e-77cd-4992-a831-14c168b0945b": "asechka|15|2026-11-10",
     "1a2b6fa1-9881-4d5a-ba80-12e6dd124309": "me|45|2026-11-10",
     "d220598a-c5ff-4a37-a24f-3c30566b2d76": "me|17|2026-11-10",
     "e906e746-fbc4-43b5-b185-2d2b1ee8eef3": "me|50|2026-11-10",
@@ -646,7 +649,8 @@
     "7b6c3cf3-2183-4836-9134-807c80561759": "me|4|2026-11-22",
     "57fa4599-f9b3-4af9-bde8-0537c8efe975": "me|11|2026-11-22",
     "6996ae41-afce-49b6-ab11-ed6162b85ffb": "me|11|2026-11-22",
-    "0f97f2bd-ae2b-4ff9-85fb-05a0a6128f9d": "me|1|2026-11-22"
+    "0f97f2bd-ae2b-4ff9-85fb-05a0a6128f9d": "me|1|2026-11-22",
+    "99187e69-3497-4d4d-953b-0b06c8b6efcd": "me|4|2026-11-25"
   },
   "heartStreak": {
     "version": 1,
@@ -659,16 +663,19 @@
   },
   "streakStatus": {
     "version": 1,
-    "today": "2026-11-22",
-    "days": 41,
-    "lives": 2,
+    "today": "2026-11-25",
+    "days": 44,
+    "lives": 0,
     "livesEarned": 2,
-    "livesUsed": 0,
-    "protectedDays": [],
+    "livesUsed": 2,
+    "protectedDays": [
+      "2026-11-23",
+      "2026-11-24"
+    ],
     "lastResetOn": null,
     "nextLifeOn": "2026-12-12",
     "todayComplete": true,
-    "asOf": "2026-11-23T04:56:40.938Z"
+    "asOf": "2026-11-26T00:18:09.265Z"
   },
   "messages": [
     {
