@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T02:52:52.947Z",
+  "updatedAt": "2026-11-26T02:52:55.979Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -953,13 +953,18 @@
       "text": "Even the moon must grow tired of watching the tides return to the shore, yet it never stops pulling the ocean closer. Perhaps that's what my love is like: something endless, something written into the nature of my soul. No matter how far life takes us or how many seasons pass, I will always find my way back to you, as naturally as the waves find their way home.",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "7f8d006f-924c-4f78-ab7f-d16d57e5a771",
             "hash": "7874b80c1c8d6aafdd496d5b34bb4bb728e6bba064827fe40c0f89c4377c1e1e"
+          },
+          {
+            "id": "17221557-9c3c-4f96-a638-7fb9d3ead5af",
+            "hash": "b5b97f21361451c1b130886c3e8decafb36f3546e1943ae25654bab426e93929"
           }
         ]
       }
