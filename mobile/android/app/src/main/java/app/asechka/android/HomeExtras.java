@@ -173,7 +173,7 @@ final class HomeExtras {
     summary.setGravity(Gravity.CENTER_HORIZONTAL);
     LinearLayout statsLine = u.row(8);
     statsLine.setGravity(Gravity.CENTER);
-    counts = u.text("", 12.5f, Ui.INK);
+    counts = u.text("", 13, Ui.INK);
     Compat.font(counts, R.font.dm_sans, 500);
     statsLine.addView(counts);
     TextView dotSep = u.text("·", 12, Ui.MUTED);
@@ -182,7 +182,7 @@ final class HomeExtras {
     Compat.font(streak, R.font.dm_sans, 600);
     statsLine.addView(streak);
     summary.addView(statsLine);
-    milestoneText = u.text("", 10.5f, Ui.MUTED);
+    milestoneText = u.text("", 11, Ui.MUTED);
     milestoneText.setGravity(Gravity.CENTER);
     milestoneText.setVisibility(View.GONE);
     u.add(summary, milestoneText, 3);
@@ -268,7 +268,7 @@ final class HomeExtras {
     LinearLayout clockRow = u.row(10);
     clockRow.setGravity(Gravity.CENTER_VERTICAL);
     LinearLayout clockCopy = u.column();
-    TextView together = u.text("Together ♡", 11.5f, Ui.PURPLE);
+    TextView together = u.text("Together ♡", 12, Ui.PURPLE);
     Compat.font(together, R.font.dm_sans, 600);
     clockCopy.addView(together);
     elapsed = u.title("", 18);
@@ -316,11 +316,11 @@ final class HomeExtras {
     camTop.addView(new View(activity), new LinearLayout.LayoutParams(0, 1, 1));
     camTop.addView(Glyph.view(activity, "arrow.up.right", 0x996b5cb5), new LinearLayout.LayoutParams(u.dp(14), u.dp(14)));
     camera.addView(camTop);
-    TextView cameraName = u.text("Our disposable camera", 13.5f, Ui.INK);
+    TextView cameraName = u.text("Our disposable camera", 14, Ui.INK);
     Compat.font(cameraName, R.font.dm_sans, 600);
     cameraName.setMaxLines(2);
     u.add(camera, cameraName, 8);
-    cameraSub = u.text("8 weekly shots · Sun 8 PM", 10.5f, Ui.PURPLE);
+    cameraSub = u.text("8 weekly shots · Sun 8 PM", 11, Ui.PURPLE);
     cameraSub.setMaxLines(2);
     u.add(camera, cameraSub, 3);
     camera.setContentDescription("Our disposable camera");
@@ -341,11 +341,11 @@ final class HomeExtras {
     vaultTop.addView(new View(activity), new LinearLayout.LayoutParams(0, 1, 1));
     vaultTop.addView(Glyph.view(activity, "arrow.up.right", 0x73263451), new LinearLayout.LayoutParams(u.dp(14), u.dp(14)));
     vault.addView(vaultTop);
-    TextView vaultName = u.text("Time vault", 13.5f, Ui.INK);
+    TextView vaultName = u.text("Time vault", 14, Ui.INK);
     Compat.font(vaultName, R.font.dm_sans, 600);
     vaultName.setMaxLines(2);
     u.add(vault, vaultName, 8);
-    vaultSub = u.text("Seal notes for later · Shared vault", 10.5f, Ui.MUTED);
+    vaultSub = u.text("Seal notes for later · Shared vault", 11, Ui.MUTED);
     vaultSub.setMaxLines(2);
     u.add(vault, vaultSub, 3);
     vault.setContentDescription("Time vault");
