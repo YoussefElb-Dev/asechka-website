@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T02:52:49.412Z",
+  "updatedAt": "2026-11-26T02:52:52.947Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -972,13 +972,18 @@
       "text": "Somewhere, countless stars are being born and others are quietly disappearing, galaxies are drifting through the darkness, and time is carrying everything forward. Yet here I am, in the middle of all that infinity, certain of one thing: if I were given every lifetime imaginable, I would spend each one learning how to love you a little more. And when the last light in the universe fades, I hope ours is still shining.",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "ef52689d-0325-4cac-a460-1f536193fbe3",
             "hash": "9595b0a1daadd53a93304829b3292eb0f27e5fb6585fbe1c6cda2442cf9c588f"
+          },
+          {
+            "id": "7fd3c68e-4930-4e9d-b90c-26e8765ceb02",
+            "hash": "f3c9931ab78591760d9e010a8541ad1d2cfdafafb02cf4e320d29cd75720c724"
           }
         ]
       }
