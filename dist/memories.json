@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T06:23:04.164Z",
+  "updatedAt": "2026-11-26T06:23:19.534Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1052,6 +1052,13 @@
           }
         ]
       }
+    },
+    {
+      "id": "9ce05eb2-c7b4-4cee-a2e6-4a9c82dbe12a",
+      "date": "2026-11-25",
+      "createdAt": "2026-11-26T06:23:19.534Z",
+      "author": "youssef",
+      "text": "I hope we get to grow old beneath the same skies, watching the world change around us while finding comfort in the things that never do. I want to see a thousand summers pass, walk along unfamiliar shores, collect sunsets in places we've never been, and still reach for your hand as if it's the first time. And when our hair turns silver and the years become stories, I hope I'll look at you and feel the same wonder I feel today, knowing that somehow, in all the endlessness of existence, I got to spend my life with you."
     }
   ],
   "photos": [
