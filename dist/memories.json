@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T06:54:38.267Z",
+  "updatedAt": "2026-11-26T06:54:40.952Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -927,13 +927,18 @@
       "text": "If the ocean could keep every secret whispered into its waves, I would fill it with all the things I have yet to tell you. Every little reason I adore you, every dream I have of our future, every moment I wish I could relive. And perhaps one day, when the tides have carried a thousand sunsets across the shore, we'll stand together and realize that the most beautiful thing life ever gave us wasn't a place or a moment, but the life we built beside each other.",
       "social": {
         "likes": {
-          "youssef": true
+          "youssef": true,
+          "asnat": true
         },
         "comments": [],
         "receipts": [
           {
             "id": "ede09a5a-98c8-4d31-953f-1d56bdca7418",
             "hash": "6b65e4e3996843461f5a22a78619497ba07d0cb3cd2333d9985be947b2758092"
+          },
+          {
+            "id": "f036e0d7-3213-404e-9901-f9fb8ac944ce",
+            "hash": "f2e1aabfcdffab1348b07fb4cd7a2a42e40b2e7070f11a29fe613fd4f0b87bbe"
           }
         ]
       }
