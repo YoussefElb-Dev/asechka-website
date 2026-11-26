@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-26T00:18:05.931Z",
+  "updatedAt": "2026-11-26T00:23:46.257Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -982,6 +982,13 @@
           }
         ]
       }
+    },
+    {
+      "id": "bba397d7-1e20-4ec6-b565-674ed28a05b9",
+      "date": "2026-11-23",
+      "createdAt": "2026-11-26T00:23:46.257Z",
+      "author": "youssef",
+      "text": "Maybe one day we'll find ourselves somewhere far from everything we know, watching the sunset disappear into the sea, with nothing but the sound of the waves and the warmth of each other's presence. And in that moment, I hope we understand that we never needed a perfect world, only a thousand ordinary days spent together. Because even the most beautiful paradise could never compare to a life in which I get to wake up and find you beside me."
     }
   ],
   "photos": [
