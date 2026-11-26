@@ -113,8 +113,18 @@ struct RootView:View {
             }
         }
     }
+    private var windowSafeBottom:CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap{$0 as? UIWindowScene}
+            .flatMap{$0.windows}
+            .first{$0.isKeyWindow}?.safeAreaInsets.bottom ?? 0
+    }
     private var shell:some View {
-        VStack(spacing:0){
+        let safeBottom=windowSafeBottom
+        let barBottomPad:CGFloat = safeBottom > 16 ? 14 : max(8,safeBottom)
+        let barTotalHeight:CGFloat = 46 + barBottomPad
+        let scrollClearance:CGFloat = max(16,barTotalHeight - safeBottom)
+        return VStack(spacing:0){
             HStack(spacing:8){
                 Text("asechka.").font(.custom("Manrope-Bold",size:25))
                 Spacer()
@@ -133,45 +143,47 @@ struct RootView:View {
                 .transition(.opacity.combined(with:.offset(x:reduced ? 0:8)))
         }
         .safeAreaInset(edge:.bottom,spacing:0){
+            Color.clear.frame(height:scrollClearance)
+        }
+        .overlay(alignment:.bottom){
             HStack(spacing:0){ForEach(0..<tabs.count,id:\.self){index in
                 let active = tab == index
-                Button{Touch.tap();withAnimation(reduced ? nil:.spring(response:0.28,dampingFraction:0.82)){tab=index}}label:{
-                    VStack(spacing:3){
+                Button{Touch.tap();withAnimation(reduced ? nil:.spring(response:0.26,dampingFraction:0.84)){tab=index}}label:{
+                    VStack(spacing:0){
                         ZStack{
+                            Color.clear.frame(height:2.5)
                             if active {
-                                Capsule().fill(Palette.violet.opacity(0.11)).frame(width:38,height:26)
-                                    .matchedGeometryEffect(id:"active-tab-glow",in:tabMotion)
+                                Capsule().fill(Palette.violet).frame(width:24,height:2.5)
+                                    .matchedGeometryEffect(id:"active-tab",in:tabMotion)
                             }
-                            Image(systemName:active ? tabs[index].1 : tabs[index].0)
-                                .font(.system(size:19,weight:active ? .semibold : .regular))
-                                .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.85))
-                        }.frame(height:26)
+                        }
+                        Spacer().frame(height:6)
+                        Image(systemName:active ? tabs[index].1 : tabs[index].0)
+                            .font(.system(size:20,weight:active ? .semibold : .regular))
+                            .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.84))
+                            .frame(height:22)
+                        Spacer().frame(height:2)
                         Text(tabs[index].2)
                             .font(.system(size:10,weight:active ? .semibold : .medium))
-                            .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.85))
+                            .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.84))
                             .lineLimit(1).minimumScaleFactor(0.85)
-                        if active {
-                            Capsule().fill(Palette.violet).frame(width:16,height:3)
-                                .shadow(color:Palette.violet.opacity(0.45),radius:4,y:0)
-                                .matchedGeometryEffect(id:"active-tab",in:tabMotion)
-                        } else {
-                            Color.clear.frame(width:16,height:3)
-                        }
                     }
                     .frame(maxWidth:.infinity)
-                    .padding(.top,7).padding(.bottom,2)
+                    .padding(.bottom,barBottomPad)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(tabs[index].2)
                 .accessibilityAddTraits(active ? .isSelected : [])
             }}
-            .padding(.horizontal,8)
-            .background(.ultraThinMaterial,ignoresSafeAreaEdges:.bottom)
-            .background(Color.white.opacity(0.55).ignoresSafeArea(edges:.bottom))
+            .padding(.horizontal,6)
+            .background(.ultraThinMaterial)
+            .background(Color.white.opacity(0.62))
             .overlay(alignment:.top){
-                Rectangle().fill(Palette.purple.opacity(0.12)).frame(height:0.5)
+                Rectangle().fill(Palette.purple.opacity(0.14)).frame(height:0.5)
             }
+            .ignoresSafeArea(.container,edges:.bottom)
+            .ignoresSafeArea(.keyboard,edges:.bottom)
         }
     }
 }

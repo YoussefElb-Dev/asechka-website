@@ -237,16 +237,17 @@ final class HomeExtras {
     vibePillParams.topMargin = u.dp(8);
     heart.addView(partnerVibeText, vibePillParams);
 
+    // 1b. Standalone Vibe Row directly below Heart Card (matching iOS HomeHub)
     HorizontalScrollView vibeScroll = new HorizontalScrollView(activity);
     vibeScroll.setHorizontalScrollBarEnabled(false);
     LinearLayout vibeRow = u.row(6);
     for (String[] vibe : VIBES) {
       final String vibeId = vibe[0], vibeSymbol = vibe[1], vibeLabel = vibe[2];
-      TextView chip = u.text(vibeSymbol + " " + vibeLabel, 11, Ui.PURPLE);
-      Compat.font(chip, R.font.dm_sans, 600);
-      chip.setPadding(u.dp(10), u.dp(5), u.dp(10), u.dp(5));
+      TextView chip = u.text(vibeSymbol + " " + vibeLabel, 11, Ui.INK);
+      Compat.font(chip, R.font.dm_sans, 500);
+      chip.setPadding(u.dp(10), u.dp(6), u.dp(10), u.dp(6));
       android.graphics.drawable.GradientDrawable bg = u.shape(Color.WHITE, 100);
-      bg.setStroke(u.dp(1), 0x226b5cb5);
+      bg.setStroke(u.dp(1), 0x246b5cb5);
       chip.setBackground(bg);
       chip.setContentDescription("Send heart vibe: " + vibeLabel);
       chip.setOnClickListener(
@@ -258,7 +259,7 @@ final class HomeExtras {
       vibeRow.addView(chip);
     }
     vibeScroll.addView(vibeRow);
-    u.add(heart, vibeScroll, 8);
+    u.add(root, vibeScroll, 10);
 
     // 2. Balanced Together Counter Card (Clock left + Milestone Progress Ring right)
     LinearLayout clock = u.card(root, Ui.BLUE);
@@ -354,7 +355,17 @@ final class HomeExtras {
     special.addView(vault, new LinearLayout.LayoutParams(0, -1, 1));
     u.add(root, special, 8);
 
-    // 4. Streamlined 4 shortcuts (2x2 grid)
+    // 4. Dynamic 2.8.0 Cards (exact iOS order: Love Jar -> Today's Question -> Song of the Moment -> On This Day)
+    loveJarSlot = u.column();
+    u.add(root, loveJarSlot, 10);
+    promptSlot = u.column();
+    u.add(root, promptSlot, 10);
+    momentSlot = u.column();
+    u.add(root, momentSlot, 10);
+    throwbackSlot = u.column();
+    u.add(root, throwbackSlot, 10);
+
+    // 5. Streamlined 4 shortcuts (2x2 grid, identical to iOS HomeHub)
     String[] names = {"Secret vocab", "Open when…", "Little things", "Our beginning"};
     String[] symbols = {"book", "envelope", "heart", "infinity"};
     int[] destinations = {3, 1, 2, 0};
@@ -363,7 +374,7 @@ final class HomeExtras {
     for (int i = 0; i < names.length; i++) {
       if (i % columns == 0) {
         row = u.row(7);
-        u.add(root, row, 7);
+        u.add(root, row, i == 0 ? 10 : 7);
       }
       final int destination = destinations[i];
       LinearLayout tile = u.row(7);
@@ -388,19 +399,9 @@ final class HomeExtras {
       row.addView(tile, new LinearLayout.LayoutParams(0, u.dp(44), 1));
     }
 
-    // 5. Live Location Card (kept right below shortcuts so both remain visible above fold)
+    // 6. Live Location Card (at bottom of Home Hub, identical to iOS)
     locationCard = ((MainActivity) activity).locationCard();
-    u.add(root, locationCard.view(), 6);
-
-    // 6. Dynamic 2.8.0 Cards: Daily Prompt, Love Jar Pinned Notes, Song of the Moment, On This Day
-    promptSlot = u.column();
-    u.add(root, promptSlot, 8);
-    loveJarSlot = u.column();
-    u.add(root, loveJarSlot, 8);
-    momentSlot = u.column();
-    u.add(root, momentSlot, 8);
-    throwbackSlot = u.column();
-    u.add(root, throwbackSlot, 8);
+    u.add(root, locationCard.view(), 10);
 
     update();
     return root;
@@ -509,8 +510,11 @@ final class HomeExtras {
             + " lives available. Long press for history.");
     if (milestoneText != null && shownTotalAllTime > 0) {
       long next = nextHeartMilestone(shownTotalAllTime);
-      long pct = Math.min(99, (shownTotalAllTime * 100) / Math.max(1, next));
-      milestoneText.setText(String.format(Locale.US, "%,d / %,d hearts (%d%%) · tap for 7-day recap", shownTotalAllTime, next, pct));
+      int[] streakMarks = {7, 14, 30, 50, 100, 150, 200, 365};
+      int nextStreak = shownStreak + 50;
+      for (int m : streakMarks) if (m > shownStreak) { nextStreak = m; break; }
+      String targetLbl = next >= 1000 ? (next / 1000) + "k" : String.valueOf(next);
+      milestoneText.setText(String.format(Locale.US, "%,d ♡ · %,d to %s · %dd to %dd", shownTotalAllTime, Math.max(0, next - shownTotalAllTime), targetLbl, Math.max(0, nextStreak - shownStreak), nextStreak));
       milestoneText.setVisibility(View.VISIBLE);
     }
   }
@@ -832,16 +836,18 @@ final class HomeExtras {
     if (sig.toString().equals(lastJarSignature)) return;
     lastJarSignature = sig.toString();
     loveJarSlot.removeAllViews();
-    LinearLayout card = u.card(loveJarSlot, Ui.PALE);
+    LinearLayout card = u.card(loveJarSlot, Color.WHITE);
     ((LinearLayout.LayoutParams) card.getLayoutParams()).topMargin = 0;
+    card.setBackground(u.shape(Color.WHITE, 18, 0xffe6e2f5));
+    card.setPadding(u.dp(14), u.dp(14), u.dp(14), u.dp(14));
     LinearLayout head = u.row(8);
-    head.addView(u.label(pinned.isEmpty() ? "OUR LOVE JAR" : "PINNED FROM OUR LOVE JAR"), new LinearLayout.LayoutParams(0, -2, 1));
-    TextView openJar = u.text("Open jar →", 12, Ui.PURPLE);
+    head.addView(u.label("PINNED IN OUR LOVE JAR"), new LinearLayout.LayoutParams(0, -2, 1));
+    TextView openJar = u.text("Write ♡", 11, Ui.PURPLE);
     Compat.font(openJar, R.font.dm_sans, 600);
     head.addView(openJar);
     card.addView(head);
     if (pinned.isEmpty()) {
-      u.add(card, u.text("Pin a favorite note from your Love Jar to keep it right here on Home.", 13, Ui.MUTED), 6);
+      u.add(card, u.text("Drop a warm note in our Love Jar and pin it right here on Home. ♡", 13, Ui.MUTED), 6);
     } else {
       int shown = Math.min(2, pinned.size());
       for (int i = 0; i < shown; i++) {
@@ -866,33 +872,53 @@ final class HomeExtras {
     momentSlot.removeAllViews();
     LinearLayout card = u.card(momentSlot, Color.WHITE);
     ((LinearLayout.LayoutParams) card.getLayoutParams()).topMargin = 0;
-    LinearLayout top = u.row(8);
-    top.addView(u.label("SONG OF THE MOMENT"), new LinearLayout.LayoutParams(0, -2, 1));
-    TextView swap = u.text(moment == null ? "Pick one →" : "Swap →", 12, Ui.PURPLE);
+    card.setBackground(u.shape(Color.WHITE, 18, 0xffe6e2f5));
+    card.setPadding(u.dp(12), u.dp(12), u.dp(12), u.dp(12));
+    LinearLayout row = u.row(12);
+    row.setGravity(Gravity.CENTER_VERTICAL);
+    boolean hasSong = moment != null && !moment.optString("title").isEmpty();
+    if (hasSong) {
+      ImageView art = new ImageView(activity);
+      art.setScaleType(ImageView.ScaleType.CENTER_CROP);
+      art.setBackground(u.shape(Ui.PALE, 12));
+      art.setClipToOutline(true);
+      row.addView(art, new LinearLayout.LayoutParams(u.dp(50), u.dp(50)));
+      if (activity instanceof MainActivity) ((MainActivity) activity).feedImages().load(moment.optString("artworkUrl"), art);
+    } else {
+      FrameLayout badge = new FrameLayout(activity);
+      badge.setBackground(u.shape(Ui.PALE, 12));
+      badge.addView(Glyph.view(activity, "music", Ui.PURPLE), new FrameLayout.LayoutParams(u.dp(20), u.dp(20), Gravity.CENTER));
+      row.addView(badge, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
+    }
+    LinearLayout copy = u.column();
+    copy.addView(u.label("SONG OF THE MOMENT"));
+    if (hasSong) {
+      TextView title = u.text(moment.optString("title"), 14, Ui.INK);
+      Compat.font(title, R.font.dm_sans, 600);
+      title.setSingleLine(true);
+      title.setEllipsize(android.text.TextUtils.TruncateAt.END);
+      u.add(copy, title, 2);
+      String subText = moment.optString("artist") + (!moment.optString("note").isEmpty() ? " · " + moment.optString("note") : "");
+      TextView sub = u.text(subText, 11, Ui.MUTED);
+      sub.setSingleLine(true);
+      sub.setEllipsize(android.text.TextUtils.TruncateAt.END);
+      u.add(copy, sub, 2);
+    } else {
+      u.add(copy, u.text("Pick the track on repeat right now", 13, Ui.MUTED), 2);
+    }
+    row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
+    TextView swap = u.text(hasSong ? "Swap" : "Pick", 12, Ui.PURPLE);
     Compat.font(swap, R.font.dm_sans, 600);
-    top.addView(swap);
-    card.addView(top);
-    if (moment == null || moment.optString("title").isEmpty()) {
-      u.add(card, u.text("Drop whatever song is stuck in your head right now.", 13, Ui.MUTED), 6);
+    swap.setPadding(u.dp(12), u.dp(7), u.dp(12), u.dp(7));
+    swap.setBackground(u.shape(Ui.PALE, 100));
+    row.addView(swap);
+    card.addView(row);
+    if (!hasSong) {
       card.setOnClickListener(v -> {
         if (activity instanceof MainActivity) ((MainActivity) activity).searchMomentMusic();
       });
       return;
     }
-    LinearLayout row = u.row(12);
-    row.setGravity(Gravity.CENTER_VERTICAL);
-    ImageView art = new ImageView(activity);
-    art.setScaleType(ImageView.ScaleType.CENTER_CROP);
-    art.setBackground(u.shape(Ui.PALE, 12));
-    art.setClipToOutline(true);
-    row.addView(art, new LinearLayout.LayoutParams(u.dp(50), u.dp(50)));
-    if (activity instanceof MainActivity) ((MainActivity) activity).feedImages().load(moment.optString("artworkUrl"), art);
-    LinearLayout copy = u.column();
-    copy.addView(u.title(moment.optString("title"), 15));
-    u.add(copy, u.text(moment.optString("artist"), 13, Ui.MUTED), 2);
-    if (!moment.optString("note").isEmpty()) u.add(copy, u.text(moment.optString("note"), 12, Ui.PURPLE), 4);
-    row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
-    u.add(card, row, 8);
     swap.setOnClickListener(v -> {
       if (activity instanceof MainActivity) ((MainActivity) activity).searchMomentMusic();
     });

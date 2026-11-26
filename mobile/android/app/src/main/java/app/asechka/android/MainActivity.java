@@ -344,7 +344,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               root == view ? (keyboard ? ime.bottom : 0) : Math.max(sys.bottom, ime.bottom));
           if (root == view && bottom != null) {
             bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-            bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), Math.max(u.dp(8), sys.bottom));
+            bottom.setPadding(u.dp(6), 0, u.dp(6), navBottomPad(sys.bottom));
           }
           return insets;
         });
@@ -363,7 +363,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             navigationInset = systemBottom;
             if (root == view && bottom != null) {
               bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-              bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), Math.max(u.dp(8), navigationInset));
+              bottom.setPadding(u.dp(6), 0, u.dp(6), navBottomPad(navigationInset));
             }
             return insets;
           });
@@ -732,11 +732,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
     feed = null;
     bottom = u.row(0);
-    bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), Math.max(u.dp(8), navigationInset));
-    bottom.setElevation(u.dp(2));
+    bottom.setPadding(u.dp(6), 0, u.dp(6), navBottomPad(navigationInset));
+    bottom.setElevation(0);
     android.graphics.drawable.LayerDrawable glassBar = new android.graphics.drawable.LayerDrawable(
         new android.graphics.drawable.Drawable[] {
-          new android.graphics.drawable.ColorDrawable(0x1f6c5ce7),
+          new android.graphics.drawable.ColorDrawable(0x246b5cb5),
           new android.graphics.drawable.ColorDrawable(0xebffffff)
         });
     glassBar.setLayerInset(1, 0, Math.max(1, u.dp(1)), 0, 0);
@@ -911,41 +911,48 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     return getResources().getConfiguration().screenHeightDp < 420;
   }
 
+  private int navBottomPad(int inset) {
+    if (inset > u.dp(28)) return inset;
+    return Math.max(u.dp(8), Math.min(inset, u.dp(12)));
+  }
+
   private void renderNav() {
     bottom.removeAllViews();
     int[] order = {0, 1, 3, 4, 6};
+    int activeViolet = 0xff6c5ce7;
     for (int position = 0; position < order.length; position++) {
       final int i = order[position];
       final int target = i;
       boolean selected = screen == i || (i == 1 && (screen == 2 || screen == 5));
       LinearLayout tab = u.column();
-      tab.setGravity(Gravity.CENTER);
+      tab.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
       tab.setPadding(u.dp(2), 0, u.dp(2), 0);
       tab.setContentDescription(labels[i]);
       tab.setFocusable(true);
       tab.setSelected(selected);
-      int activeViolet = 0xff6c5ce7;
       tab.setBackground(
           new android.graphics.drawable.RippleDrawable(
-              android.content.res.ColorStateList.valueOf(0x186c5ce7),
+              android.content.res.ColorStateList.valueOf(0x166c5ce7),
               null,
-              u.shape(Color.WHITE, 14)));
-      FrameLayout iconFrame = new FrameLayout(this);
-      iconFrame.setBackground(u.shape(selected ? 0x1a6c5ce7 : Color.TRANSPARENT, 14));
-      FrameLayout.LayoutParams iconParams =
-          new FrameLayout.LayoutParams(u.dp(21), u.dp(21), Gravity.CENTER);
+              u.shape(Color.WHITE, 12)));
+      View topAccent = new View(this);
+      topAccent.setBackground(u.shape(activeViolet, 3));
+      topAccent.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
+      tab.addView(topAccent, new LinearLayout.LayoutParams(u.dp(24), Math.max(2, u.dp(2.5f))));
       String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
-      iconFrame.addView(Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.MUTED), iconParams);
-      tab.addView(iconFrame, new LinearLayout.LayoutParams(u.dp(38), u.dp(26)));
+      ImageView icon = Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.MUTED);
+      LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(u.dp(20), u.dp(20));
+      iconParams.topMargin = u.dp(6);
+      tab.addView(icon, iconParams);
       if (selected && motion()) {
-        iconFrame.setScaleX(.88f);
-        iconFrame.setScaleY(.88f);
-        iconFrame
+        icon.setScaleX(.88f);
+        icon.setScaleY(.88f);
+        icon
             .animate()
             .scaleX(1)
             .scaleY(1)
-            .setDuration(260)
-            .setInterpolator(new android.view.animation.OvershootInterpolator(1.25f))
+            .setDuration(240)
+            .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
             .start();
       }
       TextView label = u.text(labels[i], 10, selected ? activeViolet : Ui.MUTED);
@@ -956,15 +963,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       label.setMaxLines(1);
       label.setEllipsize(android.text.TextUtils.TruncateAt.END);
       label.setGravity(Gravity.CENTER);
-      Compat.font(label, R.font.dm_sans, selected ? 700 : 500);
-      u.add(tab, label, 3);
-      View indicator = new View(this);
-      indicator.setBackground(u.shape(activeViolet, 3));
-      indicator.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
-      LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(u.dp(16), u.dp(3));
-      dotParams.topMargin = u.dp(3);
-      tab.addView(indicator, dotParams);
-      tab.setMinimumHeight(u.dp(compact() ? 42 : 48));
+      Compat.font(label, R.font.dm_sans, selected ? 600 : 500);
+      u.add(tab, label, 2);
+      tab.setMinimumHeight(u.dp(compact() ? 42 : 46));
       tab.setOnClickListener(v -> select(target));
       bottom.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
     }
@@ -1040,10 +1041,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     stories.setClipToPadding(false);
     LinearLayout row = u.row(home ? 10 : 18);
     row.setPadding(u.dp(home ? 16 : 22), u.dp(home ? 0 : 7), u.dp(home ? 16 : 22), u.dp(home ? 8 : 14));
-    String[] titles = {"Create", "Our corner", "Our days", "Music", savedPosts ? "All posts" : "Saved"};
-    String[] symbols = {"plus", "heart", "sparkles", "music", "bookmark"};
+    String[] titles = {"Create", "Our corner", "Our days", savedPosts ? "All posts" : "Saved"};
+    String[] symbols = {"plus", "heart", "sparkles", "bookmark"};
     for(int i=0;i<titles.length;i++){
-      if(home && (i==2 || i==3))continue;
+      if(home && i==2)continue;
       final int action=i;
       LinearLayout story=u.column();story.setGravity(Gravity.CENTER);
       if(home){
@@ -1058,7 +1059,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         TextView name=u.text(titles[i],11,Ui.INK);name.setGravity(Gravity.CENTER);u.add(story,name,8);
       }
       story.setContentDescription(titles[i]);
-      story.setOnClickListener(v->{if(action==0)choosePost();if(action==1)ourCorner();if(action==2)select(3);if(action==3)select(2);if(action==4){savedPosts=!savedPosts;if(feed!=null){stage.removeView(feed);feed=null;}render(false);}});
+      story.setOnClickListener(v->{if(action==0)choosePost();if(action==1)ourCorner();if(action==2)select(3);if(action==3){savedPosts=!savedPosts;if(feed!=null){stage.removeView(feed);feed=null;}render(false);}});
       row.addView(story,home?new LinearLayout.LayoutParams(0,-2,1):new LinearLayout.LayoutParams(u.dp(70),-2));
     }
     if(home)header.addView(row);else{stories.addView(row);header.addView(stories);}
@@ -1150,7 +1151,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     compose.setOnClickListener(v -> { if (screen == 1 && photoSection.equals("photography")) createPost(true); else choosePost(); });
     u.add(intro, compose, 17);
     if (!home) header.addView(intro);
-    if (screen == 5 && !savedPosts) {
+    if ((screen == 5 || (screen == 1 && memoryFilter == 2)) && !savedPosts) {
       LinearLayout carousel = u.column();
       carousel.setPadding(u.dp(18), 0, u.dp(18), u.dp(14));
       quoteCarousel(carousel);
