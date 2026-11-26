@@ -8,61 +8,67 @@ struct BookView:View {
     var personal=false
     @State private var chapter=0
     @State private var query=""
-    @State private var filter=0
     @State private var reveal=0
-    @State private var manageThings=false
+    @State private var manageKeepsakes=false
     @State private var editing:BookEdit?
     @State private var letter:BookEntry?
     @State private var removal:BookEdit?
     @State private var beginning=false
-    init(personal:Bool=false,initialChapter:Int=0){self.personal=personal;_chapter=State(initialValue:max(0,min(2,initialChapter)))}
+    init(personal:Bool=false,initialChapter:Int=0){self.personal=personal;_chapter=State(initialValue:personal ? max(0,min(2,initialChapter)):0)}
     private var data:[String:Any]{personal ? universe.keepsakes:universe.journal}
     private var writable:Bool {data["writable"] as? Bool ?? false}
     private var endpoint:String{personal ? "/api/keepsakes":"/api/journal"}
-    private var key:String{personal ? (chapter==1 ? "letters":"things"):(chapter==0 ? "victories":chapter==1 ? "recipes":"jokes")}
-    private var kind:String{personal ? (chapter==1 ? "Letter":"Thing"):(chapter==0 ? "Victory":chapter==1 ? "Recipe":"Joke")}
+    private var key:String{personal ? (chapter==1 ? "letters":"things"):"jokes"}
+    private var kind:String{personal ? (chapter==1 ? "Letter":"Thing"):"Joke"}
     private var entries:[BookEntry]{(data[key] as? [[String:Any]] ?? []).map{BookEntry(fields:$0)}}
     private var filtered:[BookEntry]{entries.reversed().filter{item in
-        if kind=="Recipe",filter != 0,item.flag("tried") != (filter==2){return false}
-        return query.isEmpty || ["title","meaning","story"].map{item.string($0)}.joined(separator:" ").localizedCaseInsensitiveContains(query)
+        query.isEmpty || ["title","meaning","story"].map{item.string($0)}.joined(separator:" ").localizedCaseInsensitiveContains(query)
     }}
     var body:some View {
         NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
-            Text(personal ? "All the days\nthat became ours.":"Our little book.\nStill being written.").font(.custom("Manrope-Bold",size:30))
-            Text("Saved for both of us. Add your own words, whenever you like.").foregroundColor(Palette.muted)
-            ScrollView(.horizontal,showsIndicators:false){HStack(spacing:10){ForEach(0..<3,id:\.self){index in Button{chapter=index;query="";filter=0;Touch.tap()}label:{Text((personal ? ["Since us","Open when…","Little things"]:["Tiny victories","Recipes for two","Inside jokes"])[index]).font(.subheadline.weight(.semibold)).padding(14).background(chapter==index ? Palette.purple:Palette.lavender,in:Capsule()).foregroundColor(chapter==index ? .white:Palette.purple)}.accessibilityAddTraits(chapter==index ? .isSelected:[])}}}
+            Text(personal ? "All the days\nthat became ours.":"Our secret vocab.").font(.custom("Manrope-Bold",size:30))
+            Text(personal ? "Our beginning, Open when letters, and the little things kept close.":"Nicknames, phrases, and inside jokes that make sense to just the two of us.").foregroundColor(Palette.muted)
+            if personal {
+                ScrollView(.horizontal,showsIndicators:false){HStack(spacing:10){ForEach(0..<3,id:\.self){index in Button{chapter=index;query="";Touch.tap()}label:{Text(["Since us","Open when…","Little things"][index]).font(.subheadline.weight(.semibold)).padding(14).background(chapter==index ? Palette.purple:Palette.lavender,in:Capsule()).foregroundColor(chapter==index ? .white:Palette.purple)}.accessibilityAddTraits(chapter==index ? .isSelected:[])}}}
+            }
             if !writable{Text("Connect and refresh once to enable shared editing. Your saved pages remain here offline.").font(.caption).foregroundColor(Palette.muted)}
             if personal && chapter==0 {sinceContent}
             else {chapterContent}
-        }.padding(22)}.background(Palette.background).refreshable{await universe.refresh()}.navigationTitle(personal ? "Since us":"Our little book").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}
+        }.padding(22)}.background(Palette.background).refreshable{await universe.refresh()}.navigationTitle(personal ? "Us & keepsakes":"Secret vocab").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}
         .sheet(item:$editing){edit in BookEditor(kind:edit.kind,original:edit.entry,endpoint:endpoint)}
-        .sheet(item:$letter){item in OpenWhenView(item:item,edit:{editing=BookEdit(kind:"Letter",entry:item)},remove:{removal=BookEdit(kind:"Letter",entry:item)},writable:writable)}
+        .sheet(item:$letter){item in OpenWhenView(item:item,edit:{editing=BookEdit(kind:"Letter",entry:item)},remove:{removal=BookEdit(kind:"Letter",entry:item)},writable:writable && manageKeepsakes)}
         .sheet(isPresented:$beginning){BeginningEditor(original:BookEntry(fields:data["since"] as? [String:Any] ?? [:]))}
         .confirmationDialog("Remove this entry for both of us?",isPresented:Binding(get:{removal != nil},set:{if !$0{removal=nil}}),titleVisibility:.visible){Button("Remove",role:.destructive){if let removal{remove(removal)};removal=nil};Button("Keep it",role:.cancel){removal=nil}}
     }
     @ViewBuilder private var chapterContent:some View {
-        Button{editing=BookEdit(kind:kind)}label:{Label(kind=="Thing" ? "Add a little thing":kind=="Joke" ? "Add an inside joke":"Add a "+kind.lowercased(),systemImage:"plus").frame(maxWidth:.infinity).primary()}.disabled(!writable)
-        if kind=="Joke" {TextField("Find one of our inside jokes…",text:$query).textFieldStyle(.roundedBorder)}
-        if kind=="Recipe"{Picker("Recipe collection",selection:$filter){Text("All").tag(0);Text("Wish list").tag(1);Text("Tried").tag(2)}.pickerStyle(.segmented)}
+        if !personal {
+            Button{editing=BookEdit(kind:"Joke")}label:{Label("Add to secret vocab",systemImage:"plus").frame(maxWidth:.infinity).primary()}.disabled(!writable)
+            TextField("Find one of our inside jokes…",text:$query).textFieldStyle(.roundedBorder)
+        } else {
+            Toggle("Manage & edit keepsakes",isOn:$manageKeepsakes).font(.subheadline).padding(.horizontal,4)
+            if manageKeepsakes {
+                Button{editing=BookEdit(kind:kind)}label:{Label(kind=="Thing" ? "Add a little thing":"Add a letter",systemImage:"plus").frame(maxWidth:.infinity).primary()}.disabled(!writable)
+            }
+        }
         if entries.isEmpty {Text("A little space for something only we could write.").foregroundColor(Palette.muted).padding(.vertical,24)}
         else if kind=="Letter" {LazyVGrid(columns:[GridItem(.adaptive(minimum:145),spacing:12)],spacing:12){ForEach(entries){item in Button{letter=item;Touch.tap(true)}label:{VStack(alignment:.leading,spacing:16){Image(systemName:"envelope").font(.title2);Text(item.string("title")).font(.headline).multilineTextAlignment(.leading);Text("Open with love ♡").font(.caption)}.frame(maxWidth:.infinity,minHeight:130,alignment:.leading).padding(18).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22))}}}}
         else if kind=="Thing" {
             entryCard(entries[reveal%entries.count]);Button("Another little thing ♡"){reveal=(reveal+1)%entries.count;Touch.tap()}
-            DisclosureGroup("Manage all little things",isExpanded:$manageThings){ForEach(entries){item in HStack{Text(item.string("text")).font(.subheadline);Spacer();Button("Edit"){editing=BookEdit(kind:"Thing",entry:item)};Button{removal=BookEdit(kind:"Thing",entry:item)}label:{Image(systemName:"trash")}.accessibilityLabel("Remove little thing")}.padding(.vertical,10)}}
+            if manageKeepsakes {
+                ForEach(entries){item in HStack{Text(item.string("text")).font(.subheadline);Spacer();Button("Edit"){editing=BookEdit(kind:"Thing",entry:item)};Button{removal=BookEdit(kind:"Thing",entry:item)}label:{Image(systemName:"trash")}.accessibilityLabel("Remove little thing")}.padding(.vertical,10)}
+            }
         } else {ForEach(filtered){entryCard($0)};if filtered.isEmpty{Text("No matching little memories yet.").foregroundColor(Palette.muted)}}
     }
     private func entryCard(_ item:BookEntry)->some View {
         VStack(alignment:.leading,spacing:14){
             Text(item.string(kind=="Thing" ? "text":"title")).font(kind=="Thing" ? .custom("Caveat-Medium",size:29):.title3.weight(.semibold)).textSelection(.enabled)
             if item.flag("pending"){Text("Saved on this phone · waiting to sync").font(.caption).foregroundColor(Palette.purple)}
-            if kind=="Victory" {Text((item.string("who")=="me" ? "Proud of Youssef":item.string("who")=="asechka" ? "Proud of Asechka":"Proud of both of us")+" · "+item.string("date")).font(.caption).foregroundColor(Palette.purple)}
-            if kind=="Recipe",!item.string("photoId").isEmpty{CachedPhoto(source:"/api/journal?photo="+item.string("photoId")).aspectRatio(1.2,contentMode:.fit).clipShape(RoundedRectangle(cornerRadius:18))}
-            ForEach(["note","meaning","story","ingredients","steps"],id:\.self){field in if !item.string(field).isEmpty{VStack(alignment:.leading,spacing:6){if field=="ingredients" || field=="steps"{Text(field.capitalized).font(.headline)};Text(item.string(field)).foregroundColor(Palette.muted).textSelection(.enabled)}}}
-            if kind=="Recipe" {Text(item.flag("tried") ? "Tried together · Youssef \(rating(item,"me")) · Asechka \(rating(item,"asechka"))":"On our cooking wish list").font(.caption).foregroundColor(Palette.purple)}
-            HStack{Button("Edit"){editing=BookEdit(kind:kind,entry:item)};Spacer();Button("Remove",role:.destructive){removal=BookEdit(kind:kind,entry:item)}}.disabled(!writable)
+            ForEach(["note","meaning","story"],id:\.self){field in if !item.string(field).isEmpty{Text(item.string(field)).foregroundColor(Palette.muted).textSelection(.enabled)}}
+            if !personal || manageKeepsakes {
+                HStack{Button("Edit"){editing=BookEdit(kind:kind,entry:item)};Spacer();Button("Remove",role:.destructive){removal=BookEdit(kind:kind,entry:item)}}.disabled(!writable)
+            }
         }.card()
     }
-    private func rating(_ item:BookEntry,_ key:String)->String {guard let value=(item.fields["ratings"] as? [String:Any])?[key] as? Int else{return "unrated"};return "\(value)/5"}
     @ViewBuilder private var sinceContent:some View {
         if let since=data["since"] as? [String:Any],let started=BookDates.instant(since["startedAt"] as? String ?? "") {
             TimelineView(.periodic(from:.now,by:60)){context in VStack(alignment:.leading,spacing:15){
@@ -72,7 +78,9 @@ struct BookView:View {
                 if let day=since["startedTalkingAt"] as? String,let date=BookDates.day(day){Divider();Text("We started talking.").font(.headline);Text(BookDates.display(date)).foregroundColor(Palette.purple)}
                 ForEach([false,true],id:\.self){yearly in Divider();Text(yearly ? "Our next anniversary":"Our next month together").font(.headline);Text(BookDates.display(BookDates.next(started,yearly:yearly,now:context.date))).foregroundColor(Palette.purple);if let message=since[yearly ? "yearlyMessage":"monthlyMessage"] as? String,!message.isEmpty{Text(message).font(.subheadline).foregroundColor(Palette.muted)}}
             }.card()}
-            Button("Edit our beginning & messages"){beginning=true}.primary().disabled(!writable)
+            DisclosureGroup("Settings & edit keepsakes",isExpanded:$manageKeepsakes){
+                Button("Edit our beginning & messages"){beginning=true}.primary().disabled(!writable).padding(.top,8)
+            }
         }
     }
     private func remove(_ edit:BookEdit){guard let entry=edit.entry else{return};do{try universe.enqueue(endpoint,["action":"remove"+edit.kind,"id":entry.id,"expectedRevision":entry.fields["revision"] ?? NSNull()])}catch{universe.error=error.localizedDescription}}
@@ -83,8 +91,6 @@ struct BookEditor:View {
     @Environment(\.dismiss) private var dismiss
     var kind:String;var original:BookEntry?;var endpoint:String
     @State private var draft=BookDraft()
-    @State private var picker:PhotosPickerItem?
-    @State private var preparing=false
     @State private var committed=false
     @State private var loaded=false
     private var key:String{"book-draft:"+universe.actor+":"+kind+":"+(original?.id ?? "new")}
@@ -93,40 +99,24 @@ struct BookEditor:View {
             Section("In our own words"){
                 if kind != "Thing" {TextField(kind=="Letter" ? "Open when…":kind=="Joke" ? "Our phrase":"Title",text:$draft.title)}
                 if kind=="Letter" || kind=="Thing" {TextField("Your words",text:$draft.text,axis:.vertical).lineLimit(5...20)}
-                if kind=="Victory" {TextField("Date · YYYY-MM-DD",text:$draft.date);Picker("Proud of",selection:$draft.who){Text("Youssef").tag("me");Text("Asechka").tag("asechka");Text("Both of us").tag("us")};TextField("What made you proud?",text:$draft.note,axis:.vertical).lineLimit(3...10)}
                 if kind=="Joke" {TextField("What it means to us",text:$draft.meaning,axis:.vertical).lineLimit(3...10);TextField("How it started · optional",text:$draft.story,axis:.vertical).lineLimit(3...10)}
             }
-            if kind=="Recipe" {
-                Section("Cooking together"){TextField("Ingredients · one per line",text:$draft.ingredients,axis:.vertical).lineLimit(4...15);TextField("Steps · one per line",text:$draft.steps,axis:.vertical).lineLimit(5...20);TextField("Our notes",text:$draft.note,axis:.vertical).lineLimit(3...10);Toggle("We tried this together",isOn:$draft.tried)}
-                if draft.tried{Section("Our ratings"){rating("Youssef’s rating",value:$draft.me);rating("Asechka’s rating",value:$draft.asechka)}}
-                Section("A picture for our recipe"){
-                    if let bytes=draft.photo,let image=UIImage(data:bytes){Image(uiImage:image).resizable().scaledToFit()}
-                    else if !draft.removePhoto,let id=original?.string("photoId"),!id.isEmpty{CachedPhoto(source:"/api/journal?photo="+id).aspectRatio(1.2,contentMode:.fit)}
-                    PhotosPicker(selection:$picker,matching:.images){Label(preparing ? "Preparing…":"Choose a recipe photo",systemImage:"photo")}.disabled(preparing)
-                    if draft.photo != nil || !(original?.string("photoId") ?? "").isEmpty {Button("Remove photo",role:.destructive){draft.photo=nil;draft.removePhoto=true}}
-                }
-            }
             Section{Text("Your draft is saved privately on this phone. Shared changes sync when connected.").font(.caption).foregroundColor(Palette.muted)}
-        }.navigationTitle((original==nil ? "Add ":"Edit ")+kind.lowercased()).navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.cancellationAction){Button("Cancel"){dismiss()}};ToolbarItem(placement:.confirmationAction){Button("Save",action:save).disabled(preparing || !valid)}}}
+        }.navigationTitle((original==nil ? "Add ":"Edit ")+kind.lowercased()).navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.cancellationAction){Button("Cancel"){dismiss()}};ToolbarItem(placement:.confirmationAction){Button("Save",action:save).disabled(!valid)}}}
         .onAppear{if !loaded{draft=universe.vault.value(key,as:BookDraft.self) ?? BookDraft(original);loaded=true}}
         .onDisappear{if !committed{try? universe.vault.save(key,draft)}}
-        .task(id:picker){guard let picker else{return};preparing=true;defer{preparing=false};do{guard let bytes=try await picker.loadTransferable(type:Data.self),bytes.count<25_000_000 else{throw URLError(.dataLengthExceedsMaximum)};draft.photo=try await Task.detached{try ComposerView.preparePhoto(bytes)}.value;draft.removePhoto=false}catch{universe.error=error.localizedDescription}}
     }
-    private func rating(_ label:String,value:Binding<Int>)->some View {Picker(label,selection:value){Text("Not rated").tag(0);ForEach(1...5,id:\.self){Text("\($0) / 5").tag($0)}}}
     private var valid:Bool {
-        if kind != "Thing" && (draft.title.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || draft.title.count>(["Joke","Letter"].contains(kind) ? 160:140)){return false}
+        if kind != "Thing" && (draft.title.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || draft.title.count>160){return false}
         if ["Thing","Letter"].contains(kind) && (draft.text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || draft.text.count>(kind=="Letter" ? 16000:2000)){return false}
-        if kind=="Victory" && (BookDates.day(draft.date)==nil || draft.note.count>3000){return false}
         if kind=="Joke" && (draft.meaning.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || draft.meaning.count>3000 || draft.story.count>3000){return false}
-        return kind != "Recipe" || draft.ingredients.count<=6000 && draft.steps.count<=12000 && draft.note.count<=2000
+        return true
     }
     private func save(){
         var b:[String:Any]=["action":"save"+kind,"id":original?.id ?? UUID().uuidString.lowercased(),"expectedRevision":original?.fields["revision"] ?? NSNull()]
         if kind != "Thing"{b["title"]=draft.title}
         if ["Thing","Letter"].contains(kind){b["text"]=draft.text}
-        if kind=="Victory"{b["date"]=draft.date;b["who"]=draft.who;b["note"]=draft.note}
         if kind=="Joke"{b["meaning"]=draft.meaning;b["story"]=draft.story}
-        if kind=="Recipe"{b["ingredients"]=draft.ingredients;b["steps"]=draft.steps;b["note"]=draft.note;b["tried"]=draft.tried;b["ratings"]=["me":draft.tried && draft.me>0 ? draft.me as Any:NSNull(),"asechka":draft.tried && draft.asechka>0 ? draft.asechka as Any:NSNull()];if let bytes=draft.photo{b["photo"]="data:image/jpeg;base64,"+bytes.base64EncodedString()}else if draft.removePhoto{b["removePhoto"]=true}}
         do{try universe.vault.save(key,draft);try universe.enqueue(endpoint,b);committed=true;universe.vault.remove(key);Touch.tap(true);dismiss()}catch{universe.error=error.localizedDescription}
     }
 }
@@ -149,5 +139,5 @@ struct OpenWhenView:View {
     @AppStorage("motion-paused") private var paused=false
     var item:BookEntry;var edit:()->Void;var remove:()->Void;var writable:Bool
     @State private var celebrating=false
-    var body:some View {NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:22){Text("♡  ✦  ♡  ✧  ♡").font(.system(size:32)).foregroundColor(Palette.purple).offset(y:celebrating ? -7:7).animation(reduced || paused ? nil:.easeInOut(duration:1.8).repeatForever(autoreverses:true),value:celebrating);Text(item.string("title")).font(.custom("Caveat-Medium",size:36));Text(item.string("text")).font(.system(size:18)).lineSpacing(7).textSelection(.enabled);HStack{Button("Edit this letter"){dismiss();DispatchQueue.main.asyncAfter(deadline:.now()+0.4){edit()}};Spacer();Button("Remove",role:.destructive){dismiss();DispatchQueue.main.asyncAfter(deadline:.now()+0.4){remove()}}}.disabled(!writable)}.padding(26)}.background(Palette.lavender).navigationTitle("Open with love").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Keep it close ♡"){dismiss()}}}}.overlay{LetterCelebration()}.onAppear{celebrating=true;Touch.tap(true)}}
+    var body:some View {NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:22){Text("♡  ✦  ♡  ✧  ♡").font(.system(size:32)).foregroundColor(Palette.purple).offset(y:celebrating ? -7:7).animation(reduced || paused ? nil:.easeInOut(duration:1.8).repeatForever(autoreverses:true),value:celebrating);Text(item.string("title")).font(.custom("Caveat-Medium",size:36));Text(item.string("text")).font(.system(size:18)).lineSpacing(7).textSelection(.enabled);if writable{HStack{Button("Edit this letter"){dismiss();DispatchQueue.main.asyncAfter(deadline:.now()+0.4){edit()}};Spacer();Button("Remove",role:.destructive){dismiss();DispatchQueue.main.asyncAfter(deadline:.now()+0.4){remove()}}}}}.padding(26)}.background(Palette.lavender).navigationTitle("Open with love").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Keep it close ♡"){dismiss()}}}}.overlay{LetterCelebration()}.onAppear{celebrating=true;Touch.tap(true)}}
 }

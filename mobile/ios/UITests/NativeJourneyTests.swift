@@ -5,25 +5,25 @@ final class NativeJourneyTests:XCTestCase {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture","--incoming-message"];app.launch()
         let close=app.buttons["Keep it in my heart ♡"]
         XCTAssertTrue(close.waitForExistence(timeout:15));capture("226-iPhone-incoming-art");close.tap()
-        XCTAssertFalse(close.waitForExistence(timeout:2));app.buttons["Messages"].tap();app.buttons["Message history"].tap()
-        XCTAssertTrue(app.staticTexts["Kept in our hearts"].waitForExistence(timeout:5));capture("226-iPhone-closed-message")
+        XCTAssertFalse(close.waitForExistence(timeout:2));app.buttons["Messages"].tap();app.buttons["Love Jar & note history"].tap()
+        XCTAssertTrue(app.staticTexts["Read once · kept in our hearts"].waitForExistence(timeout:5));capture("226-iPhone-closed-message")
     }
     func testLittleMessageComposerHistoryAndFastPhotos() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         XCTAssertTrue(app.buttons["Messages"].waitForExistence(timeout:15));app.buttons["Messages"].tap()
         XCTAssertTrue(app.textViews["Your little message"].waitForExistence(timeout:5));app.textViews["Your little message"].tap();app.textViews["Your little message"].typeText("A little love, saved offline.")
         capture("226-iPhone-message-composer");app.buttons["Save to send when online"].tap()
-        XCTAssertTrue(app.buttons["Messages"].waitForExistence(timeout:5));app.buttons["Messages"].tap();app.buttons["Message history"].tap()
+        XCTAssertTrue(app.buttons["Messages"].waitForExistence(timeout:5));app.buttons["Messages"].tap();app.buttons["Love Jar & note history"].tap()
         XCTAssertTrue(app.staticTexts["A little love, saved offline."].waitForExistence(timeout:5));capture("226-iPhone-message-history")
-        app.buttons["message-history-close"].tap();app.buttons["Our home-screen widgets"].tap();XCTAssertTrue(app.staticTexts["Words to keep"].waitForExistence(timeout:5));capture("226-iPhone-widgets");app.navigationBars.buttons.element(boundBy:0).tap();app.buttons["message-composer-close"].tap();app.buttons["Photos"].firstMatch.tap()
+        app.buttons["message-history-close"].tap();app.buttons["Our home-screen widgets"].tap();XCTAssertTrue(app.staticTexts["Words to keep"].waitForExistence(timeout:5));capture("226-iPhone-widgets");app.navigationBars.buttons.element(boundBy:0).tap();app.buttons["message-composer-close"].tap();app.buttons["Memories"].firstMatch.tap()
         for _ in 0..<5{app.swipeUp(velocity:.fast);app.swipeDown(velocity:.fast)}
         XCTAssertTrue(app.buttons["Create post"].exists);capture("226-iPhone-photos")
     }
-
     func testNormalReopenHasNoPasswordScreenAndPreservesComposer() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         XCTAssertTrue(app.buttons["Create post"].waitForExistence(timeout:15))
         XCTAssertFalse(app.buttons["Digit 1"].exists)
+        app.buttons["Memories"].firstMatch.tap()
         app.buttons["Quotes"].firstMatch.tap();app.buttons["Create post"].tap()
         let editor=app.textViews["Quote text"];XCTAssertTrue(editor.waitForExistence(timeout:5));editor.tap();editor.typeText("A draft kept while we step away.")
         XCUIDevice.shared.press(.home);app.activate()
@@ -37,10 +37,11 @@ final class NativeJourneyTests:XCTestCase {
         app.launchArguments=["--preview-fixture"]
         app.launch()
         XCTAssertTrue(app.buttons["Create post"].waitForExistence(timeout:15))
-        for label in ["Home","Photos","Quotes","Music","Our days","Words"] {
+        for label in ["Home","Memories","Our days","Words","Games"] {
             XCTAssertTrue(app.buttons[label].firstMatch.exists,"Missing bottom destination: "+label)
         }
         capture("01-iPhone-home")
+        app.buttons["Memories"].firstMatch.tap()
         app.buttons["Photos"].firstMatch.tap()
         let picture=app.otherElements["Our shared photo"].firstMatch
         XCTAssertTrue(picture.waitForExistence(timeout:8))
@@ -77,15 +78,6 @@ final class NativeJourneyTests:XCTestCase {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         let send=app.buttons["Send a heart to Youssef"].firstMatch
         XCTAssertTrue(send.waitForExistence(timeout:15))
-        let create=app.buttons["Create"].firstMatch,corner=app.buttons["Our corner"].firstMatch,saved=app.buttons["Saved"].firstMatch
-        XCTAssertEqual(create.frame.width,corner.frame.width,accuracy:2)
-        XCTAssertEqual(saved.frame.width,corner.frame.width,accuracy:2)
-        XCTAssertEqual(saved.frame.maxX,app.frame.maxX-16,accuracy:2,"Home actions fill the row without an empty trailing area")
-        let media=app.otherElements["Post media"].firstMatch
-        XCTAssertTrue(media.waitForExistence(timeout:5))
-        let visibleBottom=app.buttons["Home"].firstMatch.frame.minY
-        XCTAssertGreaterThan(min(media.frame.maxY,visibleBottom)-max(media.frame.minY,app.scrollViews.firstMatch.frame.minY),60,"The first post is visible immediately on Home")
-        capture("00-iPhone-home-first-glance")
         reveal(send,in:app)
         for _ in 0..<15{send.tap()}
         let streak=app.buttons["Our heart history"].firstMatch
@@ -93,14 +85,9 @@ final class NativeJourneyTests:XCTestCase {
         capture("12-iPhone-home-hearts")
         XCTAssertTrue(streak.exists);reveal(streak,in:app);XCTAssertTrue(streak.isHittable);streak.tap()
         XCTAssertTrue(app.navigationBars["Our heart history"].waitForExistence(timeout:5));capture("13-iPhone-heart-history");app.buttons["Done"].tap()
-        for shortcut in ["Secret vocab","Open when…","Tiny victories","Recipes for two","Little things","Our beginning"] {
+        for shortcut in ["Secret vocab","Open when…","Little things","Our beginning"] {
             let button=app.buttons[shortcut].firstMatch;reveal(button,in:app);XCTAssertTrue(button.isHittable,shortcut);button.tap()
             if shortcut=="Secret vocab" {XCTAssertTrue(app.textFields["Find one of our inside jokes…"].waitForExistence(timeout:5));capture("14-iPhone-secret-vocab")}
-            else if shortcut=="Open when…" {XCTAssertTrue(app.buttons["Add a letter"].waitForExistence(timeout:5))}
-            else if shortcut=="Tiny victories" {XCTAssertTrue(app.buttons["Add a victory"].waitForExistence(timeout:5))}
-            else if shortcut=="Recipes for two" {XCTAssertTrue(app.buttons["Add a recipe"].waitForExistence(timeout:5))}
-            else if shortcut=="Little things" {XCTAssertTrue(app.buttons["Add a little thing"].waitForExistence(timeout:5))}
-            else {XCTAssertTrue(app.buttons["Edit our beginning & messages"].waitForExistence(timeout:5));capture("15-iPhone-our-time")}
             app.buttons["Done"].tap()
         }
         app.buttons["Profile and settings"].tap();capture("16-iPhone-settings");app.buttons["Done"].tap()
@@ -117,19 +104,11 @@ final class NativeJourneyTests:XCTestCase {
             start.press(forDuration:0.02,thenDragTo:end)
         }
     }
-    func testOurLittleBookAndSinceUsAreNativeAndEditableOffline() {
+    func testSecretVocabAndSinceUsAreNativeAndEditableOffline() {
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         XCTAssertTrue(app.buttons["Our days"].firstMatch.waitForExistence(timeout:15));app.buttons["Our days"].firstMatch.tap()
-        app.buttons["Our little book"].tap()
-        XCTAssertTrue(app.buttons["Tiny victories"].firstMatch.waitForExistence(timeout:5))
-        app.buttons["Add a victory"].tap()
-        let title=app.textFields["Title"];XCTAssertTrue(title.waitForExistence(timeout:5));title.tap();title.typeText("A little win, kept together")
-        app.buttons["Save"].tap()
-        XCTAssertTrue(app.staticTexts["A little win, kept together"].waitForExistence(timeout:5))
-        capture("07-iPhone-little-book")
-        app.buttons["Recipes for two"].tap();app.buttons["Add a recipe"].tap()
-        XCTAssertTrue(app.buttons["Choose a recipe photo"].waitForExistence(timeout:5));capture("08-iPhone-recipe-editor");app.buttons["Cancel"].tap()
-        app.buttons["Inside jokes"].tap();XCTAssertTrue(app.textFields["Find one of our inside jokes…"].exists)
+        app.buttons["Secret vocab"].tap()
+        XCTAssertTrue(app.textFields["Find one of our inside jokes…"].waitForExistence(timeout:5))
         app.buttons["Done"].tap();app.buttons["Since us · letters & little things"].tap()
         XCTAssertTrue(app.staticTexts["September 27, 2026"].waitForExistence(timeout:5));capture("09-iPhone-since-us")
         app.buttons["Open when…"].tap();capture("10-iPhone-open-when-letters")

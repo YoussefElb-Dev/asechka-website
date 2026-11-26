@@ -43,7 +43,7 @@ public final class ApiClient {
 
   String userAgent() {
     if (cachedUserAgent != null) return cachedUserAgent;
-    String version = "2.7.4";
+    String version = "2.8.0";
     try {
       String name = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
       if (name != null && !name.isEmpty()) version = name;
@@ -189,8 +189,12 @@ public final class ApiClient {
     Exception failure = null;
     if (connected() && signedIn()) {
       try {
-        JSONObject result =
-            json(path.equals("/memories.json") ? "/api/memories" : path, "GET", null, null);
+        String reqPath = path.equals("/memories.json") ? "/api/memories" : path;
+        if (reqPath.equals("/api/together")) {
+          String who = context.getSharedPreferences("preferences", Context.MODE_PRIVATE).getString("person", "");
+          if (!who.isEmpty()) reqPath = "/api/together?actor=" + who;
+        }
+        JSONObject result = json(reqPath, "GET", null, null);
         if (!signedIn()) throw new ApiError("Open our little door again to sync.", 401);
         store.snapshot(path, result);
         // Login explicitly unlocks offline storage. A late GET must never undo a user lock.
@@ -289,7 +293,7 @@ public final class ApiClient {
             JSONObject candidate = items.getJSONObject(i);
             if (candidate.optString("status").equals("pending")
                 && candidate.optString("path").equals("/api/together")
-                && java.util.Arrays.asList("sendHeart", "sendMessage", "closeMessage")
+                && java.util.Arrays.asList("sendHeart", "sendMessage", "closeMessage", "pinMessage", "answerPrompt")
                     .contains(candidate.getJSONObject("body").optString("action"))) {
               entry = candidate;
               break;
@@ -303,8 +307,13 @@ public final class ApiClient {
                 && entry.getJSONObject("body").optString("action").equals("sendHeart");
         if (heart && heartBatches++ >= 2) break;
         try {
+          String postPath = path;
+          if (postPath.equals("/api/together")) {
+            String who = context.getSharedPreferences("preferences", Context.MODE_PRIVATE).getString("person", "");
+            if (!who.isEmpty()) postPath = "/api/together?actor=" + who;
+          }
           JSONObject response =
-              json(path, "POST", store.mappedBody(entry).toString(), "application/json");
+              json(postPath, "POST", store.mappedBody(entry).toString(), "application/json");
           store.acknowledge(entry, response);
         } catch (ApiError error) {
           synchronized (syncing) {
@@ -520,15 +529,16 @@ public final class ApiClient {
       sentCookie = signedIn() ? cookie : "";
       if (!sentCookie.isEmpty()) connection.setRequestProperty("Cookie", sentCookie);
     }
-    if (path.equals("/api/location")) connection.setRequestProperty("X-Asechka-Location", "1");
-    if (path.equals("/api/camera")) connection.setRequestProperty("X-Asechka-Camera", "1");
-    if (path.equals("/api/journal")) connection.setRequestProperty("X-Asechka-Journal", "1");
-    if (path.equals("/api/keepsakes")) connection.setRequestProperty("X-Asechka-Keepsakes", "1");
-    if (path.equals("/api/music")) connection.setRequestProperty("X-Asechka-Music", "1");
-    if (path.equals("/api/memories")) connection.setRequestProperty("X-Asechka-Memories", "1");
-    if (path.equals("/api/together")) connection.setRequestProperty("X-Asechka-Together", "1");
-    if (path.equals("/api/games-session")) connection.setRequestProperty("X-Asechka-Games", "1");
-    if (path.equals("/api/translation"))
+    String cleanPath = path.contains("?") ? path.substring(0, path.indexOf('?')) : path;
+    if (cleanPath.equals("/api/location")) connection.setRequestProperty("X-Asechka-Location", "1");
+    if (cleanPath.equals("/api/camera")) connection.setRequestProperty("X-Asechka-Camera", "1");
+    if (cleanPath.equals("/api/journal")) connection.setRequestProperty("X-Asechka-Journal", "1");
+    if (cleanPath.equals("/api/keepsakes")) connection.setRequestProperty("X-Asechka-Keepsakes", "1");
+    if (cleanPath.equals("/api/music")) connection.setRequestProperty("X-Asechka-Music", "1");
+    if (cleanPath.equals("/api/memories")) connection.setRequestProperty("X-Asechka-Memories", "1");
+    if (cleanPath.equals("/api/together")) connection.setRequestProperty("X-Asechka-Together", "1");
+    if (cleanPath.equals("/api/games-session")) connection.setRequestProperty("X-Asechka-Games", "1");
+    if (cleanPath.equals("/api/translation"))
       connection.setRequestProperty("X-Asechka-Translation", "1");
     try {
       if (body != null) {

@@ -47,12 +47,12 @@ test('successful repository saves use one atomic tree and decrypt images only af
   assert.deepEqual(entries.map(entry=>entry.path),['private/camera.json',`private/camera/${capture.operationId}.bin`]);
   await store.change(capture); assert.equal(writes,2);
   await assert.rejects(()=>store.photo(capture.operationId), e=>e.status===404);
-  for(let i=1;i<24;i++) data=apply(data,shot(create.operationId)).data;
+  for(let i=1;i<8;i++) data=apply(data,shot(create.operationId)).data;
   await store.change(draft('develop',{rollId:create.operationId}));
   assert.deepEqual(await store.photo(capture.operationId),Buffer.from(jpeg.slice(23),'base64'));
 });
 
-test('24 shots stay sealed, stable retries consume one slot, and development creates a revisitable album', () => {
+test('8 weekly shots stay sealed, stable retries consume one slot, early develop works, and development creates a revisitable album', () => {
   let { data, id, input } = roll(); assert.equal(apply(data, input).changed, false);
   assert.throws(() => apply(data, draft('create', { title: 'Another roll' })), e => e.status === 409);
   assert.throws(() => apply(data, draft('develop', { rollId: id })), e => e.status === 409);
@@ -63,8 +63,11 @@ test('24 shots stay sealed, stable retries consume one slot, and development cre
   const publicShot = cameraView(data).rolls[0].shots[0];
   assert.deepEqual(Object.keys(publicShot).sort(), ['actor', 'createdAt', 'id']);
   assert(!JSON.stringify(cameraView(data)).includes('secret little note'));
-  for (let i = 1; i < 24; i++) data = apply(data, { ...shot(id), actor: i % 2 ? 'youssef' : 'asnat' }).data;
-  assert.equal(data.rolls[0].shots.length, 24);
+  // Early develop with >= 1 shot works on an active roll
+  const earlyDeveloped = apply(structuredClone(data), draft('develop', { rollId: id, early: true })).data;
+  assert(earlyDeveloped.rolls[0].developedAt);
+  for (let i = 1; i < 8; i++) data = apply(data, { ...shot(id), actor: i % 2 ? 'youssef' : 'asnat' }).data;
+  assert.equal(data.rolls[0].shots.length, 8);
   assert.throws(() => apply(data, shot(id)), e => e.status === 409);
   assert.throws(() => apply(data, draft('react', { rollId: id, shotId: first.operationId, reaction: '♡' })), e => e.status === 409);
   const develop = draft('develop', { rollId: id }); data = apply(data, develop).data;
@@ -73,10 +76,13 @@ test('24 shots stay sealed, stable retries consume one slot, and development cre
   const view = cameraView(data); assert.equal(view.rolls[0].shots[0].caption, first.caption); assert(!JSON.stringify(view).includes('hash'));
   const next = apply(data, draft('create', { title: 'Next week' })).data;
   assert.equal(next.rolls.length, 2); assert.deepEqual(next.rolls[0], data.rolls[0]);
+  // Legacy 24-shot rolls remain valid when loaded
+  const legacy = structuredClone(data); legacy.rolls[0].capacity = 24;
+  assert.doesNotThrow(() => checkedCamera(legacy));
 });
 
 test('reactions are separate per profile and malformed inputs cannot corrupt a roll', () => {
-  let { data, id } = roll(); for (let i = 0; i < 24; i++) data = apply(data, shot(id)).data;
+  let { data, id } = roll(); for (let i = 0; i < 8; i++) data = apply(data, shot(id)).data;
   data = apply(data, draft('develop', { rollId: id })).data;
   const reaction = draft('react', { rollId: id, shotId: data.rolls[0].shots[0].id, reaction: '♡' });
   data = apply(data, reaction).data; assert.equal(apply(data, reaction).changed, false);
@@ -84,11 +90,11 @@ test('reactions are separate per profile and malformed inputs cannot corrupt a r
   assert.deepEqual(data.rolls[0].shots[0].reactions, { asnat: '♡', youssef: '😂' });
   for (const input of [draft('create', { title: '' }), draft('create', { title: 'a'.repeat(81) }), { ...shot(id), actor: 'stranger' }, { ...shot(id), photo: 'https://example.com/a.jpg' }, { ...shot(id), caption: 'x'.repeat(241) }, draft('capture', { rollId: '../private', caption: '', photo: jpeg }), { ...reaction, reaction: '<script>' }]) assert.throws(() => checkedCameraChange(input), e => e.status === 400);
   const broken = structuredClone(data); broken.rolls[0].shots.push(broken.rolls[0].shots[0]); assert.throws(() => checkedCamera(broken));
-  const early = structuredClone(data); early.rolls[0].shots.pop(); assert.throws(() => checkedCamera(early));
+  const emptyDev = structuredClone(data); emptyDev.rolls[0].shots = []; assert.throws(() => checkedCamera(emptyDev));
 });
 
 test('GitHub commits metadata and private photo atomically and retries the last-slot race without overfilling', async () => {
-  let { data, id } = roll(); for (let i = 0; i < 23; i++) data = apply(data, shot(id)).data;
+  let { data, id } = roll(); for (let i = 0; i < 7; i++) data = apply(data, shot(id)).data;
   let head = '1'.repeat(40), tree = '2'.repeat(40), staged, race = true; const calls = [];
   const encryptionKey = cameraKey('test-only-camera-secret-1234567890123456789');
   const store = new GitHubCameraStore({ secret: () => 'test-only-camera-secret-1234567890123456789', token: () => 'test-token', fetcher: async (url, options) => {
@@ -104,7 +110,7 @@ test('GitHub commits metadata and private photo atomically and retries the last-
     return Response.json(value);
   } });
   await assert.rejects(() => store.change(shot(id)), e => e.status === 409);
-  assert.equal(data.rolls[0].shots.length, 24); assert.equal(data.rolls[0].shots.at(-1).actor, 'youssef');
+  assert.equal(data.rolls[0].shots.length, 8); assert.equal(data.rolls[0].shots.at(-1).actor, 'youssef');
   assert.equal(calls.filter(call => call.path === '/git/trees').length, 1);
   await assert.rejects(() => store.photo(data.rolls[0].shots[0].id), e => e.status === 404);
   await assert.rejects(() => store.photo('../camera.json'), e => e.status === 404);
@@ -126,7 +132,7 @@ test('API authenticates photos and metadata, protects writes and strips hidden d
   assert.equal((await handler(new Request(origin + '/api/journal?__camera=1', { headers }))).status, 200);
   assert.equal((await handler(request({}))).status, 400);
   assert.equal((await handler(request(body, { 'content-length': '999999' }))).status, 413);
-  for (let i = 1; i < 24; i++) data = apply(data, shot(id)).data;
+  for (let i = 1; i < 8; i++) data = apply(data, shot(id)).data;
   assert.equal((await handler(request(draft('develop', { rollId: id })))).status, 200);
   assert.equal((await handler(new Request(origin + '/api/camera?photo=' + body.operationId, { headers }))).status, 200);
 });

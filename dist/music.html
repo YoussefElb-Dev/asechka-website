@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#edf2ff">
-  <meta name="description" content="Ten little places for the songs that feel like us. Choose our shared soundtrack together, just for Asechka.">
+  <meta name="description" content="Our song of the moment and ten little places for the songs that feel like us. Just for Asechka.">
   <title>Our little soundtrack · Asechka ♡</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,13 +16,14 @@
   <link rel="stylesheet" href="together.css">
   <link rel="stylesheet" href="music.css">
   <script type="module" src="music.js"></script>
-<link rel="stylesheet" href="translation.css"></head>
+  <link rel="stylesheet" href="translation.css">
+</head>
 <body class="collection-page music-page">
   <a class="skip-link" href="#main">Skip to our music</a>
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
   <header class="site-header collection-header wrap">
     <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
-    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html" aria-current="page">Music</a><a href="/together.html">Our days</a><a class="nav-words" href="/translation.html">Our words</a><a href="/us.html">Since us</a></nav>
+    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html" aria-current="page">Music</a><a href="/camera.html">Camera</a><a href="/together.html">Our days</a><a href="/us.html">Us</a></nav>
   </header>
   <main id="main" class="collection-main music-main wrap">
     <a class="collection-back" href="/"><span aria-hidden="true">←</span> Back to our little universe</a>
@@ -30,8 +31,8 @@
       <div class="soundtrack-copy">
         <p class="eyebrow">A LITTLE SOUNDTRACK, CHOSEN BY US</p>
         <h1 id="music-title">Some songs just<br>feel like <span class="handwritten">you + me.</span></h1>
-        <p>A song for the drive home. A chorus we keep singing.<br>Ten little places for the music we want to keep.</p>
-        <a class="text-link" href="#song-search">Let’s find our first song <span aria-hidden="true">↘</span></a>
+        <p>Swap our Song of the Moment anytime for Home, or keep our shared top ten archive below.</p>
+        <a class="text-link" href="#song-search">Find a song right now <span aria-hidden="true">↘</span></a>
         <p class="soundtrack-dedication handwritten">two hearts. one little soundtrack. ♡</p>
       </div>
       <div class="record-scene" aria-hidden="true">
@@ -48,8 +49,18 @@
       <a id="reopen-login" href="/login" hidden>Reopen our little door ↗</a>
     </div>
 
+    <section class="song-moment-section" id="song-moment" aria-labelledby="moment-heading">
+      <div class="soundtrack-heading">
+        <div>
+          <p class="eyebrow">ON REPEAT RIGHT NOW</p>
+          <h2 id="moment-heading">Song of the <span class="handwritten">moment.</span></h2>
+        </div>
+      </div>
+      <div class="ranked-slot moment-slot" id="moment-slot"></div>
+    </section>
+
     <section class="song-search-panel" id="song-search" aria-labelledby="search-title">
-      <div class="search-heading"><div><p class="eyebrow">FIND A SONG, KEEP A FEELING</p><h2 id="search-title">What should we <span class="handwritten">keep?</span></h2></div><p>Either of us can choose a song.<br>Search, pick a place, leave a little note.</p></div>
+      <div class="search-heading"><div><p class="eyebrow">FIND A SONG, KEEP A FEELING</p><h2 id="search-title">What should we <span class="handwritten">play?</span></h2></div><p>Either of us can set our Song of the Moment or add a song to our Top 10.</p></div>
       <form id="music-search-form" role="search">
         <label for="music-query">Song, artist, or album</label>
         <div class="search-input-row"><input id="music-query" name="q" type="search" placeholder="That song you were telling me about…" minlength="2" maxlength="120" required autocomplete="off" enterkeyhint="search" aria-describedby="search-help"><button class="button button-primary" id="search-button" type="submit">Find a song <span aria-hidden="true">↗</span></button></div>
@@ -61,7 +72,7 @@
 
     <section class="shared-soundtrack" aria-labelledby="top-ten-title">
       <div class="soundtrack-heading"><div><p class="eyebrow">TEN PLACES. ALL OURS.</p><h2 id="top-ten-title">Our shared <span class="handwritten">top ten.</span></h2></div><span class="soundtrack-count" id="music-count">0 / 10 songs</span></div>
-      <p class="soundtrack-help" id="soundtrack-help">Choose a place from 1 to 10. Both of us can add a song, change it, or leave a little note.</p>
+      <p class="soundtrack-help" id="soundtrack-help">Choose a place from 1 to 10. Both of us can add a song, change it, or promote one to Song of the Moment.</p>
       <ol class="ranked-tracks" id="ranked-tracks" aria-describedby="soundtrack-help" aria-busy="true"></ol>
       <p class="soundtrack-endnote handwritten">Leaving a little room for the songs we haven’t found yet. ♡</p>
     </section>
@@ -77,9 +88,11 @@
       <p class="dialog-description" id="song-dialog-description">Choose where this song belongs and, if you like, why it reminds you of us.</p>
       <div class="dialog-track" id="dialog-track"></div>
       <form id="song-save-form">
-        <label for="song-rank">A place in our top ten</label>
-        <select id="song-rank" name="rank" required aria-describedby="slot-description"></select>
-        <p class="slot-description" id="slot-description"></p>
+        <div id="rank-field-wrap">
+          <label for="song-rank">A place in our top ten</label>
+          <select id="song-rank" name="rank" required aria-describedby="slot-description"></select>
+          <p class="slot-description" id="slot-description"></p>
+        </div>
         <label for="song-note">A little note <span>(optional)</span></label>
         <textarea id="song-note" name="note" rows="3" maxlength="500" placeholder="Why this one feels like us…" aria-describedby="note-help"></textarea>
         <p class="field-help" id="note-help">Up to 500 characters. Your note is shared with the song.</p>
@@ -94,6 +107,6 @@
       <a class="dialog-login" id="dialog-login" href="/login" hidden>Reopen our little door ↗</a>
     </div>
   </dialog>
-  <noscript><p class="noscript-notice">Enable JavaScript to search for songs and choose our shared top ten.</p></noscript>
+  <noscript><p class="noscript-notice">Enable JavaScript to search for songs and choose our shared soundtrack.</p></noscript>
 </body>
 </html>

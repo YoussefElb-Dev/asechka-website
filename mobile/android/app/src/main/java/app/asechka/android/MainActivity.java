@@ -74,6 +74,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private final ExecutorService socialWrites = Executors.newSingleThreadExecutor();
   private boolean savedPosts;
   private String photoSection = "all";
+  private int memoryFilter = 0;
+  private String memorySearch = "";
   private TextView notice;
   private Dialog activeDialog;
   private PlanEditor planEditor;
@@ -97,7 +99,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private ImageView quoteArtwork;
   private int quoteArtworkIndex = -1;
   private Button quotePauseButton;
-  private final String[] labels = {"Home", "Photos", "Music", "Our days", "Words", "Quotes", "Games"};
+  private final String[] labels = {"Home", "Memories", "Music", "Our days", "Words", "Quotes", "Games"};
   private final String[] languageIds = {"ar-EG", "ru", "he", "fr", "es"};
   private final String[] languageNames = {
     "Egyptian Arabic · مصري",
@@ -131,7 +133,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                 () -> {
                   try {
                     api.syncPending();
-                    api.get("/api/together");
+                    JSONObject latestTogether = api.get("/api/together");
+                    if (latestTogether != null) {
+                      together = latestTogether;
+                      SyncJob.notifyPartnerUpdates(MainActivity.this, latestTogether);
+                    }
                   } catch (Exception ignored) {
                   }
                   main.post(
@@ -749,7 +755,15 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     Ui.Sheet sheet = u.sheet("Our little settings", "");
     sheet.item("App updates", "Version " + updater.version() + " · check for a new release", "↻", false, updater::show);
     LinearLayout profile=u.row(14);profile.setPadding(u.dp(16),u.dp(16),u.dp(16),u.dp(16));profile.setBackground(u.shape(Color.WHITE,16));profile.addView(SocialFeed.avatar(this,actor(),50),new LinearLayout.LayoutParams(u.dp(50),u.dp(50)));LinearLayout copy=u.column();copy.addView(u.title(person(),17));u.add(copy,u.text("Our little universe",15,Ui.MUTED),4);profile.addView(copy);sheet.items.addView(profile);
-    sheet.section("Feel a little more");sheet.toggle("Haptic feedback",prefs().getBoolean("haptics",true),on->prefs().edit().putBoolean("haptics",on).apply());sheet.toggle("Pause gentle animations",prefs().getBoolean("motion-paused",false),on->{prefs().edit().putBoolean("motion-paused",on).apply();render(true);});
+    sheet.section("Feel a little more");
+    sheet.toggle("Haptic feedback",prefs().getBoolean("haptics",true),on->prefs().edit().putBoolean("haptics",on).apply());
+    sheet.toggle("Pause gentle animations",prefs().getBoolean("motion-paused",false),on->{prefs().edit().putBoolean("motion-paused",on).apply();render(true);});
+    sheet.toggle("Partner heart & Love Jar alerts",prefs().getBoolean("alerts-enabled",false),on->{
+      prefs().edit().putBoolean("alerts-enabled",on).apply();
+      if(on&&Build.VERSION.SDK_INT>=33&&checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)!=android.content.pm.PackageManager.PERMISSION_GRANTED){
+        requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS},4091);
+      }
+    });
     sheet.section("Our little door");
     if (biometrics.available() || biometrics.enabled())
       sheet.item(
@@ -881,8 +895,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private int navPosition(int target) {
-    int[] order = {0, 1, 5, 2, 3, 4, 6};
-    for (int i = 0; i < order.length; i++) if (order[i] == target) return i;
+    int normalized = (target == 2 || target == 5) ? 1 : target;
+    int[] order = {0, 1, 3, 4, 6};
+    for (int i = 0; i < order.length; i++) if (order[i] == normalized) return i;
     return 0;
   }
 
@@ -892,11 +907,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void renderNav() {
     bottom.removeAllViews();
-    int[] order = {0, 1, 5, 2, 3, 4, 6};
+    int[] order = {0, 1, 3, 4, 6};
     for (int position = 0; position < order.length; position++) {
       final int i = order[position];
       final int target = i;
-      boolean selected = screen == i;
+      boolean selected = screen == i || (i == 1 && (screen == 2 || screen == 5));
       LinearLayout tab = u.column();
       tab.setGravity(Gravity.CENTER);
       tab.setPadding(u.dp(2), 0, u.dp(2), 0);
@@ -971,6 +986,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       feed.setVisibility(View.VISIBLE);
       feed.savedOnly(savedPosts);
       feed.photoSection(photoSection);
+      feed.memoryFilter(screen == 1 ? memoryFilter : 0);
+      feed.searchQuery(screen == 1 ? memorySearch : "");
       feed.submit(memories, keepScroll && !freshFeed);
       return;
     }
@@ -1040,9 +1057,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             savedPosts
                 ? "SAVED FOR US"
                 : screen == 1
-                    ? (photoSection.equals("photography")
-                        ? "EVERYDAY FRAMES"
-                        : "MOMENTS WORTH KEEPING")
+                    ? (memoryFilter == 2
+                        ? "WORDS WORTH KEEPING"
+                        : memoryFilter == 1 && photoSection.equals("photography")
+                            ? "EVERYDAY FRAMES"
+                            : "OUR SHARED TIMELINE")
                     : screen == 5 ? "WORDS WORTH KEEPING" : "OUR LITTLE UNIVERSE"),
         0);
     u.add(
@@ -1051,7 +1070,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             savedPosts
                 ? "Kept close."
                 : screen == 1
-                    ? (photoSection.equals("photography") ? "Photography." : "Our camera roll.")
+                    ? (memoryFilter == 2
+                        ? "Words to keep."
+                        : memoryFilter == 1 && photoSection.equals("photography")
+                            ? "Photography."
+                            : "Our memories.")
                     : screen == 5 ? "Words to keep." : "Our little us.",
             28),
         6);
@@ -1060,29 +1083,46 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         u.text(
             savedPosts
                 ? "Your saved photos and words, in one place."
-                : screen == 1 && photoSection.equals("photography")
-                    ? "Everyday frames, small details, and things that catch our eye."
+                : screen == 1
+                    ? "Photos, quotes, and our soundtrack — all in one place."
                     : "A little life together, one moment at a time.",
             15,
             Ui.MUTED),
         4);
     if (screen == 1) {
-      LinearLayout sections = u.row(2);sections.setBackground(u.shape(Ui.PALE,9));sections.setPadding(u.dp(2),u.dp(2),u.dp(2),u.dp(2));
-      String[] values = {"all", "memories", "photography"};
-      String[] names = {"All", "Memories", "Photography"};
-      for (int i = 0; i < values.length; i++) {
-        final String section = values[i];
-        Button choice = u.textButton(names[i], () -> {
-          photoSection = section;
-          if (feed != null) { stage.removeView(feed); feed = null; }
-          render(false);
-        });
-        choice.setTextSize(12);choice.setTextColor(Ui.INK);choice.setMinHeight(u.dp(30));choice.setMinimumHeight(u.dp(30));choice.setPadding(u.dp(4),0,u.dp(4),0);choice.setBackground(u.shape(section.equals(photoSection)?Color.WHITE:Color.TRANSPARENT,7));
-        choice.setContentDescription("Photo collection: " + names[i]);
-        choice.setSelected(section.equals(photoSection));
-        sections.addView(choice, new LinearLayout.LayoutParams(0, u.dp(30), 1));
+      u.add(intro, memoriesSwitcher(memoryFilter), 14);
+      if (memoryFilter == 1) {
+        LinearLayout sections = u.row(2);sections.setBackground(u.shape(Ui.PALE,9));sections.setPadding(u.dp(2),u.dp(2),u.dp(2),u.dp(2));
+        String[] values = {"all", "memories", "photography"};
+        String[] names = {"All", "Memories", "Photography"};
+        for (int i = 0; i < values.length; i++) {
+          final String section = values[i];
+          Button choice = u.textButton(names[i], () -> {
+            photoSection = section;
+            if (feed != null) { stage.removeView(feed); feed = null; }
+            render(false);
+          });
+          choice.setTextSize(12);choice.setTextColor(Ui.INK);choice.setMinHeight(u.dp(30));choice.setMinimumHeight(u.dp(30));choice.setPadding(u.dp(4),0,u.dp(4),0);choice.setBackground(u.shape(section.equals(photoSection)?Color.WHITE:Color.TRANSPARENT,7));
+          choice.setContentDescription("Photo collection: " + names[i]);
+          choice.setSelected(section.equals(photoSection));
+          sections.addView(choice, new LinearLayout.LayoutParams(0, u.dp(30), 1));
+        }
+        u.add(intro, sections, 8);
       }
-      u.add(intro, sections, 14);
+      EditText search = u.input("Search quotes, captions, dates…", memorySearch, 120, false);
+      search.setSingleLine(true);
+      search.addTextChangedListener(new android.text.TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        public void afterTextChanged(android.text.Editable s) {
+          memorySearch = s == null ? "" : s.toString();
+          if (feed != null) {
+            feed.searchQuery(memorySearch);
+            feed.submit(memories, false);
+          }
+        }
+      });
+      u.add(intro, search, 10);
     }
     LinearLayout compose = u.row(12);
     compose.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
@@ -1111,7 +1151,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               api,
               destination -> {
                 if (destination <= 2) book.show(true, destination);
-                else book.show(false, destination == 3 ? 2 : destination == 4 ? 0 : 1);
+                else book.show(false, 0);
               },
               flushHearts);
       header.addView(homeExtras.view(), 1);
@@ -1226,6 +1266,50 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     }
   }
 
+  private LinearLayout memoriesSwitcher(int active) {
+    LinearLayout bar = u.row(2);
+    bar.setBackground(u.shape(Ui.PALE, 9));
+    bar.setPadding(u.dp(2), u.dp(2), u.dp(2), u.dp(2));
+    String[] names = {"All", "Photos", "Quotes", "Music"};
+    for (int i = 0; i < names.length; i++) {
+      final int idx = i;
+      Button btn = u.textButton(names[i], () -> {
+        if (idx == 3) {
+          select(2);
+        } else {
+          memoryFilter = idx;
+          if (screen != 1) {
+            select(1);
+          } else {
+            if (feed != null) { stage.removeView(feed); feed = null; }
+            render(false);
+          }
+        }
+      });
+      btn.setTextSize(12);
+      btn.setTextColor(Ui.INK);
+      btn.setMinHeight(u.dp(30));
+      btn.setMinimumHeight(u.dp(30));
+      btn.setPadding(u.dp(4), 0, u.dp(4), 0);
+      btn.setBackground(u.shape(active == i ? Color.WHITE : Color.TRANSPARENT, 7));
+      btn.setSelected(active == i);
+      bar.addView(btn, new LinearLayout.LayoutParams(0, u.dp(30), 1));
+    }
+    return bar;
+  }
+
+  void refreshHomeExtras() {
+    if (homeExtras != null) homeExtras.update();
+  }
+
+  void openLoveJar() {
+    if (messages != null) messages.open();
+  }
+
+  void searchMomentMusic() {
+    searchMusic(-1);
+  }
+
   public void react(SocialFeed.Post post, boolean liked, View anchor) {
     queueSocial(
         object(
@@ -1239,6 +1323,25 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             actor(),
             "liked",
             liked,
+            "operationId",
+            UUID.randomUUID().toString()),
+        null);
+  }
+
+  public void reactEmoji(SocialFeed.Post post, String emoji, View anchor) {
+    String next = post.reaction(actor()).equals(emoji) ? "" : emoji;
+    queueSocial(
+        object(
+            "action",
+            "setReaction",
+            "kind",
+            post.kind,
+            "id",
+            post.id,
+            "actor",
+            actor(),
+            "reaction",
+            next,
             "operationId",
             UUID.randomUUID().toString()),
         null);
@@ -1556,7 +1659,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             "/api/together",
             "/api/daily-memory",
             "/api/keepsakes",
-            "/api/journal"
+            "/api/journal",
+            "/api/camera"
           };
           for (String path : paths) {
             try {
@@ -1571,7 +1675,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           refreshing = false;
           if (result.has("/memories.json")) memories = result.optJSONObject("/memories.json");
           if (result.has("/api/music")) music = result.optJSONObject("/api/music");
-          if (result.has("/api/together")) together = result.optJSONObject("/api/together");
+          if (result.has("/api/together")) {
+            together = result.optJSONObject("/api/together");
+            SyncJob.notifyPartnerUpdates(this, together);
+          }
           if (result.has("/api/daily-memory")) daily = result.optJSONObject("/api/daily-memory");
           if (messages != null) messages.check();
           UniverseWidgets.updateAll(this);
@@ -1618,6 +1725,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               "messages",
               "heartDays",
               "hearts",
+              "heartVibes",
+              "dailyPrompt",
               "heartReceipts",
               "heartReceipt",
               "heartStreak",
@@ -1963,7 +2072,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               Ui.MUTED),
           8);
     u.add(content, u.button("Since us · letters & little things", true, () -> book.show(true)), 18);
-    u.add(content, u.button("Our little book", false, () -> book.show(false)), 10);
+    u.add(content, u.button("Secret vocab", false, () -> book.show(false)), 10);
     birthdayCard(content);
     dailyCard(content);
     u.add(content, u.label("THE LITTLE THINGS, THE BIG FEELINGS"), 28);
@@ -2397,12 +2506,41 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void music() {
-    heading("TEN SONGS FOR US", "Our soundtrack.", "Ten little places for the songs that sound like us.");
-    Button find=u.button("Find our next favorite",true,this::searchMusic);
-    Glyph.leading(find,"search",Color.WHITE,17,8);
-    u.add(content,find,20);
+    u.add(content, memoriesSwitcher(3), 0);
+    heading("OUR SOUNDTRACK", "Our music.", "Our Song of the Moment, plus our ten-song archive.");
+    if(music!=null){
+      JSONObject moment=music.optJSONObject("moment");
+      LinearLayout momentCard=u.card(content,Ui.PALE);
+      u.add(momentCard,u.label("SONG OF THE MOMENT"),0);
+      if(moment!=null&&!moment.optString("title").isEmpty()){
+        LinearLayout mRow=u.row(12);
+        ImageView mArt=new ImageView(this);mArt.setScaleType(ImageView.ScaleType.CENTER_CROP);mArt.setBackground(u.shape(Color.WHITE,14));mArt.setClipToOutline(true);
+        mRow.addView(mArt,new LinearLayout.LayoutParams(u.dp(64),u.dp(64)));images.load(moment.optString("artworkUrl"),mArt);
+        LinearLayout mCopy=u.column();mCopy.addView(u.title(moment.optString("title"),17));u.add(mCopy,u.text(moment.optString("artist"),14,Ui.MUTED),4);
+        if(!moment.optString("note").isEmpty())u.add(mCopy,u.text(moment.optString("note"),13,Ui.PURPLE),4);
+        mRow.addView(mCopy,new LinearLayout.LayoutParams(0,-2,1));
+        u.add(momentCard,mRow,10);
+        LinearLayout mActions=u.row(8);
+        Button listenBtn=u.button("Listen ↗",false,()->openLink(moment.optString("trackUrl")));
+        Button swapBtn=u.button("Swap song",true,this::searchMomentMusic);
+        swapBtn.setEnabled(writable(music));
+        mActions.addView(listenBtn,new LinearLayout.LayoutParams(0,-2,1));
+        mActions.addView(swapBtn,new LinearLayout.LayoutParams(0,-2,1));
+        u.add(momentCard,mActions,12);
+        if(writable(music))u.add(momentCard,u.textButton("Clear Song of the Moment",this::clearMomentSong),4);
+      }else{
+        u.add(momentCard,u.text("Pick one song that feels like right now. Swap it anytime in one tap.",14,Ui.MUTED),8);
+        Button pickMoment=u.button("Pick Song of the Moment ♡",true,this::searchMomentMusic);
+        pickMoment.setEnabled(writable(music));
+        u.add(momentCard,pickMoment,12);
+      }
+    }
+    Button find=u.button("Find a song for our Top 10",false,this::searchMusic);
+    Glyph.leading(find,"search",Ui.PURPLE,17,8);
+    u.add(content,find,16);
     if(music==null){empty(content,"Gathering our soundtrack…","Your saved songs will appear here.");return;}
     if(!writable(music))u.add(content,u.text("Shared saving is being connected. You can still search and listen.",13,Ui.MUTED),16);
+    u.add(content,u.label("OUR TOP 10 ARCHIVE"),18);
     for(int rank=1;rank<=10;rank++){
       final int spot=rank;
       JSONObject song=trackAt(rank);
@@ -2429,6 +2567,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       ImageView more=Glyph.view(this,"more",Ui.PURPLE);more.setPadding(u.dp(9),u.dp(11),u.dp(9),u.dp(11));more.setContentDescription("Song options");
       more.setOnClickListener(v->{
         Ui.Sheet menu=u.sheet("Our song",song.optString("title"));
+        menu.item("Set as Song of the Moment ♡","Feature this right now on Home","heart",false,()->confirmMomentSong(song));
         menu.item("Edit note","","words",false,()->chooseSong(song,spot));
         menu.item("Replace","Choose a different song","music",false,()->searchMusic(spot));
         menu.item("Remove","","close",true,()->removeSong(song));
@@ -2506,14 +2645,27 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                       c, u.button("Listen ↗", false, () -> openLink(t.optString("trackUrl"))), 10);
                   Button save =
                       u.button(
-                          "Choose this song",
+                          preferred < 0 ? "Set as Song of the Moment ♡" : "Choose for Top 10",
                           true,
                           () -> {
                             dialog.dismiss();
-                            chooseSong(t, preferred);
+                            if (preferred < 0) confirmMomentSong(t);
+                            else chooseSong(t, preferred);
                           });
                   save.setEnabled(writable(music));
                   u.add(c, save, 6);
+                  if (preferred >= 0) {
+                    Button momentBtn =
+                        u.button(
+                            "Set as Song of the Moment ♡",
+                            false,
+                            () -> {
+                              dialog.dismiss();
+                              confirmMomentSong(t);
+                            });
+                    momentBtn.setEnabled(writable(music));
+                    u.add(c, momentBtn, 6);
+                  }
                 }
               },
               error -> {
@@ -2596,6 +2748,59 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             });
   }
 
+  private void confirmMomentSong(JSONObject song) {
+    LinearLayout body = u.column();
+    body.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(16));
+    u.add(body, u.title(song.optString("title"), 20), 0);
+    u.add(body, u.text(song.optString("artist"), 14, Ui.MUTED), 6);
+    u.add(body, u.label("A LITTLE NOTE · OPTIONAL"), 14);
+    EditText note = u.input("Why this song right now…", "", 240, true);
+    u.add(body, note, 8);
+    TextView status = u.text("Featured on Home and at the top of Music.", 12, Ui.MUTED);
+    u.add(body, status, 10);
+    AlertDialog dialog =
+        new AlertDialog.Builder(this)
+            .setTitle("Song of the Moment")
+            .setView(u.scroll(body))
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Set Song ♡", null)
+            .create();
+    track(dialog);
+    dialog.show();
+    dialog
+        .getButton(-1)
+        .setOnClickListener(
+            v ->
+                saveMusic(
+                    dialog,
+                    status,
+                    object(
+                        "action",
+                        "setMoment",
+                        "trackId",
+                        song.optLong("trackId"),
+                        "note",
+                        note.getText().toString().trim(),
+                        "actor",
+                        actor())));
+  }
+
+  private void clearMomentSong() {
+    AlertDialog dialog =
+        new AlertDialog.Builder(this)
+            .setTitle("Clear Song of the Moment?")
+            .setMessage("You can pick a new one anytime.")
+            .setNegativeButton("Keep", null)
+            .setPositiveButton("Clear", null)
+            .create();
+    track(dialog);
+    dialog.show();
+    dialog
+        .getButton(-1)
+        .setOnClickListener(
+            v -> saveMusic(dialog, null, object("action", "clearMoment", "expectedId", null)));
+  }
+
   private void removeSong(JSONObject song) {
     AlertDialog dialog =
         new AlertDialog.Builder(this)
@@ -2637,6 +2842,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           mutating = false;
           dialog.dismiss();
           render(true);
+          refreshHomeExtras();
           toast(
               data.optBoolean("_pending")
                   ? "Saved on this phone · waiting to sync"
@@ -2673,7 +2879,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         "Places to go. Things to try. A little more us.");
     u.add(
         content,
-        u.button("Our little book", true, () -> book.show(false)),
+        u.button("Secret vocab", true, () -> book.show(false)),
         18);
     u.add(
         content, u.button("Since us · letters & little things", true, () -> book.show(true)), 20);

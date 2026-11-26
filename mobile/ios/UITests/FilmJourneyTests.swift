@@ -5,7 +5,6 @@ final class FilmJourneyTests: XCTestCase {
         let app = openFilm(capturePreview: true)
         let lens = app.buttons["film.camera.open"]
         XCTAssertTrue(lens.isHittable)
-        // Tap the artwork's center, exactly where the old decorative lens did nothing.
         lens.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         XCTAssertTrue(app.navigationBars["Keep this moment"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Keep this moment ●"].exists)
@@ -47,9 +46,9 @@ final class FilmJourneyTests: XCTestCase {
         let album = app.buttons.containing(.staticText, identifier: "A weekend in little pieces").firstMatch
         for _ in 0..<5 { if album.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(album.exists); album.tap()
-        XCTAssertTrue(app.staticTexts["FRAME 1 / 24"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["FRAME 1 / 8"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["A little surprise, kept for you. ♡"].exists)
-        app.buttons["Next moment →"].tap(); XCTAssertTrue(app.staticTexts["FRAME 2 / 24"].exists)
+        app.buttons["Next moment →"].tap(); XCTAssertTrue(app.staticTexts["FRAME 2 / 8"].exists)
         let reveal = XCTAttachment(screenshot: app.screenshot()); reveal.name = "Disposable-camera-reveal"; reveal.lifetime = .keepAlways; add(reveal)
     }
 }

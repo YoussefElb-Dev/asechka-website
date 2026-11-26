@@ -352,7 +352,9 @@ final class OfflineStore {
               "pending",
               "createdAt",
               System.currentTimeMillis());
-      if (path.equals("/api/music") && body.optString("action").equals("save")) {
+      if (path.equals("/api/music")
+          && (body.optString("action").equals("save")
+              || body.optString("action").equals("setMoment"))) {
         JSONObject track = read("track:" + body.optLong("trackId"));
         if (track == null)
           throw new IOException("Connect once to load this song before saving it offline.");
@@ -378,7 +380,12 @@ final class OfflineStore {
   }
 
   void tapHearts(String from, String day, int count) throws Exception {
+    tapHearts(from, day, count, "");
+  }
+
+  void tapHearts(String from, String day, int count, String vibe) throws Exception {
     if (count < 1 || count > 1000000) throw new IllegalArgumentException("Invalid heart batch");
+    String cleanVibe = vibe == null ? "" : vibe.trim();
     synchronized (LOCK) {
       JSONArray items = queue();
       for (int i = items.length() - 1; i >= 0; i--) {
@@ -389,24 +396,25 @@ final class OfflineStore {
             && b.optString("day").equals(day)
             && b.optLong("count") + count <= 1000000) {
           b.put("count", b.optLong("count", 1) + count);
+          if (!cleanVibe.isEmpty()) b.put("vibe", cleanVibe);
           queue(items);
           return;
         }
       }
-      JSONObject entry =
-          enqueue(
-              "/api/together",
-              json(
-                  "action",
-                  "sendHeart",
-                  "from",
-                  from,
-                  "day",
-                  day,
-                  "count",
-                  count,
-                  "operationId",
-                  UUID.randomUUID().toString()));
+      JSONObject body =
+          json(
+              "action",
+              "sendHeart",
+              "from",
+              from,
+              "day",
+              day,
+              "count",
+              count,
+              "operationId",
+              UUID.randomUUID().toString());
+      if (!cleanVibe.isEmpty()) body.put("vibe", cleanVibe);
+      JSONObject entry = enqueue("/api/together", body);
       items = queue();
       for (int i = 0; i < items.length(); i++)
         if (items.getJSONObject(i).optString("id").equals(entry.optString("id")))
@@ -644,23 +652,45 @@ final class OfflineStore {
         } else if (path.equals("/memories.json")) {
           MemoryProjection.apply(data, b, entry.getLong("createdAt"));
         } else if (path.equals("/api/music")) {
-          JSONArray list = data.optJSONArray("tracks"), next = new JSONArray();
-          if (list != null)
-            for (int j = 0; j < list.length(); j++)
-              if (list.getJSONObject(j).optInt("rank") != b.optInt("rank"))
-                next.put(list.getJSONObject(j));
-          if (action.equals("save")) {
+          if (action.equals("clearMoment")) {
+            data.put("moment", JSONObject.NULL);
+          } else if (action.equals("setMoment")) {
             JSONObject song = copy(entry.getJSONObject("track"));
-            song.put("rank", b.getInt("rank"));
             song.put("note", b.optString("note"));
-            song.put("id", entry.getString("localId"));
+            song.put("actor", b.optString("actor"));
+            song.put("updatedAt", Dates.timestamp(entry.getLong("createdAt")));
             song.put("pending", true);
-            next.put(song);
+            data.put("moment", song);
+          } else {
+            JSONArray list = data.optJSONArray("tracks"), next = new JSONArray();
+            if (list != null)
+              for (int j = 0; j < list.length(); j++)
+                if (list.getJSONObject(j).optInt("rank") != b.optInt("rank"))
+                  next.put(list.getJSONObject(j));
+            if (action.equals("save")) {
+              JSONObject song = copy(entry.getJSONObject("track"));
+              song.put("rank", b.getInt("rank"));
+              song.put("note", b.optString("note"));
+              song.put("id", entry.getString("localId"));
+              song.put("pending", true);
+              next.put(song);
+            }
+            data.put("tracks", next);
           }
-          data.put("tracks", next);
         } else if (path.equals("/api/together")) {
-          if (action.equals("sendMessage") || action.equals("closeMessage")) {
+          if (action.equals("sendMessage") || action.equals("closeMessage") || action.equals("pinMessage")) {
             Messages.project(data, b, entry.getLong("createdAt"));
+          } else if (action.equals("answerPrompt")) {
+            JSONObject prompt = data.optJSONObject("dailyPrompt");
+            if (prompt == null) {
+              prompt = json("day", b.optString("day", HeartCounts.day(entry.getLong("createdAt"))), "prompt", "What small moment made you smile today?", "revealed", false, "answers", new JSONObject());
+              data.put("dailyPrompt", prompt);
+            }
+            JSONObject answers = prompt.optJSONObject("answers");
+            if (answers == null) { answers = new JSONObject(); prompt.put("answers", answers); }
+            answers.put(b.optString("actor"), json("answered", true, "answeredAt", Dates.timestamp(entry.getLong("createdAt")), "text", b.optString("text")));
+            boolean both = answers.optJSONObject("asnat") != null && answers.optJSONObject("asnat").optBoolean("answered") && answers.optJSONObject("youssef") != null && answers.optJSONObject("youssef").optBoolean("answered");
+            prompt.put("revealed", both);
           } else if (action.equals("sendHeart")) {
             HeartCounts.apply(data, b, entry.getLong("createdAt"));
           } else {

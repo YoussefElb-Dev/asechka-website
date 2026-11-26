@@ -1,8 +1,13 @@
 import { authorize, privateHeaders } from './auth.js';
 import { MusicCatalog, MusicError } from './music-catalog.js';
 import { GitHubMusicStore, checkedChange } from './music-store.js';
+
 const catalog = new MusicCatalog(), store = new GitHubMusicStore();
-const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...privateHeaders, 'Content-Type': 'application/json; charset=utf-8', ...(status === 429 ? { 'Retry-After': '60' } : {}) } });
+const json = (data, status = 200) => new Response(JSON.stringify(data), {
+  status,
+  headers: { ...privateHeaders, 'Content-Type': 'application/json; charset=utf-8', ...(status === 429 ? { 'Retry-After': '60' } : {}) },
+});
+
 export function createMusicAPI({ catalog: songs = catalog, store: favorites = store } = {}) {
   return async request => {
     const denied = await authorize(request);
@@ -23,12 +28,17 @@ export function createMusicAPI({ catalog: songs = catalog, store: favorites = st
       try { input = JSON.parse(body); } catch { return json({ error: 'Choose a song and try again.' }, 400); }
       const change = checkedChange(input);
       if (!favorites.writable) throw new MusicError('Saving our songs is still being connected. Search is ready—try saving again shortly.');
-      const track = change.action === 'save' ? await songs.track(change.trackId) : null;
+      const track = (change.action === 'save' || change.action === 'setMoment') ? await songs.track(change.trackId) : null;
       const data = await favorites.change(change, track);
-      return json({ ...data, writable: true, message: change.action === 'save' ? 'Saved to our soundtrack ♡' : 'A little space for our next favorite.' });
+      const message = change.action === 'setMoment' ? 'Set as our song of the moment ♡'
+        : change.action === 'clearMoment' ? 'Song of the moment cleared.'
+        : change.action === 'save' ? 'Saved to our soundtrack ♡'
+        : 'A little space for our next favorite.';
+      return json({ ...data, writable: true, message });
     } catch (error) {
       return json({ error: error instanceof MusicError ? error.message : 'Our music is taking a little break. Please try again shortly.' }, error instanceof MusicError ? error.status : 503);
     }
   };
 }
+
 export const handleMusic = createMusicAPI();

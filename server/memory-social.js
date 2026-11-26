@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto';
 import { TogetherError } from './together-store.js';
 import { UUID } from './daily-memory.js';
 
-export const socialActions = new Set(['setLike', 'addComment', 'removeComment']);
+export const REACTION_EMOJIS = ['', '♡', '😂', '🥹', '✨', '🔥', '💋'];
+export const socialActions = new Set(['setLike', 'setReaction', 'addComment', 'removeComment']);
 const fail = (message, status = 400) => { throw new TogetherError(message, status); };
 export const contentFingerprint = item => {
   if (typeof item === 'string') return createHash('sha256').update(JSON.stringify(item)).digest('hex');
@@ -19,6 +20,10 @@ export function checkedSocialChange(input) {
   if (input.action === 'setLike') {
     if (typeof input.liked !== 'boolean') fail('Choose whether to like this post.');
     change.liked = input.liked;
+  } else if (input.action === 'setReaction') {
+    if (typeof input.reaction !== 'string' || !REACTION_EMOJIS.includes(input.reaction))
+      fail('Choose one of our emoji reactions.');
+    change.reaction = input.reaction;
   } else if (input.action === 'addComment') {
     if (typeof input.text !== 'string' || !input.text.trim() || input.text.length > 1000)
       fail('Write a comment of 1 to 1,000 characters.');
@@ -37,8 +42,8 @@ export function changeSocial(data, change, keyFor, now) {
   const previous = data[kind][index];
   const item = typeof previous === 'string' ? { text: previous, id: change.id } : previous;
   item.id ||= change.id;
-  const social = item.social ||= { likes: {}, comments: [], receipts: [] };
-  social.likes ||= {}; social.comments ||= []; social.receipts ||= [];
+  const social = item.social ||= { likes: {}, reactions: {}, comments: [], receipts: [] };
+  social.likes ||= {}; social.reactions ||= {}; social.comments ||= []; social.receipts ||= [];
   const hash = createHash('sha256').update(JSON.stringify(change)).digest('hex');
   const receipt = social.receipts.find(receipt => receipt.id === change.operationId);
   if (receipt) {
@@ -46,7 +51,10 @@ export function changeSocial(data, change, keyFor, now) {
     return { data, changed: false };
   }
   if (change.action === 'setLike') social.likes[change.actor] = change.liked;
-  else if (change.action === 'addComment') {
+  else if (change.action === 'setReaction') {
+    if (change.reaction) social.reactions[change.actor] = change.reaction;
+    else delete social.reactions[change.actor];
+  } else if (change.action === 'addComment') {
     const existing = social.comments.find(comment => comment.id === change.operationId);
     if (existing && (existing.text !== change.text || existing.author !== change.actor))
       fail('This comment changed. Please try it again.', 409);

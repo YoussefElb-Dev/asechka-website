@@ -1,26 +1,79 @@
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { checkedTrack, MusicError } from './music-catalog.js';
+
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const endpoint = 'https://api.github.com/repos/YoussefElb-Dev/asechka-website/contents/dist/music.json';
+
 export function checkedMusic(value) {
   const ranks = new Set(), songs = new Set();
-  if (!value || value.version !== 1 || !Array.isArray(value.tracks) || value.tracks.length > 10) throw new MusicError('Our saved music needs a little attention. Nothing has been changed.');
+  if (!value || value.version !== 1 || !Array.isArray(value.tracks) || value.tracks.length > 10) {
+    throw new MusicError('Our saved music needs a little attention. Nothing has been changed.');
+  }
   for (const track of value.tracks) {
     if (!checkedTrack(track) || !UUID.test(track.id) || !Number.isInteger(track.rank) || track.rank < 1 || track.rank > 10 ||
-        ranks.has(track.rank) || songs.has(track.trackId) || typeof track.note !== 'string' || track.note.length > 500) throw new MusicError('Our saved music needs a little attention. Nothing has been changed.');
+        ranks.has(track.rank) || songs.has(track.trackId) || typeof track.note !== 'string' || track.note.length > 500) {
+      throw new MusicError('Our saved music needs a little attention. Nothing has been changed.');
+    }
     ranks.add(track.rank); songs.add(track.trackId);
+  }
+  if (value.moment !== undefined && value.moment !== null) {
+    const m = value.moment;
+    if (!checkedTrack(m) || !UUID.test(m.id) || typeof m.note !== 'string' || m.note.length > 240 ||
+        (m.actor !== undefined && !['asnat', 'youssef', ''].includes(m.actor))) {
+      throw new MusicError('Our saved music needs a little attention. Nothing has been changed.');
+    }
   }
   return value;
 }
+
 export function checkedChange(value) {
-  if (!value || !['save', 'remove'].includes(value.action) || !Number.isInteger(value.rank) || value.rank < 1 || value.rank > 10 ||
-      !(value.expectedId === null || typeof value.expectedId === 'string' && UUID.test(value.expectedId))) throw new MusicError('Choose a spot between 1 and 10 and try again.', 400);
-  if (value.action === 'save' && (!Number.isSafeInteger(value.trackId) || value.trackId < 1 || typeof value.note !== 'string' || value.note.length > 500)) throw new MusicError('Choose a song and keep your little note under 500 characters.', 400);
+  if (!value || !['save', 'remove', 'setMoment', 'clearMoment'].includes(value.action)) {
+    throw new MusicError('Choose a song action and try again.', 400);
+  }
+  if (value.action === 'setMoment' || value.action === 'clearMoment') {
+    if (!(value.expectedId === undefined || value.expectedId === null || (typeof value.expectedId === 'string' && UUID.test(value.expectedId)))) {
+      throw new MusicError('Refresh our song of the moment and try again.', 400);
+    }
+    if (value.action === 'clearMoment') return { action: 'clearMoment', expectedId: value.expectedId ?? null };
+    if (!Number.isSafeInteger(value.trackId) || value.trackId < 1 || typeof (value.note ?? '') !== 'string' || (value.note ?? '').length > 240) {
+      throw new MusicError('Choose a song and keep your little note under 240 characters.', 400);
+    }
+    const actor = ['asnat', 'youssef'].includes(value.actor) ? value.actor : '';
+    return { action: 'setMoment', trackId: value.trackId, note: (value.note ?? '').trim(), actor, expectedId: value.expectedId ?? null };
+  }
+  if (!Number.isInteger(value.rank) || value.rank < 1 || value.rank > 10 ||
+      !(value.expectedId === null || typeof value.expectedId === 'string' && UUID.test(value.expectedId))) {
+    throw new MusicError('Choose a spot between 1 and 10 and try again.', 400);
+  }
+  if (value.action === 'save' && (!Number.isSafeInteger(value.trackId) || value.trackId < 1 || typeof value.note !== 'string' || value.note.length > 500)) {
+    throw new MusicError('Choose a song and keep your little note under 500 characters.', 400);
+  }
   return { action: value.action, rank: value.rank, expectedId: value.expectedId, ...(value.action === 'save' ? { trackId: value.trackId, note: value.note.trim() } : {}) };
 }
+
 export function changeMusic(base, change, track, id = randomUUID()) {
   checkedMusic(base);
+  if (change.action === 'setMoment' || change.action === 'clearMoment') {
+    const current = base.moment || null;
+    if (change.action === 'clearMoment') {
+      if (!current) return { data: base, changed: false };
+      if (change.expectedId !== null && current.id !== change.expectedId) throw new MusicError('Our song of the moment just changed. Refresh and try again.', 409);
+      const data = structuredClone(base);
+      data.moment = null;
+      data.updatedAt = new Date().toISOString();
+      return { data, changed: true };
+    }
+    if (!checkedTrack(track) || track.trackId !== change.trackId) throw new MusicError('Choose a song from the search results.', 400);
+    if (current && current.trackId === change.trackId && current.note === change.note && (current.actor || '') === (change.actor || '')) {
+      return { data: base, changed: false };
+    }
+    const data = structuredClone(base);
+    const now = new Date().toISOString();
+    data.moment = { ...track, id, note: change.note, actor: change.actor || '', updatedAt: now };
+    data.updatedAt = now;
+    return { data, changed: true };
+  }
   const current = base.tracks.find(song => song.rank === change.rank);
   if (change.action === 'save' && current?.trackId === change.trackId && current.note === change.note) return { data: base, changed: false };
   if (change.action === 'remove' && !current) return { data: base, changed: false };
@@ -36,6 +89,7 @@ export function changeMusic(base, change, track, id = randomUUID()) {
   data.updatedAt = new Date().toISOString();
   return { data, changed: true };
 }
+
 export class GitHubMusicStore {
   constructor({ token = () => process.env.MUSIC_GITHUB_TOKEN, fetcher = fetch, fallback = () => readFile(new URL('../dist/music.json', import.meta.url), 'utf8'), now = () => Date.now() } = {}) {
     this.token = token; this.fetcher = fetcher; this.fallback = fallback; this.now = now; this.cached = null;
@@ -76,8 +130,12 @@ export class GitHubMusicStore {
       const update = changeMusic(data, change, track, id);
       if (!update.changed) return data;
       try {
+        const message = change.action === 'setMoment' ? 'Update our song of the moment'
+          : change.action === 'clearMoment' ? 'Clear our song of the moment'
+          : change.action === 'remove' ? `Clear music spot ${change.rank} for Asechka`
+          : `Save music spot ${change.rank} for Asechka`;
         await this.github('PUT', {
-          message: change.action === 'remove' ? `Clear music spot ${change.rank} for Asechka` : `Save music spot ${change.rank} for Asechka`,
+          message,
           branch: 'main', sha, content: Buffer.from(JSON.stringify(update.data, null, 2) + '\n').toString('base64'),
         });
         this.cached = null;

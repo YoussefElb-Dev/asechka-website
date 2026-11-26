@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#edf2ff"><meta name="description" content="Since that Friday. Our little days, letters for whenever you need them, and all the things I love about you.">
-  <title>Since us · Asechka ♡</title>
+  <meta name="theme-color" content="#edf2ff"><meta name="description" content="Since that Friday. Our little days, letters for whenever you need them, secret vocab, time vault, and all the things I love about you.">
+  <title>Us &amp; Keepsakes · Asechka ♡</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
   <svg class="svg-definitions" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
   <header class="site-header collection-header wrap">
     <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
-    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html">Music</a><a href="/us.html" aria-current="page">Since us</a><a href="/together.html">Our days</a><a href="/translation.html">Our words</a></nav>
+    <nav aria-label="Our collections"><a href="/quotes.html">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html">Music</a><a href="/camera.html">Camera</a><a href="/together.html">Our days</a><a href="/us.html" aria-current="page">Us</a></nav>
   </header>
   <main id="main" class="collection-main keepsakes-main wrap">
     <a class="collection-back" href="/">← Back to our little universe</a>
@@ -34,15 +34,30 @@
       <article class="anniversary-card"><span class="anniversary-mark" aria-hidden="true">☾</span><p class="eyebrow" data-month-label>OUR NEXT MONTH TOGETHER</p><h2 data-month-date>November 16</h2><p class="anniversary-clock" data-month-countdown>Counting the little moments…</p><p class="anniversary-time">At our time. 3:41 PM Eastern.</p></article>
       <article class="anniversary-card anniversary-lavender"><span class="anniversary-mark" aria-hidden="true">✧</span><p class="eyebrow" data-year-label>OUR FIRST YEAR TOGETHER</p><h2 data-year-date>October 16, 2027</h2><p class="anniversary-clock" data-year-countdown>So many little days ahead.</p><p class="anniversary-time">At our time. 3:41 PM Eastern.</p></article>
     </div>
-    <nav class="keepsake-jump" aria-label="On this page"><a href="#letters">Open when… ↓</a><a href="#little-things">The little things ↓</a><a href="/journal.html">Our little book ↗</a><button type="button" data-edit-since disabled>Edit our beginning</button><button type="button" data-manage-keepsakes aria-pressed="false" disabled>Edit our words</button></nav>
+    <nav class="keepsake-jump" aria-label="On this page">
+      <a href="#letters">Open when… ↓</a>
+      <a href="#little-things">The little things ↓</a>
+      <a href="/journal.html#jokes">Secret vocab ↗</a>
+      <a href="/vault.html">Time vault ↗</a>
+      <a href="/translation.html">Our words ↗</a>
+    </nav>
+    <details class="opened-details">
+      <summary>Settings &amp; edit keepsakes</summary>
+      <div class="keepsake-jump" style="margin-top:12px">
+        <button type="button" data-edit-since disabled>Edit our beginning</button>
+        <button type="button" data-manage-keepsakes aria-pressed="false" disabled>Manage letters &amp; little things</button>
+        <button class="keepsake-add" type="button" data-add-keepsake="Letter" disabled>+ Add a letter</button>
+        <button class="keepsake-add" type="button" data-add-keepsake="Thing" disabled>+ Add a little thing</button>
+      </div>
+    </details>
     <p class="keepsake-status" data-keepsake-status role="status" hidden></p>
     <section class="open-when-section" id="letters" aria-labelledby="letters-title">
-      <div class="keepsake-section-heading"><div><p class="eyebrow">A FEW WORDS, WAITING FOR THE RIGHT MOMENT</p><h2 id="letters-title">Open <span class="handwritten">when…</span></h2><p>Little letters for all kinds of days. Pick the one you need, whenever you need it.</p></div><button class="keepsake-add" type="button" data-add-keepsake="Letter" disabled>+ Add a letter</button></div>
+      <div class="keepsake-section-heading"><div><p class="eyebrow">A FEW WORDS, WAITING FOR THE RIGHT MOMENT</p><h2 id="letters-title">Open <span class="handwritten">when…</span></h2><p>Little letters for all kinds of days. Pick the one you need, whenever you need it.</p></div></div>
       <div class="open-when-grid letter-library-grid" data-letter-grid aria-busy="true"></div>
       <p class="keepsake-empty" data-letter-empty hidden>A little space for the next thing you want to tell her.</p>
     </section>
     <section class="personal-things-section" id="little-things" aria-labelledby="personal-things-title">
-      <div class="keepsake-section-heading"><div><p class="eyebrow">IT’S ALWAYS BEEN THE LITTLE THINGS</p><h2 id="personal-things-title">Little things I love <span class="handwritten">about you.</span></h2><p>The details I notice. The ones that stay with me.</p></div><button class="keepsake-add" type="button" data-add-keepsake="Thing" disabled>+ Add a little thing</button></div>
+      <div class="keepsake-section-heading"><div><p class="eyebrow">IT’S ALWAYS BEEN THE LITTLE THINGS</p><h2 id="personal-things-title">Little things I love <span class="handwritten">about you.</span></h2><p>The details I notice. The ones that stay with me.</p></div></div>
       <div class="little-detail-card"><span class="detail-star" aria-hidden="true">✧</span><span class="detail-number" data-thing-number>ONE LITTLE THING AT A TIME</span><p class="detail-text" data-thing-text aria-live="polite">There’s a little something I love about you, waiting here.</p><div class="detail-controls"><button class="detail-previous" type="button" data-previous-thing aria-label="Previous little thing" hidden>←</button><button class="button button-primary" type="button" data-next-thing disabled>Open a little thing ♡</button></div><p class="detail-progress" data-thing-progress></p></div>
       <details class="opened-details"><summary>The little things you’ve opened</summary><ol data-opened-things></ol></details>
       <div class="keepsake-management" hidden><p class="management-hint">Your words, kept here. Add to them whenever another little thing comes to mind.</p><ol class="manage-things-list" data-manage-things></ol></div>

@@ -7,7 +7,10 @@ final class MemoryProjection {
   static void apply(JSONObject data, JSONObject body, long createdAt) throws Exception {
     String action = body.optString("action");
     boolean social =
-        action.equals("setLike") || action.equals("addComment") || action.equals("removeComment");
+        action.equals("setLike")
+            || action.equals("setReaction")
+            || action.equals("addComment")
+            || action.equals("removeComment");
     String collection =
         social
             ? body.optString("kind").equals("photo") ? "photos" : "quotes"
@@ -36,6 +39,13 @@ final class MemoryProjection {
         if (likes == null) likes = new JSONObject();
         likes.put(body.getString("actor"), body.getBoolean("liked"));
         state.put("likes", likes);
+      } else if (action.equals("setReaction")) {
+        JSONObject reactions = state.optJSONObject("reactions");
+        if (reactions == null) reactions = new JSONObject();
+        String reaction = body.optString("reaction", "");
+        if (reaction.isEmpty()) reactions.remove(body.getString("actor"));
+        else reactions.put(body.getString("actor"), reaction);
+        state.put("reactions", reactions);
       } else {
         JSONArray comments = state.optJSONArray("comments"), next = new JSONArray();
         boolean found = false;

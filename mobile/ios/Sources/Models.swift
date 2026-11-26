@@ -2,12 +2,14 @@ import Foundation
 
 struct Conversation: Codable, Equatable {
     var likes: [String: Bool] = [:]
+    var reactions: [String: String] = [:]
     var comments: [Comment] = []
-    enum CodingKeys: String, CodingKey { case likes, comments }
+    enum CodingKeys: String, CodingKey { case likes, reactions, comments }
     init() {}
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         likes = try c.decodeIfPresent([String: Bool].self, forKey: .likes) ?? [:]
+        reactions = try c.decodeIfPresent([String: String].self, forKey: .reactions) ?? [:]
         comments = try c.decodeIfPresent([Comment].self, forKey: .comments) ?? []
     }
 }
@@ -16,6 +18,23 @@ struct Comment: Codable, Identifiable, Equatable {
     var author: String
     var text: String
     var createdAt: String
+}
+struct HeartVibeInfo: Codable, Equatable {
+    var vibe: String
+    var label: String
+    var symbol: String
+    var sentAt: String
+}
+struct DailyPromptAnswer: Codable, Equatable {
+    var answered: Bool
+    var answeredAt: String?
+    var text: String?
+}
+struct DailyPromptState: Codable, Equatable {
+    var day: String
+    var prompt: String
+    var revealed: Bool
+    var answers: [String: DailyPromptAnswer]
 }
 enum PhotoCollection: String, Codable, CaseIterable, Identifiable {
     case memories, photography
@@ -108,10 +127,14 @@ enum Projection {
         var values=isPhoto ? memories.photos : memories.quotes
         let id=body["id"] as? String ?? operation
         let found=values.firstIndex { $0.id==id || $0.editKey==id }
-        if ["setLike","addComment","removeComment"].contains(action) {
+        if ["setLike","setReaction","addComment","removeComment"].contains(action) {
             guard let index=found,let actor=body["actor"] as? String else{return}
             var social=values[index].social ?? Conversation()
             if action=="setLike" { social.likes[actor]=body["liked"] as? Bool ?? false }
+            if action=="setReaction" {
+                let reaction=body["reaction"] as? String ?? ""
+                if reaction.isEmpty { social.reactions.removeValue(forKey: actor) } else { social.reactions[actor]=reaction }
+            }
             if action=="addComment", let text=body["text"] as? String,!social.comments.contains(where:{$0.id==operation}) {
                 social.comments.append(Comment(id:operation,author:actor,text:text,createdAt:pending.createdAt))
             }
@@ -149,9 +172,11 @@ struct Song: Codable, Identifiable {
     var previewUrl: String?
     var rank: Int?
     var note: String?
+    var actor: String?
+    var updatedAt: String?
     var revision: String?
     var savedId: String?
-    enum CodingKeys:String,CodingKey {case trackId,title,artist,album,artworkUrl,trackUrl,previewUrl,rank,note,revision;case savedId="id"}
+    enum CodingKeys:String,CodingKey {case trackId,title,artist,album,artworkUrl,trackUrl,previewUrl,rank,note,actor,updatedAt,revision;case savedId="id"}
 }
 struct Wish: Codable, Identifiable {
     var id: String

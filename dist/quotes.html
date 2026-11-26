@@ -16,21 +16,27 @@
   <link rel="stylesheet" href="collection-editor.css">
   <link rel="stylesheet" href="together.css">
   <script type="module" src="memory-gallery.js"></script>
-<link rel="stylesheet" href="translation.css"><link rel="stylesheet" href="soft-orbit.css"></head>
+  <link rel="stylesheet" href="translation.css">
+  <link rel="stylesheet" href="soft-orbit.css">
+</head>
 <body class="collection-page">
   <a class="skip-link" href="#main">Skip to our quotes</a>
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol></svg>
   <header class="site-header collection-header wrap">
     <a class="brand" href="/" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
-    <nav aria-label="Our collections"><a href="/quotes.html" aria-current="page">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html">Music</a><a href="/together.html">Our days</a><a class="nav-words" href="/translation.html">Our words</a><a href="/us.html">Since us</a></nav>
+    <nav aria-label="Our collections"><a href="/quotes.html" aria-current="page">Quotes</a><a href="/pictures.html">Pictures</a><a href="/music.html">Music</a><a href="/camera.html">Camera</a><a href="/together.html">Our days</a><a href="/us.html">Us</a></nav>
   </header>
   <main id="main" class="collection-main wrap">
     <a class="collection-back" href="/#quotes"><span aria-hidden="true">←</span> Back to our little universe</a>
     <section aria-labelledby="quotes-title">
       <div class="collection-intro"><p class="eyebrow">EVERY LITTLE WORD, KEPT HERE</p><h1 class="collection-title" id="quotes-title">All those things <span class="handwritten">I tell you.</span></h1><p>The random quotes, the sweet ones, and the ones we shouldn't forget. All in one little place.</p></div>
+      <div class="memory-search-bar">
+        <input id="memory-search" type="search" placeholder="Search quotes, notes, or dates…" aria-label="Search our quotes">
+        <button type="button" id="memory-saved-only" class="memory-saved-toggle" aria-pressed="false">Saved only</button>
+      </div>
       <p class="collection-status" id="collection-status" role="status">Gathering our little words…</p>
       <ol class="quote-list" id="quote-list"></ol>
-      <div class="quote-empty" id="quote-empty" hidden><span class="empty-quote-mark" aria-hidden="true">“</span><p class="handwritten">A little place for all those things I say to you.</p><p>Our first quote goes right here.</p></div>
+      <div class="quote-empty" id="quote-empty" hidden><span class="empty-quote-mark" aria-hidden="true">“</span><p class="handwritten">A little place for all those things I say to you.</p><p>No matching quotes yet.</p></div>
       <p class="collection-count" id="quote-count" hidden></p>
     </section>
   </main>

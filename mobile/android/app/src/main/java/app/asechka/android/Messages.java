@@ -9,9 +9,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import org.json.*;
 
-/**
- * Durable close receipts are written before a letter disappears. Full text has no history action.
- */
+/** Our Love Jar & read-once secret notes, with durable offline receipts and pinning. */
 final class Messages {
   interface Actor {
     String get();
@@ -57,34 +55,48 @@ final class Messages {
       for (int i = 0; i < list.length(); i++)
         if (id.equals(list.getJSONObject(i).optString("id"))) return;
       String who = body.optString("actor"), text = body.optString("text");
-      list.put(
-          OfflineStore.json(
-              "id",
-              id,
-              "from",
-              who,
-              "to",
-              who.equals("asnat") ? "youssef" : "asnat",
-              "text",
-              text,
-              "preview",
-              preview(text),
-              "createdAt",
-              Dates.timestamp(at),
-              "day",
-              HeartCounts.day(at),
-              "closedAt",
-              JSONObject.NULL,
-              "pending",
-              true));
-    } else
+      String mode = body.optString("mode", "once");
+      boolean pinned = mode.equals("jar") && body.optBoolean("pinned", false);
+      if (pinned) {
+        for (int i = 0; i < list.length(); i++) list.getJSONObject(i).put("pinned", false);
+      }
+      JSONObject note = OfflineStore.json(
+          "id", id,
+          "from", who,
+          "to", who.equals("asnat") ? "youssef" : "asnat",
+          "text", text,
+          "preview", preview(text),
+          "mode", mode,
+          "pinned", pinned,
+          "createdAt", Dates.timestamp(at),
+          "day", HeartCounts.day(at),
+          "closedAt", JSONObject.NULL,
+          "pending", true);
+      list.put(note);
+      if (pinned) data.put("pinnedNote", note);
+    } else if (action.equals("pinMessage")) {
+      String targetId = body.optString("id");
+      boolean pinned = body.optBoolean("pinned", true);
+      JSONObject latestPinned = null;
+      for (int i = 0; i < list.length(); i++) {
+        JSONObject item = list.getJSONObject(i);
+        if (item.optString("id").equals(targetId)) {
+          item.put("pinned", pinned);
+        } else if (pinned) {
+          item.put("pinned", false);
+        }
+        if (item.optBoolean("pinned") && "jar".equals(item.optString("mode"))) latestPinned = item;
+      }
+      data.put("pinnedNote", latestPinned == null ? JSONObject.NULL : latestPinned);
+    } else {
       for (int i = 0; i < list.length(); i++) {
         JSONObject item = list.getJSONObject(i);
         if (item.optString("id").equals(body.optString("id"))) {
-          item.remove("text");
+          if (!"jar".equals(item.optString("mode"))) item.remove("text");
           item.put("closedAt", Dates.timestamp(at));
         }
       }
+    }
   }
 
   private JSONArray list() throws Exception {
@@ -150,22 +162,23 @@ final class Messages {
     incoming = new Dialog(activity);
     incoming.setCancelable(false);
     showing = message.optString("id");
+    boolean isJar = "jar".equals(message.optString("mode"));
     LinearLayout box = ui.column();
     box.setPadding(ui.dp(24), ui.dp(26), ui.dp(24), ui.dp(24));
     box.setBackground(ui.shape(Ui.BG, 28));
     TextView icon = ui.text("♡", 42, Ui.PURPLE);
     icon.setGravity(Gravity.CENTER);
     box.addView(icon);
-    ui.add(box, ui.title("A little message for you", 23), 12);
+    ui.add(box, ui.title(isJar ? "A new Love Jar note" : "A little message for you", 23), 12);
     ui.add(
         box,
         ui.text(
-            "From " + SocialFeed.nameOf(message.optString("from")) + " · just this once",
+            "From " + SocialFeed.nameOf(message.optString("from")) + (isJar ? " · saved in our Love Jar" : " · just this once"),
             13,
             Ui.MUTED),
         8);
     TextView text = ui.text(message.optString("text"), 20, Ui.INK);
-    text.setTextIsSelectable(false);
+    text.setTextIsSelectable(isJar);
     text.setLineSpacing(ui.dp(5), 1);
     LinearLayout textBox = ui.column();
     textBox.addView(text);
@@ -176,11 +189,13 @@ final class Messages {
     ui.add(
         box,
         ui.text(
-            "Closing keeps only a short note in history. The full message won’t open again.",
+            isJar
+                ? "This note stays safe in our Love Jar and on Home."
+                : "Closing keeps only a short note in history. The full message won’t open again.",
             12,
             Ui.MUTED),
         20);
-    Button close = ui.button("Keep it in my heart ♡", true, null);
+    Button close = ui.button(isJar ? "Keep in our Love Jar ♡" : "Keep it in my heart ♡", true, null);
     close.setOnClickListener(
         v -> {
           close.setEnabled(false);
@@ -191,14 +206,10 @@ final class Messages {
                   api.store.enqueue(
                       "/api/together",
                       OfflineStore.json(
-                          "action",
-                          "closeMessage",
-                          "id",
-                          id,
-                          "actor",
-                          actor.get(),
-                          "operationId",
-                          UUID.randomUUID().toString()));
+                          "action", "closeMessage",
+                          "id", id,
+                          "actor", actor.get(),
+                          "operationId", UUID.randomUUID().toString()));
                   JSONObject closed = dismissed();
                   closed.put(id, true);
                   api.store.write("closed-messages", closed);
@@ -215,11 +226,7 @@ final class Messages {
                   main.post(
                       () -> {
                         close.setEnabled(true);
-                        Toast.makeText(
-                                activity,
-                                "Couldn’t save closing yet. Try again.",
-                                Toast.LENGTH_LONG)
-                            .show();
+                        Toast.makeText(activity, "Couldn’t save closing yet. Try again.", Toast.LENGTH_LONG).show();
                       });
                 }
               });
@@ -231,25 +238,23 @@ final class Messages {
     incoming
         .getWindow()
         .setLayout(
-            Math.min(
-                ui.dp(440), activity.getResources().getDisplayMetrics().widthPixels - ui.dp(32)),
-            Math.min(
-                ui.dp(680), activity.getResources().getDisplayMetrics().heightPixels - ui.dp(80)));
+            Math.min(ui.dp(440), activity.getResources().getDisplayMetrics().widthPixels - ui.dp(32)),
+            Math.min(ui.dp(680), activity.getResources().getDisplayMetrics().heightPixels - ui.dp(80)));
     Motion.enter(box, 1);
   }
 
   void open() {
     Ui.Sheet sheet =
-        ui.sheet("Little messages", "Three messages each, every day · midnight Eastern.");
+        ui.sheet("Our Love Jar", "Three warm notes each, every day · pin your favorite to Home.");
     sheet.item(
-        "Compose a message",
-        "A surprise for " + SocialFeed.nameOf(actor.get().equals("asnat") ? "youssef" : "asnat"),
+        "Drop a note in our Love Jar",
+        "Keep & pin on Home, or send a read-once secret for " + SocialFeed.nameOf(actor.get().equals("asnat") ? "youssef" : "asnat"),
         "♡",
         false,
         this::compose);
     sheet.item(
-        "Message history",
-        "Small notes only · full messages never reopen",
+        "Love Jar & note history",
+        "Read saved Love Jar notes & pin to Home",
         "≡",
         false,
         this::history);
@@ -266,8 +271,13 @@ final class Messages {
         ui.title(
             "Just for " + SocialFeed.nameOf(actor.get().equals("asnat") ? "youssef" : "asnat"),
             24));
-    TextView note = ui.text("3 per day · full text disappears after closing", 12, Ui.MUTED);
+    TextView note = ui.text("3 per day · keep in our Love Jar or send read-once", 12, Ui.MUTED);
     ui.add(box, note, 10);
+    CheckBox keepInJar = new CheckBox(activity);
+    keepInJar.setText("Keep in Love Jar & pin to Home ♡");
+    keepInJar.setChecked(true);
+    keepInJar.setTextColor(Ui.INK);
+    ui.add(box, keepInJar, 10);
     EditText text = new EditText(activity);
     text.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | android.text.InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
     text.setHint("Something only you could say…");
@@ -279,17 +289,19 @@ final class Messages {
     text.setFilters(new InputFilter[] {new InputFilter.LengthFilter(1000)});
     JSONObject draft = api.store.read("message-draft:" + actor.get());
     if (draft != null) text.setText(draft.optString("text"));
-    ui.add(box, text, 18);
+    ui.add(box, text, 14);
     TextView feedback = ui.text("", 12, Ui.PURPLE);
     ui.add(box, feedback, 8);
-    Button send = ui.button("Send a little love", true, null);
+    Button send = ui.button("Drop in our Love Jar ♡", true, null);
+    keepInJar.setOnCheckedChangeListener((b, on) -> send.setText(on ? "Drop in our Love Jar ♡" : "Send read-once secret"));
     send.setOnClickListener(
         v -> {
           String content = text.getText().toString().trim();
           if (content.isEmpty()) {
-            feedback.setText("Write your little message first.");
+            feedback.setText("Write your little note first.");
             return;
           }
+          boolean jar = keepInJar.isChecked();
           send.setEnabled(false);
           worker.execute(
               () -> {
@@ -303,19 +315,16 @@ final class Messages {
                       used++;
                   }
                   if (used >= 3)
-                    throw new Exception(
-                        "All three are sent for today. More at midnight Eastern. ♡");
+                    throw new Exception("All three are sent for today. More at midnight Eastern. ♡");
                   api.post(
                       "/api/together",
                       OfflineStore.json(
-                          "action",
-                          "sendMessage",
-                          "actor",
-                          actor.get(),
-                          "text",
-                          content,
-                          "operationId",
-                          UUID.randomUUID().toString()));
+                          "action", "sendMessage",
+                          "actor", actor.get(),
+                          "text", content,
+                          "mode", jar ? "jar" : "once",
+                          "pinned", jar,
+                          "operationId", UUID.randomUUID().toString()));
                   api.store.remove("message-draft:" + actor.get());
                   main.post(
                       () -> {
@@ -325,10 +334,11 @@ final class Messages {
                         Toast.makeText(
                                 activity,
                                 api.connected()
-                                    ? "Message sent ♡"
+                                    ? (jar ? "Saved & pinned in our Love Jar ♡" : "Secret message sent ♡")
                                     : "Saved · sends when you reconnect",
                                 Toast.LENGTH_LONG)
                             .show();
+                        if (activity instanceof MainActivity) ((MainActivity) activity).refreshHomeExtras();
                       });
                 } catch (Exception e) {
                   main.post(
@@ -373,9 +383,7 @@ final class Messages {
                   ui.add(
                       box,
                       ui.text(
-                          "Long-press your Home Screen, choose Widgets, then find Asechka. Add any"
-                              + " of these six little windows. Tap a widget to open the app and"
-                              + " sync.",
+                          "Long-press your Home Screen, choose Widgets, then find Asechka. Add any of these six little windows. Tap a widget to open the app and sync.",
                           14,
                           Ui.MUTED),
                       14);
@@ -407,11 +415,11 @@ final class Messages {
                   LinearLayout box = ui.column();
                   box.setPadding(ui.dp(22), ui.dp(22), ui.dp(22), ui.dp(22));
                   box.setBackgroundColor(Ui.BG);
-                  box.addView(ui.title("Little message history", 24));
+                  box.addView(ui.title("Our Love Jar & history", 24));
                   ui.add(
                       box,
                       ui.text(
-                          "Only a short note stays here. Closed messages can’t be opened.",
+                          "Love Jar notes stay readable forever and can be pinned on Home. Read-once secrets keep only a short preview.",
                           13,
                           Ui.MUTED),
                       12);
@@ -420,6 +428,8 @@ final class Messages {
                     if (m == null
                         || !who.equals(m.optString("from")) && !who.equals(m.optString("to")))
                       continue;
+                    boolean isJar = "jar".equals(m.optString("mode"));
+                    boolean isPinned = m.optBoolean("pinned", false);
                     LinearLayout card = ui.column();
                     card.setPadding(ui.dp(16), ui.dp(14), ui.dp(16), ui.dp(14));
                     card.setBackground(ui.shape(0xffffffff, 20));
@@ -429,25 +439,41 @@ final class Messages {
                                     ? "To " + SocialFeed.nameOf(m.optString("to"))
                                     : "From " + SocialFeed.nameOf(m.optString("from")))
                                 + " · "
-                                + m.optString("day"),
+                                + m.optString("day")
+                                + (isPinned ? " · Pinned ♡" : ""),
                             12,
                             Ui.PURPLE));
-                    ui.add(card, ui.text(m.optString("preview"), 16, Ui.INK), 8);
+                    String display = isJar && !m.optString("text").isEmpty() ? m.optString("text") : m.optString("preview");
+                    ui.add(card, ui.text(display, 16, Ui.INK), 8);
                     ui.add(
                         card,
                         ui.text(
-                            m.isNull("closedAt") ? "Waiting to be received" : "Kept in our hearts",
+                            isJar
+                                ? "Kept in our Love Jar ♡"
+                                : (m.isNull("closedAt") ? "Waiting to be received" : "Read once · kept in our hearts"),
                             11,
                             Ui.MUTED),
                         6);
+                    if (isJar) {
+                      String noteId = m.optString("id");
+                      Button pinBtn = ui.textButton(isPinned ? "Unpin from Home" : "Pin to Home ♡", () -> {
+                        worker.execute(() -> {
+                          try {
+                            api.post("/api/together", OfflineStore.json("action", "pinMessage", "actor", who, "id", noteId, "pinned", !isPinned, "operationId", UUID.randomUUID().toString()));
+                            main.post(() -> {
+                              dialog.dismiss();
+                              if (activity instanceof MainActivity) ((MainActivity) activity).refreshHomeExtras();
+                              history();
+                            });
+                          } catch (Exception ignored) {}
+                        });
+                      });
+                      ui.add(card, pinBtn, 4);
+                    }
                     ui.add(box, card, 12);
                   }
                   if (items.length() == 0)
-                    ui.add(
-                        box,
-                        ui.text(
-                            "Our first little message is waiting to be written. ♡", 16, Ui.MUTED),
-                        24);
+                    ui.add(box, ui.text("Our first Love Jar note is waiting to be written. ♡", 16, Ui.MUTED), 24);
                   ui.add(box, ui.button("Done", false, dialog::dismiss), 18);
                   dialog.setContentView(ui.scroll(box));
                   dialog.show();

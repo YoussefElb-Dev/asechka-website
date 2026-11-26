@@ -3,26 +3,36 @@ import UIKit
 import WidgetKit
 
 struct LittleMessage:Codable,Identifiable,Equatable {
-    var id:String;var from:String;var to:String;var text:String?;var preview:String;var day:String;var createdAt:String;var closedAt:String?;var pending:Bool?
+    var id:String;var from:String;var to:String;var text:String?;var preview:String;var day:String;var createdAt:String;var closedAt:String?;var mode:String?;var pinned:Bool?;var pending:Bool?
+    var isJar:Bool { mode == "jar" }
 }
 struct MessageHub:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.dismiss) private var dismiss
     @State private var text=""
+    @State private var keepInJar=true
+    @State private var pinToHome=true
     @State private var history=false
     private var remaining:Int{max(0,3-universe.littleMessages.filter{$0.from==universe.actor && $0.day==HeartLedger.day()}.count)}
     var body:some View {
         NavigationStack{ScrollView{VStack(alignment:.leading,spacing:18){
-            Label("Just for \(universe.partner)",systemImage:"envelope.badge").font(.custom("Manrope-Bold",size:27))
-            Text("\(remaining) of 3 messages left today").font(.subheadline).foregroundColor(Palette.purple)
-            Text("A little surprise appears on their screen. Once they close it, only a short note stays in history.").foregroundColor(Palette.muted)
-            TextEditor(text:$text).frame(minHeight:180).padding(12).scrollContentBackground(.hidden).background(.white,in:RoundedRectangle(cornerRadius:22)).overlay(RoundedRectangle(cornerRadius:22).stroke(Palette.lavender)).accessibilityLabel("Your little message")
+            Label("Our Love Jar",systemImage:"heart.text.square").font(.custom("Manrope-Bold",size:27))
+            Text("\(remaining) of 3 notes left today").font(.subheadline).foregroundColor(Palette.purple)
+            Text("Leave a warm note for \(universe.partner). Keep it in our Love Jar & pin it on Home, or send a read-once secret.").foregroundColor(Palette.muted)
+            Picker("Note style",selection:$keepInJar){
+                Text("Love Jar (keep)").tag(true)
+                Text("Read once").tag(false)
+            }.pickerStyle(.segmented)
+            if keepInJar {
+                Toggle("Pin this note to Home",isOn:$pinToHome).font(.subheadline)
+            }
+            TextEditor(text:$text).frame(minHeight:160).padding(12).scrollContentBackground(.hidden).background(.white,in:RoundedRectangle(cornerRadius:22)).overlay(RoundedRectangle(cornerRadius:22).stroke(Palette.lavender)).accessibilityLabel("Your little message")
                 .onChange(of:text){if $0.count>1000{text=String($0.prefix(1000))};try? universe.vault.save("message-draft:"+universe.actor,text)}
             HStack{Text("\(text.count) / 1,000");Spacer();Text("Resets at midnight Eastern")}.font(.caption).foregroundColor(Palette.muted)
-            Button{do{try universe.sendMessage(text);text="";Touch.tap(true);dismiss()}catch{universe.error=error.localizedDescription}}label:{Label(universe.online ? "Send a little love":"Save to send when online",systemImage:"paperplane.fill").frame(maxWidth:.infinity).padding(17).background(Palette.purple,in:Capsule()).foregroundColor(.white)}.disabled(text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || remaining==0)
+            Button{do{try universe.sendMessage(text,mode:keepInJar ? "jar":"once",pinned:keepInJar && pinToHome);text="";Touch.tap(true);dismiss()}catch{universe.error=error.localizedDescription}}label:{Label(universe.online ? (keepInJar ? "Drop in our Love Jar ♡":"Send read-once secret"):"Save to send when online",systemImage:"paperplane.fill").frame(maxWidth:.infinity).padding(17).background(Palette.purple,in:Capsule()).foregroundColor(.white)}.disabled(text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || remaining==0)
             NavigationLink{WidgetGallery()}label:{Label("Our home-screen widgets",systemImage:"square.grid.2x2").frame(maxWidth:.infinity).padding(16).background(Palette.blue,in:Capsule())}
-            Button{history=true}label:{Label("Message history",systemImage:"clock.arrow.circlepath").frame(maxWidth:.infinity).padding(16).background(Palette.lavender,in:Capsule())}
-        }.padding(24)}.background(Palette.background).navigationTitle("Little messages").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}.accessibilityIdentifier("message-composer-close")}}}
+            Button{history=true}label:{Label("Love Jar & note history",systemImage:"clock.arrow.circlepath").frame(maxWidth:.infinity).padding(16).background(Palette.lavender,in:Capsule())}
+        }.padding(24)}.background(Palette.background).navigationTitle("Our Love Jar").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}.accessibilityIdentifier("message-composer-close")}}}
         .onAppear{text=universe.vault.value("message-draft:"+universe.actor,as:String.self) ?? ""}
         .sheet(isPresented:$history){MessageHistory()}
     }
@@ -31,15 +41,31 @@ struct MessageHistory:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.dismiss) private var dismiss
     var body:some View {NavigationStack{ScrollView{LazyVStack(alignment:.leading,spacing:14){
-        Text("Only little notes live here. Closed messages can’t be opened again.").font(.subheadline).foregroundColor(Palette.muted)
-        ForEach(universe.littleMessages.reversed()){message in VStack(alignment:.leading,spacing:9){Text((message.from==universe.actor ? "To \(Post.name(message.to))":"From \(Post.name(message.from))")+" · "+message.day).font(.caption).foregroundColor(Palette.purple);Text(message.preview).font(.body);Text(message.closedAt==nil ? message.pending==true ? "Waiting to sync":"Waiting to be received":"Kept in our hearts").font(.caption).foregroundColor(Palette.muted)}.frame(maxWidth:.infinity,alignment:.leading).padding(18).background(.white,in:RoundedRectangle(cornerRadius:22))}
-        if universe.littleMessages.isEmpty{Text("Our first little message is waiting to be written. ♡").padding(.vertical,30)}
-    }.padding(22)}.background(Palette.background).navigationTitle("Message history").toolbar{Button("Done"){dismiss()}.accessibilityIdentifier("message-history-close")}}}
+        Text("Love Jar notes stay readable forever and can be pinned on Home. Read-once secrets keep only a short preview.").font(.subheadline).foregroundColor(Palette.muted)
+        ForEach(universe.littleMessages.reversed()){message in VStack(alignment:.leading,spacing:9){
+            HStack{
+                Text((message.from==universe.actor ? "To \(Post.name(message.to))":"From \(Post.name(message.from))")+" · "+message.day).font(.caption).foregroundColor(Palette.purple)
+                Spacer()
+                if message.pinned==true {Text("Pinned ♡").font(.caption2.weight(.semibold)).padding(.horizontal,8).padding(.vertical,3).background(Palette.lavender,in:Capsule()).foregroundColor(Palette.purple)}
+            }
+            Text(message.isJar ? (message.text ?? message.preview) : message.preview).font(.body).textSelection(.enabled)
+            HStack{
+                Text(message.isJar ? (message.pending==true ? "Waiting to sync":"Kept in Love Jar ♡") : (message.closedAt==nil ? (message.pending==true ? "Waiting to sync":"Waiting to be received"):"Read once · kept in our hearts")).font(.caption).foregroundColor(Palette.muted)
+                Spacer()
+                if message.isJar {
+                    Button(message.pinned==true ? "Unpin":"Pin to Home"){
+                        do{try universe.pinMessage(message,pinned:!(message.pinned==true));Touch.tap()}catch{universe.error=error.localizedDescription}
+                    }.font(.caption.weight(.semibold)).foregroundColor(Palette.purple)
+                }
+            }
+        }.frame(maxWidth:.infinity,alignment:.leading).padding(18).background(.white,in:RoundedRectangle(cornerRadius:22))}
+        if universe.littleMessages.isEmpty{Text("Our first Love Jar note is waiting to be written. ♡").padding(.vertical,30)}
+    }.padding(22)}.background(Palette.background).navigationTitle("Love Jar & history").toolbar{Button("Done"){dismiss()}.accessibilityIdentifier("message-history-close")}}}
 }
 struct IncomingMessage:View {
     @EnvironmentObject private var universe:UniverseStore
     let message:LittleMessage
-    var body:some View {ZStack{Color.black.opacity(0.24).ignoresSafeArea();VStack(spacing:18){Image(systemName:"envelope.open.fill").font(.system(size:36)).foregroundColor(Palette.purple);Text("A little message for you").font(.custom("Manrope-Bold",size:25));Text("From \(Post.name(message.from)) · just this once").font(.subheadline).foregroundColor(Palette.muted);ScrollView{Text(message.text ?? "").font(.system(size:21)).lineSpacing(7).frame(maxWidth:.infinity,alignment:.leading).padding(.vertical,12)}.frame(maxHeight:320);Text("Closing keeps only a short note in history. The full message won’t open again.").font(.caption).foregroundColor(Palette.muted);Button{do{try universe.closeMessage(message);Touch.tap(true)}catch{universe.error=error.localizedDescription}}label:{Text("Keep it in my heart ♡").fontWeight(.semibold).frame(maxWidth:.infinity).padding(17).background(Palette.purple,in:Capsule()).foregroundColor(.white)}}.padding(26).background(Palette.background,in:RoundedRectangle(cornerRadius:30)).padding(22).frame(maxWidth:500).shadow(color:.black.opacity(0.1),radius:30)}.tint(Palette.purple)}
+    var body:some View {ZStack{Color.black.opacity(0.24).ignoresSafeArea();VStack(spacing:18){Image(systemName:message.isJar ? "heart.text.square.fill":"envelope.open.fill").font(.system(size:36)).foregroundColor(Palette.purple);Text(message.isJar ? "A new Love Jar note":"A little message for you").font(.custom("Manrope-Bold",size:25));Text("From \(Post.name(message.from)) · "+(message.isJar ? "saved in our Love Jar":"just this once")).font(.subheadline).foregroundColor(Palette.muted);ScrollView{Text(message.text ?? "").font(.system(size:21)).lineSpacing(7).frame(maxWidth:.infinity,alignment:.leading).padding(.vertical,12)}.frame(maxHeight:320);Text(message.isJar ? "This note stays safe in our Love Jar and on Home.":"Closing keeps only a short note in history. The full message won’t open again.").font(.caption).foregroundColor(Palette.muted);Button{do{try universe.closeMessage(message);Touch.tap(true)}catch{universe.error=error.localizedDescription}}label:{Text(message.isJar ? "Keep in our Love Jar ♡":"Keep it in my heart ♡").fontWeight(.semibold).frame(maxWidth:.infinity).padding(17).background(Palette.purple,in:Capsule()).foregroundColor(.white)}}.padding(26).background(Palette.background,in:RoundedRectangle(cornerRadius:30)).padding(22).frame(maxWidth:500).shadow(color:.black.opacity(0.1),radius:30)}.tint(Palette.purple)}
 }
 /// Above sheets and editors, below the optional biometric privacy window.
 struct MessagePopupWindow:UIViewRepresentable {

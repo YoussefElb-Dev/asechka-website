@@ -11,7 +11,11 @@ struct SettingsView:View {
     var body:some View {
         NavigationStack{List{
             Section{HStack(spacing:14){Avatar(actor:universe.actor,size:50);VStack(alignment:.leading){Text(universe.name).font(.headline);Text("Our little universe").foregroundColor(Palette.muted)}}}
-            Section("Feel a little more"){Toggle("Haptic feedback",isOn:$haptics);Toggle("Pause gentle animations",isOn:$paused)}
+            Section("Feel a little more"){
+                Toggle("Haptic feedback",isOn:$haptics)
+                Toggle("Pause gentle animations",isOn:$paused)
+                Toggle("Partner heart & Love Jar alerts",isOn:Binding(get:{universe.alertsEnabled},set:{enabled in Task{await universe.setAlerts(enabled)}}))
+            }
             if BiometricAccess.available || universe.biometricEnabled{Section("Our little door"){Toggle("Unlock with \(BiometricAccess.name)",isOn:Binding(get:{universe.biometricEnabled},set:{enabled in Task{await universe.setBiometrics(enabled)}}));Text("Optional. When enabled, use biometrics or your phone passcode after leaving the app.").font(.caption).foregroundColor(Palette.muted)}}
             Section("Our birthdays"){Label("Asnat · August 5",systemImage:"gift");Label("Youssef · January 25",systemImage:"gift")}
             Section("Saved changes"){
@@ -24,7 +28,7 @@ struct SettingsView:View {
                 }}
             }
             Section{Button("Refresh our universe"){Task{await universe.forceRefresh()}};Button("Reconnect with our code"){reconnect=true};Button("Switch profile"){universe.choose("");dismiss()};Button("Lock our little door",role:.destructive){universe.lock();dismiss()}}
-            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.7.4") · made for us ♡").font(.caption)}
+            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.8.0") · made for us ♡").font(.caption)}
         }.navigationTitle("Our little settings").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}
             .alert("Reconnect",isPresented:$reconnect){SecureField("Our code",text:$code);Button("Open"){Task{await universe.login(code);code=""}};Button("Cancel",role:.cancel){code=""}}
         }
@@ -44,7 +48,7 @@ struct CornerView:View {
             Text(universe.actor=="asnat" ? "My favorite\nlittle universe.":"Our favorite\nlittle universe.").font(.custom("Manrope-Bold",size:33))
             Text("Of all the people, in all the places, somehow my heart keeps finding you.").foregroundColor(Palette.muted)
             Button("Since us · letters & little things"){personalBook=true}.primary()
-            Button("Our little book"){littleBook=true}.primary()
+            Button("Secret vocab"){littleBook=true}.primary()
             CachedPhoto(source:"assets/our-little-universe.png").aspectRatio(1.25,contentMode:.fit).clipShape(RoundedRectangle(cornerRadius:24))
             Button(universe.actor=="asnat" ? "Your letter ♡":"Letter to Asnat ♡"){letter=true}.primary()
             VStack(alignment:.leading,spacing:12){Text("A LITTLE MOMENT, JUST FOR US").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)

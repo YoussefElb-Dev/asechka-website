@@ -5,6 +5,7 @@ const make = (tag, className, text) => {
   return element;
 };
 const names = { asnat: 'Asnat', youssef: 'Youssef' };
+const REACTIONS = ['♡', '😂', '🥹', '✨', '🔥', '💋'];
 const paths = {
   heart: '<path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/>',
   comment: '<path d="M21 11.5a9 9 0 0 1-9 9 10 10 0 0 1-4-.9L3 21l1.4-5a9 9 0 1 1 16.6-4.5Z"/>',
@@ -38,6 +39,10 @@ async function chooseActor() {
   });
 }
 
+export function savedPostKey(kind, item) {
+  return `${kind}:${item.id || item.src || item.text}`;
+}
+
 export function postHeader(item, kind, date) {
   const header = make('div', 'orbit-header');
   const name = names[item.author] || 'Our little us';
@@ -53,23 +58,42 @@ export function postFooter(item, kind, { writable, onSaved }) {
   const row = make('div', 'orbit-actions');
   const like = iconButton('heart', 'Like post'), comments = iconButton('comment', 'Comments'), share = iconButton('share', 'Share post'), save = iconButton('save', 'Save post');
   const status = make('p', 'orbit-status'); status.setAttribute('role', 'status');
-  let social = item.social || { likes: {}, comments: [] }, busy = false;
+  let social = item.social || { likes: {}, reactions: {}, comments: [] }, busy = false;
   const likeText = make('p', 'orbit-likes');
+  const reactionBar = make('div', 'orbit-reactions');
+  const reactButtons = [];
+  const reactSummary = make('span', 'orbit-react-summary');
+
   const updateLike = () => {
-    const liked = !!social.likes?.[actor()]; like.classList.toggle('is-active', liked); like.setAttribute('aria-pressed', String(liked)); like.setAttribute('aria-label', liked ? 'Unlike post' : 'Like post');
+    const who = actor();
+    const liked = !!social.likes?.[who]; like.classList.toggle('is-active', liked); like.setAttribute('aria-pressed', String(liked)); like.setAttribute('aria-label', liked ? 'Unlike post' : 'Like post');
     const a = social.likes?.asnat, y = social.likes?.youssef;
     likeText.textContent = a && y ? 'Liked by you both ♡' : a ? 'Liked by Asnat ♡' : y ? 'Liked by Youssef ♡' : 'A little love goes a long way';
+    const reactions = social.reactions || {};
+    for (const btn of reactButtons) {
+      const emoji = btn.dataset.emoji;
+      const active = reactions[who] === emoji;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', String(active));
+    }
+    const parts = [];
+    if (reactions.asnat) parts.push(`Asnat ${reactions.asnat}`);
+    if (reactions.youssef) parts.push(`Youssef ${reactions.youssef}`);
+    reactSummary.textContent = parts.join(' · ');
   };
-  const key = `${kind}:${item.id || item.src || item.text}`;
+
+  const key = savedPostKey(kind, item);
   const isSaved = () => { try { return JSON.parse(localStorage.getItem('asechka-saved-posts') || '[]').includes(key); } catch { return false; } };
   const updateSaved = () => { const saved = isSaved(); save.classList.toggle('is-active', saved); save.setAttribute('aria-pressed', String(saved)); save.setAttribute('aria-label', saved ? 'Remove from saved' : 'Save post'); };
-  save.onclick = () => { try { const keys = new Set(JSON.parse(localStorage.getItem('asechka-saved-posts') || '[]')); if (keys.has(key)) keys.delete(key); else keys.add(key); localStorage.setItem('asechka-saved-posts', JSON.stringify([...keys])); updateSaved(); } catch { status.textContent = 'Your browser couldn’t save this post. Please allow local storage.'; } };
+  save.onclick = () => { try { const keys = new Set(JSON.parse(localStorage.getItem('asechka-saved-posts') || '[]')); if (keys.has(key)) keys.delete(key); else keys.add(key); localStorage.setItem('asechka-saved-posts', JSON.stringify([...keys])); updateSaved(); window.dispatchEvent(new CustomEvent('asechka-saved-changed')); } catch { status.textContent = 'Your browser couldn’t save this post. Please allow local storage.'; } };
   share.onclick = async () => { try { const data = { title: 'Our little universe', text: item.text || item.caption || 'A moment with you', url: location.origin + (kind === 'quote' ? '/quotes.html' : '/pictures.html') }; if (navigator.share) await navigator.share(data); else { await navigator.clipboard.writeText(`${data.text}\n${data.url}`); status.textContent = 'Copied to your clipboard ♡'; } } catch (error) { if (error.name !== 'AbortError') status.textContent = 'Open this page’s address to share this collection.'; } };
+
   // A failed request keeps its operation ID so retrying cannot duplicate a comment.
   let retry;
   async function send(change, selectedActor) {
     if (busy) return null;
     busy = true; like.disabled = true;
+    reactButtons.forEach(b => { b.disabled = true; });
     const payload = { ...change, actor: selectedActor, kind, id: item.id };
     const fingerprint = JSON.stringify(payload);
     if (retry?.fingerprint !== fingerprint) retry = { fingerprint, operationId: crypto.randomUUID() };
@@ -80,8 +104,9 @@ export function postFooter(item, kind, { writable, onSaved }) {
       retry = null;
       social = (result[kind === 'quote' ? 'quotes' : 'photos'].find(post => post.id === item.id)?.social) || social;
       updateLike(); return result;
-    } finally { busy = false; like.disabled = false; }
+    } finally { busy = false; like.disabled = false; reactButtons.forEach(b => { b.disabled = false; }); }
   }
+
   const conversation = make('button', 'orbit-conversation', social.comments?.length ? `View ${social.comments.length === 1 ? '1 comment' : `all ${social.comments.length} comments`}` : 'Leave a little love…'); conversation.type = 'button';
   const canReact = writable && /^[a-f0-9-]{36}$/i.test(item.id || '');
   like.onclick = async () => {
@@ -89,6 +114,24 @@ export function postFooter(item, kind, { writable, onSaved }) {
     try { status.textContent = ''; const result = await send({ action: 'setLike', liked: !social.likes?.[who] }, who); if (result) onSaved(result); }
     catch (error) { status.textContent = error.message; }
   };
+  if (canReact) {
+    for (const emoji of REACTIONS) {
+      const btn = make('button', 'orbit-react-btn', emoji);
+      btn.type = 'button'; btn.dataset.emoji = emoji;
+      btn.setAttribute('aria-label', `React with ${emoji}`);
+      btn.onclick = async () => {
+        const who = await chooseActor(); if (!who) return;
+        const next = social.reactions?.[who] === emoji ? '' : emoji;
+        try { status.textContent = ''; const result = await send({ action: 'setReaction', reaction: next }, who); if (result) onSaved(result); }
+        catch (error) { status.textContent = error.message; }
+      };
+      reactButtons.push(btn); reactionBar.append(btn);
+    }
+    reactionBar.append(reactSummary);
+  } else if (social.reactions && (social.reactions.asnat || social.reactions.youssef)) {
+    reactionBar.append(reactSummary);
+  }
+
   comments.onclick = conversation.onclick = () => {
     const dialog = make('dialog', 'orbit-dialog'); dialog.setAttribute('aria-label', 'Our conversation');
     const close = make('button', 'orbit-person', 'Close'); close.type = 'button'; close.onclick = () => dialog.close();
@@ -112,7 +155,9 @@ export function postFooter(item, kind, { writable, onSaved }) {
   if (canReact) row.append(like, comments);
   else if (social.comments?.length) row.append(comments);
   row.append(share, save); updateLike(); updateSaved();
-  fragment.append(badge, row, likeText);
+  fragment.append(badge, row);
+  if (reactionBar.childElementCount) fragment.append(reactionBar);
+  fragment.append(likeText);
   const caption = kind === 'photo' ? item.caption : item.note;
   if (caption) fragment.append(make('p', 'orbit-caption', caption));
   if (canReact || social.comments?.length) fragment.append(conversation);

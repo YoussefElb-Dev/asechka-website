@@ -1,13 +1,16 @@
 const $ = id => document.getElementById(id);
 const rankedList = $('ranked-tracks');
+const momentSlot = $('moment-slot');
 const resultsList = $('search-results');
 const dialog = $('song-dialog');
 const saveForm = $('song-save-form');
 const rankInput = $('song-rank');
+const rankWrap = $('rank-field-wrap');
 const noteInput = $('song-note');
 const READY_MESSAGE = 'Our shared playlist is almost ready. You can browse songs while we connect saving.';
 const BADGE_URL = 'assets/itunes-badge.svg';
 let tracks = [];
+let moment = null;
 let results = [];
 let writable = false;
 let loaded = false;
@@ -21,6 +24,13 @@ let draft = null;
 let opener = null;
 let searchController = null;
 let searchSequence = 0;
+
+function currentActor() {
+  try {
+    const side = localStorage.getItem('asechka-heart-side');
+    return side === 'me' ? 'youssef' : side === 'asechka' ? 'asnat' : '';
+  } catch { return ''; }
+}
 
 class MusicError extends Error {
   constructor(message, status = 0) { super(message); this.status = status; }
@@ -66,7 +76,19 @@ function savedList(payload) {
     ranks.add(value.rank);
     return { ...catalogTrack(value), rank: value.rank, id: value.id, note: value.note };
   });
-  return { tracks: saved.sort((a, b) => a.rank - b.rank), writable: payload.writable };
+  let savedMoment = null;
+  if (payload.moment && typeof payload.moment === 'object') {
+    try {
+      savedMoment = {
+        ...catalogTrack(payload.moment),
+        id: String(payload.moment.id || ''),
+        note: typeof payload.moment.note === 'string' ? payload.moment.note : '',
+        actor: typeof payload.moment.actor === 'string' ? payload.moment.actor : '',
+        updatedAt: typeof payload.moment.updatedAt === 'string' ? payload.moment.updatedAt : '',
+      };
+    } catch { savedMoment = null; }
+  }
+  return { tracks: saved.sort((a, b) => a.rank - b.rank), moment: savedMoment, writable: payload.writable };
 }
 async function request(url, options = {}) {
   const controller = new AbortController();
@@ -124,7 +146,6 @@ function preserveFocus(container, render) {
   const target = [...container.querySelectorAll('[data-focus-key]')].find(node => node.dataset.focusKey === key);
   if (target && !target.disabled) target.focus({ preventScroll: true });
   else {
-    // A removed song still leaves the keyboard at the same ranked place.
     const rank = key.match(/^slot-(\d+)-/)?.[1];
     const fallback = [...container.querySelectorAll('[data-focus-key]')].find(node => node.dataset.focusKey === `slot-${rank}-choose`);
     if (fallback && !fallback.disabled) fallback.focus({ preventScroll: true });
@@ -170,7 +191,6 @@ function trackPresentation(track, focusPrefix = `track-${track.trackId}`) {
     badgeFailed = true;
     badge.hidden = true;
     badgeFallback.hidden = false;
-    // Display promotional artwork only alongside its official store badge.
     artwork.hidden = true;
     fallback.hidden = false;
     fallback.textContent = 'Album artwork unavailable';
@@ -197,9 +217,42 @@ function trackPresentation(track, focusPrefix = `track-${track.trackId}`) {
 }
 function chooseFromSearch(rank) {
   preferredRank = rank;
-  $('search-status').textContent = `Find a song for place #${rankLabel(rank)}, then choose it below.`;
+  $('search-status').textContent = rank === 'moment'
+    ? 'Find a song for our Song of the Moment, then choose it below.'
+    : `Find a song for place #${rankLabel(rank)}, then choose it below.`;
   $('music-query').focus({ preventScroll: true });
   $('song-search').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+}
+function renderMoment() {
+  if (!momentSlot) return;
+  momentSlot.replaceChildren();
+  const label = element('div', 'rank-label');
+  const pickedBy = moment?.actor === 'asnat' ? 'Picked by Asnat ♡' : moment?.actor === 'youssef' ? 'Picked by Youssef ♡' : 'Appears on Home';
+  label.append(element('b', '', 'NOW'), element('span', '', pickedBy));
+  momentSlot.append(label);
+  if (moment) {
+    momentSlot.append(trackPresentation(moment, 'moment'));
+    if (moment.note.trim()) momentSlot.append(element('p', 'song-note', moment.note));
+    const actions = element('div', 'song-actions');
+    actions.append(
+      actionButton('Swap song', 'quiet-button', 'moment-swap', () => chooseFromSearch('moment')),
+      actionButton(moment.note.trim() ? 'Edit note' : 'Add a note', 'quiet-button', 'moment-note', event => openMoment(moment, event.currentTarget)),
+      actionButton('Clear', 'quiet-button remove-link', 'moment-clear', event => openClearMoment(moment, event.currentTarget))
+    );
+    momentSlot.append(actions);
+  } else {
+    const body = element('div', 'empty-slot-body');
+    const record = element('div', 'empty-vinyl');
+    record.setAttribute('aria-hidden', 'true');
+    const copy = element('div', 'empty-slot-copy');
+    copy.append(
+      element('h3', '', 'No Song of the Moment yet.'),
+      element('p', '', 'Pick whatever song is stuck in your head today — it shows right on our Home screen.'),
+      element('p', 'handwritten', 'one tap to swap anytime ♡')
+    );
+    body.append(record, copy);
+    momentSlot.append(body, actionButton('Choose our Song of the Moment ↗', 'button button-outline empty-slot-action', 'moment-choose', () => chooseFromSearch('moment')));
+  }
 }
 function renderRanked() {
   preserveFocus(rankedList, () => {
@@ -215,9 +268,12 @@ function renderRanked() {
         slot.append(trackPresentation(track, `slot-${rank}`));
         if (track.note.trim()) slot.append(element('p', 'song-note', track.note));
         const actions = element('div', 'song-actions');
-        actions.append(actionButton('Change song', 'quiet-button', `slot-${rank}-change`, () => chooseFromSearch(rank)),
+        actions.append(
+          actionButton('Set as Moment ♡', 'quiet-button', `slot-${rank}-moment`, event => openMoment(track, event.currentTarget)),
+          actionButton('Change song', 'quiet-button', `slot-${rank}-change`, () => chooseFromSearch(rank)),
           actionButton(track.note.trim() ? 'Edit note' : 'Add a note', 'quiet-button', `slot-${rank}-note`, event => openSave(track, rank, event.currentTarget)),
-          actionButton('Remove', 'quiet-button remove-link', `slot-${rank}-remove`, event => openRemove(track, event.currentTarget)));
+          actionButton('Remove', 'quiet-button remove-link', `slot-${rank}-remove`, event => openRemove(track, event.currentTarget))
+        );
         slot.append(actions);
       } else {
         const body = element('div', 'empty-slot-body');
@@ -243,10 +299,14 @@ function renderResults() {
       const actions = element('div', 'result-actions');
       const existing = tracks.find(saved => saved.trackId === track.trackId);
       if (existing) actions.append(element('span', 'saved-location', `In our soundtrack at #${rankLabel(existing.rank)}`));
-      actions.append(actionButton('Choose a place +', 'button button-outline choose-song', `result-${track.trackId}`, event => {
-        const firstEmpty = Array.from({ length: 10 }, (_, i) => i + 1).find(rank => !byRank(rank));
-        openSave(track, preferredRank ?? existing?.rank ?? firstEmpty ?? 1, event.currentTarget);
-      }));
+      actions.append(
+        actionButton('Song of the Moment ♡', 'button button-primary choose-song', `result-${track.trackId}-moment`, event => openMoment(track, event.currentTarget)),
+        actionButton('Add to Top 10 +', 'button button-outline choose-song', `result-${track.trackId}`, event => {
+          const firstEmpty = Array.from({ length: 10 }, (_, i) => i + 1).find(rank => !byRank(rank));
+          const targetRank = typeof preferredRank === 'number' ? preferredRank : (existing?.rank ?? firstEmpty ?? 1);
+          openSave(track, targetRank, event.currentTarget);
+        })
+      );
       item.append(actions);
       fragment.append(item);
     }
@@ -273,11 +333,13 @@ function updateControls() {
 function applyList(payload) {
   const next = savedList(payload);
   tracks = next.tracks;
+  moment = next.moment;
   writable = next.writable;
   loaded = true;
   const serialized = JSON.stringify(next);
   if (serialized !== serializedList) {
     serializedList = serialized;
+    renderMoment();
     renderRanked();
     renderResults();
   }
@@ -292,7 +354,7 @@ async function refreshMusic({ allowDialog = false } = {}) {
     if (mutating || (dialog.open && !allowDialog)) return false;
     applyList(payload);
     $('retry-music').hidden = true;
-    setStatus(writable ? 'Our songs, chosen together. Both of us can make this little soundtrack our own.' : READY_MESSAGE);
+    setStatus(writable ? 'Our songs, chosen together. Both of us can update Song of the Moment or our Top 10.' : READY_MESSAGE);
     return true;
   } catch (error) {
     if (requireLogin(error)) return false;
@@ -335,6 +397,37 @@ function openDialog(button) {
   document.body.classList.add('music-dialog-open');
   updateControls();
 }
+function openMoment(track, button) {
+  if (!loaded || !writable || !authenticated || mutating) return;
+  draft = { mode: 'setMoment', track, expectedId: moment?.id ?? null, blocked: false };
+  $('song-dialog-eyebrow').textContent = 'SONG OF THE MOMENT';
+  $('song-dialog-title').textContent = 'Play this on Home.';
+  $('song-dialog-description').textContent = 'Add an optional little note (up to 240 characters) for why this song is on repeat.';
+  $('dialog-track').replaceChildren(trackPresentation(track));
+  if (rankWrap) rankWrap.hidden = true;
+  rankInput.required = false;
+  noteInput.maxLength = 240;
+  noteInput.value = moment?.trackId === track.trackId ? moment.note : (track.note || '').slice(0, 240);
+  $('save-song').textContent = 'Set as Song of the Moment ♡';
+  saveForm.hidden = false;
+  $('song-remove-confirmation').hidden = true;
+  openDialog(button);
+  noteInput.focus({ preventScroll: true });
+}
+function openClearMoment(track, button) {
+  if (!loaded || !writable || !authenticated || mutating) return;
+  draft = { mode: 'clearMoment', track, expectedId: track.id || null, blocked: false };
+  $('song-dialog-eyebrow').textContent = 'SONG OF THE MOMENT';
+  $('song-dialog-title').textContent = 'Clear our current song?';
+  $('song-dialog-description').textContent = 'Your Top 10 archive stays untouched.';
+  $('dialog-track').replaceChildren(trackPresentation(track));
+  $('remove-description').textContent = `Clear “${track.title}” as our Song of the Moment?`;
+  $('remove-song').textContent = 'Clear Song of the Moment';
+  saveForm.hidden = true;
+  $('song-remove-confirmation').hidden = false;
+  openDialog(button);
+  $('cancel-remove').focus({ preventScroll: true });
+}
 function openSave(track, rank, button) {
   if (!loaded || !writable || !authenticated || mutating) return;
   draft = { mode: 'save', track, rank, expectedId: null, blocked: false };
@@ -342,6 +435,9 @@ function openSave(track, rank, button) {
   $('song-dialog-title').textContent = 'Give it a little place.';
   $('song-dialog-description').textContent = 'Choose where this song belongs and, if you like, why it reminds you of us.';
   $('dialog-track').replaceChildren(trackPresentation(track));
+  if (rankWrap) rankWrap.hidden = false;
+  rankInput.required = true;
+  noteInput.maxLength = 500;
   saveForm.hidden = false;
   $('song-remove-confirmation').hidden = true;
   populateRanks(rank);
@@ -391,7 +487,8 @@ async function refreshDraft() {
       updateControls();
       return;
     }
-  } else { populateRanks(draft.rank); updateSlot(); }
+  } else if (draft.mode === 'save') { populateRanks(draft.rank); updateSlot(); }
+  else if (draft.mode === 'setMoment' || draft.mode === 'clearMoment') { draft.expectedId = moment?.id ?? null; }
   draft.blocked = false;
   $('dialog-status').textContent = 'Someone changed this place while you were choosing. We’ve refreshed it. Review the song here before confirming again.';
   $('refresh-dialog').hidden = true;
@@ -401,15 +498,18 @@ async function mutate(action) {
   if (!draft || draft.mode !== action || draft.blocked || mutating || !loaded || !writable || !authenticated) return;
   mutating = true;
   let conflict = false;
-  $('dialog-status').textContent = action === 'save' ? 'Keeping this little song…' : 'Making a little room…';
+  $('dialog-status').textContent = action === 'save' || action === 'setMoment' ? 'Keeping this little song…' : 'Making a little room…';
   updateControls();
-  const body = { action, rank: draft.rank, expectedId: draft.expectedId };
-  if (action === 'save') { body.trackId = draft.track.trackId; body.note = noteInput.value; }
+  const body = action === 'setMoment'
+    ? { action: 'setMoment', trackId: draft.track.trackId, note: noteInput.value.slice(0, 240), actor: currentActor(), expectedId: draft.expectedId }
+    : action === 'clearMoment'
+      ? { action: 'clearMoment', expectedId: draft.expectedId }
+      : { action, rank: draft.rank, expectedId: draft.expectedId, ...(action === 'save' ? { trackId: draft.track.trackId, note: noteInput.value } : {}) };
   try {
     const payload = await request('/api/music', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Asechka-Music': '1' }, body: JSON.stringify(body) });
     applyList(payload);
     preferredRank = null;
-    const message = action === 'save' ? `Saved at #${rankLabel(body.rank)}. A little piece of us, kept here.` : `Place #${rankLabel(body.rank)} is ready for another song.`;
+    const message = payload.message || 'Saved for both of us ♡';
     dialog.close();
     setStatus(writable ? message : READY_MESSAGE);
   } catch (error) {
@@ -418,7 +518,6 @@ async function mutate(action) {
       conflict = true;
       draft.blocked = true;
     } else if (!error.status || error.name === 'AbortError') {
-      // A lost response may have saved successfully. Refresh before a retry.
       draft.blocked = true;
       $('dialog-status').textContent = 'We couldn’t confirm the change. Refresh this place to check whether it was saved before trying again.';
       $('refresh-dialog').hidden = false;
@@ -447,7 +546,7 @@ $('music-search-form').addEventListener('submit', async event => {
     results = payload.tracks.map(catalogTrack).filter(track => !seen.has(track.trackId) && seen.add(track.trackId));
     renderResults();
     $('search-status').textContent = results.length
-      ? `${results.length} ${results.length === 1 ? 'song' : 'songs'} found for “${query}”.${writable && loaded ? ' Choose a recording and give it a place.' : ' Browse and listen while saving gets ready.'}`
+      ? `${results.length} ${results.length === 1 ? 'song' : 'songs'} found for “${query}”.${writable && loaded ? ' Set as Song of the Moment or add to Top 10.' : ' Browse and listen while saving gets ready.'}`
       : `No songs found for “${query}”. Try another title or add the artist’s name.`;
   } catch (error) {
     if (sequence !== searchSequence || requireLogin(error)) return;
@@ -457,8 +556,8 @@ $('music-search-form').addEventListener('submit', async event => {
   }
 });
 rankInput.addEventListener('change', updateSlot);
-saveForm.addEventListener('submit', event => { event.preventDefault(); if (saveForm.reportValidity()) void mutate('save'); });
-$('remove-song').addEventListener('click', () => void mutate('remove'));
+saveForm.addEventListener('submit', event => { event.preventDefault(); if (draft && saveForm.reportValidity()) void mutate(draft.mode); });
+$('remove-song').addEventListener('click', () => { if (draft) void mutate(draft.mode); });
 for (const id of ['close-song-dialog', 'cancel-save', 'cancel-remove']) $(id).addEventListener('click', () => { if (!mutating) dialog.close(); });
 dialog.addEventListener('cancel', event => { if (mutating) event.preventDefault(); });
 dialog.addEventListener('close', () => {
@@ -467,11 +566,6 @@ dialog.addEventListener('close', () => {
   draft = null;
   const target = opener?.isConnected ? opener : [...document.querySelectorAll('[data-focus-key]')].find(node => node.dataset.focusKey === key);
   if (target && !target.disabled) target.focus({ preventScroll: true });
-  else {
-    const rank = key?.match(/^slot-(\d+)-/)?.[1];
-    const fallback = [...rankedList.querySelectorAll('[data-focus-key]')].find(node => node.dataset.focusKey === `slot-${rank}-choose`);
-    if (fallback && !fallback.disabled) fallback.focus({ preventScroll: true });
-  }
   opener = null;
   if (!mutating) void refreshMusic();
 });
@@ -479,6 +573,7 @@ $('refresh-dialog').addEventListener('click', () => void refreshDraft());
 $('retry-music').addEventListener('click', () => void refreshMusic());
 window.addEventListener('focus', () => void refreshMusic());
 document.addEventListener('visibilitychange', () => { if (!document.hidden) void refreshMusic(); });
+renderMoment();
 renderRanked();
 updateControls();
 void refreshMusic();

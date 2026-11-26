@@ -1,13 +1,22 @@
 import { createQuoteCarousel } from './quote-carousel.js';
 import { createMemoryEditor, memoryPhotoURL } from './collection-editor.js';
 import { quoteBackgroundSequence, quoteBackgroundSource } from './quote-backgrounds.js';
-import { postHeader, postFooter } from './soft-orbit.js';
+import { postHeader, postFooter, savedPostKey } from './soft-orbit.js';
 
 const quoteList = document.getElementById('quote-list');
 const quoteCarousel = document.getElementById('quote-carousel') ? createQuoteCarousel() : null;
 const collectionStatus = document.getElementById('collection-status');
+const searchInput = document.getElementById('memory-search');
+const savedToggle = document.getElementById('memory-saved-only');
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 let socialWritable = false;
+let searchQuery = '';
+let savedOnly = false;
+let latestQuotes = [];
+
+function savedSet() {
+  try { return new Set(JSON.parse(localStorage.getItem('asechka-saved-posts') || '[]')); } catch { return new Set(); }
+}
 function savedConversation(content) {
   localRevision++;
   renderContent(content); lastContent = JSON.stringify(content);
@@ -20,36 +29,44 @@ function formatDate(value) {
 }
 
 function renderQuotes(quotes) {
-if (!quoteList) return;
-const savedQuotes = (Array.isArray(quotes) ? quotes : [])
-  .map(quote => typeof quote === 'string' ? { text: quote } : quote)
-  .filter(quote => quote && typeof quote.text === 'string' && quote.text.trim());
-const quoteFragment = document.createDocumentFragment();
-const orderedQuotes = savedQuotes.slice().reverse();
-const backgrounds = quoteBackgroundSequence(orderedQuotes.map(quote => quote.id || quote.text), !!quoteCarousel);
-orderedQuotes.forEach((quote, index) => {
-  const item = document.createElement('li');
-  item.className = 'quote-item orbit-post';
-  const block = document.createElement('blockquote');
-  block.className = 'orbit-quote-media';
-  const background = backgrounds[index];
-  item.dataset.quoteBackground = String(background);
-  block.style.backgroundImage = `url('${quoteBackgroundSource(background)}')`;
-  const text = document.createElement('p');
-  text.textContent = quote.text;
-  block.append(text);
-  item.append(postHeader(quote, 'quote', formatDate(quote.date)), block, postFooter(quote, 'quote', { writable: socialWritable, onSaved: savedConversation }));
-  const actions = editor.cardActions('Quote', quote);
-  if (actions) item.append(actions);
-  quoteFragment.append(item);
-});
-quoteList.replaceChildren(quoteFragment);
-quoteCarousel?.refresh();
-document.getElementById('quote-empty').hidden = savedQuotes.length > 0;
-const quoteCount = document.getElementById('quote-count');
-quoteCount.hidden = savedQuotes.length === 0;
-quoteCount.textContent = `${savedQuotes.length} ${savedQuotes.length === 1 ? 'quote' : 'quotes'} kept here. And counting.`;
+  if (!quoteList) return;
+  latestQuotes = Array.isArray(quotes) ? quotes : [];
+  const saved = savedSet();
+  const q = searchQuery.trim().toLocaleLowerCase();
+  const savedQuotes = latestQuotes
+    .map(quote => typeof quote === 'string' ? { text: quote } : quote)
+    .filter(quote => quote && typeof quote.text === 'string' && quote.text.trim())
+    .filter(quote => !savedOnly || saved.has(savedPostKey('quote', quote)))
+    .filter(quote => !q || `${quote.text} ${quote.note || ''} ${quote.date || ''}`.toLocaleLowerCase().includes(q));
+  const quoteFragment = document.createDocumentFragment();
+  const orderedQuotes = savedQuotes.slice().reverse();
+  const backgrounds = quoteBackgroundSequence(orderedQuotes.map(quote => quote.id || quote.text), !!quoteCarousel);
+  orderedQuotes.forEach((quote, index) => {
+    const item = document.createElement('li');
+    item.className = 'quote-item orbit-post';
+    const block = document.createElement('blockquote');
+    block.className = 'orbit-quote-media';
+    const background = backgrounds[index];
+    item.dataset.quoteBackground = String(background);
+    block.style.backgroundImage = `url('${quoteBackgroundSource(background)}')`;
+    const text = document.createElement('p');
+    text.textContent = quote.text;
+    block.append(text);
+    item.append(postHeader(quote, 'quote', formatDate(quote.date)), block, postFooter(quote, 'quote', { writable: socialWritable, onSaved: savedConversation }));
+    const actions = editor.cardActions('Quote', quote);
+    if (actions) item.append(actions);
+    quoteFragment.append(item);
+  });
+  quoteList.replaceChildren(quoteFragment);
+  quoteCarousel?.refresh();
+  document.getElementById('quote-empty').hidden = savedQuotes.length > 0;
+  const quoteCount = document.getElementById('quote-count');
+  quoteCount.hidden = savedQuotes.length === 0;
+  quoteCount.textContent = q || savedOnly
+    ? `Showing ${savedQuotes.length} matching ${savedQuotes.length === 1 ? 'quote' : 'quotes'}.`
+    : `${savedQuotes.length} ${savedQuotes.length === 1 ? 'quote' : 'quotes'} kept here. And counting.`;
 }
+
 let savedPhotos = [];
 let photoContent = [];
 const photoFilters = [...document.querySelectorAll('[data-photo-filter]')];
@@ -84,75 +101,91 @@ function showPhoto(index) {
   document.getElementById('lightbox-position').textContent = `${currentPhoto + 1} / ${savedPhotos.length}`;
   previousButton.hidden = nextButton.hidden = savedPhotos.length < 2;
 }
-lightboxImage?.addEventListener('error', () => {
-  lightboxImage.hidden = true;
-  lightboxError.hidden = false;
-});
-lightboxImage?.addEventListener('load', () => {
-  lightboxImage.hidden = false;
-  lightboxError.hidden = true;
-});
+lightboxImage?.addEventListener('error', () => { lightboxImage.hidden = true; lightboxError.hidden = false; });
+lightboxImage?.addEventListener('load', () => { lightboxImage.hidden = false; lightboxError.hidden = true; });
 
 function renderPhotos(photos) {
-if (!photoGrid) return;
-photoContent = Array.isArray(photos) ? photos : [];
-const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
-savedPhotos = photoContent
-  .filter(photo => photoFilter === 'all' || (photo?.collection ?? 'memories') === photoFilter)
-  .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
-  .map(photo => ({ ...photo, src: memoryPhotoURL(photo).trim() }))
-  .filter(photo => {
-    try { return ['http:', 'https:'].includes(new URL(photo.src, document.baseURI).protocol); }
-    catch { return false; }
-  }).reverse();
-const photoFragment = document.createDocumentFragment();
-const previewLimit = Number(photoGrid.dataset.previewLimit) || savedPhotos.length;
-const visiblePhotos = savedPhotos.slice(0, previewLimit);
-visiblePhotos.forEach((photo, index) => {
-  const button = document.createElement('button');
-  button.className = 'orbit-photo-open';
-  button.type = 'button';
-  button.dataset.photoSrc = photo.src;
-  button.setAttribute('aria-label', `Open photo: ${photoCaption(photo)}${formatDate(photo.date) ? `, ${formatDate(photo.date)}` : ''}`);
-  const imageWrap = document.createElement('span');
-  imageWrap.className = 'photo-image-wrap';
-  const image = document.createElement('img');
-  image.alt = photoAlt(photo);
-  image.loading = 'lazy';
-  image.decoding = 'async';
-  image.src = photo.src;
-  const error = document.createElement('span');
-  error.className = 'photo-error';
-  error.textContent = 'This photo couldn’t load.';
-  error.hidden = true;
-  image.addEventListener('error', () => { image.hidden = true; error.hidden = false; });
-  imageWrap.append(image, error);
-  button.append(imageWrap);
-  button.addEventListener('click', () => {
-    photoOpener = button;
-    showPhoto(index);
-    photoDialog.showModal();
-    document.body.classList.add('dialog-open');
+  if (!photoGrid) return;
+  photoContent = Array.isArray(photos) ? photos : [];
+  const focusedSrc = document.activeElement?.closest('[data-photo-src]')?.dataset.photoSrc;
+  const saved = savedSet();
+  const q = searchQuery.trim().toLocaleLowerCase();
+  savedPhotos = photoContent
+    .filter(photo => photoFilter === 'all' || (photo?.collection ?? 'memories') === photoFilter)
+    .filter(photo => photo && typeof photo.src === 'string' && photo.src.trim())
+    .map(photo => ({ ...photo, src: memoryPhotoURL(photo).trim() }))
+    .filter(photo => {
+      try { return ['http:', 'https:'].includes(new URL(photo.src, document.baseURI).protocol); }
+      catch { return false; }
+    })
+    .filter(photo => !savedOnly || saved.has(savedPostKey('photo', photo)))
+    .filter(photo => !q || `${photo.caption || ''} ${photo.date || ''} ${photo.author || ''}`.toLocaleLowerCase().includes(q))
+    .reverse();
+  const photoFragment = document.createDocumentFragment();
+  const previewLimit = Number(photoGrid.dataset.previewLimit) || savedPhotos.length;
+  const visiblePhotos = savedPhotos.slice(0, previewLimit);
+  visiblePhotos.forEach((photo, index) => {
+    const button = document.createElement('button');
+    button.className = 'orbit-photo-open';
+    button.type = 'button';
+    button.dataset.photoSrc = photo.src;
+    button.setAttribute('aria-label', `Open photo: ${photoCaption(photo)}${formatDate(photo.date) ? `, ${formatDate(photo.date)}` : ''}`);
+    const imageWrap = document.createElement('span');
+    imageWrap.className = 'photo-image-wrap';
+    const image = document.createElement('img');
+    image.alt = photoAlt(photo);
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.src = photo.src;
+    const error = document.createElement('span');
+    error.className = 'photo-error';
+    error.textContent = 'This photo couldn’t load.';
+    error.hidden = true;
+    image.addEventListener('error', () => { image.hidden = true; error.hidden = false; });
+    imageWrap.append(image, error);
+    button.append(imageWrap);
+    button.addEventListener('click', () => {
+      photoOpener = button;
+      showPhoto(index);
+      photoDialog.showModal();
+      document.body.classList.add('dialog-open');
+    });
+    const actions = editor.cardActions('Photo', photo);
+    const entry = document.createElement('article'); entry.className = 'photo-entry orbit-post';
+    entry.append(postHeader(photo, 'photo', formatDate(photo.date)), button, postFooter(photo, 'photo', { writable: socialWritable, onSaved: savedConversation }));
+    if (actions) entry.append(actions);
+    photoFragment.append(entry);
   });
-  const actions = editor.cardActions('Photo', photo);
-  const entry = document.createElement('article'); entry.className = 'photo-entry orbit-post';
-  entry.append(postHeader(photo, 'photo', formatDate(photo.date)), button, postFooter(photo, 'photo', { writable: socialWritable, onSaved: savedConversation }));
-  if (actions) entry.append(actions);
-  photoFragment.append(entry);
-});
-photoGrid.replaceChildren(photoFragment);
-if (focusedSrc) [...photoGrid.querySelectorAll('[data-photo-src]')].find(button => button.dataset.photoSrc === focusedSrc)?.focus({ preventScroll: true });
-document.getElementById('photo-empty').hidden = savedPhotos.length > 0 || photoFilter === 'photography';
-const filterEmpty = document.getElementById('photo-filter-empty');
-if (filterEmpty) filterEmpty.hidden = savedPhotos.length > 0 || photoFilter !== 'photography';
-const photoCount = document.getElementById('photo-count');
-photoCount.hidden = savedPhotos.length === 0;
-photoCount.textContent = visiblePhotos.length < savedPhotos.length
-  ? `${visiblePhotos.length} of ${savedPhotos.length} moments. There’s more in our collection.`
-  : photoFilter === 'photography'
-    ? `${savedPhotos.length} ${savedPhotos.length === 1 ? 'photograph' : 'photographs'}. Little things, kept here.`
-    : `${savedPhotos.length} ${savedPhotos.length === 1 ? 'moment' : 'moments'} I want to keep.`;
+  photoGrid.replaceChildren(photoFragment);
+  if (focusedSrc) [...photoGrid.querySelectorAll('[data-photo-src]')].find(button => button.dataset.photoSrc === focusedSrc)?.focus({ preventScroll: true });
+  document.getElementById('photo-empty').hidden = savedPhotos.length > 0 || photoFilter === 'photography';
+  const filterEmpty = document.getElementById('photo-filter-empty');
+  if (filterEmpty) filterEmpty.hidden = savedPhotos.length > 0 || (photoFilter !== 'photography' && !q && !savedOnly);
+  const photoCount = document.getElementById('photo-count');
+  photoCount.hidden = savedPhotos.length === 0;
+  photoCount.textContent = q || savedOnly
+    ? `Showing ${savedPhotos.length} matching ${savedPhotos.length === 1 ? 'picture' : 'pictures'}.`
+    : visiblePhotos.length < savedPhotos.length
+      ? `${visiblePhotos.length} of ${savedPhotos.length} moments. There’s more in our collection.`
+      : photoFilter === 'photography'
+        ? `${savedPhotos.length} ${savedPhotos.length === 1 ? 'photograph' : 'photographs'}. Little things, kept here.`
+        : `${savedPhotos.length} ${savedPhotos.length === 1 ? 'moment' : 'moments'} I want to keep.`;
 }
+
+searchInput?.addEventListener('input', () => {
+  searchQuery = searchInput.value;
+  renderQuotes(latestQuotes);
+  renderPhotos(photoContent);
+});
+savedToggle?.addEventListener('click', () => {
+  savedOnly = !savedOnly;
+  savedToggle.setAttribute('aria-pressed', String(savedOnly));
+  renderQuotes(latestQuotes);
+  renderPhotos(photoContent);
+});
+window.addEventListener('asechka-saved-changed', () => {
+  if (savedOnly) { renderQuotes(latestQuotes); renderPhotos(photoContent); }
+});
 
 function selectPhotoCollection() {
   for (const button of photoFilters) button.setAttribute('aria-pressed', String(button.dataset.photoFilter === photoFilter));
@@ -193,7 +226,6 @@ photoDialog?.addEventListener('close', () => {
 });
 
 function renderContent(content) {
-  // Keep the image and keyboard focus steady while someone is browsing a photo.
   if (photoDialog?.open) { waitingContent = content; return; }
   const focusedEdit = document.activeElement?.dataset.memoryEdit;
   const focusedRemove = document.activeElement?.dataset.memoryRemove;
@@ -230,7 +262,6 @@ async function checkForMemories() {
     if (serialized !== lastContent) { renderContent(content); lastContent = serialized; }
     if (collectionStatus) collectionStatus.hidden = true;
   } catch {
-    // Keep loaded memories visible during a brief connection problem.
     if (collectionStatus && !lastContent) collectionStatus.textContent = 'Our little collection couldn’t load just yet. We’ll try again in a moment.';
   }
   finally { checking = false; }

@@ -62,5 +62,13 @@ final class HeartCounts {
     data.put("heartDays", days);
     hearts.put(from, OfflineStore.json("id", op, "sentAt", Dates.timestamp(time), "pending", true));
     data.put("hearts", hearts);
+    String vibe = body.optString("vibe", "");
+    if (!vibe.isEmpty()) {
+      JSONObject vibes = data.optJSONObject("heartVibes");
+      if (vibes == null) vibes = new JSONObject();
+      String[] meta = HomeExtras.vibeMeta(vibe);
+      vibes.put(from, OfflineStore.json("vibe", vibe, "symbol", meta[0], "label", meta[1], "sentAt", Dates.timestamp(time)));
+      data.put("heartVibes", vibes);
+    }
   }
 }

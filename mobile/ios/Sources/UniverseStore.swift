@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import CryptoKit
 import Network
+import UserNotifications
 
 struct ServerError: LocalizedError {
     let message:String
@@ -20,10 +21,12 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     @Published private(set) var requiresCode=false
     @Published var doorError:String?
     @Published private(set) var biometricEnabled=false
+    @Published var alertsEnabled=UserDefaults.standard.bool(forKey:"alerts-enabled")
     private var biometricPrompt=false
     private var accessEpoch=0
     @Published var memories=Memories()
     @Published var songs:[Song]=[]
+    @Published var momentSong:Song?
     @Published var wishes:[Wish]=[]
     @Published var journal:[String:Any]=[:]
     @Published var keepsakes:[String:Any]=[:]
@@ -35,35 +38,81 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     @Published var error:String?
     @Published var bookmarks:Set<String>=[]
     @Published var hearts:[String:String]=[:]
+    @Published var heartVibes:[String:HeartVibeInfo]=[:]
     @Published var heartDays:[String:[String:Int]]=[:]
     @Published var heartStreakPolicy:[String:Any]=[:]
     @Published var serverHeartDay=""
+    @Published var dailyPrompt:DailyPromptState?
+    @Published var pinnedNote:LittleMessage?
+    @Published var throwbackText=""
+    @Published var throwbackLabel=""
     private var serverHeartAsOf:Date?
     private var refreshingHearts=false
     private var streakCacheKey=""
     private var streakCache:SharedHeartStreak?
+    private var lastPartnerHeartSeen=""
+    private var lastNoteSeen=""
+    private var lastPromptSeen=""
     func sharedHeartStreak(at date:Date=Date())->SharedHeartStreak {
         let today=online && !serverHeartDay.isEmpty && abs(date.timeIntervalSince(serverHeartAsOf ?? .distantPast))<90 ? serverHeartDay:HeartLedger.day(date)
-        // Repeated hearts change totals, but cannot change the streak again that day.
         let activeDays=heartDays.keys.filter{(heartDays[$0]?["me"] ?? 0)>0 || (heartDays[$0]?["asechka"] ?? 0)>0}.sorted().joined(separator:",")
         let key="\(today)|\(heartStreakPolicy["startedOn"] ?? "")|\(heartStreakPolicy["seededThrough"] ?? "")|\(heartStreakPolicy["seedDays"] ?? 13)|\(activeDays)"
         if key==streakCacheKey,let result=streakCache{return result}
         let result=SharedHeartStreak.calculate(heartDays,policy:heartStreakPolicy,today:today)
         streakCacheKey=key;streakCache=result;return result
     }
+    func setAlerts(_ enabled:Bool)async {
+        if !enabled { alertsEnabled=false; UserDefaults.standard.set(false,forKey:"alerts-enabled"); return }
+        do {
+            let granted=try await UNUserNotificationCenter.current().requestAuthorization(options:[.alert,.sound,.badge])
+            alertsEnabled=granted; UserDefaults.standard.set(granted,forKey:"alerts-enabled")
+            if !granted { self.error="Notifications are off in Settings. Turn them on to get partner heart & Love Jar alerts." }
+        } catch { alertsEnabled=false; UserDefaults.standard.set(false,forKey:"alerts-enabled") }
+    }
+    private func notifyLocal(id:String,title:String,body:String) {
+        guard alertsEnabled,!actor.isEmpty else{return}
+        let content=UNMutableNotificationContent()
+        content.title=title; content.body=body; content.sound = .default
+        let req=UNNotificationRequest(identifier:id,content:content,trigger:nil)
+        UNUserNotificationCenter.current().add(req)
+    }
+    private func checkForPartnerNotifications() {
+        let otherKey=actor=="asnat" ? "me":"asechka"
+        let otherActor=actor=="asnat" ? "youssef":"asnat"
+        if let latest=hearts[otherKey],!latest.isEmpty {
+            if !lastPartnerHeartSeen.isEmpty && latest>lastPartnerHeartSeen {
+                let vibe=heartVibes[otherKey]
+                let body=vibe != nil ? "\(partner) sent a heart: \(vibe!.symbol) \(vibe!.label)":"\(partner) is thinking of you ♡"
+                notifyLocal(id:"heart-"+latest,title:"A little heart ♡",body:body)
+            }
+            lastPartnerHeartSeen=latest
+        }
+        if let newest=littleMessages.last(where:{$0.from==otherActor}) {
+            if !lastNoteSeen.isEmpty && newest.id != lastNoteSeen {
+                notifyLocal(id:"note-"+newest.id,title:"New Love Jar note ♡",body:"From \(partner): \(newest.preview)")
+            }
+            lastNoteSeen=newest.id
+        }
+        if let prompt=dailyPrompt,let ans=prompt.answers[otherActor],ans.answered {
+            let stamp=prompt.day+":"+(ans.answeredAt ?? "1")
+            if !lastPromptSeen.isEmpty && stamp != lastPromptSeen {
+                notifyLocal(id:"prompt-"+stamp,title:"Today’s question",body:"\(partner) answered today’s question. Open Asechka to see ♡")
+            }
+            lastPromptSeen=stamp
+        }
+    }
     private func saveTogether(_ data:Data)throws {
         let incoming=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] ?? [:]
         if let saved=vault.read("snapshot:/api/together"), let current=(try? JSONSerialization.jsonObject(with:saved)) as? [String:Any],
-           ((current["updatedAt"] as? String ?? "") > (incoming["updatedAt"] as? String ?? "") ||
-            ((current["updatedAt"] as? String ?? "") == (incoming["updatedAt"] as? String ?? "") &&
-             ((current["streakStatus"] as? [String:Any])?["asOf"] as? String ?? "") > ((incoming["streakStatus"] as? [String:Any])?["asOf"] as? String ?? ""))) {return}
+           ((current["updatedAt"] as? String ?? "") > (incoming["updatedAt"] as? String ?? "")) {return}
         try vault.write("snapshot:/api/together",data)
     }
     func refreshSharedHearts()async {
         guard unlocked,!locked,online,!cookie.isEmpty,!refreshingHearts else{return}
         refreshingHearts=true;defer{refreshingHearts=false}
         await sync()
-        do {let data=try await request("/api/together");guard !locked else{return};try saveTogether(data);restore();status()}catch{}
+        let path=actor.isEmpty ? "/api/together":"/api/together?actor="+actor
+        do {let data=try await request(path);guard !locked else{return};try saveTogether(data);restore();checkForPartnerNotifications();status()}catch{}
     }
     private var heartReceipts:Set<String>=[]
     private var inFlightChange:String?
@@ -77,17 +126,34 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         let closed=Set(vault.value("closed-messages",as:[String].self) ?? [])
         return littleMessages.first{$0.to==actor && $0.closedAt==nil && $0.text != nil && !closed.contains($0.id)}
     }
-    func sendMessage(_ text:String)throws {
+    func sendMessage(_ text:String,mode:String="once",pinned:Bool=false)throws {
         let value=text.trimmingCharacters(in:.whitespacesAndNewlines)
         guard !value.isEmpty,value.count<=1000 else{throw ServerError(message:"Write a little message, up to 1,000 characters.",status:400)}
         guard littleMessages.filter({$0.from==actor && $0.day==HeartLedger.day()}).count<3 else{throw ServerError(message:"Your three messages are sent. More at midnight Eastern. ♡",status:429)}
-        try enqueue("/api/together",["action":"sendMessage","actor":actor,"text":value]);vault.remove("message-draft:"+actor)
+        try enqueue("/api/together",["action":"sendMessage","actor":actor,"text":value,"mode":mode,"pinned":pinned]);vault.remove("message-draft:"+actor)
+    }
+    func pinMessage(_ message:LittleMessage,pinned:Bool)throws {
+        try enqueue("/api/together",["action":"pinMessage","actor":actor,"id":message.id,"pinned":pinned])
     }
     func closeMessage(_ message:LittleMessage)throws {
         try enqueue("/api/together",["action":"closeMessage","actor":actor,"id":message.id])
         var closed=Set(vault.value("closed-messages",as:[String].self) ?? []);closed.insert(message.id);try vault.save("closed-messages",Array(closed))
     }
+    func answerPrompt(_ text:String)throws {
+        let value=text.trimmingCharacters(in:.whitespacesAndNewlines)
+        guard !value.isEmpty,value.count<=400 else{throw ServerError(message:"Write a short answer, up to 400 characters.",status:400)}
+        try enqueue("/api/together",["action":"answerPrompt","actor":actor,"text":value,"day":dailyPrompt?.day ?? HeartLedger.day()])
+    }
+    func setMomentSong(_ song:Song,note:String="")throws {
+        let trimmed=String(note.trimmingCharacters(in:.whitespacesAndNewlines).prefix(240))
+        try vault.save("song:\(song.trackId)",song)
+        try enqueue("/api/music",["action":"setMoment","trackId":song.trackId,"note":trimmed,"actor":actor])
+    }
+    func clearMomentSong()throws {
+        try enqueue("/api/music",["action":"clearMoment","expectedId":NSNull()])
+    }
     @Published var dailyText=""
+    @Published var cameraBadge="8 weekly shots · Sun 8pm ET"
     private(set) var storageUnavailable=false
     let vault:Vault
     private let session:URLSession
@@ -101,7 +167,6 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     var name:String {Post.name(actor)}
     var partner:String {actor=="asnat" ? "Youssef" : "Asnat"}
     init(previewFixture:Bool=false) {
-        // A storage failure is shown to the user rather than silently falling back to plaintext.
         #if DEBUG
         let preview=previewFixture || ProcessInfo.processInfo.arguments.contains("--preview-fixture")
         #else
@@ -169,11 +234,11 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard path.hasPrefix("/"),!path.hasPrefix("//"),!path.contains("\\"),let url=URL(string:Self.site+path)else{throw URLError(.badURL)}
         var request=URLRequest(url:url);request.httpMethod=body==nil ? "GET":"POST";request.httpBody=body
         request.setValue("application/json",forHTTPHeaderField:"Accept");request.setValue(Self.site,forHTTPHeaderField:"Origin")
-        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/"+(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.7.4"),forHTTPHeaderField:"User-Agent")
+        request.setValue("no-store",forHTTPHeaderField:"Cache-Control");request.setValue("Asechka-iOS/"+(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.8.0"),forHTTPHeaderField:"User-Agent")
         if !cookie.isEmpty {request.setValue(cookie,forHTTPHeaderField:"Cookie")}
         if body != nil {request.setValue(form ? "application/x-www-form-urlencoded":"application/json",forHTTPHeaderField:"Content-Type")}
         for (endpoint,header) in [("/api/location","X-Asechka-Location"),("/api/camera","X-Asechka-Camera"),("/api/journal","X-Asechka-Journal"),("/api/keepsakes","X-Asechka-Keepsakes"),("/api/memories","X-Asechka-Memories"),("/api/music","X-Asechka-Music"),("/api/together","X-Asechka-Together"),("/api/translation","X-Asechka-Translation"),("/api/games-session","X-Asechka-Games")] {
-            if path==endpoint {request.setValue("1",forHTTPHeaderField:header)}
+            if path==endpoint || path.hasPrefix(endpoint+"?") {request.setValue("1",forHTTPHeaderField:header)}
         }
         let (data,response)=try await session.data(for:request)
         guard let http=response as? HTTPURLResponse else{throw URLError(.badServerResponse)}
@@ -249,18 +314,26 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         }
     }
     static func verifier(_ code:String,_ salt:String)->String {
-        // The verifier is itself encrypted by the device-only Keychain key.
         SHA256.hash(data:Data((salt+":"+code).utf8)).map{String(format:"%02x",$0)}.joined()
     }
     func lock(){WidgetBridge.clear();requireCode();locked=true;unlocked=false;try? vault.save("locked",true);cookie="";vault.remove("session")}
     func restore(){
-        littleMessages=[]
+        littleMessages=[]; pinnedNote=nil; dailyPrompt=nil; heartVibes=[:]
         heartDays=[:];heartReceipts=[];heartStreakPolicy=[:];serverHeartDay="";serverHeartAsOf=nil
         memories=vault.value("snapshot:/api/memories",as:Memories.self) ?? bundledMemories()
-        songs=(vault.read("snapshot:/api/music").flatMap{try? JSONDecoder().decode(SongList.self,from:$0)})?.tracks ?? []
+        if let musicData=vault.read("snapshot:/api/music"),let decoded=try? JSONDecoder().decode(SongList.self,from:musicData) {
+            songs=decoded.tracks; momentSong=decoded.moment
+        } else { songs=[]; momentSong=nil }
         wishes=(vault.read("snapshot:/api/together").flatMap{try? JSONDecoder().decode(WishList.self,from:$0)})?.bucketList ?? []
         if let data=vault.read("snapshot:/api/together"),let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] {
             if let raw=json["messages"],let encoded=try? JSONSerialization.data(withJSONObject:raw){littleMessages=(try? JSONDecoder().decode([LittleMessage].self,from:encoded)) ?? []}
+            if let rawPinned=json["pinnedNote"],!(rawPinned is NSNull),let encoded=try? JSONSerialization.data(withJSONObject:rawPinned){pinnedNote=try? JSONDecoder().decode(LittleMessage.self,from:encoded)}
+            if let rawPrompt=json["dailyPrompt"],!(rawPrompt is NSNull),let encoded=try? JSONSerialization.data(withJSONObject:rawPrompt){dailyPrompt=try? JSONDecoder().decode(DailyPromptState.self,from:encoded)}
+            if let rawVibes=json["heartVibes"] as? [String:Any] {
+                for (k,v) in rawVibes {
+                    if !(v is NSNull),let encoded=try? JSONSerialization.data(withJSONObject:v),let info=try? JSONDecoder().decode(HeartVibeInfo.self,from:encoded){heartVibes[k]=info}
+                }
+            }
             let values=json["hearts"] as? [String:Any] ?? [:]
             heartStreakPolicy=json["heartStreak"] as? [String:Any] ?? [:]
             serverHeartDay=(json["streakStatus"] as? [String:Any])?["today"] as? String ?? ""
@@ -272,10 +345,30 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         if let data=vault.read("snapshot:/api/daily-memory"),let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] {
             let memory=json["memory"] as? [String:Any]
             dailyText=memory?["text"] as? String ?? memory?["caption"] as? String ?? memory?["title"] as? String ?? "A new little moment, every day."
+            if let tb=json["throwback"] as? [String:Any] {
+                throwbackLabel=tb["throwbackLabel"] as? String ?? tb["label"] as? String ?? "On this day"
+                let nested=tb["memory"] as? [String:Any]
+                throwbackText=tb["text"] as? String ?? tb["caption"] as? String ?? nested?["text"] as? String ?? nested?["caption"] as? String ?? ""
+            } else { throwbackLabel=""; throwbackText="" }
+        }
+        if let camData=vault.read("snapshot:/api/camera"),let camJson=(try? JSONSerialization.jsonObject(with:camData)) as? [String:Any],let rolls=camJson["rolls"] as? [[String:Any]] {
+            if let active=rolls.last(where:{($0["developedAt"] as? String)?.isEmpty ?? true}) {
+                let cap=active["capacity"] as? Int ?? 8
+                let shots=active["shots"] as? [[String:Any]] ?? []
+                let ready=(active["sundayReady"] as? Bool ?? false) || shots.count>=cap
+                let lastBy=active["lastShotActor"] as? String ?? ""
+                let partnerShot = !lastBy.isEmpty && lastBy != actor
+                if ready { cameraBadge="Roll ready to develop! ✨" }
+                else if !shots.isEmpty { cameraBadge="\(shots.count)/\(cap) shots" + (partnerShot ? " · \(partner) shot ✨" : " · Sun 8pm ET") }
+                else { cameraBadge="\(cap) weekly shots · Sun 8pm ET" }
+            } else { cameraBadge="Start a new 8-shot roll · Sun 8pm ET" }
         }
         journal=restoreBook("/api/journal","journal");keepsakes=restoreBook("/api/keepsakes","keepsakes")
         translations=vault.value("translations:"+actor,as:[Translation].self) ?? []
         for change in pending {if change.error != nil,let body=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any],body["action"] as? String=="sendMessage"{continue};Projection.apply(change,to:&memories);projectOther(change)}
+        if pinnedNote == nil {
+            pinnedNote = littleMessages.last(where: { $0.isJar && $0.pinned == true && ($0.text != nil || !$0.preview.isEmpty) }) ?? littleMessages.last(where: { $0.isJar && $0.text != nil })
+        }
         WidgetBridge.save(self)
     }
     private func bundledMemories()->Memories {
@@ -286,17 +379,23 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         guard !refreshing,unlocked,!locked,online else{status();return}
         refreshing=true;defer{refreshing=false;status()}
         await sync()
-        for path in ["/api/memories","/api/music","/api/together","/api/daily-memory","/api/keepsakes","/api/journal"] {
-            do{let data=try await request(path);guard !locked else{return};if path=="/api/together"{try saveTogether(data)}else{try vault.write("snapshot:"+path,data)}}
-            catch{if vault.read("snapshot:"+path)==nil {self.error=error.localizedDescription}}
+        let togetherPath=actor.isEmpty ? "/api/together":"/api/together?actor="+actor
+        for (key,path) in [("/api/memories","/api/memories"),("/api/music","/api/music"),("/api/together",togetherPath),("/api/daily-memory","/api/daily-memory"),("/api/keepsakes","/api/keepsakes"),("/api/journal","/api/journal"),("/api/camera","/api/camera")] {
+            do{let data=try await request(path);guard !locked else{return};if key=="/api/together"{try saveTogether(data)}else{try vault.write("snapshot:"+key,data)}}
+            catch{if vault.read("snapshot:"+key)==nil {self.error=error.localizedDescription}}
         }
-        guard !locked else{return};restore();await prefetch()
+        guard !locked else{return};restore();checkForPartnerNotifications();await prefetch()
     }
-    func sendHeart()throws {
-        let key=(actor=="asnat" ? "asechka":"me")+"|"+HeartLedger.day()
+    func sendHeart(vibe:String?=nil)throws {
+        let from=actor=="asnat" ? "asechka":"me"
+        if let vibe,!vibe.isEmpty {
+            let day=HeartLedger.day()
+            try enqueue("/api/together",["action":"sendHeart","from":from,"day":day,"count":1,"vibe":vibe])
+            return
+        }
+        let key=from+"|"+HeartLedger.day()
         heartTaps[key,default:0]+=1
         guard heartCommit==nil else{return}
-        // The particle starts immediately; save/count updates coalesce in 16ms and flush immediately.
         heartCommit=Task{try? await Task.sleep(nanoseconds:16_000_000);guard !Task.isCancelled else{return};flushHeartTaps()}
     }
     private func flushHeartTaps(){
@@ -309,7 +408,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                 let parts=key.split(separator:"|").map(String.init),from=parts[0],day=parts[1]
                 var merged=false
                 for index in next.indices.reversed() where next[index].path=="/api/together" && next[index].error==nil && next[index].id != inFlightChange && !sealedHearts.contains(next[index].id) {
-                    guard var body=(try? JSONSerialization.jsonObject(with:next[index].body)) as? [String:Any],body["action"] as? String=="sendHeart",body["from"] as? String==from,body["day"] as? String==day,(body["count"] as? Int ?? 1)+count<=1000000 else{continue}
+                    guard var body=(try? JSONSerialization.jsonObject(with:next[index].body)) as? [String:Any],body["action"] as? String=="sendHeart",body["from"] as? String==from,body["day"] as? String==day,body["vibe"]==nil,(body["count"] as? Int ?? 1)+count<=1000000 else{continue}
                     body["count"]=(body["count"] as? Int ?? 1)+count;next[index].body=try JSONSerialization.data(withJSONObject:body,options:[.sortedKeys]);merged=true;break
                 }
                 if !merged {
@@ -334,7 +433,6 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     func forceRefresh()async {
         retryAfter = .distantPast
         await finishHeartSaves()
-        // Only hearts can be safely retried without a person resolving a stale edit.
         var next=pending,recovered=false
         for index in next.indices where next[index].error != nil {
             guard let body=(try? JSONSerialization.jsonObject(with:next[index].body)) as? [String:Any],next[index].path=="/api/together",body["action"] as? String=="sendHeart" else{continue}
@@ -363,7 +461,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
             if !heartTaps.isEmpty { flushHeartTaps() }
             guard let first=pending.first?.error==nil ? pending.first:pending.first(where:{change in
                 guard change.error==nil,change.path=="/api/together",let body=(try? JSONSerialization.jsonObject(with:change.body)) as? [String:Any] else{return false}
-                return ["sendHeart","sendMessage","closeMessage"].contains(body["action"] as? String ?? "")
+                return ["sendHeart","sendMessage","closeMessage","pinMessage","answerPrompt"].contains(body["action"] as? String ?? "")
             }) else{break}
             let isHeart=((try? JSONSerialization.jsonObject(with:first.body)) as? [String:Any])?["action"] as? String=="sendHeart"
             if isHeart{batches += 1;if batches>12{break}}
@@ -374,7 +472,8 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                 for field in ["expectedVersion","expectedId","expectedRevision"] {
                     if var value=body[field] as? String {for _ in 0..<50 {guard let next=idMap[value] else{break};value=next};body[field]=value}
                 }
-                let data=try await request(first.path,body:JSONSerialization.data(withJSONObject:body))
+                let reqPath=first.path=="/api/together" && !actor.isEmpty ? "/api/together?actor="+actor : first.path
+                let data=try await request(reqPath,body:JSONSerialization.data(withJSONObject:body))
                 guard !locked else{return}
                 if first.path=="/api/memories",let saved=try? JSONDecoder().decode(Memories.self,from:data),let op=body["operationId"] as? String {
                     let id=body["id"] as? String ?? op
@@ -385,7 +484,6 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                        let value=list.first(where:{$0["id"] as? String==body["id"] as? String})?["revision"] as? String {idMap[op]=value}
                     if first.path=="/api/music",let list=json["tracks"] as? [[String:Any]],let value=list.first(where:{$0["rank"] as? Int==body["rank"] as? Int})?["id"] as? String {idMap[first.id]=value}
                 }
-                // Persist the server snapshot before dropping the queued operation. Retried writes are idempotent.
                 if first.path=="/api/together"{try saveTogether(data)}else{try vault.write("snapshot:"+first.path,data)};try vault.save("id-map",idMap)
                 var next=pending;next.removeAll{$0.id==first.id};try vault.save("outbox",next);pending=next
                 sealedHearts.remove(first.id);try? vault.save("heart-sealed",Array(sealedHearts))
@@ -426,10 +524,31 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
             let action=b["action"] as? String ?? ""
             if action=="sendMessage",let id=b["operationId"] as? String,!littleMessages.contains(where:{$0.id==id}) {
                 let text=b["text"] as? String ?? "",from=b["actor"] as? String ?? actor
-                littleMessages.append(LittleMessage(id:id,from:from,to:from=="asnat" ? "youssef":"asnat",text:text,preview:String(text.split(whereSeparator:{$0.isWhitespace}).joined(separator:" ").prefix(60))+(text.count>60 ? "…":""),day:HeartLedger.day(BookDates.instant(change.createdAt) ?? Date()),createdAt:change.createdAt,pending:true));return
+                let mode=b["mode"] as? String ?? "once",pinned=mode=="jar" && (b["pinned"] as? Bool ?? false)
+                if pinned { for i in littleMessages.indices { littleMessages[i].pinned = false } }
+                let note=LittleMessage(id:id,from:from,to:from=="asnat" ? "youssef":"asnat",text:text,preview:String(text.split(whereSeparator:{$0.isWhitespace}).joined(separator:" ").prefix(60))+(text.count>60 ? "…":""),day:HeartLedger.day(BookDates.instant(change.createdAt) ?? Date()),createdAt:change.createdAt,mode:mode,pinned:pinned,pending:true)
+                littleMessages.append(note)
+                if pinned { pinnedNote = note }
+                return
             }
-            if action=="closeMessage"{if let index=littleMessages.firstIndex(where:{$0.id==b["id"] as? String}){littleMessages[index].text=nil;littleMessages[index].closedAt=change.createdAt};return}
-            if action=="sendHeart" {HeartLedger.apply(b,to:&heartDays,receipts:heartReceipts,createdAt:change.createdAt);hearts[b["from"] as? String ?? "me"]=change.createdAt;return}
+            if action=="closeMessage"{if let index=littleMessages.firstIndex(where:{$0.id==b["id"] as? String}){if !littleMessages[index].isJar { littleMessages[index].text=nil }; littleMessages[index].closedAt=change.createdAt};return}
+            if action=="pinMessage"{let id=b["id"] as? String ?? "",pinned=b["pinned"] as? Bool ?? true; for i in littleMessages.indices { if littleMessages[i].id == id { littleMessages[i].pinned = pinned } else if pinned { littleMessages[i].pinned = false } }; pinnedNote = littleMessages.last(where: { $0.isJar && $0.pinned == true }); return}
+            if action=="answerPrompt" {
+                let who=b["actor"] as? String ?? actor,text=b["text"] as? String ?? "",day=b["day"] as? String ?? HeartLedger.day()
+                var p=dailyPrompt ?? DailyPromptState(day:day,prompt:"What small moment made you smile today?",revealed:false,answers:[:])
+                p.answers[who]=DailyPromptAnswer(answered:true,answeredAt:change.createdAt,text:text)
+                p.revealed = (p.answers["asnat"]?.answered == true && p.answers["youssef"]?.answered == true)
+                dailyPrompt = p; return
+            }
+            if action=="sendHeart" {
+                HeartLedger.apply(b,to:&heartDays,receipts:heartReceipts,createdAt:change.createdAt)
+                let from=b["from"] as? String ?? "me"; hearts[from]=change.createdAt
+                if let vibe=b["vibe"] as? String,!vibe.isEmpty {
+                    let meta=HomeHub.vibeMeta(vibe)
+                    heartVibes[from]=HeartVibeInfo(vibe:vibe,label:meta.1,symbol:meta.0,sentAt:change.createdAt)
+                }
+                return
+            }
             guard let id=b["id"] as? String else{return}
             if action=="removeItem"{wishes.removeAll{$0.id==id};return}
             if let index=wishes.firstIndex(where:{$0.id==id}) {
@@ -438,13 +557,22 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
                 if b["photo"] != nil {wishes[index].photoId=b["operationId"] as? String}
             }else if action=="saveItem" {wishes.append(Wish(id:id,title:b["title"] as? String ?? "",place:b["place"] as? String,note:b["note"] as? String,completed:b["completed"] as? Bool,revision:b["operationId"] as? String,photoId:b["photo"] != nil ? b["operationId"] as? String:nil))}
         }
-        if change.path=="/api/music",let rank=b["rank"] as? Int {
-            songs.removeAll{$0.rank==rank}
-            if b["action"] as? String=="save",let id=b["trackId"] as? Int,var song=vault.value("song:\(id)",as:Song.self) {song.rank=rank;song.savedId=change.id;song.revision=change.id;song.note=b["note"] as? String;songs.append(song)}
-            songs.sort{($0.rank ?? 0)<($1.rank ?? 0)}
+        if change.path=="/api/music" {
+            let action=b["action"] as? String ?? ""
+            if action=="clearMoment" { momentSong = nil; return }
+            if action=="setMoment",let id=b["trackId"] as? Int,var song=vault.value("song:\(id)",as:Song.self) {
+                song.note=b["note"] as? String; song.actor=b["actor"] as? String; song.updatedAt=change.createdAt
+                momentSong=song; return
+            }
+            if let rank=b["rank"] as? Int {
+                songs.removeAll{$0.rank==rank}
+                if action=="save",let id=b["trackId"] as? Int,var song=vault.value("song:\(id)",as:Song.self) {song.rank=rank;song.savedId=change.id;song.revision=change.id;song.note=b["note"] as? String;songs.append(song)}
+                songs.sort{($0.rank ?? 0)<($1.rank ?? 0)}
+            }
         }
     }
     func like(_ post:Post,_ liked:Bool){do{try enqueue("/api/memories",["action":"setLike","kind":post.kind,"id":post.id,"actor":actor,"liked":liked])}catch{self.error=error.localizedDescription}}
+    func react(_ post:Post,_ emoji:String){let current=post.social?.reactions[actor] ?? "";do{try enqueue("/api/memories",["action":"setReaction","kind":post.kind,"id":post.id,"actor":actor,"reaction":current==emoji ? "":emoji])}catch{self.error=error.localizedDescription}}
     func comment(_ post:Post,_ text:String)throws{try enqueue("/api/memories",["action":"addComment","kind":post.kind,"id":post.id,"actor":actor,"text":text])}
     func current(_ post:Post)->Post{memories.posts.first{$0.id==post.id} ?? post}
     func image(_ source:String)async->Data? {
@@ -465,9 +593,8 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
     }
     func prefetch()async {
         guard !prefetching else{return};prefetching=true;defer{prefetching=false}
-        let sources=memories.photos.map(\.imageURL)+songs.compactMap(\.artworkUrl)+wishes.compactMap{$0.photoId.map{"/api/together-photo?kind=bucket&id="+$0}}
-        let recipePhotos=(journal["recipes"] as? [[String:Any]] ?? []).compactMap{$0["photoId"] as? String}.map{"/api/journal?photo="+$0}
-        for source in sources+recipePhotos {guard online,!locked else{return};_=await image(source)}
+        let sources=memories.photos.map(\.imageURL)+songs.compactMap(\.artworkUrl)+(momentSong?.artworkUrl.map{[$0]} ?? [])+wishes.compactMap{$0.photoId.map{"/api/together-photo?kind=bucket&id="+$0}}
+        for source in sources {guard online,!locked else{return};_=await image(source)}
     }
     func search(_ query:String)async throws->[Song]{
         var parts=URLComponents();parts.queryItems=[URLQueryItem(name:"q",value:query)]
@@ -490,7 +617,7 @@ final class NoRedirect: NSObject, URLSessionTaskDelegate {
         try vault.save("translation-history:"+actor,Array(history.prefix(30)))
     }
 }
-struct SongList:Decodable {var tracks:[Song]}
+struct SongList:Decodable {var tracks:[Song]; var moment:Song?}
 struct WishList:Decodable {var bucketList:[Wish]}
 struct TranslationList:Decodable {var translations:[Translation]}
 struct TranslationRecord:Codable,Identifiable {var id:String;var text:String;var results:[Translation]}

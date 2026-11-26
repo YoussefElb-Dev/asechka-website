@@ -28,7 +28,7 @@ final class BookViews {
   Dialog window;
   LinearLayout content;
   JSONObject journal, keepsakes;
-  boolean personal, loading;
+  boolean personal, loading, manageKeepsakes;
   int chapter, reveal;
   Editor editor;
   final Runnable poll =
@@ -56,6 +56,7 @@ final class BookViews {
 
   void show(boolean personal, int initialChapter) {
     this.personal = personal;
+    manageKeepsakes = false;
     chapter = Math.max(0, Math.min(2, initialChapter));
     window = new Dialog(activity);
     LinearLayout outer = u.column();
@@ -63,7 +64,7 @@ final class BookViews {
     LinearLayout header = u.row();
     header.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(8));
     header.addView(
-        u.title(personal ? "Since us" : "Our little book", 17),
+        u.title(personal ? "Since us" : "Secret vocab", 17),
         new LinearLayout.LayoutParams(0, -2, 1));
     header.addView(u.textButton("Done", () -> window.dismiss()));
     outer.addView(header);
@@ -153,34 +154,43 @@ final class BookViews {
 
   void render() {
     content.removeAllViews();
-    String[] labels =
-        personal
-            ? new String[] {"Since us", "Open when…", "Little things"}
-            : new String[] {"Tiny victories", "Recipes for two", "Inside jokes"};
     u.add(
         content,
-        u.title(personal ? "All the days\nthat became ours." : "Our little book.\nStill being written.", 30),
+        u.title(personal ? "All the days\nthat became ours." : "Secret vocab.\nOur private dictionary.", 30),
         15);
     u.add(
         content,
-        u.text("Saved for both of us. Add your own words, whenever you like.", 17, Ui.MUTED),
+        u.text(personal ? "Our beginning, Open when… letters, and little things we love." : "Every inside joke and nickname only we understand.", 16, Ui.MUTED),
         8);
-    HorizontalScrollView tabs = new HorizontalScrollView(activity);
-    tabs.setHorizontalScrollBarEnabled(false);
-    LinearLayout row = u.row(8);
-    for (int i = 0; i < labels.length; i++) {
-      final int index = i;
-      row.addView(
+    if (personal) {
+      String[] labels = new String[] {"Since us", "Open when…", "Little things"};
+      HorizontalScrollView tabs = new HorizontalScrollView(activity);
+      tabs.setHorizontalScrollBarEnabled(false);
+      LinearLayout row = u.row(8);
+      for (int i = 0; i < labels.length; i++) {
+        final int index = i;
+        row.addView(
+            u.button(
+                labels[i],
+                chapter == i,
+                () -> {
+                  chapter = index;
+                  render();
+                }));
+      }
+      tabs.addView(row);
+      u.add(content, tabs, 18);
+      u.add(
+          content,
           u.button(
-              labels[i],
-              chapter == i,
+              manageKeepsakes ? "Hide keepsakes editing" : "Manage & edit keepsakes",
+              false,
               () -> {
-                chapter = index;
+                manageKeepsakes = !manageKeepsakes;
                 render();
-              }));
+              }),
+          10);
     }
-    tabs.addView(row);
-    u.add(content, tabs, 20);
     if (!writable())
       u.add(
           content,
@@ -194,24 +204,20 @@ final class BookViews {
       since();
       return;
     }
-    String key =
-        personal
-            ? (chapter == 1 ? "letters" : "things")
-            : (chapter == 0 ? "victories" : chapter == 1 ? "recipes" : "jokes");
-    String kind =
-        personal
-            ? (chapter == 1 ? "Letter" : "Thing")
-            : (chapter == 0 ? "Victory" : chapter == 1 ? "Recipe" : "Joke");
-    Button add =
-        u.button(
-            "＋ Add "
-                + (kind.equals("Thing")
-                    ? "a little thing"
-                    : kind.equals("Joke") ? "an inside joke" : "a " + kind.toLowerCase(Locale.US)),
-            true,
-            () -> edit(kind, null));
-    add.setEnabled(writable());
-    u.add(content, add, 18);
+    String key = personal ? (chapter == 1 ? "letters" : "things") : "jokes";
+    String kind = personal ? (chapter == 1 ? "Letter" : "Thing") : "Joke";
+    if (!personal || manageKeepsakes) {
+      Button add =
+          u.button(
+              "＋ Add "
+                  + (kind.equals("Thing")
+                      ? "a little thing"
+                      : kind.equals("Joke") ? "an inside joke" : "a " + kind.toLowerCase(Locale.US)),
+              true,
+              () -> edit(kind, null));
+      add.setEnabled(writable());
+      u.add(content, add, 18);
+    }
     JSONArray entries = list(key);
     if (entries.length() == 0) {
       u.add(content, u.text("A little space for something only we could write.", 16, Ui.MUTED), 28);
@@ -230,25 +236,27 @@ final class BookViews {
                 render();
               }),
           12);
-      u.add(
-          content,
-          u.button(
-              "Manage all little things",
-              false,
-              () -> {
-                LinearLayout all = u.column();
-                for (int i = 0; i < entries.length(); i++) {
-                  JSONObject thing = entries.optJSONObject(i);
-                  u.add(
-                      all, u.button(thing.optString("text"), false, () -> edit("Thing", thing)), 8);
-                }
-                new AlertDialog.Builder(activity)
-                    .setTitle("All the little things")
-                    .setView(u.scroll(all))
-                    .setNegativeButton("Close", null)
-                    .show();
-              }),
-          10);
+      if (manageKeepsakes) {
+        u.add(
+            content,
+            u.button(
+                "Manage all little things",
+                false,
+                () -> {
+                  LinearLayout all = u.column();
+                  for (int i = 0; i < entries.length(); i++) {
+                    JSONObject thing = entries.optJSONObject(i);
+                    u.add(
+                        all, u.button(thing.optString("text"), false, () -> edit("Thing", thing)), 8);
+                  }
+                  new AlertDialog.Builder(activity)
+                      .setTitle("All the little things")
+                      .setView(u.scroll(all))
+                      .setNegativeButton("Close", null)
+                      .show();
+                }),
+            10);
+      }
       return;
     }
     if (kind.equals("Letter")) {
@@ -363,14 +371,16 @@ final class BookViews {
               Ui.PURPLE),
           12);
     }
-    LinearLayout actions = u.actions();
-    Button edit = u.button("Edit", false, () -> edit(kind, item));
-    Button remove = u.button("Remove", false, () -> remove(kind, item));
-    edit.setEnabled(writable());
-    remove.setEnabled(writable());
-    actions.addView(edit, new LinearLayout.LayoutParams(0, -2, 1));
-    actions.addView(remove, new LinearLayout.LayoutParams(0, -2, 1));
-    u.add(c, actions, 16);
+    if (!personal || manageKeepsakes) {
+      LinearLayout actions = u.actions();
+      Button edit = u.button("Edit", false, () -> edit(kind, item));
+      Button remove = u.button("Remove", false, () -> remove(kind, item));
+      edit.setEnabled(writable());
+      remove.setEnabled(writable());
+      actions.addView(edit, new LinearLayout.LayoutParams(0, -2, 1));
+      actions.addView(remove, new LinearLayout.LayoutParams(0, -2, 1));
+      u.add(c, actions, 16);
+    }
   }
 
   String rating(JSONObject ratings, String key) {
@@ -386,8 +396,10 @@ final class BookViews {
     TextView text = u.text(item.optString("text"), 18, Ui.INK);
     text.setTextIsSelectable(true);
     u.add(body, text, 16);
-    u.add(body, u.button("Edit this letter", false, () -> edit("Letter", item)), 20);
-    u.add(body, u.button("Remove this letter", false, () -> remove("Letter", item)), 8);
+    if (manageKeepsakes) {
+      u.add(body, u.button("Edit this letter", false, () -> edit("Letter", item)), 20);
+      u.add(body, u.button("Remove this letter", false, () -> remove("Letter", item)), 8);
+    }
     AlertDialog d =
         new AlertDialog.Builder(activity)
             .setTitle(item.optString("title"))
@@ -515,9 +527,11 @@ final class BookViews {
       String message = since.optString(yearly ? "yearlyMessage" : "monthlyMessage");
       if (!message.isEmpty()) u.add(card, u.text(message, 15, Ui.MUTED), 8);
     }
-    Button edit = u.button("Edit our beginning & messages", true, () -> editSince(since));
-    edit.setEnabled(writable());
-    u.add(content, edit, 18);
+    if (manageKeepsakes) {
+      Button edit = u.button("Edit our beginning & messages", true, () -> editSince(since));
+      edit.setEnabled(writable());
+      u.add(content, edit, 18);
+    }
   }
 
   static String displayDate(long value, boolean time) {

@@ -6,8 +6,10 @@ struct FeedView:View {
     var mode:Int
     @Binding var savedOnly:Bool
     @Binding var photoSection:PhotoSection
+    @Binding var memoryTab:Int
     var create:(Bool)->Void
     var corner:()->Void
+    var openJar:()->Void = {}
     var navigate:(Int)->Void
     @State private var comments:PostSelection?
     @State private var viewer:PostSelection?
@@ -15,8 +17,23 @@ struct FeedView:View {
     @State private var deletion:PostSelection?
     @State private var shortcut:BookRoute?
     @State private var heartHistory=false
+    @State private var searchQuery=""
     private var home:Bool{mode==0 && !savedOnly}
-    var posts:[Post]{universe.memories.posts.filter{(mode==0 || (mode==1 ? photoSection.includes($0):!$0.isPhoto)) && (!savedOnly || universe.bookmarks.contains($0.key))}}
+    var posts:[Post]{
+        let q=searchQuery.trimmingCharacters(in:.whitespacesAndNewlines).lowercased()
+        return universe.memories.posts.filter{post in
+            if savedOnly && !universe.bookmarks.contains(post.key) { return false }
+            if mode==1 {
+                if memoryTab==1 && !photoSection.includes(post) { return false }
+                if memoryTab==2 && post.isPhoto { return false }
+            }
+            if !q.isEmpty {
+                let hay=[post.text,post.caption,post.note,post.name,post.date].compactMap{$0}.joined(separator:" ").lowercased()
+                if !hay.contains(q) { return false }
+            }
+            return true
+        }
+    }
     private var quoteBackgrounds:[String:Int]{
         var result:[String:Int]=[:],previous = -1
         for post in posts where !post.isPhoto {let index=QuoteBackgrounds.next(post.id.isEmpty ? post.text ?? "":post.id,after:previous);result[post.key]=index;previous=index}
@@ -26,10 +43,14 @@ struct FeedView:View {
         ScrollViewReader{proxy in
             ScrollView{LazyVStack(spacing:12){
                 header.id("top")
-                if mode==2 && !savedOnly {QuoteCarousel().padding(.horizontal,18)}
-                let backgrounds=quoteBackgrounds
-                ForEach(posts){post in PostCard(post:post,backgroundIndex:backgrounds[post.key] ?? 0,comments:{comments=PostSelection(post:post)},open:{viewer=PostSelection(post:post)},edit:{edit=ComposeRequest(photo:post.isPhoto,post:post,collection:post.photoCollection)},delete:{deletion=PostSelection(post:post)})}
-                Text(posts.isEmpty ? "Our next favorite moment starts with you. ♡":"All caught up. More little moments soon. ♡").font(.footnote).foregroundColor(Palette.muted).padding(30)
+                if mode==1 && memoryTab==3 {
+                    SoundtrackView(embedded:true)
+                } else {
+                    if mode==1 && memoryTab==2 && !savedOnly {QuoteCarousel().padding(.horizontal,18)}
+                    let backgrounds=quoteBackgrounds
+                    ForEach(posts){post in PostCard(post:post,backgroundIndex:backgrounds[post.key] ?? 0,comments:{comments=PostSelection(post:post)},open:{viewer=PostSelection(post:post)},edit:{edit=ComposeRequest(photo:post.isPhoto,post:post,collection:post.photoCollection)},delete:{deletion=PostSelection(post:post)})}
+                    Text(posts.isEmpty ? "Our next favorite moment starts with you. ♡":"All caught up. More little moments soon. ♡").font(.footnote).foregroundColor(Palette.muted).padding(30)
+                }
             }.padding(.bottom,12)}
             .refreshable{await universe.refresh()}
         }
@@ -37,38 +58,54 @@ struct FeedView:View {
         .sheet(item:$shortcut){route in BookView(personal:route.personal,initialChapter:route.chapter)}
         .sheet(isPresented:$heartHistory){HeartHistoryView()}
         .sheet(item:$edit){ComposerView(request:$0)}
-        .fullScreenCover(item:$viewer){selection in PhotoViewer(post:selection.post,collection:mode==1 ? photoSection.collection:nil)}
+        .fullScreenCover(item:$viewer){selection in PhotoViewer(post:selection.post,collection:mode==1 && memoryTab==1 ? photoSection.collection:nil)}
         .confirmationDialog("Delete this shared post?",isPresented:Binding(get:{deletion != nil},set:{if !$0{deletion=nil}}),titleVisibility:.visible){
             Button("Delete post",role:.destructive){guard let post=deletion?.post else{return};do{try universe.enqueue("/api/memories",["action":post.isPhoto ? "removePhoto":"removeQuote","id":post.id,"expectedVersion":post.editVersion ?? ""])}catch{universe.error=error.localizedDescription};deletion=nil}
         }message:{Text("This removes it from both phones and the website.")}
     }
     private var header:some View {
-        VStack(alignment:.leading,spacing:home ? 8:19){
+        VStack(alignment:.leading,spacing:home ? 8:14){
             if home {
                 HStack(spacing:10){story("Create","plus"){create(true)};story("Our corner","heart",action:corner);story("Saved","bookmark"){savedOnly.toggle()}}.padding(.horizontal,16)
-            }else {
-                ScrollView(.horizontal,showsIndicators:false){HStack(spacing:18){
-                    story("Create","plus"){create(mode != 2)};story("Our corner","heart",action:corner)
-                    story("Our days","sparkles"){navigate(4)};story("Music","music.note"){navigate(3)}
+            } else {
+                ScrollView(.horizontal,showsIndicators:false){HStack(spacing:14){
+                    story("Create","plus"){create(memoryTab != 2)};story("Our corner","heart",action:corner)
+                    story("Our days","sparkles"){navigate(2)}
                     story(savedOnly ? "All posts":"Saved","bookmark"){savedOnly.toggle()}
-                }.padding(.horizontal,22).padding(.vertical,7)}
+                }.padding(.horizontal,22).padding(.vertical,5)}
             }
-            if mode==0 && !savedOnly {HomeHub(open:{shortcut=$0},openHistory:{heartHistory=true})}
-            if !home {VStack(alignment:.leading,spacing:6){
-                Text(savedOnly ? "SAVED FOR US":mode==1 ? (photoSection == .photography ? "EVERYDAY FRAMES":"MOMENTS WORTH KEEPING"):"WORDS WORTH KEEPING").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
-                Text(savedOnly ? "Kept close.":mode==1 ? (photoSection == .photography ? "Photography.":"Our camera roll."):mode==2 ? "Words to keep.":"Our little us.").font(.custom("Manrope-Bold",size:28))
-                Text(mode==1 && photoSection == .photography ? "Everyday frames, small details, and things that catch our eye.":"A little life together, one moment at a time.").font(.subheadline).foregroundColor(Palette.muted)
+            if mode==0 && !savedOnly {HomeHub(open:{shortcut=$0},openHistory:{heartHistory=true},openJar:openJar)}
+            if !home {VStack(alignment:.leading,spacing:10){
+                Text(savedOnly ? "SAVED FOR US":mode==1 ? (memoryTab==3 ? "OUR SOUNDTRACK":memoryTab==2 ? "WORDS WORTH KEEPING":"MOMENTS WORTH KEEPING"):"OUR LITTLE US").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                Text(savedOnly ? "Kept close.":mode==1 ? (memoryTab==3 ? "Music.":memoryTab==2 ? "Quotes.":memoryTab==1 ? (photoSection == .photography ? "Photography.":"Photos."):"Our memories."):"Our little us.").font(.custom("Manrope-Bold",size:28))
                 if mode==1 {
-                    Picker("Photo collection",selection:$photoSection){ForEach(PhotoSection.allCases){Text($0.title).tag($0)}}.pickerStyle(.segmented).accessibilityIdentifier("photos.collection.filter")
+                    Picker("Memories",selection:$memoryTab){
+                        Text("All").tag(0)
+                        Text("Photos").tag(1)
+                        Text("Quotes").tag(2)
+                        Text("Music").tag(3)
+                    }.pickerStyle(.segmented).accessibilityIdentifier("memories.section.filter")
+                    if memoryTab==1 {
+                        Picker("Photo collection",selection:$photoSection){ForEach(PhotoSection.allCases){Text($0.title).tag($0)}}.pickerStyle(.segmented).accessibilityIdentifier("photos.collection.filter")
+                    }
+                    if memoryTab != 3 {
+                        HStack(spacing:8){
+                            Image(systemName:"magnifyingglass").foregroundColor(Palette.muted)
+                            TextField("Search quotes, captions, dates…",text:$searchQuery).font(.subheadline)
+                            if !searchQuery.isEmpty {Button{searchQuery=""}label:{Image(systemName:"xmark.circle.fill").foregroundColor(Palette.muted)}}
+                        }.padding(.horizontal,12).padding(.vertical,10).background(.white,in:RoundedRectangle(cornerRadius:16)).overlay(RoundedRectangle(cornerRadius:16).stroke(Palette.lavender,lineWidth:1))
+                    }
                 }
-                Button{create(mode != 2)}label:{HStack(spacing:12){Avatar(actor:universe.actor);Text("Something to share, \(universe.name)?").font(.subheadline).foregroundColor(Palette.muted);Spacer();Image(systemName:"plus")}.padding(14).background(.white,in:RoundedRectangle(cornerRadius:22))}.padding(.top,10)
+                if memoryTab != 3 {
+                    Button{create(memoryTab != 2)}label:{HStack(spacing:12){Avatar(actor:universe.actor);Text("Something to share, \(universe.name)?").font(.subheadline).foregroundColor(Palette.muted);Spacer();Image(systemName:"plus")}.padding(14).background(.white,in:RoundedRectangle(cornerRadius:22))}
+                }
             }.padding(.horizontal,22)}
-        }.padding(.top,home ? 10:12).padding(.bottom,home ? 0:8)
+        }.padding(.top,home ? 10:12).padding(.bottom,home ? 0:6)
     }
     private func story(_ text:String,_ symbol:String,action:@escaping()->Void)->some View {
         Button{Touch.tap();action()}label:{
             if home{Label(text,systemImage:symbol).font(.system(size:13,weight:.medium)).padding(.horizontal,6).frame(maxWidth:.infinity,minHeight:44).background(Palette.lavender,in:Capsule())}
-            else{VStack(spacing:8){Image(systemName:symbol).font(.system(size:25,weight:.light)).frame(width:62,height:62).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:70)}
+            else{VStack(spacing:6){Image(systemName:symbol).font(.system(size:22,weight:.light)).frame(width:56,height:56).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:68)}
         }
     }
 }
@@ -146,7 +183,16 @@ struct PostCard:View {
     var delete:()->Void
     @State private var burst=false
     @State private var expanded=false
+    private let emojis=["♡","😂","🥹","✨","🔥","💋"]
     var liked:Bool{post.social?.likes[universe.actor] ?? false}
+    var myReaction:String{post.social?.reactions[universe.actor] ?? ""}
+    var reactionSummary:String {
+        let r=post.social?.reactions ?? [:]
+        var parts:[String]=[]
+        if let a=r["asnat"],!a.isEmpty { parts.append("Asnat \(a)") }
+        if let y=r["youssef"],!y.isEmpty { parts.append("Youssef \(y)") }
+        return parts.joined(separator:" · ")
+    }
     var body:some View {
         VStack(alignment:.leading,spacing:0){
             HStack(spacing:11){Avatar(actor:post.author ?? "us");VStack(alignment:.leading,spacing:3){Text(post.name).font(.system(size:14,weight:.semibold));Text((post.isPhoto ? "A moment":"A thought")+(post.date.isEmpty ? "":" · "+post.date)+(post.pending==true ? " · saved offline":"")).font(.system(size:11)).foregroundColor(Palette.muted)};Spacer()
@@ -166,8 +212,18 @@ struct PostCard:View {
                 ShareLink(item:post.content+"\n\nOur little universe ♡\n"+UniverseStore.site){Image(systemName:"paperplane").frame(width:44,height:48)}
                 Spacer();Button{Touch.tap();universe.bookmark(post)}label:{Image(systemName:universe.bookmarks.contains(post.key) ? "bookmark.fill":"bookmark").frame(width:44,height:48)}.accessibilityLabel("Save post")
             }.font(.system(size:22,weight:.light)).padding(.horizontal,10)
+            HStack(spacing:6){
+                ForEach(emojis,id:\.self){emoji in
+                    Button{Touch.tap();universe.react(post,emoji)}label:{
+                        Text(emoji).font(.system(size:15)).frame(minWidth:34,minHeight:30)
+                            .background(myReaction==emoji ? Palette.lavender:Palette.background,in:Capsule())
+                            .overlay(Capsule().stroke(myReaction==emoji ? Palette.purple:Palette.lavender,lineWidth:1))
+                    }.accessibilityLabel("React \(emoji)")
+                }
+                Spacer()
+            }.padding(.horizontal,18).padding(.bottom,8)
             VStack(alignment:.leading,spacing:9){
-                Text(likeText).font(.system(size:12,weight:.semibold))
+                Text(likeText + (reactionSummary.isEmpty ? "":" · "+reactionSummary)).font(.system(size:12,weight:.semibold))
                 if let caption=post.isPhoto ? post.caption:post.note,!caption.isEmpty {Text(caption).font(.system(size:14)).lineLimit(expanded ? nil:3).onTapGesture{withAnimation{expanded.toggle()}}}
                 if !post.isPhoto && (post.text?.count ?? 0)>260 {Button(expanded ? "Keep it little":"Read the whole quote"){withAnimation{expanded.toggle()}}.font(.caption)}
                 Button(action:comments){Text(post.social?.comments.isEmpty==false ? "View all \(post.social?.comments.count ?? 0) comments":"Start our conversation").font(.system(size:13)).foregroundColor(Palette.muted)}

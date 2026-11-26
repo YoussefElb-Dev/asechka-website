@@ -18,9 +18,16 @@
   <script type="module" src="app.js"></script>
   <script type="module" src="memory-gallery.js"></script>
   <script type="module" src="shared-moments.js"></script>
-<link rel="stylesheet" href="translation.css"><link rel="stylesheet" href="keepsakes.css"><link rel="stylesheet" href="soft-orbit.css"><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="home-dashboard.css"><script src="vendor/leaflet.js" defer></script><script type="module" src="live-location.js"></script></head>
+  <link rel="stylesheet" href="translation.css">
+  <link rel="stylesheet" href="keepsakes.css">
+  <link rel="stylesheet" href="soft-orbit.css">
+  <link rel="stylesheet" href="vendor/leaflet.css">
+  <link rel="stylesheet" href="home-dashboard.css">
+  <script src="vendor/leaflet.js" defer></script>
+  <script type="module" src="live-location.js"></script>
+</head>
 <body class="home-dashboard">
-  <a class="skip-link" href="#main">Skip to the love letter</a>
+  <a class="skip-link" href="#main">Skip to our universe</a>
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <symbol id="star" viewBox="0 0 32 32"><path d="m16 2 4.3 9.2L30 13l-7 7 1.5 10L16 25l-8.5 5L9 20l-7-7 9.7-1.8Z"/></symbol>
     <symbol id="sparkle" viewBox="0 0 32 32"><path d="M16 2c1 9 5 13 14 14-9 1-13 5-14 14-1-9-5-13-14-14C11 15 15 11 16 2Z"/></symbol>
@@ -31,7 +38,14 @@
 
   <header class="site-header wrap">
     <a class="brand" href="#" aria-label="Asechka's little universe, home"><span class="brand-mark"><svg><use href="#sparkle"/></svg></span>asechka<span class="brand-dot">.</span></a>
-    <nav aria-label="Main navigation"><a class="nav-little" href="#little-things">The little things</a><a href="#quotes">Quotes</a><a href="#photos">Pictures</a><a class="nav-music" href="/music.html" style="display:flex;align-items:center;min-height:44px;padding-inline:10px">Music</a><a href="/camera.html">Our camera</a><a class="nav-days" href="/together.html">Our days</a><a class="nav-letter" href="/us.html#letters">Open when…</a><a class="nav-secret" href="/us.html">Since us <svg><use href="#sparkle"/></svg></a><a class="nav-words" href="/translation.html">Our words</a></nav>
+    <nav aria-label="Main navigation">
+      <a href="/quotes.html">Quotes</a>
+      <a href="/pictures.html">Pictures</a>
+      <a class="nav-music" href="/music.html">Music</a>
+      <a href="/camera.html">Camera</a>
+      <a class="nav-days" href="/together.html">Our days</a>
+      <a class="nav-secret" href="/us.html">Us <svg><use href="#sparkle"/></svg></a>
+    </nav>
   </header>
 
   <main id="main">
@@ -42,51 +56,109 @@
     </section>
 
     <section class="home-overview wrap" aria-label="Home choices and our locations">
-      <div class="home-heading"><h1>Our little us.</h1><span>wherever we are ♡</span></div>
-      <nav class="home-choices" aria-label="Our choices"><a href="/camera.html">◉ Camera</a><a href="/vault.html">◇ Time vault</a><a href="/journal.html#jokes">Secret vocab</a><a href="/us.html#letters">Open when…</a><a href="/journal.html#victories">Tiny victories</a><a href="/journal.html#recipes">Recipes for two</a><a href="/music.html">♫ Music</a><a href="/together.html">Our days</a><a class="home-extra" href="#photos">Pictures</a><a class="home-extra" href="#quotes">Quotes</a><a class="home-extra" href="/translation.html">Our words</a><a class="home-extra" href="#little-things">Little things</a></nav>
-      <section class="location-card" data-live-location aria-label="Our live locations"><div class="location-heading"><h2>⌖ Find each other</h2><select aria-label="Your location profile"><option value="">I’m here as…</option><option value="asnat">Asnat</option><option value="youssef">Youssef</option></select><button type="button" data-location-toggle>Share location</button></div><div class="location-map" data-location-map role="region" aria-label="Map of our shared locations"></div><div class="location-people" data-location-people></div><p class="location-status" data-location-status>Off until you choose. The apps can keep sharing in the background.</p></section>
-    </section>
-    <section class="hero wrap" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow"><span></span> FOR ASNAT. MY ASECHKA.</p>
-        <h1 id="hero-title">My favorite<br>little universe.<br><span>It's you, Asechka.</span></h1>
-        <p class="hero-description">Of all the people, in all the places,<br>somehow my heart keeps finding you.</p>
-        <div class="hero-actions"><button class="button button-primary" data-open-letter><svg><use href="#envelope"/></svg>A little note for you<svg class="button-arrow"><use href="#arrow"/></svg></button><a class="text-link" href="#little-things">Follow the stars <span>↘</span></a></div>
-        <p class="handwritten hero-footnote">a whole lot of love, in one little website <span>♡</span></p>
+      <div class="home-heading">
+        <h1>Our little us.</h1>
+        <div class="home-heading-actions">
+          <button type="button" class="notify-chip" data-notify-toggle hidden>Alerts</button>
+          <span>wherever we are ♡</span>
+        </div>
       </div>
-      <div class="hero-art">
-        <div class="orbit orbit-one" aria-hidden="true"></div><div class="orbit orbit-two" aria-hidden="true"></div>
-        <svg class="decoration art-star star-one" aria-hidden="true"><use href="#sparkle"/></svg>
-        <svg class="decoration art-star star-two" aria-hidden="true"><use href="#star"/></svg>
-        <svg class="decoration art-star star-three" aria-hidden="true"><use href="#sparkle"/></svg>
-        <span class="art-dot dot-one" aria-hidden="true"></span><span class="art-dot dot-two" aria-hidden="true"></span>
-        <span class="art-caption handwritten">my happy place</span>
-        <img class="cats-image" src="assets/cats-cuddle.jpg" width="1124" height="750" alt="A real ginger cat nuzzling a sleepy tabby cat curled up beside a window." fetchpriority="high">
-        <img class="cat-memory-photo" src="assets/cats-cozy.jpg" width="1200" height="800" alt="Two real cats snuggled together, with a little cream kitten sleeping in front." decoding="async">
-        <button class="love-sticker" id="send-love" aria-label="Send Asechka a little love"><svg><use href="#heart"/></svg><span>you + me + a little magic</span><span class="sticker-sparkle">✧</span></button>
-        <p class="love-status" id="love-status" role="status"></p>
-        <p class="cat-photo-credit">Photos: <a href="https://www.pexels.com/photo/a-cuddling-tabby-and-ginger-cat-7725998/" target="_blank" rel="noopener noreferrer">Arina Krasnikova</a> &amp; <a href="https://unsplash.com/photos/two-cats-cuddling-on-a-blanket-Ln72daSueik" target="_blank" rel="noopener noreferrer">Griffin Taylor</a></p>
-      </div>
+      <nav class="home-choices" aria-label="Our choices">
+        <a href="/camera.html" data-camera-shortcut>◉ Camera <span class="shortcut-badge" data-camera-badge hidden></span></a>
+        <button type="button" class="choice-button" data-open-jar>♡ Love Jar</button>
+        <a href="/music.html">♫ Music</a>
+        <a href="/together.html">Our days</a>
+        <a href="/us.html">Us &amp; letters</a>
+        <a href="/journal.html#jokes">Secret vocab</a>
+        <a href="/vault.html">◇ Time vault</a>
+        <a href="/translation.html">Our words</a>
+        <a class="home-extra" href="/pictures.html">Pictures</a>
+        <a class="home-extra" href="/quotes.html">Quotes</a>
+      </nav>
+      <section class="location-card" data-live-location aria-label="Our live locations">
+        <div class="location-heading"><h2>⌖ Find each other</h2><select aria-label="Your location profile"><option value="">I’m here as…</option><option value="asnat">Asnat</option><option value="youssef">Youssef</option></select><button type="button" data-location-toggle>Share location</button></div>
+        <div class="location-map" data-location-map role="region" aria-label="Map of our shared locations"></div>
+        <div class="location-people" data-location-people></div>
+        <p class="location-status" data-location-status>Off until you choose. The apps can keep sharing in the background.</p>
+      </section>
     </section>
-
-    <div class="between-sections" aria-hidden="true"><span></span><svg><use href="#sparkle"/></svg><span></span></div>
 
     <section class="shared-days home-shared-days wrap" id="our-days" aria-labelledby="our-days-title">
       <div class="section-intro"><p class="eyebrow">A LITTLE MORE OF US, EVERY DAY</p><h2 id="our-days-title">For our today, <span class="handwritten">and all our tomorrows.</span></h2><p>Something to remember. A little heart to leave. So many days still ahead.</p></div>
       <div class="shared-notice" role="status" aria-live="polite"><span data-shared-status>Gathering our little memories…</span><button type="button" class="quiet-link" data-retry-shared hidden>Try again</button><a href="/login" data-shared-login hidden>Reopen our little door ↗</a></div>
       <div class="daily-grid">
-        <article class="daily-card" aria-labelledby="daily-title"><div class="daily-card-heading"><span class="eyebrow">A LITTLE MEMORY, JUST FOR TODAY</span><span class="memory-date" data-memory-day></span></div><h3 id="daily-title">Something worth <span class="handwritten">remembering.</span></h3><div class="daily-content" data-daily-memory aria-busy="true"><p class="soft-loading">Finding a little memory for today…</p></div><p class="daily-footnote">One of our quotes, pictures, or songs. A new little memory each day.</p></article>
-        <article class="thinking-card" aria-labelledby="thinking-title"><p class="eyebrow">A SMALL WAY TO SAY SOMETHING BIG</p><h3 id="thinking-title">You crossed <span class="handwritten">my mind.</span></h3><label class="side-label" for="heart-side">I’m here as</label><select id="heart-side" data-heart-side><option value="">Choose your side…</option><option value="me">Me · sending to Asechka</option><option value="asechka">Asechka · sending to him</option></select><button class="thinking-heart" type="button" data-send-heart disabled aria-label="Send a thinking-of-you heart"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27S3 19.3 3 10.8C3 3.5 12 2.5 16 8c4-5.5 13-4.5 13 2.8C29 19.3 16 27 16 27Z"/></svg><span class="heart-orbit" aria-hidden="true"></span></button><p class="heart-invitation" data-heart-invitation>Choose your side, then leave a little heart.</p><div class="heart-message" data-heart-message role="status" aria-live="polite"></div><p class="own-heart" data-own-heart></p><p class="heart-send-status" data-heart-status role="status" aria-live="polite"></p></article>
+        <article class="thinking-card" aria-labelledby="thinking-title">
+          <p class="eyebrow">A SMALL WAY TO SAY SOMETHING BIG</p>
+          <h3 id="thinking-title">You crossed <span class="handwritten">my mind.</span></h3>
+          <label class="side-label" for="heart-side">I’m here as</label>
+          <select id="heart-side" data-heart-side><option value="">Choose your side…</option><option value="me">Youssef · to Asnat</option><option value="asechka">Asnat · to Youssef</option></select>
+          <button class="thinking-heart" type="button" data-send-heart disabled aria-label="Send a thinking-of-you heart"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27S3 19.3 3 10.8C3 3.5 12 2.5 16 8c4-5.5 13-4.5 13 2.8C29 19.3 16 27 16 27Z"/></svg><span class="heart-orbit" aria-hidden="true"></span></button>
+          <p class="heart-invitation" data-heart-invitation>Choose your side, then leave a little heart.</p>
+          <div class="heart-message" data-heart-message role="status" aria-live="polite"></div>
+          <p class="own-heart" data-own-heart></p>
+          <p class="heart-send-status" data-heart-status role="status" aria-live="polite"></p>
+          <div class="heart-vibes" data-heart-vibes role="group" aria-label="Add a heart vibe"></div>
+          <div class="heart-milestone-bar" data-heart-milestones hidden></div>
+        </article>
       </div>
-      <div class="translation-teaser"><div><p class="eyebrow">OUR SHARED DISPOSABLE CAMERA</p><h3>24 moments. A little surprise.</h3><p>No previews. Just little pieces of our days, waiting to be developed together.</p></div><a class="button button-outline" href="/camera.html">Load our camera <span aria-hidden="true">↗</span></a></div><div class="bucket-preview"><div><p class="eyebrow">OUR SHARED BUCKET LIST</p><h3>There’s so much left to do with you.</h3><p class="bucket-preview-summary" data-bucket-summary>Our first little wish is waiting to be written.</p><ul class="preview-wishes" data-preview-wishes></ul></div><a class="button button-outline" href="/together.html">Make a little plan <span aria-hidden="true">↗</span></a></div><div class="home-keepsake-teaser"><div><p class="eyebrow">A LETTER FOR THE MOMENT YOU NEED IT</p><h3>Open when you miss me. Or just because.</h3><p>A few words, kept here for you.</p></div><a class="button button-outline" href="/us.html#letters">Find your little letter <span aria-hidden="true">↗</span></a></div><div class="translation-teaser"><div><p class="eyebrow">OUR LOVE TRANSLATION</p><h3>Same feeling. Five ways to say it.</h3><p>Egyptian Arabic, Russian, Hebrew, French & Spanish.</p></div><a class="button button-outline" href="/translation.html">Find our words <span aria-hidden="true">↗</span></a></div>
-    </section>
 
-    <section class="wrap" aria-label="Our little book"><div class="home-keepsake-teaser"><div><p class="eyebrow">OUR LITTLE BOOK</p><h3>The little things that become ours.</h3><p>Tiny victories, recipes for two, and our inside-joke dictionary.</p></div><a class="button button-outline" href="/journal.html">Open our little book ↗</a></div></section>
+      <div class="home-hub-grid">
+        <article class="hub-card pinned-jar-card" id="love-jar-card" aria-labelledby="jar-card-title">
+          <div class="hub-card-top">
+            <span class="eyebrow">LOVE JAR · PINNED NOTE</span>
+            <button type="button" class="quiet-link" data-open-jar>Open jar ↗</button>
+          </div>
+          <h3 id="jar-card-title" class="hub-card-heading">Notes kept close.</h3>
+          <div class="pinned-note-body" data-pinned-note>
+            <p class="soft-loading">Write a note to pin right here for both of us.</p>
+          </div>
+        </article>
+
+        <article class="hub-card prompt-card" id="daily-prompt-card" aria-labelledby="prompt-card-title">
+          <div class="hub-card-top">
+            <span class="eyebrow">TODAY’S QUESTION</span>
+            <span class="prompt-status-pill" data-prompt-pill>Waiting</span>
+          </div>
+          <h3 id="prompt-card-title" class="hub-card-heading" data-prompt-question>Loading today’s question…</h3>
+          <div class="prompt-body" data-prompt-body></div>
+          <form class="prompt-form" data-prompt-form hidden>
+            <textarea data-prompt-input rows="2" maxlength="400" placeholder="Write your answer… stays hidden until both of you reply." required></textarea>
+            <div class="prompt-form-row">
+              <span class="prompt-feedback" data-prompt-feedback role="status"></span>
+              <button type="submit" class="hub-action-btn" data-prompt-submit>Save answer ♡</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="hub-card moment-song-card" id="song-moment-card" aria-labelledby="moment-song-title">
+          <div class="hub-card-top">
+            <span class="eyebrow">SONG OF THE MOMENT</span>
+            <a class="quiet-link" href="/music.html#song-moment">Swap song ↗</a>
+          </div>
+          <h3 id="moment-song-title" class="sr-only">Song of the Moment</h3>
+          <div class="moment-song-body" data-moment-song>
+            <p class="soft-loading">Pick a song that feels like today on Music.</p>
+          </div>
+        </article>
+
+        <article class="hub-card throwback-card" id="throwback-card" aria-labelledby="throwback-title">
+          <div class="hub-card-top">
+            <span class="eyebrow" data-throwback-kicker>ON THIS DAY · THROWBACK</span>
+            <span class="memory-date" data-memory-day></span>
+          </div>
+          <h3 id="throwback-title" class="hub-card-heading">Something worth <span class="handwritten">remembering.</span></h3>
+          <div class="daily-content" data-daily-memory aria-busy="true"><p class="soft-loading">Finding a little memory for today…</p></div>
+        </article>
+      </div>
+
+      <div class="translation-teaser"><div><p class="eyebrow">OUR SHARED DISPOSABLE CAMERA</p><h3>8 moments. A Sunday surprise.</h3><p>No previews. Fill 8 frames together — or let it auto-develop Sunday at 8 PM Eastern.</p></div><a class="button button-outline" href="/camera.html">Load our camera <span aria-hidden="true">↗</span></a></div>
+      <div class="bucket-preview"><div><p class="eyebrow">OUR SHARED BUCKET LIST</p><h3>There’s so much left to do with you.</h3><p class="bucket-preview-summary" data-bucket-summary>Our first little wish is waiting to be written.</p><ul class="preview-wishes" data-preview-wishes></ul></div><a class="button button-outline" href="/together.html">Make a little plan <span aria-hidden="true">↗</span></a></div>
+    </section>
 
     <section class="little-things wrap" id="little-things" aria-labelledby="little-things-title">
       <div class="section-intro"><p class="eyebrow">THE LITTLE THINGS, THE BIG FEELINGS</p><h2 id="little-things-title">Little things I love <span class="handwritten">about you.</span></h2><p>The details I notice. The ones that stay with me.</p></div>
       <div class="little-detail-card"><span class="detail-star" aria-hidden="true">✧</span><span class="detail-number" data-thing-number>ONE LITTLE THING AT A TIME</span><p class="detail-text" data-thing-text aria-live="polite">There’s a little something I love about you, waiting here.</p><div class="detail-controls"><button class="detail-previous" type="button" data-previous-thing aria-label="Previous little thing" hidden>←</button><button class="button button-primary" type="button" data-next-thing disabled>Open a little thing ♡</button></div><p class="detail-progress" data-thing-progress></p></div>
-      <div class="home-detail-links"><a href="/us.html#little-things">All our little things · edit / remove ↗</a><button class="keepsake-add" type="button" data-add-keepsake="Thing" disabled>+ Add a little thing</button></div>
+      <div class="home-detail-links"><a href="/us.html#little-things">All our little things ↗</a></div>
       <p class="keepsake-status" data-keepsake-status role="status" hidden></p>
     </section>
 
@@ -105,7 +177,7 @@
       </div>
       <div class="quote-empty" id="quote-empty"><span class="empty-quote-mark" aria-hidden="true">“</span><p class="handwritten">A little place for all those things I say to you.</p><p>Our first quote goes right here.</p></div>
       <p class="collection-count" id="quote-count" hidden></p>
-      <div class="collection-link-wrap"><a class="button button-outline collection-link" href="/quotes.html">View all quotes <span aria-hidden="true">↗</span></a></div>
+      <div class="collection-link-wrap"><a class="button button-outline collection-link" href="/quotes.html">View &amp; search all quotes <span aria-hidden="true">↗</span></a></div>
     </section>
 
     <section class="memories-section wrap" id="photos" aria-labelledby="photos-title">
@@ -113,20 +185,12 @@
       <div class="photo-grid" id="photo-grid" data-preview-limit="6"></div>
       <div class="photo-empty" id="photo-empty"><div class="empty-polaroid" aria-hidden="true"><span class="tape"></span><div><svg viewBox="0 0 80 64" fill="none"><rect x="9" y="16" width="62" height="40" rx="5"/><path d="m25 16 5-9h20l5 9"/><circle cx="40" cy="36" r="12"/><path d="M58 24h5"/></svg></div><span class="handwritten">you + me, soon ♡</span></div><div class="empty-photo-copy"><p class="handwritten">Leaving some room<br>for our favorite days.</p><p>We haven’t filled this page yet.<br>I’m looking forward to it.</p></div></div>
       <p class="collection-count" id="photo-count" hidden></p>
-      <div class="collection-link-wrap"><a class="button button-outline collection-link" href="/pictures.html">View all pictures <span aria-hidden="true">↗</span></a></div>
+      <div class="collection-link-wrap"><a class="button button-outline collection-link" href="/pictures.html">View &amp; search all pictures <span aria-hidden="true">↗</span></a></div>
     </section>
 
     <section class="letter-section wrap" id="letter" aria-labelledby="letter-title">
       <div class="letter-drawing" aria-hidden="true"><span class="letter-sparkle sparkle-a">✦</span><span class="letter-sparkle sparkle-b">✧</span><div class="paper-peek"><span>Dear Asechka,</span><i></i><i></i><i></i><b>♡</b></div><div class="big-envelope"><div class="envelope-flap"></div><div class="envelope-front"></div><span class="wax-seal">♡</span></div><span class="handwritten drawing-note">a little piece of my heart</span></div>
       <div class="letter-copy"><p class="eyebrow">SIGNED, WITH ALL MY LOVE</p><h2 id="letter-title">Some things are easier<br>to write <span class="handwritten">from the heart.</span></h2><p>I made this little corner of the internet because you deserve something that feels as special as you are to me.</p><p>No grand speech. Just me, finding a few more ways to say that you mean so much.</p><button class="button button-outline" data-open-letter>Open your letter <svg><use href="#arrow"/></svg></button><span class="letter-postscript handwritten">P.S. yes, all of this is for you.</span></div>
-    </section>
-
-    <section class="surprise-section wrap" id="surprise" aria-labelledby="surprise-title">
-      <div class="secret-stars" aria-hidden="true">✧ <span>✦</span> ✧</div><p class="eyebrow">A LITTLE CHAPTER, STILL UNWRITTEN</p><h2 id="surprise-title">Something is waiting<br><span class="handwritten">just around the corner.</span></h2><p class="surprise-description" id="surprise-description">I've been saving a little moment for us.<br>Some things are better said when you're right beside me.</p>
-      <div class="secret-date"><svg aria-hidden="true"><use href="#envelope"/></svg><span>Friday, October 16 <b>·</b> 3:00 PM Eastern</span><span class="secret-lock" aria-hidden="true">✧</span></div>
-      <button class="hint-button" id="hint-button" aria-controls="hint-text">Can I have a tiny hint? <span>↗</span></button>
-      <p class="hint-text handwritten" id="hint-text" role="status">No spoilers. Just a few butterflies.</p>
-      <p class="hint-progress" id="hint-progress" aria-live="polite"></p>
     </section>
   </main>
 

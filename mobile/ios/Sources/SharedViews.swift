@@ -15,7 +15,7 @@ struct DaysView:View {
                 Text("Our little days.").font(.custom("Manrope-Bold",size:30))
                 Text("Places to go. Things to try. A little more us.").foregroundColor(Palette.muted)
             }
-            Button("Our little book"){littleBook=true}.primary()
+            Button("Secret vocab"){littleBook=true}.primary()
             Button("Since us · letters & little things"){personalBook=true}.primary()
             VStack(alignment:.leading,spacing:14){Text("Thinking of you.").font(.title3.weight(.semibold));Text("A little heart, from \(universe.name) to \(universe.partner).").foregroundColor(Palette.muted)
                 let otherKey = universe.actor == "asnat" ? "me" : "asechka"
@@ -81,20 +81,53 @@ struct WishEditor:View {
 struct SongSelection:Identifiable{var song:Song;var id:String{song.id}}
 struct SoundtrackView:View {
     @EnvironmentObject private var universe:UniverseStore
+    var embedded=false
     @State private var search=false
+    @State private var searchMoment=false
     @State private var editing:SongSelection?
     var body:some View {
-        ScrollView{VStack(alignment:.leading,spacing:20){
+        Group {
+            if embedded { content }
+            else { ScrollView { content }.refreshable { await universe.refresh() } }
+        }
+        .sheet(isPresented:$search){MusicSearchView()}
+        .sheet(isPresented:$searchMoment){MusicSearchView(forMoment:true)}
+        .sheet(item:$editing){selection in NavigationStack{SongSaveView(song:selection.song,existing:true)}}
+    }
+    private var content:some View {
+        VStack(alignment:.leading,spacing:20){
             VStack(alignment:.leading,spacing:6){
-                Text("TEN SONGS FOR US").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                Text("SONG OF THE MOMENT & TOP TEN").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
                 Text("Our soundtrack.").font(.custom("Manrope-Bold",size:30))
-                Text("Ten little places for the songs that sound like us.").foregroundColor(Palette.muted)
+                Text("One song on repeat right now, plus our timeless top ten.").foregroundColor(Palette.muted)
             }
+            VStack(alignment:.leading,spacing:12){
+                HStack{Text("ON REPEAT RIGHT NOW").font(.system(size:10,weight:.bold)).tracking(1.6).foregroundColor(Palette.purple);Spacer();Button(universe.momentSong==nil ? "Pick song":"Swap"){searchMoment=true;Touch.tap()}.font(.caption.weight(.semibold))}
+                if let m=universe.momentSong {
+                    HStack(spacing:14){
+                        CachedPhoto(source:m.artworkUrl ?? "",living:false).frame(width:72,height:72).clipShape(RoundedRectangle(cornerRadius:16))
+                        VStack(alignment:.leading,spacing:5){
+                            Text(m.title).font(.headline)
+                            Text(m.artist).font(.subheadline).foregroundColor(Palette.muted)
+                            if let note=m.note,!note.isEmpty { Text("“\(note)”").font(.caption).foregroundColor(Palette.purple) }
+                        }
+                        Spacer()
+                    }
+                    HStack(spacing:16){
+                        if let url=m.trackUrl.flatMap(URL.init(string:)){Link(destination:url){Label("Apple Music",systemImage:"play.fill").font(.caption)}}
+                        if let query=(m.title+" "+m.artist).addingPercentEncoding(withAllowedCharacters:.urlPathAllowed),let url=URL(string:"https://open.spotify.com/search/"+query){Link(destination:url){Label("Spotify",systemImage:"music.note").font(.caption)}}
+                        Spacer()
+                        Button("Clear",role:.destructive){do{try universe.clearMomentSong();Touch.tap()}catch{universe.error=error.localizedDescription}}.font(.caption)
+                    }
+                } else {
+                    Text("No Song of the Moment yet. Tap Pick song to share what you’re listening to right now.").font(.subheadline).foregroundColor(Palette.muted)
+                }
+            }.card()
             Button{search=true}label:{Label("Find our next favorite",systemImage:"magnifyingglass").frame(maxWidth:.infinity).primary()}
             ForEach(1...10,id:\.self){rank in
                 if let song=universe.songs.first(where:{$0.rank==rank}) {VStack(alignment:.leading,spacing:14){
                     HStack(spacing:14){Text(String(rank)).font(.system(size:13,weight:.bold)).foregroundColor(Palette.purple).frame(width:22);CachedPhoto(source:song.artworkUrl ?? "",living:false).frame(width:70,height:70).clipShape(RoundedRectangle(cornerRadius:15));VStack(alignment:.leading,spacing:6){Text(song.title).font(.headline);Text(song.artist).font(.subheadline).foregroundColor(Palette.muted)};Spacer()
-                        Menu{Button("Edit song note"){editing=SongSelection(song:song)};Button("Remove song",role:.destructive){remove(song)}}label:{Image(systemName:"ellipsis").frame(width:40,height:44)}
+                        Menu{Button("Set as Song of the Moment ♡"){do{try universe.setMomentSong(song,note:song.note ?? "");Touch.tap(true)}catch{universe.error=error.localizedDescription}};Button("Edit song note"){editing=SongSelection(song:song)};Button("Remove song",role:.destructive){remove(song)}}label:{Image(systemName:"ellipsis").frame(width:40,height:44)}
                     }
                     if let note=song.note,!note.isEmpty{Text(note).font(.subheadline).foregroundColor(Palette.muted)}
                     if let album=song.album,!album.isEmpty{Text(album).font(.caption).foregroundColor(Palette.muted)}
@@ -103,15 +136,14 @@ struct SoundtrackView:View {
                 }.card()}
                 else {Button{search=true}label:{HStack{Text(String(rank)).font(.caption.weight(.bold)).frame(width:22);Image(systemName:"music.note");Text("A little space for our next favorite").font(.subheadline);Spacer();Image(systemName:"plus")}.foregroundColor(Palette.muted).card()}}
             }
-        }.padding(22)}.refreshable{await universe.refresh()}
-            .sheet(isPresented:$search){MusicSearchView()}
-            .sheet(item:$editing){selection in NavigationStack{SongSaveView(song:selection.song,existing:true)}}
+        }.padding(22)
     }
     private func remove(_ song:Song){do{try universe.enqueue("/api/music",["action":"remove","rank":song.rank ?? 1,"expectedId":song.savedId ?? song.revision as Any? ?? NSNull()])}catch{universe.error=error.localizedDescription}}
 }
 struct MusicSearchView:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.dismiss) private var dismiss
+    var forMoment=false
     @State private var query=""
     @State private var results:[Song]=[]
     @State private var searching=false
@@ -119,8 +151,8 @@ struct MusicSearchView:View {
         NavigationStack{List{
             HStack{TextField("A song or an artist",text:$query).submitLabel(.search).onSubmit{find()};Button("Search",action:find).disabled(searching || query.trimmingCharacters(in:.whitespaces).isEmpty)}
             if searching{ProgressView("Finding our songs…")}
-            ForEach(results){song in NavigationLink{SongSaveView(song:song,existing:false,onSave:{dismiss()})}label:{HStack(spacing:12){CachedPhoto(source:song.artworkUrl ?? "",living:false).frame(width:52,height:52).clipShape(RoundedRectangle(cornerRadius:10));VStack(alignment:.leading,spacing:5){Text(song.title).font(.headline);Text(song.artist).font(.subheadline).foregroundColor(Palette.muted)}}}}
-        }.navigationTitle("Find a song").toolbar{ToolbarItem(placement:.cancellationAction){Button("Close"){dismiss()}}}}
+            ForEach(results){song in NavigationLink{SongSaveView(song:song,existing:false,forMoment:forMoment,onSave:{dismiss()})}label:{HStack(spacing:12){CachedPhoto(source:song.artworkUrl ?? "",living:false).frame(width:52,height:52).clipShape(RoundedRectangle(cornerRadius:10));VStack(alignment:.leading,spacing:5){Text(song.title).font(.headline);Text(song.artist).font(.subheadline).foregroundColor(Palette.muted)}}}}
+        }.navigationTitle(forMoment ? "Song of the Moment":"Find a song").toolbar{ToolbarItem(placement:.cancellationAction){Button("Close"){dismiss()}}}}
     }
     private func find(){searching=true;Task{do{results=try await universe.search(query)}catch{universe.error=error.localizedDescription};searching=false}}
 }
@@ -129,14 +161,24 @@ struct SongSaveView:View {
     @Environment(\.dismiss) private var dismiss
     var song:Song
     var existing:Bool
+    var forMoment=false
     var onSave:(()->Void)?
     @State private var rank=1
     @State private var note=""
     var body:some View {
         Form{Section{HStack(spacing:14){CachedPhoto(source:song.artworkUrl ?? "",living:false).frame(width:80,height:80).clipShape(RoundedRectangle(cornerRadius:16));VStack(alignment:.leading,spacing:7){Text(song.title).font(.headline);Text(song.artist).foregroundColor(Palette.muted)}}}
-            Section("A little place in our top ten"){Picker("Spot",selection:$rank){ForEach(1...10,id:\.self){Text("\($0)").tag($0)}}.disabled(existing);TextField("What does this song mean to us?",text:$note,axis:.vertical).lineLimit(3...8)}
-            Section{Button("Keep in our soundtrack ♡",action:save).disabled(note.count>500)}
-        }.navigationTitle(existing ? "Our song":"Keep this song").onAppear{rank=song.rank ?? (1...10).first{value in !universe.songs.contains{$0.rank==value}} ?? 1;note=song.note ?? ""}
+            Section(forMoment ? "Why this song right now?":"A little place in our top ten"){
+                if !forMoment { Picker("Spot",selection:$rank){ForEach(1...10,id:\.self){Text("\($0)").tag($0)}}.disabled(existing) }
+                TextField("What does this song mean to us?",text:$note,axis:.vertical).lineLimit(3...8)
+            }
+            Section{
+                Button("Set as Song of the Moment ♡",action:saveMoment).disabled(note.count>240)
+                if !forMoment { Button("Keep in our top ten ♡",action:save).disabled(note.count>500) }
+            }
+        }.navigationTitle(forMoment ? "Song of the Moment":existing ? "Our song":"Keep this song").onAppear{rank=song.rank ?? (1...10).first{value in !universe.songs.contains{$0.rank==value}} ?? 1;note=song.note ?? ""}
+    }
+    private func saveMoment(){
+        do{try universe.setMomentSong(song,note:note);Touch.tap(true);if let onSave{onSave()}else{dismiss()}}catch{universe.error=error.localizedDescription}
     }
     private func save(){let current=universe.songs.first{$0.rank==rank};do{try universe.vault.save("song:\(song.trackId)",song);try universe.enqueue("/api/music",["action":"save","rank":rank,"trackId":song.trackId,"note":note,"expectedId":current?.savedId ?? current?.revision as Any? ?? NSNull()]);Touch.tap(true);if let onSave{onSave()}else{dismiss()}}catch{universe.error=error.localizedDescription}}
 }

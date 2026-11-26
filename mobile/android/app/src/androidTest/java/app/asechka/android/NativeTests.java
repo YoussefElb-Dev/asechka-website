@@ -245,7 +245,7 @@ public final class NativeTests extends Instrumentation {
     check(api.canOpen() && api.signedIn(), "Secure login succeeds");
     for (int screen : new int[] {0, 1, 5, 2, 3, 4}) {
       call("select", new Class[] {int.class}, screen);
-      check(((ViewGroup) get("bottom")).getChildCount() == 7, "Native screen renders: " + screen);
+      check(((ViewGroup) get("bottom")).getChildCount() == 5, "Native screen renders: " + screen);
     }
     call("select", new Class[] {int.class}, 3);
     verifyBirthdaySettings();
@@ -552,7 +552,7 @@ public final class NativeTests extends Instrumentation {
     call("select", new Class[] {int.class}, 2);
     check(text("Our favorite song") != null, "Music metadata shown");
     screenshot("04-music");
-    click("Find our next favorite");
+    click("Find a song for our Top 10");
     await(() -> get("activeDialog") != null, "Music search dialog missing");
     AlertDialog search = (AlertDialog) get("activeDialog");
     ui(
@@ -1731,8 +1731,6 @@ public final class NativeTests extends Instrumentation {
         new String[] {
           "Secret vocab",
           "Open when…",
-          "Tiny victories",
-          "Recipes for two",
           "Little things",
           "Our beginning"
         }) {
@@ -1829,7 +1827,7 @@ public final class NativeTests extends Instrumentation {
     check(
         HeartCounts.count(received, HeartCounts.day(System.currentTimeMillis()), "asechka") == 100,
         "A lost acknowledgement cannot double-project hearts");
-    int[][] routes = {{3, 0, 2}, {1, 1, 1}, {4, 0, 0}, {5, 0, 1}, {2, 1, 2}, {0, 1, 0}};
+    int[][] routes = {{3, 0, 0}, {1, 1, 1}, {2, 1, 2}, {0, 1, 0}};
     for (int[] route : routes) {
       ui(() -> home.open.open(route[0]));
       BookViews book = (BookViews) get("book");
@@ -1894,55 +1892,10 @@ public final class NativeTests extends Instrumentation {
                   });
           book[0].show(false);
         });
-    check(hasText(book[0].content, "Tiny victories"), "Native victory chapter");
+    check(hasText(book[0].content, "Secret vocab"), "Native secret vocab chapter");
     ui(
         () -> {
-          book[0].edit("Victory", null);
-          book[0].editor.fields.get("title").setText("A little win, kept together");
-          book[0].editor.fields.get("note").setText("You kept trying.");
-          book[0].editor.save();
-        });
-    await(() -> book[0].editor == null, "Victory editor saved durably");
-    check(
-        api.cached("/api/journal", true).getJSONArray("victories").length() == 1,
-        "Victory visible offline");
-    ui(
-        () -> {
-          book[0].chapter = 1;
-          book[0].render();
-          book[0].edit("Recipe", null);
-          book[0].editor.fields.get("title").setText("Our fixture meal");
-          book[0].editor.fields.get("ingredients").setText("Rice\nWater");
-          book[0].editor.fields.get("steps").setText("Cook together");
-          book[0].editor.tried.setChecked(true);
-          book[0].editor.me.setSelection(4);
-          book[0].editor.asechka.setSelection(5);
-        });
-    Bitmap image = Bitmap.createBitmap(400, 300, Bitmap.Config.ARGB_8888);
-    image.eraseColor(android.graphics.Color.BLUE);
-    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    image.compress(Bitmap.CompressFormat.JPEG, 85, bytes);
-    image.recycle();
-    String photo =
-        "data:image/jpeg;base64,"
-            + android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP);
-    ui(
-        () -> {
-          book[0].editor.photo = photo;
-          book[0].editor.save();
-        });
-    await(() -> book[0].editor == null, "Recipe editor saved");
-    JSONObject recipe = api.cached("/api/journal", true).getJSONArray("recipes").getJSONObject(0);
-    check(
-        recipe.getJSONObject("ratings").getInt("me") == 4
-            && recipe.getJSONObject("ratings").getInt("asechka") == 5,
-        "Separate native ratings");
-    check(
-        api.image("/api/journal?photo=" + recipe.getString("photoId")).length > 0,
-        "Recipe photo retained offline");
-    ui(
-        () -> {
-          book[0].chapter = 2;
+          book[0].chapter = 0;
           book[0].render();
           book[0].edit("Joke", null);
           book[0].editor.fields.get("title").setText("Our little phrase");
@@ -1978,7 +1931,7 @@ public final class NativeTests extends Instrumentation {
           book[0].editor.save();
         });
     await(() -> book[0].editor == null, "Letter edit saved offline");
-    check(api.store.pending() == 4, "All four changes queued once");
+    check(api.store.pending() == 2, "Both changes queued once");
     ApiClient restart = new ApiClient(getTargetContext(), "http://127.0.0.1:4777");
     offline(restart, true);
     check(
@@ -1988,8 +1941,8 @@ public final class NativeTests extends Instrumentation {
     api.syncPending();
     check(api.store.pending() == 0, "Book and keepsakes synchronized");
     check(
-        api.get("/api/journal").getJSONArray("recipes").length() == 1,
-        "Recipe synchronized exactly once");
+        api.get("/api/journal").getJSONArray("jokes").length() == 1,
+        "Secret vocab synchronized exactly once");
     check(
         api.get("/api/keepsakes")
             .getJSONArray("letters")
@@ -2043,11 +1996,11 @@ public final class NativeTests extends Instrumentation {
         .remove("saved-posts:asnat")
         .commit();
     chrome("Social home");
-    for (int screen : new int[] {0, 1, 5, 2, 3, 4}) {
+    for (int screen : new int[] {0, 1, 2, 3, 4, 6}) {
       call("select", new Class[] {int.class}, screen);
       check(
-          ((ViewGroup) get("bottom")).getChildCount() == 7,
-          "All seven native tabs remain: " + screen);
+          ((ViewGroup) get("bottom")).getChildCount() == 5,
+          "All five streamlined native tabs remain: " + screen);
     }
     call("select", new Class[] {int.class}, 0);
     SocialFeed feed = (SocialFeed) get("feed");
@@ -2235,6 +2188,7 @@ public final class NativeTests extends Instrumentation {
     prepareMotionFixture();
     offline(api, true);
     call("select", new Class[] {int.class}, 1);
+    click("Photos");
     check(((SocialFeed) get("feed")).items().size() == 1, "All includes the legacy photo");
     click("Photography");
     check(((SocialFeed) get("feed")).items().isEmpty(), "Legacy pictures stay in Memories");
@@ -2272,7 +2226,7 @@ public final class NativeTests extends Instrumentation {
     MemoryProjection.apply(preserved, obj("action", "updatePhoto", "id", uploaded.getString("id"), "operationId", UUID.randomUUID().toString(), "caption", "New caption", "date", "2026-10-31"), System.currentTimeMillis());
     check(preserved.getJSONArray("photos").getJSONObject(0).optString("collection").equals("photography"), "Older offline edits preserve category");
     call("select", new Class[] {int.class}, 6);
-    check(((ViewGroup) get("bottom")).getChildCount() == 7, "Games joins the existing navigation");
+    check(((ViewGroup) get("bottom")).getChildCount() == 5, "Games joins the existing navigation");
     for (String title : GamesData.TITLES) check(text(title) != null, "Native game card: " + title);
     check(views(decor(), android.webkit.WebView.class).isEmpty(), "Games renders through native views");
     screenshot("games-hub");
@@ -2467,8 +2421,8 @@ public final class NativeTests extends Instrumentation {
     offline(api, false);
     api.login("native-test-code");
     call("select", new Class[] {int.class}, 0);
-    check(((ViewGroup) get("bottom")).getChildCount() == 7, "Seven native navigation tabs");
-    for (String label : new String[] {"Home", "Photos", "Quotes", "Music", "Our days", "Words"})
+    check(((ViewGroup) get("bottom")).getChildCount() == 5, "Five streamlined native navigation tabs");
+    for (String label : new String[] {"Home", "Memories", "Our days", "Words", "Games"})
       check(text(label) != null, "Navigation label " + label);
     check(
         ((SocialFeed) get("feed")).items().size() > 0, "Native social home restores shared posts");

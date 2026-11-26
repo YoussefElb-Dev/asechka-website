@@ -9,8 +9,10 @@ struct FilmShot: Decodable, Identifiable {
 struct FilmRoll: Decodable, Identifiable {
     let id: String; let title: String; let actor: String; let createdAt: String
     let developedAt: String?; let shots: [FilmShot]
+    var capacity: Int?; var sundayReady: Bool?; var canDevelopEarly: Bool?
+    var rollCapacity: Int { capacity ?? (shots.count > 8 ? 24 : 8) }
 }
-struct FilmCollection: Decodable { let rolls: [FilmRoll]; let writable: Bool }
+struct FilmCollection: Decodable { let rolls: [FilmRoll]; let writable: Bool; var rollSize: Int? }
 
 struct FilmView: View {
     @EnvironmentObject private var universe: UniverseStore
@@ -27,11 +29,12 @@ struct FilmView: View {
     @State private var createID = UUID().uuidString.lowercased()
     @State private var discard = false
     private var current: FilmRoll? { rolls.first { $0.developedAt == nil } }
+    private var activeCap: Int { current?.rollCapacity ?? 8 }
     var body: some View {
         NavigationStack {
             ScrollView { VStack(alignment: .leading, spacing: 22) {
-                Text("24 moments.\nA little surprise.").font(.custom("Manrope-Bold", size: 33))
-                Text("One camera for both of us. No previews. No retakes. Keep a little of your day for each other.").foregroundColor(Palette.muted)
+                Text("8 moments.\nA Sunday surprise.").font(.custom("Manrope-Bold", size: 33))
+                Text("One camera for both of us. No previews. No retakes. Fill 8 frames together — or auto-develop Sunday at 8 PM Eastern.").foregroundColor(Palette.muted)
                 cameraCard
                 Text(message).font(.subheadline).foregroundColor(Palette.purple).accessibilityIdentifier("film-status")
                 if pending != nil {
@@ -74,7 +77,7 @@ struct FilmView: View {
     }
     private var cameraCard: some View {
         VStack(spacing: 18) {
-            HStack { Text("ASECHKA / 24").font(.caption.weight(.bold)).tracking(2); Spacer(); Circle().fill(Color(red: 0.7, green: 0.4, blue: 0.55)).frame(width: 10, height: 10) }
+            HStack { Text("ASECHKA / \(activeCap)").font(.caption.weight(.bold)).tracking(2); Spacer(); Circle().fill(Color(red: 0.7, green: 0.4, blue: 0.55)).frame(width: 10, height: 10) }
             HStack {
                 Image(systemName: "viewfinder").font(.system(size: 36)).foregroundColor(Palette.purple)
                 Spacer()
@@ -83,20 +86,35 @@ struct FilmView: View {
                         .contentShape(Circle())
                 }.buttonStyle(.plain).accessibilityLabel("Open camera").accessibilityHint("Take a secret photo for our roll").accessibilityIdentifier("film.camera.open")
                 Spacer()
-                VStack { Text("LEFT").font(.caption2); Text(String(format: "%02d", 24 - (current?.shots.count ?? 0))).font(.system(size: 28, weight: .medium, design: .monospaced)) }.padding(10).background(Palette.ink, in: RoundedRectangle(cornerRadius: 10)).foregroundColor(.white)
+                VStack { Text("LEFT").font(.caption2); Text(String(format: "%02d", max(0, activeCap - (current?.shots.count ?? 0)))).font(.system(size: 28, weight: .medium, design: .monospaced)) }.padding(10).background(Palette.ink, in: RoundedRectangle(cornerRadius: 10)).foregroundColor(.white)
             }
             Text(current?.title ?? "Our next little adventure").font(.title3.weight(.semibold))
             if let roll = current {
-                Text("\(roll.shots.count) of 24 · Asnat \(roll.shots.filter { $0.actor == "asnat" }.count) · Youssef \(roll.shots.filter { $0.actor == "youssef" }.count)").font(.caption).foregroundColor(Palette.muted)
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 8), spacing: 6) { ForEach(0..<24, id: \.self) { index in Text(index < roll.shots.count ? "♡" : String(index + 1)).font(.caption2).frame(maxWidth: .infinity, minHeight: 29).background(index < roll.shots.count ? Palette.purple : .white.opacity(0.7), in: RoundedRectangle(cornerRadius: 5)).foregroundColor(index < roll.shots.count ? .white : Palette.muted) } }
-                if roll.shots.count == 24 {
-                    Button("Develop our 24 moments ✦") { Task { await mutate(["action":"develop", "rollId":roll.id, "actor":universe.actor, "operationId":UUID().uuidString.lowercased()]) } }.primary().disabled(busy || !writable)
-                } else { Button(action: openCamera) { Label("Take a secret photo", systemImage: "camera.fill").frame(maxWidth: .infinity).primary() }.disabled(busy || !writable || pending != nil).accessibilityIdentifier("film.camera.take") }
+                let cap = roll.rollCapacity
+                Text("\(roll.shots.count) of \(cap) · Asnat \(roll.shots.filter { $0.actor == "asnat" }.count) · Youssef \(roll.shots.filter { $0.actor == "youssef" }.count)").font(.caption).foregroundColor(Palette.muted)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: min(cap, 8)), spacing: 6) {
+                    ForEach(0..<cap, id: \.self) { index in
+                        Text(index < roll.shots.count ? "♡" : String(index + 1))
+                            .font(.caption2).frame(maxWidth: .infinity, minHeight: 29)
+                            .background(index < roll.shots.count ? Palette.purple : .white.opacity(0.7), in: RoundedRectangle(cornerRadius: 5))
+                            .foregroundColor(index < roll.shots.count ? .white : Palette.muted)
+                    }
+                }
+                if roll.shots.count >= cap {
+                    Button("Develop our \(roll.shots.count) moments ✦") { Task { await mutate(["action":"develop", "rollId":roll.id, "actor":universe.actor, "operationId":UUID().uuidString.lowercased()]) } }.primary().disabled(busy || !writable)
+                } else {
+                    Button(action: openCamera) { Label("Take a secret photo", systemImage: "camera.fill").frame(maxWidth: .infinity).primary() }.disabled(busy || !writable || pending != nil).accessibilityIdentifier("film.camera.take")
+                    if roll.shots.count >= 1 {
+                        Button(roll.sundayReady == true ? "Sunday drop ready · Develop now ✦" : "Develop early (\(roll.shots.count) \(roll.shots.count == 1 ? "shot" : "shots")) ✦") {
+                            Task { await mutate(["action":"develop", "rollId":roll.id, "actor":universe.actor, "early":true, "operationId":UUID().uuidString.lowercased()]) }
+                        }.font(.subheadline.weight(.semibold)).foregroundColor(Palette.purple).disabled(busy || !writable)
+                    }
+                }
             } else {
                 TextField("Name our next roll", text: $title).textFieldStyle(.roundedBorder)
-                Button("Load a fresh roll ↗") { Task { if await mutate(["action":"create", "title":title, "actor":universe.actor, "operationId":createID]) { title = ""; createID = UUID().uuidString.lowercased() } } }.primary().disabled(busy || !writable || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || title.count > 80 || pending != nil)
+                Button("Load a fresh 8-shot roll ↗") { Task { if await mutate(["action":"create", "title":title, "actor":universe.actor, "operationId":createID]) { title = ""; createID = UUID().uuidString.lowercased() } } }.primary().disabled(busy || !writable || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || title.count > 80 || pending != nil)
             }
-            Text("Shooting as \(universe.name). Pictures stay sealed until the roll is full and developed.").font(.caption).foregroundColor(Palette.muted)
+            Text("Shooting as \(universe.name). Pictures stay sealed until developed (8 shots, Sunday 8 PM ET, or Develop early).").font(.caption).foregroundColor(Palette.muted)
         }.padding(22).background(Palette.lavender, in: RoundedRectangle(cornerRadius: 28)).overlay(RoundedRectangle(cornerRadius: 28).stroke(Palette.purple.opacity(0.12), lineWidth: 1))
     }
     private func openCamera() {
@@ -104,7 +122,7 @@ struct FilmView: View {
         else if pending != nil { cameraNotice = "Your last photo is sealed on this phone. Retry saving it before taking another." }
         else if !writable { cameraNotice = "Reconnect our shared camera using Refresh, then try again." }
         else if let roll = current {
-            if roll.shots.count >= 24 { cameraNotice = "This roll is full. Develop our 24 moments before loading a fresh roll." }
+            if roll.shots.count >= roll.rollCapacity { cameraNotice = "This roll is full. Develop our moments before loading a fresh roll." }
             else { camera = true; Touch.tap() }
         } else { cameraNotice = "Name and load a fresh roll below before taking your first photo." }
     }
@@ -113,17 +131,17 @@ struct FilmView: View {
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--film-preview") {
             let date = "2026-11-02T20:00:00Z"
-            let frames = (0..<24).map { FilmShot(id: "fixture-\($0)", actor: $0 % 2 == 0 ? "asnat" : "youssef", createdAt: date, caption: "A little surprise, kept for you. ♡", reactions: ["asnat":"", "youssef":""]) }
-            rolls = [FilmRoll(id: "current", title: "Our ordinary November", actor: "asnat", createdAt: date, developedAt: nil, shots: Array(frames.prefix(18))), FilmRoll(id: "album", title: "A weekend in little pieces", actor: "youssef", createdAt: date, developedAt: date, shots: frames)]
-            writable = ProcessInfo.processInfo.arguments.contains("--film-capture-preview"); message = "Preview · 18 moments kept. Six little surprises left."; return
+            let frames = (0..<8).map { FilmShot(id: "fixture-\($0)", actor: $0 % 2 == 0 ? "asnat" : "youssef", createdAt: date, caption: "A little surprise, kept for you. ♡", reactions: ["asnat":"", "youssef":""]) }
+            rolls = [FilmRoll(id: "current", title: "Our ordinary November", actor: "asnat", createdAt: date, developedAt: nil, shots: Array(frames.prefix(5)), capacity: 8), FilmRoll(id: "album", title: "A weekend in little pieces", actor: "youssef", createdAt: date, developedAt: date, shots: frames, capacity: 8)]
+            writable = ProcessInfo.processInfo.arguments.contains("--film-capture-preview"); message = "Preview · 5 of 8 moments kept."; return
         }
         #endif
-        do { let bytes = try await universe.request("/api/camera"); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); rolls = collection.rolls; writable = collection.writable; try? universe.vault.write("film-collection", bytes); if pending == nil { message = "Connected. Our ordinary, extraordinary life. ♡" } }
+        do { let bytes = try await universe.request("/api/camera"); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); rolls = collection.rolls; writable = collection.writable; try? universe.vault.write("film-collection", bytes); try? universe.vault.write("snapshot:/api/camera", bytes); universe.restore(); if pending == nil { message = "Connected. Our ordinary, extraordinary life. ♡" } }
         catch { if rolls.isEmpty, let saved = universe.vault.read("film-collection"), let collection = try? JSONDecoder().decode(FilmCollection.self, from: saved) { rolls = collection.rolls }; writable = false; message = error.localizedDescription }
     }
     @MainActor @discardableResult private func mutate(_ body: [String:Any]) async -> Bool {
         guard !busy else { return false }; busy = true; defer { busy = false }
-        do { let bytes = try await universe.request("/api/camera", body: JSONSerialization.data(withJSONObject: body)); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); rolls = collection.rolls; writable = collection.writable; try? universe.vault.write("film-collection", bytes); message = body["action"] as? String == "develop" ? "Developed. Open our roll together below. ♡" : "Saved for both of us. ♡"; Touch.tap(true); return true }
+        do { let bytes = try await universe.request("/api/camera", body: JSONSerialization.data(withJSONObject: body)); let collection = try JSONDecoder().decode(FilmCollection.self, from: bytes); rolls = collection.rolls; writable = collection.writable; try? universe.vault.write("film-collection", bytes); try? universe.vault.write("snapshot:/api/camera", bytes); universe.restore(); message = body["action"] as? String == "develop" ? "Developed. Open our roll together below. ♡" : "Saved for both of us. ♡"; Touch.tap(true); return true }
         catch { message = error.localizedDescription; return false }
     }
     @MainActor private func capture(_ bytes: Data, caption: String) async {
@@ -145,10 +163,12 @@ struct FilmAlbumView: View {
     var changed: () async -> Void
     @State private var index = 0
     @State private var image: UIImage?
+    @State private var rawBytes: Data?
     @State private var message = ""
     @State private var reactions: [String:String] = [:]
     @State private var savedReactions: [String:[String:String]] = [:]
     @State private var busy = false
+    @State private var savedToPhotos = Set<String>()
     private var safeIndex: Int { roll.shots.isEmpty ? 0 : min(max(index, 0), roll.shots.count - 1) }
     private var shot: FilmShot? { roll.shots.isEmpty ? nil : roll.shots[safeIndex] }
     private func reactionText(_ key: String) -> String { guard let value = reactions[key], !value.isEmpty else { return "—" }; return value }
@@ -161,6 +181,11 @@ struct FilmAlbumView: View {
                 if let caption = shot.caption, !caption.isEmpty { Text(caption).font(.title3) }
                 HStack { ForEach(["♡", "😂", "🥹", "✨"], id: \.self) { reaction in Button(reaction) { Touch.tap(); Task { await react(reaction) } }.font(.title2).frame(minWidth: 48, minHeight: 48).background(reactions[universe.actor] == reaction ? Palette.lavender : .white, in: RoundedRectangle(cornerRadius: 12)).disabled(busy) } }
                 Text("Asnat \(reactionText("asnat")) · Youssef \(reactionText("youssef"))").font(.caption).foregroundColor(Palette.purple)
+                if let bytes = rawBytes {
+                    Button(savedToPhotos.contains(shot.id) ? "Saved to Photos ♡" : "Save to our Photos timeline ♡") {
+                        saveToMemories(shot: shot, bytes: bytes)
+                    }.font(.subheadline.weight(.semibold)).foregroundColor(Palette.purple).disabled(savedToPhotos.contains(shot.id))
+                }
                 if !message.isEmpty { Text(message).font(.caption).foregroundColor(Palette.purple) }
                 HStack { Button("← Previous") { index = max(0, safeIndex - 1); Touch.tap() }.disabled(safeIndex == 0); Spacer(); Button("Next moment →") { index = min(roll.shots.count - 1, safeIndex + 1); Touch.tap() }.disabled(safeIndex >= roll.shots.count - 1) }.padding(.vertical, 12)
             } else {
@@ -169,12 +194,25 @@ struct FilmAlbumView: View {
         }.padding(22) }.background(Palette.background).navigationTitle(roll.title).navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } } }
         .task(id: shot?.id ?? "") {
             guard let shot else { return }
-            image = nil; reactions = savedReactions[shot.id] ?? shot.reactions ?? [:]; message = ""
+            image = nil; rawBytes = nil; reactions = savedReactions[shot.id] ?? shot.reactions ?? [:]; message = ""
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--film-preview"), let path = Bundle.main.path(forResource: "cats-cuddle", ofType: "jpg", inDirectory: "default") { image = UIImage(contentsOfFile: path); return }
             #endif
-            do { let bytes = try await universe.request("/api/camera?photo=" + shot.id); guard !Task.isCancelled else { return }; image = UIImage(data: bytes); try? universe.vault.write("film-photo:" + shot.id, bytes) } catch { if let bytes = universe.vault.read("film-photo:" + shot.id) { image = UIImage(data: bytes) }; message = error.localizedDescription }
+            do { let bytes = try await universe.request("/api/camera?photo=" + shot.id); guard !Task.isCancelled else { return }; rawBytes = bytes; image = UIImage(data: bytes); try? universe.vault.write("film-photo:" + shot.id, bytes) } catch { if let bytes = universe.vault.read("film-photo:" + shot.id) { rawBytes = bytes; image = UIImage(data: bytes) }; message = error.localizedDescription }
         }
+    }
+    private func saveToMemories(shot: FilmShot, bytes: Data) {
+        let date = String(shot.createdAt.prefix(10))
+        let body: [String:Any] = [
+            "action": "addPhoto",
+            "date": date.count == 10 ? date : HeartLedger.day(),
+            "author": shot.actor,
+            "caption": (shot.caption?.isEmpty == false ? shot.caption! : "From film roll: \(roll.title)"),
+            "collection": "memories",
+            "photo": "data:image/jpeg;base64," + bytes.base64EncodedString()
+        ]
+        do { try universe.enqueue("/api/memories", body); savedToPhotos.insert(shot.id); message = "Saved to our Photos timeline ♡"; Touch.tap(true) }
+        catch { message = error.localizedDescription }
     }
     @MainActor private func react(_ reaction: String) async {
         guard let shot else { return }

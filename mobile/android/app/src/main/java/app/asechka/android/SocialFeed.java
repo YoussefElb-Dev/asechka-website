@@ -19,6 +19,8 @@ final class SocialFeed extends ListView {
 
     void react(Post post, boolean liked, View anchor);
 
+    void reactEmoji(Post post, String emoji, View anchor);
+
     void comments(Post post);
 
     void explore(Post post);
@@ -63,6 +65,12 @@ final class SocialFeed extends ListView {
       return likes != null && likes.optBoolean(actor);
     }
 
+    String reaction(String actor) {
+      JSONObject social = value.optJSONObject("social");
+      JSONObject reactions = social == null ? null : social.optJSONObject("reactions");
+      return reactions == null ? "" : reactions.optString(actor, "");
+    }
+
     JSONArray comments() {
       JSONObject social = value.optJSONObject("social");
       JSONArray comments = social == null ? null : social.optJSONArray("comments");
@@ -90,6 +98,8 @@ final class SocialFeed extends ListView {
   private final ArrayList<Post> posts = new ArrayList<>();
   private boolean onlySaved;
   private String photoSection = "all";
+  private int memoryFilter = 0;
+  private String searchQuery = "";
   private int scrollState;
   private JSONObject delayedData;
   private TextView empty;
@@ -175,6 +185,10 @@ final class SocialFeed extends ListView {
 
   void photoSection(String section) { photoSection = section; }
 
+  void memoryFilter(int filter) { memoryFilter = filter; }
+
+  void searchQuery(String q) { searchQuery = q == null ? "" : q.trim().toLowerCase(Locale.ROOT); }
+
   void submit(JSONObject data, boolean keep) {
     if (keep && scrollState != AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
       delayedData = data;
@@ -187,8 +201,9 @@ final class SocialFeed extends ListView {
     posts.clear();
     if (data != null)
       for (String collection : new String[] {"photos", "quotes"}) {
-        if (mode == 1 && collection.equals("quotes") || mode == 5 && collection.equals("photos"))
-          continue;
+        if (mode == 1 && memoryFilter == 1 && collection.equals("quotes")) continue;
+        if (mode == 1 && memoryFilter == 2 && collection.equals("photos")) continue;
+        if (mode == 5 && collection.equals("photos")) continue;
         JSONArray list = data.optJSONArray(collection);
         if (list == null) continue;
         for (int i = 0; i < list.length(); i++) {
@@ -196,8 +211,12 @@ final class SocialFeed extends ListView {
           JSONObject value =
               raw instanceof JSONObject ? (JSONObject) raw : OfflineStore.json("text", raw);
           Post post = new Post(value, collection.equals("photos") ? "photo" : "quote", i);
-          if (mode == 1 && !photoSection.equals("all")
+          if (mode == 1 && memoryFilter == 1 && !photoSection.equals("all")
               && !photoSection.equals(value.optString("collection", "memories"))) continue;
+          if (!searchQuery.isEmpty()) {
+            String hay = (value.optString("text") + " " + value.optString("caption") + " " + value.optString("note") + " " + post.name() + " " + value.optString("date")).toLowerCase(Locale.ROOT);
+            if (!hay.contains(searchQuery)) continue;
+          }
           if (!onlySaved || host.saved(post)) posts.add(post);
         }
       }
@@ -284,6 +303,8 @@ final class SocialFeed extends ListView {
     final ImageView photo, quoteBackdrop;
     final TextView quote;
     final Icon like, bookmark;
+    final TextView[] emojiButtons = new TextView[6];
+    static final String[] REACTION_EMOJIS = {"♡", "😂", "🥹", "✨", "🔥", "💋"};
     String source = "";
     String backdropSource = "";
     Post item;
@@ -411,6 +432,24 @@ final class SocialFeed extends ListView {
       bookmark.setOnClickListener(v -> host.savePost(item));
       actions.addView(bookmark, new LinearLayout.LayoutParams(u.dp(44), u.dp(48)));
       post.addView(actions);
+      LinearLayout emojiRow = u.row(6);
+      emojiRow.setPadding(u.dp(18), 0, u.dp(18), u.dp(8));
+      for (int i = 0; i < REACTION_EMOJIS.length; i++) {
+        final String emoji = REACTION_EMOJIS[i];
+        TextView pill = u.text(emoji, 15, Ui.INK);
+        pill.setGravity(Gravity.CENTER);
+        pill.setPadding(u.dp(8), u.dp(3), u.dp(8), u.dp(3));
+        pill.setBackground(u.shape(Ui.BG, 16));
+        pill.setContentDescription("React " + emoji);
+        pill.setOnClickListener(v -> {
+          Motion.haptic(pill, false);
+          String current = item == null ? "" : item.reaction(host.actor());
+          host.reactEmoji(item, emoji.equals(current) ? "" : emoji, pill);
+        });
+        emojiButtons[i] = pill;
+        emojiRow.addView(pill, new LinearLayout.LayoutParams(-2, u.dp(30)));
+      }
+      post.addView(emojiRow);
       captionBox = u.column();
       captionBox.setPadding(u.dp(20), 0, u.dp(20), u.dp(20));
       post.addView(captionBox);
@@ -501,13 +540,23 @@ final class SocialFeed extends ListView {
       bookmark.on = host.saved(next);
       bookmark.invalidate();
       bookmark.setContentDescription(bookmark.on ? "Unsave post" : "Save post");
+      String mine = next.reaction(host.actor());
+      for (int i = 0; i < REACTION_EMOJIS.length; i++) {
+        boolean active = REACTION_EMOJIS[i].equals(mine);
+        GradientDrawable bg = u.shape(active ? Ui.PALE : Ui.BG, 16);
+        bg.setStroke(u.dp(1), active ? Ui.PURPLE : 0xffececf7);
+        emojiButtons[i].setBackground(bg);
+      }
       boolean asnat = next.liked("asnat"), youssef = next.liked("youssef");
-      likes.setText(
+      String baseLike =
           asnat && youssef
               ? "Liked by you both ♡"
               : asnat
                   ? "Liked by Asnat ♡"
-                  : youssef ? "Liked by Youssef ♡" : "A little love goes a long way");
+                  : youssef ? "Liked by Youssef ♡" : "A little love goes a long way";
+      String rA = next.reaction("asnat"), rY = next.reaction("youssef");
+      String reactSummary = (!rA.isEmpty() ? "Asnat " + rA : "") + (!rA.isEmpty() && !rY.isEmpty() ? " · " : "") + (!rY.isEmpty() ? "Youssef " + rY : "");
+      likes.setText(reactSummary.isEmpty() ? baseLike : baseLike + " · " + reactSummary);
       String text = next.value.optString(next.kind.equals("photo") ? "caption" : "note");
       caption.setVisibility(text.isEmpty() ? GONE : VISIBLE);
       caption.setText(text);
