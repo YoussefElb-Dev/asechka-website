@@ -33,6 +33,10 @@ public final class DisposableCameraActivity extends Activity {
   private Button shutter;
   private final Runnable poll = new Runnable() { public void run() { if (visible) { refresh(); main.postDelayed(this, 15000); } } };
 
+  @Override public boolean dispatchTouchEvent(MotionEvent ev) {
+    Ui.dismissKeyboardOnOutsideTap(this, getWindow(), ev, root);
+    return super.dispatchTouchEvent(ev);
+  }
   @Override public void onCreate(Bundle state) {
     super.onCreate(state); api = new ApiClient(this); u = new Ui(this); images = new Images(api);
     getWindow().setStatusBarColor(Ui.BG); getWindow().setNavigationBarColor(Ui.BG);

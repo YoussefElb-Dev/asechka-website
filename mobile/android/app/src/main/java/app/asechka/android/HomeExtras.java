@@ -52,7 +52,7 @@ final class HomeExtras {
     MilestoneRingView(android.content.Context c) {
       super(c);
       float d = c.getResources().getDisplayMetrics().density;
-      stroke = 4.0f * d;
+      stroke = 4.2f * d;
       trackPaint.setStyle(Paint.Style.STROKE);
       trackPaint.setStrokeWidth(stroke);
       trackPaint.setColor(0x286b5cb5);
@@ -62,7 +62,7 @@ final class HomeExtras {
       arcPaint.setColor(0xff6c5ce7);
       textPaint.setColor(Ui.INK);
       textPaint.setTextAlign(Paint.Align.CENTER);
-      textPaint.setTextSize(10.5f * d);
+      textPaint.setTextSize(11f * d);
       textPaint.setFakeBoldText(true);
     }
 
@@ -285,11 +285,11 @@ final class HomeExtras {
 
     LinearLayout milestoneBadge = u.row(10);
     milestoneBadge.setGravity(Gravity.CENTER_VERTICAL);
-    milestoneBadge.setMinimumWidth(u.dp(148));
-    milestoneBadge.setPadding(u.dp(13), u.dp(8), u.dp(13), u.dp(8));
+    milestoneBadge.setMinimumWidth(u.dp(170));
+    milestoneBadge.setPadding(u.dp(14), u.dp(9), u.dp(14), u.dp(9));
     milestoneBadge.setBackground(u.shape(0xd1ffffff, 16, 0x1a6b5cb5));
     milestoneRing = new MilestoneRingView(activity);
-    milestoneBadge.addView(milestoneRing, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
+    milestoneBadge.addView(milestoneRing, new LinearLayout.LayoutParams(u.dp(46), u.dp(46)));
     LinearLayout milestoneCopy = u.column();
     TextView nextWord = u.text("Next milestone", 10, Ui.MUTED);
     Compat.font(nextWord, R.font.dm_sans, 600);
@@ -681,7 +681,7 @@ final class HomeExtras {
                 sinceLabel.setText(
                     start <= 0
                         ? "Set our beginning in Since us"
-                        : "Since " + shortBeginning(start) + " · Eastern");
+                        : "Since " + shortBeginning(start) + " · ET");
                 if (milestoneRing != null && milestoneNextText != null) {
                   long[] marks = {50, 100, 150, 180, 200, 250, 300, 365, 500, 730, 1000, 1095, 1460, 1825};
                   long prev = 0, next = ((days / 365) + 1) * 365;
@@ -956,7 +956,7 @@ final class HomeExtras {
 
   private String shortBeginning(long start) {
     java.text.SimpleDateFormat format =
-        new java.text.SimpleDateFormat("MMMM d, yyyy 'at' h:mm a", Locale.US);
+        new java.text.SimpleDateFormat("MMM d, yyyy · h:mm a", Locale.US);
     format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
     return format.format(new Date(start));
   }

@@ -45,6 +45,7 @@ enum BookDates {
     }
     static func dayString(_ date:Date)->String {let f=DateFormatter();f.locale=Locale(identifier:"en_US_POSIX");f.timeZone=eastern;f.dateFormat="yyyy-MM-dd";return f.string(from:date)}
     static func display(_ date:Date,time:Bool=false)->String {let f=DateFormatter();f.locale=Locale(identifier:"en_US");f.timeZone=eastern;f.dateFormat=time ? "MMMM d, yyyy 'at' h:mm a":"MMMM d, yyyy";return f.string(from:date)}
+    static func shortDisplay(_ date:Date)->String {let f=DateFormatter();f.locale=Locale(identifier:"en_US");f.timeZone=eastern;f.dateFormat="MMM d, yyyy · h:mm a";return f.string(from:date)}
     static func next(_ start:Date,yearly:Bool,now:Date=Date())->Date {
         let component:Calendar.Component=yearly ? .year:.month
         var count=max(1,calendar.dateComponents([component],from:start,to:now).value(for:component) ?? 1)

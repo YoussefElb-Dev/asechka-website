@@ -107,7 +107,7 @@ struct KeyboardDismissWindow:UIViewRepresentable {
         func gestureRecognizer(_ gestureRecognizer:UIGestureRecognizer,shouldReceive touch:UITouch)->Bool{
             var current=touch.view
             while let view=current {
-                if view is UITextField || view is UITextView { return false }
+                if view is UITextField || view is UITextView || view is UISearchBar { return false }
                 current=view.superview
             }
             return true

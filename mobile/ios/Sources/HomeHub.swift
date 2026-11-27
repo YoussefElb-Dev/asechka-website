@@ -290,26 +290,26 @@ struct HomeHub:View {
                                 Text("\(days) days · "+String(format:"%02d:%02d:%02d",elapsed/3600%24,elapsed/60%60,elapsed%60))
                                     .font(.system(size:18,weight:.bold)).monospacedDigit().foregroundColor(Palette.ink)
                                     .lineLimit(1).minimumScaleFactor(0.85)
-                                Text("Since "+BookDates.display(start,time:true)+" · Eastern")
+                                Text("Since "+BookDates.shortDisplay(start)+" · ET")
                                     .font(.system(size:10)).foregroundColor(Palette.muted)
                                     .lineLimit(1).minimumScaleFactor(0.8)
                             }
                             Spacer(minLength:6)
                             HStack(spacing:10){
                                 ZStack{
-                                    Circle().stroke(Palette.purple.opacity(0.16),lineWidth:4)
+                                    Circle().stroke(Palette.purple.opacity(0.16),lineWidth:4.2)
                                     Circle().trim(from:0,to:m.progress)
-                                        .stroke(Palette.violet,style:StrokeStyle(lineWidth:4,lineCap:.round))
+                                        .stroke(Palette.violet,style:StrokeStyle(lineWidth:4.2,lineCap:.round))
                                         .rotationEffect(.degrees(-90))
-                                    Text(m.label).font(.system(size:10.5,weight:.bold)).foregroundColor(Palette.ink)
-                                }.frame(width:44,height:44)
+                                    Text(m.label).font(.system(size:11,weight:.bold)).foregroundColor(Palette.ink)
+                                }.frame(width:46,height:46)
                                 VStack(alignment:.leading,spacing:2){
                                     Text("Next milestone").font(.system(size:9.5,weight:.semibold)).foregroundColor(Palette.muted).lineLimit(1)
                                     Text("in \(m.remaining) \(m.remaining==1 ? "day":"days")").font(.system(size:12.5,weight:.bold)).foregroundColor(Palette.violet).lineLimit(1)
                                 }
                             }
-                            .frame(minWidth:148,alignment:.leading)
-                            .padding(.horizontal,13).padding(.vertical,8)
+                            .frame(minWidth:170,alignment:.leading)
+                            .padding(.horizontal,14).padding(.vertical,9)
                             .background(Color.white.opacity(0.82),in:RoundedRectangle(cornerRadius:16,style:.continuous))
                             .overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))
                         }

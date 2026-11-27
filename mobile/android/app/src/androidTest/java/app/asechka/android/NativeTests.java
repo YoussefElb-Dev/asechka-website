@@ -1698,6 +1698,54 @@ public final class NativeTests extends Instrumentation {
       check(decor().getWidth()>0,"Native "+names[i]+" screen renders");
     }
     call("select",new Class[]{int.class},0);
+    Thread.sleep(500);
+    final float density = activity.getResources().getDisplayMetrics().density;
+    ui(() -> {
+      try {
+        View bottomBar = (View) get("bottom");
+        int[] bxy = new int[2];
+        bottomBar.getLocationOnScreen(bxy);
+        int gap = decor().getHeight() - (bxy[1] + bottomBar.getHeight());
+        check(gap <= Math.round(2 * density), "Bottom bar flush with screen bottom, gap=" + gap);
+        check(bottomBar.getPaddingBottom() <= Math.round(18 * density), "Bottom bar padding compact: " + bottomBar.getPaddingBottom());
+        TextView nextMilestone = text("Next milestone");
+        if (nextMilestone != null && nextMilestone.getParent() != null && nextMilestone.getParent().getParent() instanceof View) {
+          View badge = (View) nextMilestone.getParent().getParent();
+          check(badge.getWidth() >= Math.round(166 * density), "Together milestone badge wider (>=166dp), got=" + (badge.getWidth() / density));
+        }
+      } catch (Exception e) { throw new RuntimeException(e); }
+    });
+    call("select",new Class[]{int.class},4);
+    Thread.sleep(600);
+    final int[] inputPt = new int[2];
+    final int[] outsidePt = new int[2];
+    ui(() -> {
+      ArrayList<EditText> edits = views(decor(), EditText.class);
+      check(!edits.isEmpty(), "Words screen has EditText");
+      EditText et = edits.get(0);
+      int[] xy = new int[2];
+      et.getLocationOnScreen(xy);
+      inputPt[0] = xy[0] + et.getWidth() / 2;
+      inputPt[1] = xy[1] + Math.min(et.getHeight() / 2, Math.round(24 * density));
+      TextView titleView = text("Our words.");
+      check(titleView != null, "Words title visible");
+      int[] txy = new int[2];
+      titleView.getLocationOnScreen(txy);
+      outsidePt[0] = txy[0] + titleView.getWidth() / 2;
+      outsidePt[1] = txy[1] + titleView.getHeight() / 2;
+    });
+    long down = SystemClock.uptimeMillis();
+    getUiAutomation().injectInputEvent(MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, inputPt[0], inputPt[1], 0), true);
+    getUiAutomation().injectInputEvent(MotionEvent.obtain(down, down + 40, MotionEvent.ACTION_UP, inputPt[0], inputPt[1], 0), true);
+    Thread.sleep(700);
+    screenshot("design-words-keyboard");
+    long down2 = SystemClock.uptimeMillis();
+    getUiAutomation().injectInputEvent(MotionEvent.obtain(down2, down2, MotionEvent.ACTION_DOWN, outsidePt[0], outsidePt[1], 0), true);
+    getUiAutomation().injectInputEvent(MotionEvent.obtain(down2, down2 + 40, MotionEvent.ACTION_UP, outsidePt[0], outsidePt[1], 0), true);
+    Thread.sleep(700);
+    ui(() -> check(!(activity.getCurrentFocus() instanceof EditText), "Tapping outside EditText clears focus and hides keyboard"));
+    screenshot("design-words-dismissed");
+    call("select",new Class[]{int.class},0);
     LiveLocationCard map=(LiveLocationCard)get("liveLocationCard");
     check(map!=null && map.map.getHeight()>0,"Home map renders below shortcuts");
     ui(map::expand);

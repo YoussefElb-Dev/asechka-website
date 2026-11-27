@@ -117,8 +117,17 @@ struct RootView:View {
             }
         }
     }
+    private var windowSafeBottom:CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap{$0 as? UIWindowScene}
+            .flatMap{$0.windows}
+            .first{$0.isKeyWindow}?.safeAreaInsets.bottom ?? 0
+    }
     private var shell:some View {
-        ZStack(alignment:.bottom){
+        let hasHomeBar=windowSafeBottom > 16
+        let tabBottomPad:CGFloat = hasHomeBar ? 16 : 6
+        let contentBottomPad:CGFloat = keyboardOpen ? 0 : (hasHomeBar ? 58 : 48)
+        return ZStack(alignment:.bottom){
             VStack(spacing:0){
                 HStack(spacing:8){
                     Text("asechka.").font(.custom("Manrope-Bold",size:25))
@@ -137,7 +146,7 @@ struct RootView:View {
                 }.frame(maxWidth:.infinity,maxHeight:.infinity).id(tab)
                     .transition(.opacity.combined(with:.offset(x:reduced ? 0:8)))
             }
-            .padding(.bottom,keyboardOpen ? 0:52)
+            .padding(.bottom,contentBottomPad)
 
             if !keyboardOpen {
                 HStack(spacing:0){ForEach(0..<tabs.count,id:\.self){index in
@@ -151,7 +160,7 @@ struct RootView:View {
                                         .matchedGeometryEffect(id:"active-tab",in:tabMotion)
                                 }
                             }
-                            Spacer().frame(height:5)
+                            Spacer().frame(height:3)
                             Image(systemName:active ? tabs[index].1 : tabs[index].0)
                                 .font(.system(size:20,weight:active ? .semibold : .regular))
                                 .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.84))
@@ -163,7 +172,7 @@ struct RootView:View {
                                 .lineLimit(1).minimumScaleFactor(0.85)
                         }
                         .frame(maxWidth:.infinity)
-                        .padding(.bottom,6)
+                        .padding(.bottom,tabBottomPad)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)

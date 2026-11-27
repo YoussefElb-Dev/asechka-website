@@ -25,6 +25,25 @@ final class Ui {
     this.c = c;
   }
 
+  static void dismissKeyboardOnOutsideTap(Context c, Window window, MotionEvent ev, View fallbackFocus) {
+    if (ev == null || ev.getAction() != MotionEvent.ACTION_DOWN || window == null) return;
+    View focused = window.getCurrentFocus();
+    if (focused instanceof EditText) {
+      Rect outRect = new Rect();
+      focused.getGlobalVisibleRect(outRect);
+      if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+        android.view.inputmethod.InputMethodManager imm =
+            (android.view.inputmethod.InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+        focused.clearFocus();
+        if (fallbackFocus != null) {
+          fallbackFocus.setFocusableInTouchMode(true);
+          fallbackFocus.requestFocus();
+        }
+      }
+    }
+  }
+
   Sheet sheet(String title, String subtitle) {
     return new Sheet(title, subtitle);
   }
@@ -79,19 +98,7 @@ final class Ui {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-      if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-        View focused = getCurrentFocus();
-        if (focused instanceof EditText) {
-          Rect outRect = new Rect();
-          focused.getGlobalVisibleRect(outRect);
-          if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
-            focused.clearFocus();
-            android.view.inputmethod.InputMethodManager imm =
-                (android.view.inputmethod.InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
-          }
-        }
-      }
+      dismissKeyboardOnOutsideTap(c, getWindow(), ev, panel);
       return super.dispatchTouchEvent(ev);
     }
 

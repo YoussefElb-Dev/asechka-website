@@ -912,8 +912,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private int navBottomPad(int inset) {
-    if (inset > u.dp(28)) return inset;
-    return u.dp(2);
+    if (inset >= u.dp(36)) return inset;
+    return inset > 0 ? u.dp(15) : u.dp(4);
   }
 
   private void renderNav() {
@@ -942,7 +942,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
       ImageView icon = Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.MUTED);
       LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(u.dp(20), u.dp(20));
-      iconParams.topMargin = u.dp(6);
+      iconParams.topMargin = u.dp(4);
       tab.addView(icon, iconParams);
       if (selected && motion()) {
         icon.setScaleX(.88f);
@@ -965,7 +965,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       label.setGravity(Gravity.CENTER);
       Compat.font(label, R.font.dm_sans, selected ? 600 : 500);
       u.add(tab, label, 2);
-      tab.setMinimumHeight(u.dp(compact() ? 42 : 46));
+      tab.setMinimumHeight(u.dp(compact() ? 38 : 40));
       tab.setOnClickListener(v -> select(target));
       bottom.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
     }
@@ -1983,25 +1983,16 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-      View focused = getCurrentFocus();
-      if (focused instanceof EditText) {
-        Rect outRect = new Rect();
-        focused.getGlobalVisibleRect(outRect);
-        if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
-          focused.clearFocus();
-          hideKeyboard();
-        }
-      }
-    }
+    Ui.dismissKeyboardOnOutsideTap(this, getWindow(), ev, root);
     return super.dispatchTouchEvent(ev);
   }
 
   private void hideKeyboard() {
     View focus = getCurrentFocus();
-    if (focus != null)
+    IBinder token = focus != null ? focus.getWindowToken() : getWindow().getDecorView().getWindowToken();
+    if (token != null)
       ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-          .hideSoftInputFromWindow(focus.getWindowToken(), 0);
+          .hideSoftInputFromWindow(token, 0);
   }
 
   private JSONObject object(Object... pairs) {
