@@ -56,7 +56,7 @@ final class GamesView extends ScrollView implements GamesClient.Listener, GamesB
     current=client.rooms.get(client.selectedRoom);
     focusedPlay=current!=null&&!"lobby".equals(current.optString("status"));
     activity.gamesFocus(focusedPlay,focusedPlay&&"pool".equals(current.optString("game")));
-    body.setPadding(dp(focusedPlay?12:18),dp(focusedPlay?4:20),dp(focusedPlay?12:18),dp(focusedPlay?8:96));
+    body.setPadding(dp(focusedPlay?12:18),dp(focusedPlay?4:20),dp(focusedPlay?12:18),dp(focusedPlay?8:106));
     StringBuilder key=new StringBuilder(client.selectedRoom).append(client.connected).append(client.status).append(client.error).append(client.commandBusy()).append(client.pending==null?"":client.pending.optString("id"));
     if(current!=null)key.append(current.optLong("seq")).append(current.optString("status")).append(GamesData.array(current,"players")).append(GamesData.array(current,"rematchReady")).append(current.optLong("availableAt")>System.currentTimeMillis());
     else {key.append(client.presence);for(JSONObject r:client.rooms.values())key.append(r.optString("id")).append(r.optLong("seq")).append(GamesData.array(r,"players"));}

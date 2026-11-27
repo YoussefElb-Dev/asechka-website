@@ -182,8 +182,8 @@ struct RootView:View {
     }
     private var shell:some View {
         let hasHomeBar=windowSafeBottom > 16
-        let dockBottomPad:CGFloat = hasHomeBar ? 14 : 8
-        let contentBottomPad:CGFloat = keyboardOpen ? 0 : (hasHomeBar ? 82 : 76)
+        let dockBottomPad:CGFloat = hasHomeBar ? 15 : 8
+        let contentBottomPad:CGFloat = keyboardOpen ? 0 : (hasHomeBar ? 88 : 80)
         return ZStack(alignment:.bottom){
             VStack(spacing:0){
                 topBar
@@ -199,7 +199,7 @@ struct RootView:View {
 
             if !keyboardOpen {
                 HStack(spacing:10){
-                    HStack(spacing:2){
+                    HStack(spacing:3){
                         ForEach(0..<tabs.count,id:\.self){index in
                             let active = tab == index
                             Button{switchTab(index)}label:{
@@ -207,18 +207,22 @@ struct RootView:View {
                                     if active {
                                         Capsule()
                                             .fill(Color.white)
-                                            .shadow(color:Color.black.opacity(0.22),radius:6,x:0,y:2)
+                                            .overlay(
+                                                Capsule()
+                                                    .strokeBorder(Palette.purple.opacity(0.18),lineWidth:1)
+                                            )
+                                            .shadow(color:Palette.purple.opacity(0.16),radius:6,x:0,y:2)
                                             .matchedGeometryEffect(id:"active-nav-pill",in:tabMotion)
                                     }
                                     HStack(spacing:5){
                                         Image(systemName:active ? tabs[index].1 : tabs[index].0)
                                             .font(.system(size:16,weight:active ? .bold : .medium))
-                                            .foregroundColor(active ? Palette.ink : Color.white.opacity(0.62))
+                                            .foregroundColor(active ? Palette.violet : Palette.ink.opacity(0.62))
                                             .frame(width:20,height:20)
                                         if active {
                                             Text(tabs[index].2)
                                                 .font(.system(size:12,weight:.bold))
-                                                .foregroundColor(Palette.ink)
+                                                .foregroundColor(Palette.violet)
                                                 .lineLimit(1)
                                                 .fixedSize(horizontal:true,vertical:false)
                                                 .transition(.opacity.combined(with:.scale(scale:0.9,anchor:.leading)))
@@ -226,10 +230,10 @@ struct RootView:View {
                                     }
                                     .padding(.horizontal,active ? 13 : 0)
                                     .frame(maxWidth:active ? nil : .infinity)
-                                    .frame(height:44)
+                                    .frame(height:42)
                                 }
                                 .frame(maxWidth:active ? nil : .infinity)
-                                .frame(height:44)
+                                .frame(height:42)
                                 .contentShape(Capsule())
                             }
                             .buttonStyle(.plain)
@@ -239,36 +243,41 @@ struct RootView:View {
                     }
                     .padding(6)
                     .frame(maxWidth:.infinity)
-                    .background(Color(red:26/255,green:31/255,blue:54/255).opacity(0.98),in:Capsule())
+                    .background(.ultraThinMaterial,in:Capsule())
+                    .background(
+                        LinearGradient(colors:[Palette.lavender.opacity(0.95),Palette.blue.opacity(0.95)],startPoint:.topLeading,endPoint:.bottomTrailing),
+                        in:Capsule()
+                    )
                     .overlay(
                         Capsule()
-                            .strokeBorder(LinearGradient(colors:[Color.white.opacity(0.26),Color.white.opacity(0.06)],startPoint:.top,endPoint:.bottom),lineWidth:1)
+                            .strokeBorder(LinearGradient(colors:[Color.white.opacity(0.95),Palette.purple.opacity(0.24)],startPoint:.top,endPoint:.bottom),lineWidth:1.2)
                     )
-                    .shadow(color:Color(red:26/255,green:31/255,blue:54/255).opacity(0.28),radius:16,x:0,y:8)
+                    .shadow(color:Palette.purple.opacity(0.18),radius:14,x:0,y:6)
 
                     Button{
                         Touch.tap()
                         composer=ComposeRequest(photo:!(tab==1 && memoryTab==2),collection:tab==1 ? photoSection.defaultCollection:.memories)
                     }label:{
                         Image(systemName:"plus")
-                            .font(.system(size:21,weight:.bold))
+                            .font(.system(size:20,weight:.bold))
                             .foregroundColor(.white)
-                            .frame(width:56,height:56)
+                            .frame(width:54,height:54)
                             .background(
                                 LinearGradient(colors:[Palette.violet,Palette.purple],startPoint:.topLeading,endPoint:.bottomTrailing),
                                 in:Circle()
                             )
-                            .overlay(Circle().strokeBorder(Color.white.opacity(0.35),lineWidth:1.2))
-                            .shadow(color:Palette.violet.opacity(0.42),radius:12,x:0,y:6)
+                            .overlay(Circle().strokeBorder(Color.white.opacity(0.55),lineWidth:1.4))
+                            .shadow(color:Palette.violet.opacity(0.32),radius:12,x:0,y:5)
                     }
                     .buttonStyle(SoftPress())
                     .accessibilityLabel("Create post")
                 }
                 .padding(.horizontal,16)
+                .padding(.top,16)
                 .padding(.bottom,dockBottomPad)
                 .background(alignment:.bottom){
-                    LinearGradient(colors:[Palette.background.opacity(0),Palette.background.opacity(0.94),Palette.background],startPoint:.top,endPoint:.bottom)
-                        .frame(height:92)
+                    LinearGradient(colors:[Palette.background.opacity(0),Palette.background.opacity(0.96),Palette.background],startPoint:.top,endPoint:.bottom)
+                        .frame(height:104)
                         .allowsHitTesting(false)
                 }
             }

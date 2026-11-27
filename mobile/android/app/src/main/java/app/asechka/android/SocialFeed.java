@@ -117,7 +117,7 @@ final class SocialFeed extends ListView {
     setSelector(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
     setVerticalScrollBarEnabled(false);
     setClipToPadding(false);
-    setPadding(0, 0, 0, u.dp(92));
+    setPadding(0, 0, 0, u.dp(102));
     setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
     addHeaderView(header, null, false);
     LinearLayout end = u.column();
