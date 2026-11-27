@@ -120,18 +120,28 @@ struct FeedView:View {
 }
 final class PhotoMemory {
     static let shared=NSCache<NSString,UIImage>()
-    static func configure(){shared.totalCostLimit=48*1024*1024;shared.countLimit=50}
+    static func configure(){shared.totalCostLimit=96*1024*1024;shared.countLimit=100}
 }
 struct CachedPhoto:View {
     @EnvironmentObject private var universe:UniverseStore
-    @Environment(\.accessibilityReduceMotion) private var reduced
-    @AppStorage("motion-paused") private var paused=false
     let source:String
     var living=true
     var fitContent=false
     @State private var bitmap:UIImage?
-    @State private var loading=true
-    @State private var drift=false
+    @State private var loading:Bool
+    init(source:String,living:Bool=true,fitContent:Bool=false){
+        self.source=source
+        self.living=living
+        self.fitContent=fitContent
+        PhotoMemory.configure()
+        if let cached=PhotoMemory.shared.object(forKey:source as NSString){
+            _bitmap=State(initialValue:cached)
+            _loading=State(initialValue:false)
+        } else {
+            _bitmap=State(initialValue:nil)
+            _loading=State(initialValue:true)
+        }
+    }
     @ViewBuilder var body:some View {
         if fitContent {picture.aspectRatio(bitmap.map{$0.size.width / max(1,$0.size.height)} ?? 4/3,contentMode:.fit)}
         else {picture}
@@ -139,20 +149,28 @@ struct CachedPhoto:View {
     private var picture:some View {
         ZStack{
             Palette.blue
-            if let bitmap {Image(uiImage:bitmap).resizable().scaledToFit().scaleEffect(drift && living && !reduced && !paused ? 1.025:1).transition(.opacity)}
+            if let bitmap {Image(uiImage:bitmap).resizable().scaledToFit()}
             else if loading {ProgressView().tint(Palette.purple)}
             else {VStack(spacing:10){Image(systemName:"photo").font(.title);Text("Connect to finish saving this picture").font(.caption).multilineTextAlignment(.center)}.foregroundColor(Palette.muted).padding()}
         }.clipped()
-        .task(id:source){PhotoMemory.configure();if let cached=PhotoMemory.shared.object(forKey:source as NSString){bitmap=cached;loading=false;return};bitmap=nil;loading=true;if let data=await universe.image(source){
-            let image=await Task.detached(priority:.userInitiated){Self.thumbnail(data)}.value
-            guard !Task.isCancelled else{return};if let image{PhotoMemory.shared.setObject(image,forKey:source as NSString,cost:Int(image.size.width*image.size.height*4))};withAnimation(reduced ? nil:.easeIn(duration:0.22)){bitmap=image}
-        };loading=false}
-        .onAppear{if !reduced && !paused{withAnimation(.easeInOut(duration:8).repeatForever(autoreverses:true)){drift=true}}}
-        .onDisappear{drift=false}
+        .task(id:source){
+            PhotoMemory.configure()
+            if let cached=PhotoMemory.shared.object(forKey:source as NSString){bitmap=cached;loading=false;return}
+            loading=true
+            if let data=await universe.image(source){
+                let image=await Task.detached(priority:.userInitiated){Self.thumbnail(data)}.value
+                guard !Task.isCancelled else{return}
+                if let image{PhotoMemory.shared.setObject(image,forKey:source as NSString,cost:Int(image.size.width*image.size.height*4))}
+                bitmap=image
+            }
+            loading=false
+        }
         .accessibilityElement(children:.ignore).accessibilityLabel("Our shared photo").accessibilityValue(bitmap == nil ? "Loading image":"Saved image")
     }
     static func thumbnail(_ data:Data)->UIImage?{
-        guard let source=CGImageSourceCreateWithData(data as CFData,nil),let image=CGImageSourceCreateThumbnailAtIndex(source,0,[kCGImageSourceCreateThumbnailFromImageAlways:true,kCGImageSourceThumbnailMaxPixelSize:1600,kCGImageSourceCreateThumbnailWithTransform:true] as CFDictionary)else{return nil};return UIImage(cgImage:image)
+        guard let source=CGImageSourceCreateWithData(data as CFData,nil),let image=CGImageSourceCreateThumbnailAtIndex(source,0,[kCGImageSourceCreateThumbnailFromImageAlways:true,kCGImageSourceThumbnailMaxPixelSize:1200,kCGImageSourceCreateThumbnailWithTransform:true] as CFDictionary)else{return nil}
+        let uiImage=UIImage(cgImage:image)
+        return uiImage.preparingForDisplay() ?? uiImage
     }
 }
 enum QuoteBackgrounds {
@@ -169,14 +187,25 @@ struct QuoteBackdrop:View {
     @EnvironmentObject private var universe:UniverseStore
     let index:Int
     @State private var bitmap:UIImage?
+    init(index:Int){
+        self.index=index
+        PhotoMemory.configure()
+        let key=("quote-bg:" + QuoteBackgrounds.source(index)) as NSString
+        _bitmap=State(initialValue:PhotoMemory.shared.object(forKey:key))
+    }
     var body:some View {
         GeometryReader{geometry in
             ZStack{Palette.blue;if let bitmap{Image(uiImage:bitmap).resizable().scaledToFill()}}
                 .frame(width:geometry.size.width,height:geometry.size.height).clipped()
         }.task(id:index){
-            bitmap=nil
-            if let data=await universe.image(QuoteBackgrounds.source(index)){
-                bitmap=await Task.detached(priority:.userInitiated){CachedPhoto.thumbnail(data)}.value
+            PhotoMemory.configure()
+            let src=QuoteBackgrounds.source(index)
+            let key=("quote-bg:" + src) as NSString
+            if let cached=PhotoMemory.shared.object(forKey:key){bitmap=cached;return}
+            if let data=await universe.image(src){
+                let image=await Task.detached(priority:.userInitiated){CachedPhoto.thumbnail(data)}.value
+                if let image{PhotoMemory.shared.setObject(image,forKey:key,cost:Int(image.size.width*image.size.height*4))}
+                bitmap=image
             }
         }.accessibilityHidden(true)
     }
@@ -242,7 +271,7 @@ struct PostCard:View {
         }.background(.white,in:RoundedRectangle(cornerRadius:24))
             .clipShape(RoundedRectangle(cornerRadius:24))
             .overlay(RoundedRectangle(cornerRadius:24).stroke(LinearGradient(colors:[Palette.blue,Palette.lavender],startPoint:.topLeading,endPoint:.bottomTrailing),lineWidth:1))
-            .shadow(color:Palette.purple.opacity(0.05),radius:8,y:3).padding(.horizontal,14)
+            .padding(.horizontal,14)
     }
     private var likeText:String {
         let a=post.social?.likes["asnat"]==true,y=post.social?.likes["youssef"]==true

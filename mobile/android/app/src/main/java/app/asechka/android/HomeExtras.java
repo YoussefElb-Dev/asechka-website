@@ -35,6 +35,8 @@ final class HomeExtras {
   final Ui u;
   final Open open;
   final Handler main = new Handler(Looper.getMainLooper());
+  static volatile boolean scrolling;
+  private long cachedStartMs;
   TextView counts, streak, milestoneText, partnerVibeText, elapsed, sinceLabel, cameraSub, vaultSub, milestoneNextText;
   MilestoneRingView milestoneRing;
   ObjectAnimator heartPulse;
@@ -62,7 +64,7 @@ final class HomeExtras {
       arcPaint.setColor(0xff6c5ce7);
       textPaint.setColor(Ui.INK);
       textPaint.setTextAlign(Paint.Align.CENTER);
-      textPaint.setTextSize(11f * d);
+      textPaint.setTextSize(10f * d);
       textPaint.setFakeBoldText(true);
     }
 
@@ -136,11 +138,33 @@ final class HomeExtras {
     return from().equals("me") ? "Asnat" : "Youssef";
   }
 
+  private static void setIfChanged(TextView tv, String value) {
+    if (tv == null) return;
+    String next = value == null ? "" : value;
+    CharSequence cur = tv.getText();
+    if (cur == null || !next.equals(cur.toString())) tv.setText(next);
+  }
+
+  private void tickClock() {
+    if (elapsed == null || cachedStartMs <= 0 || scrolling) return;
+    long seconds = Math.max(0, (System.currentTimeMillis() - cachedStartMs) / 1000);
+    long days = seconds / 86400;
+    setIfChanged(
+        elapsed,
+        String.format(
+            Locale.US,
+            "%d days · %02d:%02d:%02d",
+            days,
+            seconds / 3600 % 24,
+            seconds / 60 % 60,
+            seconds % 60));
+  }
+
   final Runnable tick =
       new Runnable() {
         public void run() {
           if (root != null && root.isAttachedToWindow()) {
-            update();
+            tickClock();
             main.postDelayed(this, 1000);
           }
         }
@@ -154,7 +178,8 @@ final class HomeExtras {
         new View.OnAttachStateChangeListener() {
           public void onViewAttachedToWindow(View v) {
             main.removeCallbacks(tick);
-            tick.run();
+            update();
+            main.postDelayed(tick, 1000);
           }
 
           public void onViewDetachedFromWindow(View v) {
@@ -283,19 +308,19 @@ final class HomeExtras {
     u.add(clockCopy, sinceLabel, 3);
     clockRow.addView(clockCopy, new LinearLayout.LayoutParams(0, -2, 1));
 
-    LinearLayout milestoneBadge = u.row(10);
+    LinearLayout milestoneBadge = u.row(7);
     milestoneBadge.setGravity(Gravity.CENTER);
-    milestoneBadge.setMinimumWidth(u.dp(170));
-    milestoneBadge.setPadding(u.dp(14), u.dp(9), u.dp(14), u.dp(9));
+    milestoneBadge.setMinimumWidth(u.dp(136));
+    milestoneBadge.setPadding(u.dp(10), u.dp(8), u.dp(10), u.dp(8));
     milestoneBadge.setBackground(u.shape(0xd1ffffff, 16, 0x1a6b5cb5));
     milestoneRing = new MilestoneRingView(activity);
-    milestoneBadge.addView(milestoneRing, new LinearLayout.LayoutParams(u.dp(46), u.dp(46)));
+    milestoneBadge.addView(milestoneRing, new LinearLayout.LayoutParams(u.dp(40), u.dp(40)));
     LinearLayout milestoneCopy = u.column();
-    TextView nextWord = u.text("Next milestone", 10, Ui.MUTED);
+    TextView nextWord = u.text("Next milestone", 9, Ui.MUTED);
     Compat.font(nextWord, R.font.dm_sans, 600);
     nextWord.setSingleLine(true);
     milestoneCopy.addView(nextWord);
-    milestoneNextText = u.text("in 50 days", 12, 0xff6c5ce7);
+    milestoneNextText = u.text("in 50 days", 11, 0xff6c5ce7);
     Compat.font(milestoneNextText, R.font.dm_sans, 700);
     milestoneNextText.setSingleLine(true);
     u.add(milestoneCopy, milestoneNextText, 1);
@@ -668,9 +693,11 @@ final class HomeExtras {
                 // Clock + Next Milestone Ring
                 JSONObject since = savedKeepsakes == null ? null : savedKeepsakes.optJSONObject("since");
                 long start = since == null ? 0 : Dates.instant(since.optString("startedAt"));
+                cachedStartMs = start;
                 long seconds = start <= 0 ? 0 : Math.max(0, (System.currentTimeMillis() - start) / 1000);
                 long days = seconds / 86400;
-                elapsed.setText(
+                setIfChanged(
+                    elapsed,
                     String.format(
                         Locale.US,
                         "%d days · %02d:%02d:%02d",
@@ -678,7 +705,8 @@ final class HomeExtras {
                         seconds / 3600 % 24,
                         seconds / 60 % 60,
                         seconds % 60));
-                sinceLabel.setText(
+                setIfChanged(
+                    sinceLabel,
                     start <= 0
                         ? "Set our beginning in Since us"
                         : "Since " + shortBeginning(start) + " · ET");
@@ -693,7 +721,7 @@ final class HomeExtras {
                   float prog = (float) (days - prev) / (float) Math.max(1, next - prev);
                   String mLbl = next == 365 ? "1 yr" : (next % 365 == 0 ? (next / 365) + "y" : next + "d");
                   milestoneRing.setState(prog, mLbl);
-                  milestoneNextText.setText("in " + rem + (rem == 1 ? " day" : " days"));
+                  setIfChanged(milestoneNextText, "in " + rem + (rem == 1 ? " day" : " days"));
                 }
 
                 // Dynamic 2.8.0 cards (rebuilt only when their content signature changes)

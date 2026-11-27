@@ -131,6 +131,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       };
   private Messages messages;
   private boolean heartRefreshing;
+  private String lastTogetherSig = "";
   private final Runnable heartPoll =
       new Runnable() {
         public void run() {
@@ -138,25 +139,34 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             heartRefreshing = true;
             work.execute(
                 () -> {
+                  boolean changed = false;
                   try {
                     api.syncPending();
                     JSONObject latestTogether = api.get("/api/together");
                     if (latestTogether != null) {
+                      String sig = latestTogether.toString();
+                      if (!sig.equals(lastTogetherSig)) {
+                        lastTogetherSig = sig;
+                        changed = true;
+                      }
                       together = latestTogether;
                       SyncJob.notifyPartnerUpdates(MainActivity.this, latestTogether);
                     }
                   } catch (Exception ignored) {
                   }
+                  final boolean didChange = changed;
                   main.post(
                       () -> {
                         heartRefreshing = false;
-                        if (homeExtras != null) homeExtras.update();
-                        if (messages != null) messages.check();
-                        UniverseWidgets.updateAll(MainActivity.this);
+                        if (didChange) {
+                          if (homeExtras != null) homeExtras.update();
+                          if (messages != null) messages.check();
+                          UniverseWidgets.updateAll(MainActivity.this);
+                        }
                       });
                 });
           }
-          main.postDelayed(this, 2000);
+          main.postDelayed(this, 2500);
         }
       };
   private final Runnable clock =
@@ -1363,29 +1373,58 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     return header;
   }
 
+  private LinearLayout createTile(String symbol, int iconTint, int cardBg, String badge, String title, String subtitle, Runnable action) {
+    LinearLayout card = u.column();
+    card.setPadding(u.dp(14), u.dp(14), u.dp(14), u.dp(14));
+    card.setBackground(u.shape(cardBg, 22, 0x1e6b5cb5));
+    card.setMinimumHeight(u.dp(122));
+    LinearLayout topRow = u.row(6);
+    topRow.setGravity(Gravity.CENTER_VERTICAL);
+    FrameLayout iconCircle = new FrameLayout(this);
+    iconCircle.setBackground(u.shape(Color.WHITE, 100, 0x186b5cb5));
+    iconCircle.addView(Glyph.view(this, symbol, iconTint), new FrameLayout.LayoutParams(u.dp(18), u.dp(18), Gravity.CENTER));
+    topRow.addView(iconCircle, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
+    topRow.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
+    topRow.addView(Glyph.view(this, "arrow.up.right", 0x806b5cb5), new LinearLayout.LayoutParams(u.dp(14), u.dp(14)));
+    card.addView(topRow);
+    TextView k = u.label(badge);
+    k.setTextSize(9);
+    u.add(card, k, 10);
+    TextView t = u.title(title, 15);
+    u.add(card, t, 3);
+    TextView s = u.text(subtitle, 12, Ui.MUTED);
+    s.setMaxLines(2);
+    u.add(card, s, 3);
+    card.setContentDescription(title + ". " + subtitle);
+    card.setOnClickListener(v -> action.run());
+    Motion.install(card);
+    return card;
+  }
+
   private void choosePost() {
-    Ui.Sheet sheet = u.sheet("Share a little something", "A moment, a thought, a little more us.");
-    sheet.item(
-        "Message · just for " + (actor().equals("asnat") ? "Youssef" : "Asnat"),
-        "Three little messages each day",
-        "♡",
-        false,
-        () -> messages.compose());
-    sheet.item(
-        "Photo · a moment from our day",
-        "Choose a picture and add your words",
-        "＋",
-        false,
-        () -> createPost(true));
-    sheet.item(
-        "Quote · words from the heart",
-        "Write something worth keeping",
-        "❞",
-        false,
-        () -> createPost(false));
-    sheet.item("Photography · little things we notice", "Pictures we take of everyday things", "◉", false, () -> {
-      memoryEditor = new MemoryEditor(true, null, "photography"); memoryEditor.show();
-    });
+    Ui.Sheet sheet = u.sheet("Share a little something", "Pick what you want to add to our universe.");
+    String partnerName = actor().equals("asnat") ? "Youssef" : "Asnat";
+    LinearLayout row1 = u.row(10);
+    row1.addView(
+        createTile("photos", 0xff6c5ce7, Ui.PALE, "PHOTO", "Photo", "A moment from our day", () -> { sheet.dismiss(); createPost(true); }),
+        new LinearLayout.LayoutParams(0, -1, 1));
+    row1.addView(
+        createTile("quote", Ui.PURPLE, Ui.BLUE, "QUOTE", "Quote", "Words worth keeping", () -> { sheet.dismiss(); createPost(false); }),
+        new LinearLayout.LayoutParams(0, -1, 1));
+    u.add(sheet.items, row1, 4);
+
+    LinearLayout row2 = u.row(10);
+    row2.addView(
+        createTile("envelope", 0xffc04c7a, 0xfff8eef6, "LOVE JAR", "Note for " + partnerName, "Keep or read-once note", () -> { sheet.dismiss(); messages.compose(); }),
+        new LinearLayout.LayoutParams(0, -1, 1));
+    row2.addView(
+        createTile("camera", Ui.INK, Color.WHITE, "GALLERY", "Photography", "Everyday frames we spot", () -> {
+          sheet.dismiss();
+          memoryEditor = new MemoryEditor(true, null, "photography");
+          memoryEditor.show();
+        }),
+        new LinearLayout.LayoutParams(0, -1, 1));
+    u.add(sheet.items, row2, 10);
     track(sheet);
     sheet.show();
   }
@@ -3395,7 +3434,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     final Button share;
     final String draftKey;
     String photoCollection;
-    RadioGroup collectionPicker;
+    Button[] collectionSegments;
+    TextView photoOverlayBadge, dateDisplay, charCounter;
     String selectedPhoto, operation = UUID.randomUUID().toString(), fingerprint = "";
     boolean photoBusy, committed;
     final Runnable saveDraft = () -> persistDraft();
@@ -3426,78 +3466,159 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       LinearLayout shell = u.column();
       shell.setBackgroundColor(Ui.BG);
       LinearLayout toolbar = u.row(10);
-      toolbar.setPadding(u.dp(18), u.dp(10), u.dp(18), u.dp(10));
+      toolbar.setGravity(Gravity.CENTER_VERTICAL);
+      toolbar.setPadding(u.dp(18), u.dp(12), u.dp(18), u.dp(12));
+      toolbar.setBackgroundColor(Ui.BG);
       Button close = u.pillButton("Cancel", false, null);
       close.setContentDescription("Close post composer");
       toolbar.addView(close);
-      TextView composerTitle = u.title(original == null ? (photo ? "New photo" : "New quote") : "Edit post", 19);
+      LinearLayout titleStack = u.column();
+      titleStack.setGravity(Gravity.CENTER_HORIZONTAL);
+      TextView eyebrow = u.label(original == null ? (photo ? "NEW MEMORY" : "NEW QUOTE") : "EDIT POST");
+      eyebrow.setTextSize(9);
+      eyebrow.setGravity(Gravity.CENTER);
+      titleStack.addView(eyebrow);
+      TextView composerTitle = u.title(original == null ? (photo ? "New photo" : "New quote") : "Edit post", 18);
       composerTitle.setGravity(Gravity.CENTER);
-      toolbar.addView(
-          composerTitle,
-          new LinearLayout.LayoutParams(0, -2, 1));
+      titleStack.addView(composerTitle);
+      toolbar.addView(titleStack, new LinearLayout.LayoutParams(0, -2, 1));
       share = u.pillButton(original == null ? "Share" : "Save", true, () -> save());
       toolbar.addView(share);
       shell.addView(toolbar);
+
       LinearLayout body = u.column();
-      body.setPadding(u.dp(20), u.dp(8), u.dp(20), u.dp(28));
-      LinearLayout byline = u.row(12);
-      byline.addView(
-          SocialFeed.avatar(MainActivity.this, actor(), 44),
-          new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
+      body.setPadding(u.dp(18), u.dp(6), u.dp(18), u.dp(32));
+
+      // Modern author pill card
+      LinearLayout bylineCard = u.row(12);
+      bylineCard.setGravity(Gravity.CENTER_VERTICAL);
+      bylineCard.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
+      bylineCard.setBackground(u.shape(Color.WHITE, 20, 0x166b5cb5));
+      bylineCard.addView(
+          SocialFeed.avatar(MainActivity.this, actor(), 40),
+          new LinearLayout.LayoutParams(u.dp(40), u.dp(40)));
       LinearLayout who = u.column();
-      who.addView(u.title(person(), 16));
-      who.addView(u.text("Our little universe · just us two", 12, Ui.MUTED));
-      byline.addView(who);
-      u.add(body, byline, 8);
+      who.addView(u.title(person(), 15));
+      who.addView(u.text("Our little universe · private to us", 12, Ui.MUTED));
+      bylineCard.addView(who, new LinearLayout.LayoutParams(0, -2, 1));
+      TextView badge = u.text(photo ? "Photo" : "Quote", 11, Ui.PURPLE);
+      Compat.font(badge, R.font.dm_sans, 700);
+      badge.setPadding(u.dp(10), u.dp(4), u.dp(10), u.dp(4));
+      badge.setBackground(u.shape(Ui.PALE, 100));
+      bylineCard.addView(badge);
+      u.add(body, bylineCard, 4);
+
+      // Modern segmented collection pill switcher
       if (photo) {
-        u.add(body, u.label("PHOTO COLLECTION"), 16);
-        collectionPicker = new RadioGroup(MainActivity.this);
-        collectionPicker.setOrientation(RadioGroup.HORIZONTAL);
-        for (String name : new String[] {"Memories", "Photography"}) {
-          RadioButton radio = new RadioButton(MainActivity.this);
-          radio.setId(View.generateViewId()); radio.setText(name); radio.setTextColor(Ui.INK);
-          radio.setTag(name.toLowerCase(Locale.US)); radio.setMinHeight(u.dp(48));
-          collectionPicker.addView(radio, new RadioGroup.LayoutParams(0, -2, 1));
-          if (photoCollection.equals(radio.getTag())) collectionPicker.check(radio.getId());
+        LinearLayout segWrap = u.row(4);
+        segWrap.setPadding(u.dp(4), u.dp(4), u.dp(4), u.dp(4));
+        segWrap.setBackground(u.shape(Ui.PALE, 100, 0x186b5cb5));
+        String[] segNames = {"Memories", "Photography"};
+        String[] segVals = {"memories", "photography"};
+        collectionSegments = new Button[2];
+        for (int sIdx = 0; sIdx < 2; sIdx++) {
+          final int idx = sIdx;
+          Button seg = u.textButton(segNames[sIdx], () -> {
+            photoCollection = segVals[idx];
+            refreshCollectionSegments();
+            persistDraft();
+          });
+          seg.setTextSize(13);
+          Compat.font(seg, R.font.dm_sans, 600);
+          seg.setMinHeight(u.dp(38));
+          seg.setMinimumHeight(u.dp(38));
+          seg.setPadding(u.dp(12), 0, u.dp(12), 0);
+          collectionSegments[sIdx] = seg;
+          segWrap.addView(seg, new LinearLayout.LayoutParams(0, u.dp(38), 1));
         }
-        u.add(body, collectionPicker, 4);
+        refreshCollectionSegments();
+        u.add(body, segWrap, 12);
       }
-      preview = u.image(body, "Post photo preview", 280);
-      preview.setScaleType(ImageView.ScaleType.FIT_CENTER);
-      preview.setBackground(u.shape(Ui.BLUE, 24));
+
+      // Visual preview card (tappable photo dropzone or rounded gradient quote preview)
+      FrameLayout mediaFrame = new FrameLayout(MainActivity.this);
+      mediaFrame.setBackground(u.shape(Ui.PALE, 24, 0x206b5cb5));
+      mediaFrame.setClipToOutline(true);
+      preview = new ImageView(MainActivity.this);
+      preview.setContentDescription("Post photo preview");
+      preview.setScaleType(ImageView.ScaleType.CENTER_CROP);
       preview.setVisibility(photo ? View.VISIBLE : View.GONE);
-      quotePreview = u.quote("Your words, kept close. ♡", 25);
+      mediaFrame.addView(preview, new FrameLayout.LayoutParams(-1, u.dp(250)));
+      photoOverlayBadge = u.text(original == null ? "Tap to choose a photo" : "Tap to change photo", 12, Color.WHITE);
+      Compat.font(photoOverlayBadge, R.font.dm_sans, 600);
+      photoOverlayBadge.setPadding(u.dp(14), u.dp(7), u.dp(14), u.dp(7));
+      photoOverlayBadge.setBackground(u.shape(0xb31e2640, 100));
+      FrameLayout.LayoutParams overlayP = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+      overlayP.bottomMargin = u.dp(14);
+      mediaFrame.addView(photoOverlayBadge, overlayP);
+      mediaFrame.setVisibility(photo ? View.VISIBLE : View.GONE);
+      mediaFrame.setOnClickListener(v -> pick());
+      u.add(body, mediaFrame, 12);
+
+      quotePreview = u.quote("Your words, kept close. ♡", 24);
       quotePreview.setGravity(Gravity.CENTER);
-      quotePreview.setMinHeight(u.dp(210));
-      quotePreview.setPadding(u.dp(25), u.dp(28), u.dp(25), u.dp(28));
+      quotePreview.setMinHeight(u.dp(190));
+      quotePreview.setPadding(u.dp(24), u.dp(26), u.dp(24), u.dp(26));
       quotePreview.setMaxLines(8);
-      quotePreview.setBackground(
+      android.graphics.drawable.GradientDrawable qBg =
           new android.graphics.drawable.GradientDrawable(
               android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
-              new int[] {Ui.PALE, Ui.BLUE}));
+              new int[] {Ui.PALE, Ui.BLUE});
+      qBg.setCornerRadius(u.dp(24));
+      qBg.setStroke(Math.max(1, u.dp(1)), 0x1f6b5cb5);
+      quotePreview.setBackground(qBg);
       quotePreview.setVisibility(photo ? View.GONE : View.VISIBLE);
-      u.add(body, quotePreview, 18);
-      if (photo)
-        u.add(
-            body,
-            u.button(
-                original == null ? "Choose a photo" : "Choose a different photo",
-                false,
-                () -> pick()),
-            12);
+      u.add(body, quotePreview, 12);
+
+      if (photo) {
+        Button pickBtn = u.pillButton(original == null ? "Choose a photo" : "Choose a different photo", false, () -> pick());
+        pickBtn.setMinHeight(u.dp(46));
+        u.add(body, pickBtn, 10);
+      }
+
+      // Clean white bordered form card
+      LinearLayout formCard = u.card(body, Color.WHITE);
+      ((LinearLayout.LayoutParams) formCard.getLayoutParams()).topMargin = u.dp(12);
+      formCard.setBackground(u.shape(Color.WHITE, 22, 0x166b5cb5));
+      formCard.setPadding(u.dp(16), u.dp(16), u.dp(16), u.dp(16));
+      LinearLayout captionHead = u.row(8);
+      captionHead.setGravity(Gravity.CENTER_VERTICAL);
+      captionHead.addView(u.label(photo ? "CAPTION" : "YOUR WORDS"), new LinearLayout.LayoutParams(0, -2, 1));
+      charCounter = u.text("0 / " + (photo ? "1,000" : "10,000"), 11, Ui.MUTED);
+      captionHead.addView(charCounter);
+      formCard.addView(captionHead);
       text =
           u.input(
               photo ? "Write a caption…" : "Write something from the heart…",
               draft.optString(photo ? "caption" : "text"),
               photo ? 1000 : 10000,
               true);
-      text.setMinHeight(u.dp(photo ? 110 : 150));
-      u.add(body, text, 16);
+      text.setMinHeight(u.dp(photo ? 100 : 140));
+      text.setBackground(u.shape(Ui.BG, 16, 0x186b5cb5));
+      u.add(formCard, text, 8);
       note = u.input("A little note · optional", draft.optString("note"), 1000, true);
-      if (!photo) u.add(body, note, 12);
+      note.setBackground(u.shape(Ui.BG, 16, 0x186b5cb5));
+      if (!photo) {
+        u.add(formCard, u.label("LITTLE NOTE"), 14);
+        u.add(formCard, note, 6);
+      }
       when = u.input("Date", draft.optString("date", Dates.today()), 10, false);
-      when.setFocusable(false);
-      when.setOnClickListener(
+      when.setVisibility(View.GONE);
+      formCard.addView(when);
+      LinearLayout dateRow = u.row(10);
+      dateRow.setGravity(Gravity.CENTER_VERTICAL);
+      dateRow.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
+      dateRow.setBackground(u.shape(Ui.BG, 16, 0x186b5cb5));
+      dateRow.addView(Glyph.view(MainActivity.this, "sparkles", Ui.PURPLE), new LinearLayout.LayoutParams(u.dp(17), u.dp(17)));
+      LinearLayout dateCopy = u.column();
+      dateCopy.addView(u.text("A day to remember", 12, Ui.MUTED));
+      dateDisplay = u.title(when.getText().toString(), 14);
+      dateCopy.addView(dateDisplay);
+      dateRow.addView(dateCopy, new LinearLayout.LayoutParams(0, -2, 1));
+      TextView editDateLbl = u.text("Change", 12, Ui.PURPLE);
+      Compat.font(editDateLbl, R.font.dm_sans, 600);
+      dateRow.addView(editDateLbl);
+      dateRow.setOnClickListener(
           v -> {
             Calendar c = Calendar.getInstance();
             try {
@@ -3511,7 +3632,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             new DatePickerDialog(
                     MainActivity.this,
                     (view, y, m, d) -> {
-                      when.setText(String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d));
+                      String formatted = String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d);
+                      when.setText(formatted);
+                      dateDisplay.setText(formatted);
                       persistDraft();
                     },
                     c.get(Calendar.YEAR),
@@ -3519,10 +3642,10 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                     c.get(Calendar.DAY_OF_MONTH))
                 .show();
           });
-      u.add(body, when, 12);
+      u.add(formCard, dateRow, 14);
       status =
           u.text("Saved on your phone first. Shared with both of us when connected.", 12, Ui.MUTED);
-      u.add(body, status, 16);
+      u.add(body, status, 12);
       status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
       ScrollView scroller = u.scroll(body);
       shell.addView(scroller, new LinearLayout.LayoutParams(-1, 0, 1));
@@ -3534,7 +3657,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             public void beforeTextChanged(CharSequence s, int a, int c, int f) {}
 
             public void onTextChanged(CharSequence s, int a, int b, int c) {
-              quotePreview.setText("“" + text.getText().toString() + "”");
+              String val = text.getText().toString();
+              quotePreview.setText(val.isEmpty() ? "Your words, kept close. ♡" : "“" + val + "”");
+              if (charCounter != null) charCounter.setText(val.length() + " / " + (photo ? "1,000" : "10,000"));
               main.removeCallbacks(saveDraft);
               main.postDelayed(saveDraft, 700);
             }
@@ -3543,15 +3668,23 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           };
       text.addTextChangedListener(watcher);
       note.addTextChangedListener(watcher);
-      if (collectionPicker != null) collectionPicker.setOnCheckedChangeListener((group, id) -> {
-        View selected = group.findViewById(id);
-        if (selected != null) { photoCollection = selected.getTag().toString(); persistDraft(); }
-      });
+      if (charCounter != null) charCounter.setText(text.length() + " / " + (photo ? "1,000" : "10,000"));
       quotePreview.setText(
           text.length() == 0 ? "Your words, kept close. ♡" : "“" + text.getText() + "”");
       if (selectedPhoto != null) prepared(selectedPhoto);
       else if (photo && original != null) images.load(photoSource(original), preview);
       else if (photo) images.load("assets/cats-cozy.jpg", preview);
+    }
+
+    void refreshCollectionSegments() {
+      if (collectionSegments == null) return;
+      String[] segVals = {"memories", "photography"};
+      for (int i = 0; i < collectionSegments.length; i++) {
+        boolean active = photoCollection.equals(segVals[i]);
+        collectionSegments[i].setBackground(u.shape(active ? Color.WHITE : Color.TRANSPARENT, 100));
+        collectionSegments[i].setTextColor(active ? 0xff6c5ce7 : Ui.MUTED);
+        collectionSegments[i].setSelected(active);
+      }
     }
 
     void pick() {

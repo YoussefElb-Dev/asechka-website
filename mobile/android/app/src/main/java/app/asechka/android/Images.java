@@ -31,7 +31,7 @@ final class Images {
   private final Handler main = new Handler(Looper.getMainLooper());
   private final Map<String, List<WeakReference<ImageView>>> waiting = new HashMap<>();
   private final LruCache<String, Bitmap> cache =
-      new LruCache<String, Bitmap>(32 * 1024 * 1024) {
+      new LruCache<String, Bitmap>((int) Math.min(64L * 1024 * 1024, Math.max(32L * 1024 * 1024, Runtime.getRuntime().maxMemory() / 6))) {
         protected int sizeOf(String key, Bitmap value) {
           return value.getAllocationByteCount();
         }
@@ -118,10 +118,11 @@ final class Images {
               throw new java.io.IOException();
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 1;
-            int limit = target instanceof Ui.ZoomImage ? 2200 : 1200;
+            int limit = target instanceof Ui.ZoomImage ? 2048 : 1080;
             while (Math.max(bounds.outWidth, bounds.outHeight) / options.inSampleSize > limit)
               options.inSampleSize *= 2;
             decoded = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+            if (decoded != null) decoded.prepareToDraw();
           } catch (Exception error) {
             android.util.Log.w(
                 "AsechkaImages",
@@ -159,33 +160,7 @@ final class Images {
   private void show(ImageView target, Bitmap bitmap, String key) {
     Drawable old = target.getDrawable();
     if (old instanceof BitmapDrawable && ((BitmapDrawable) old).getBitmap() == bitmap) return;
-    if (old != null && target.isAttachedToWindow() && Motion.enabled(target.getContext())) {
-      BitmapDrawable incoming = new BitmapDrawable(target.getResources(), bitmap);
-      TransitionDrawable crossfade =
-          new TransitionDrawable(new Drawable[] {old, incoming}) {
-            public int getIntrinsicWidth() {
-              return incoming.getIntrinsicWidth();
-            }
-
-            public int getIntrinsicHeight() {
-              return incoming.getIntrinsicHeight();
-            }
-          };
-      crossfade.setCrossFadeEnabled(true);
-      target.setImageDrawable(crossfade);
-      crossfade.startTransition(420);
-      main.postDelayed(
-          () -> {
-            if (key.equals(target.getTag()) && target.getDrawable() == crossfade) {
-              target.setImageBitmap(bitmap);
-              target.invalidate();
-            }
-          },
-          440);
-    } else {
-      target.setImageBitmap(bitmap);
-      target.invalidate();
-    }
+    target.setImageBitmap(bitmap);
   }
 
   private static final class Placeholder extends Drawable {

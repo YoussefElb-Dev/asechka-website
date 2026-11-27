@@ -36,7 +36,7 @@ final class SocialFeed extends ListView {
 
   static final class Post {
     final JSONObject value;
-    final String kind, id;
+    final String kind, id, displayDate;
     final int index;
     int backgroundIndex;
 
@@ -45,6 +45,12 @@ final class SocialFeed extends ListView {
       this.kind = kind;
       this.index = index;
       id = value.optString("id", value.optString("editKey"));
+      String rawWhen = value.optString("date");
+      String formatted = rawWhen;
+      try { formatted = Dates.display(rawWhen); } catch (Exception ignored) {}
+      displayDate = (kind.equals("photo") ? "A moment" : "A thought")
+          + (formatted.isEmpty() ? "" : " · " + formatted)
+          + (value.optBoolean("pending") ? " · saved offline" : "");
     }
 
     String key() {
@@ -119,6 +125,9 @@ final class SocialFeed extends ListView {
     setClipToPadding(false);
     setPadding(0, 0, 0, u.dp(118));
     setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
+    setScrollingCacheEnabled(false);
+    setAnimationCacheEnabled(false);
+    setSmoothScrollbarEnabled(true);
     addHeaderView(header, null, false);
     LinearLayout end = u.column();
     end.setPadding(u.dp(24), u.dp(28), u.dp(24), u.dp(30));
@@ -143,6 +152,7 @@ final class SocialFeed extends ListView {
         new AbsListView.OnScrollListener() {
           public void onScrollStateChanged(AbsListView view, int state) {
             scrollState = state;
+            HomeExtras.scrolling = state != SCROLL_STATE_IDLE;
             if (state == SCROLL_STATE_IDLE && delayedData != null) {
               JSONObject latest = delayedData;
               delayedData = null;
@@ -509,15 +519,7 @@ final class SocialFeed extends ListView {
       item = next;
       name.setText(next.name());
       setAvatar(avatar, next.author());
-      String when = next.value.optString("date");
-      try {
-        when = Dates.display(when);
-      } catch (Exception ignored) {
-      }
-      date.setText(
-          (next.kind.equals("photo") ? "A moment" : "A thought")
-              + (when.isEmpty() ? "" : " · " + when)
-              + (next.value.optBoolean("pending") ? " · saved offline" : ""));
+      date.setText(next.displayDate);
       if (next.kind.equals("photo")) {
         if (!source.equals(next.source())) {
           source = next.source();
@@ -543,9 +545,13 @@ final class SocialFeed extends ListView {
       String mine = next.reaction(host.actor());
       for (int i = 0; i < REACTION_EMOJIS.length; i++) {
         boolean active = REACTION_EMOJIS[i].equals(mine);
-        GradientDrawable bg = u.shape(active ? Ui.PALE : Ui.BG, 16);
-        bg.setStroke(u.dp(1), active ? Ui.PURPLE : 0xffececf7);
-        emojiButtons[i].setBackground(bg);
+        Boolean prevActive = (Boolean) emojiButtons[i].getTag();
+        if (prevActive == null || prevActive != active) {
+          emojiButtons[i].setTag(active);
+          GradientDrawable bg = u.shape(active ? Ui.PALE : Ui.BG, 16);
+          bg.setStroke(u.dp(1), active ? Ui.PURPLE : 0xffececf7);
+          emojiButtons[i].setBackground(bg);
+        }
       }
       boolean asnat = next.liked("asnat"), youssef = next.liked("youssef");
       String baseLike =

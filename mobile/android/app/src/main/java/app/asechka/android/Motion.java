@@ -166,23 +166,7 @@ final class Motion {
   }
 
   static void reveal(LinearLayout content, ScrollView scroll) {
-    if (!enabled(content.getContext()) || !content.isLaidOut() || scroll.getHeight() <= 0) return;
-    int top = scroll.getScrollY(), end = top + scroll.getHeight();
-    int stagger = 0;
-    for (int i = 0; i < content.getChildCount(); i++) {
-      View child = content.getChildAt(i);
-      if (child.getBottom() < top || child.getTop() > end || !revealed.add(child)) continue;
-      child.setAlpha(0);
-      child.setTranslationY(14 * child.getResources().getDisplayMetrics().density);
-      child
-          .animate()
-          .alpha(1)
-          .translationY(0)
-          .setStartDelay(Math.min(stagger++ * 35, 140))
-          .setDuration(420)
-          .setInterpolator(EASE)
-          .start();
-    }
+    // Keep content immediately crisp during scrolling for locked 60-120fps.
   }
 
   static void change(TextView view, String text, int direction) {
@@ -222,18 +206,7 @@ final class Motion {
     }
 
     protected void onDraw(Canvas canvas) {
-      boolean moving =
-          hasWindowFocus() && isShown() && enabled(getContext()) && getGlobalVisibleRect(visible);
-      int save = canvas.save();
-      if (moving)
-        canvas.translate(
-            0,
-            (float) Math.sin(android.os.SystemClock.uptimeMillis() / 2600d)
-                * getResources().getDisplayMetrics().density
-                * 1.4f);
       super.onDraw(canvas);
-      canvas.restoreToCount(save);
-      if (moving) postInvalidateDelayed(40);
     }
 
     public void onWindowFocusChanged(boolean focus) {
@@ -271,26 +244,7 @@ final class Motion {
 
     @Override
     protected void onDraw(Canvas canvas) {
-      boolean moving =
-          !scrolling
-              && getDrawable() instanceof android.graphics.drawable.BitmapDrawable
-              && hasWindowFocus()
-              && isShown()
-              && enabled(getContext())
-              && getGlobalVisibleRect(visible)
-              && visible.height() > getHeight() / 5;
-      int save = canvas.save();
-      if (moving) {
-        double t = (android.os.SystemClock.uptimeMillis() + phase) / 6500d;
-        canvas.clipRect(0, 0, getWidth(), getHeight());
-        canvas.scale(1.045f, 1.045f, getWidth() / 2f, getHeight() / 2f);
-        canvas.translate(
-            (float) Math.sin(t) * getWidth() * .012f,
-            (float) Math.cos(t * .8) * getHeight() * .012f);
-      }
       super.onDraw(canvas);
-      canvas.restoreToCount(save);
-      if (moving) postInvalidateDelayed(33);
     }
 
     @Override

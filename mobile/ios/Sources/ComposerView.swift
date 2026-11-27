@@ -26,31 +26,149 @@ struct ComposerView:View {
         return "post-draft:\(universe.actor):\(request.post?.id ?? kind)"
     }
     private var collectionBinding:Binding<PhotoCollection>{Binding(get:{draft.collection ?? request.post?.photoCollection ?? request.collection},set:{draft.collection=$0;persist()})}
-    var body:some View {
-        NavigationStack{ScrollView{VStack(alignment:.leading,spacing:20){
-            HStack(spacing:12){Avatar(actor:universe.actor,size:44);VStack(alignment:.leading,spacing:4){Text(universe.name).font(.headline);Text("Our little universe · just us two").font(.caption).foregroundColor(Palette.muted)}}
-            if request.post==nil {Picker("Post type",selection:$photo){Text("Photo").tag(true);Text("Quote").tag(false)}.pickerStyle(.segmented)}
-            if photo {
-                Picker("Photo collection",selection:collectionBinding){ForEach(PhotoCollection.allCases){Text($0.title).tag($0)}}.pickerStyle(.segmented).accessibilityIdentifier("composer.photo.collection")
-                Group{
-                    if let bytes=draft.photo,let image=UIImage(data:bytes){Image(uiImage:image).resizable().scaledToFit()}
-                    else if let post=request.post {CachedPhoto(source:post.imageURL,living:false)}
-                    else {VStack(spacing:14){Image(systemName:"photo.badge.plus").font(.system(size:40,weight:.light));Text("A little moment worth keeping").font(.subheadline)}.foregroundColor(Palette.purple).frame(maxWidth:.infinity).padding(50).background(Palette.gradient)}
-                }.frame(maxWidth:.infinity,minHeight:180,maxHeight:350).clipShape(RoundedRectangle(cornerRadius:22))
-                PhotosPicker(selection:$selection,matching:.images,photoLibrary:.shared()){
-                    Label(preparing ? "Preparing your picture…":draft.photo==nil ? "Choose a photo":"Choose a different photo",systemImage:"photo.on.rectangle").frame(maxWidth:.infinity).primary()
-                }.disabled(preparing)
-            } else {Text(draft.text.isEmpty ? "Your words, kept close. ♡":"“\(draft.text)”").font(.custom("Manrope-Regular",size:24)).lineSpacing(7).lineLimit(8).multilineTextAlignment(.center).padding(28).frame(maxWidth:.infinity,minHeight:210).background(Palette.gradient,in:RoundedRectangle(cornerRadius:22))}
-            VStack(alignment:.leading,spacing:8){Text(photo ? "CAPTION":"YOUR WORDS").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
-                TextEditor(text:$draft.text).frame(minHeight:120).scrollContentBackground(.hidden).padding(8).background(.white,in:RoundedRectangle(cornerRadius:16)).accessibilityLabel(photo ? "Post caption":"Quote text")
-                Text("\(draft.text.count) / \(photo ? 1000:10000)").font(.caption).foregroundColor(Palette.muted)
+    private var authorCard:some View {
+        HStack(spacing:12){
+            Avatar(actor:universe.actor,size:42)
+            VStack(alignment:.leading,spacing:2){
+                Text(universe.name).font(.system(size:15,weight:.bold)).foregroundColor(Palette.ink)
+                Text("Our little universe · private to us").font(.system(size:12)).foregroundColor(Palette.muted)
             }
-            if !photo {TextField("A little note · optional",text:$draft.note,axis:.vertical).lineLimit(2...5).padding(16).background(.white,in:RoundedRectangle(cornerRadius:16))}
-            DatePicker("A day to remember",selection:$draft.date,displayedComponents:.date).font(.subheadline)
-            Text("Saved on your phone first. Shared with both of us when connected.").font(.caption).foregroundColor(Palette.muted)
+            Spacer()
+            Text(photo ? "Photo" : "Quote")
+                .font(.system(size:11,weight:.bold))
+                .foregroundColor(Palette.violet)
+                .padding(.horizontal,11).padding(.vertical,5)
+                .background(Palette.lavender,in:Capsule())
+        }
+        .padding(14)
+        .background(.white,in:RoundedRectangle(cornerRadius:20,style:.continuous))
+        .overlay(RoundedRectangle(cornerRadius:20,style:.continuous).stroke(Palette.lavender,lineWidth:1))
+    }
+    private var typeSwitcher:some View {
+        HStack(spacing:4){
+            ForEach([(true,"Photo","photo.on.rectangle"),(false,"Quote","quote.opening")],id:\.0){item in
+                let active = photo == item.0
+                Button{Touch.tap();withAnimation(.interactiveSpring(response:0.24,dampingFraction:0.84)){photo=item.0}}label:{
+                    Label(item.1,systemImage:item.2)
+                        .font(.system(size:13,weight:.semibold))
+                        .foregroundColor(active ? Palette.violet : Palette.muted)
+                        .frame(maxWidth:.infinity).frame(height:38)
+                        .background(active ? Color.white : Color.clear,in:Capsule())
+                }.buttonStyle(.plain)
+            }
+        }
+        .padding(4)
+        .background(Palette.lavender,in:Capsule())
+    }
+    private var collectionSwitcher:some View {
+        HStack(spacing:4){
+            ForEach(PhotoCollection.allCases){item in
+                let active = collectionBinding.wrappedValue == item
+                Button{Touch.tap();withAnimation(.interactiveSpring(response:0.24,dampingFraction:0.84)){collectionBinding.wrappedValue=item}}label:{
+                    Text(item.title)
+                        .font(.system(size:13,weight:.semibold))
+                        .foregroundColor(active ? Palette.violet : Palette.muted)
+                        .frame(maxWidth:.infinity).frame(height:36)
+                        .background(active ? Color.white : Color.clear,in:Capsule())
+                }.buttonStyle(.plain)
+            }
+        }
+        .padding(4)
+        .background(Palette.lavender,in:Capsule())
+        .accessibilityIdentifier("composer.photo.collection")
+    }
+    private var mediaCard:some View {
+        VStack(spacing:12){
+            if photo {
+                collectionSwitcher
+                PhotosPicker(selection:$selection,matching:.images,photoLibrary:.shared()){
+                    ZStack(alignment:.bottom){
+                        Group{
+                            if let bytes=draft.photo,let image=UIImage(data:bytes){Image(uiImage:image).resizable().scaledToFill()}
+                            else if let post=request.post {CachedPhoto(source:post.imageURL,living:false)}
+                            else {
+                                VStack(spacing:12){
+                                    Image(systemName:"photo.badge.plus")
+                                        .font(.system(size:26,weight:.semibold))
+                                        .foregroundColor(Palette.violet)
+                                        .frame(width:58,height:58)
+                                        .background(.white,in:Circle())
+                                        .shadow(color:Palette.purple.opacity(0.14),radius:8,y:3)
+                                    Text("Tap to choose a photo").font(.system(size:15,weight:.semibold)).foregroundColor(Palette.ink)
+                                    Text("A moment worth keeping close").font(.system(size:12)).foregroundColor(Palette.muted)
+                                }
+                                .frame(maxWidth:.infinity,minHeight:220)
+                                .background(Palette.gradient)
+                            }
+                        }
+                        .frame(maxWidth:.infinity,minHeight:220,maxHeight:300)
+                        .clipShape(RoundedRectangle(cornerRadius:24,style:.continuous))
+                        .overlay(RoundedRectangle(cornerRadius:24,style:.continuous).stroke(Palette.purple.opacity(0.14),lineWidth:1))
+                        if draft.photo != nil || request.post != nil {
+                            Label(preparing ? "Preparing…" : "Change photo",systemImage:"photo.on.rectangle")
+                                .font(.system(size:12,weight:.semibold))
+                                .foregroundColor(.white)
+                                .padding(.horizontal,14).padding(.vertical,7)
+                                .background(Color.black.opacity(0.55),in:Capsule())
+                                .padding(.bottom,12)
+                        }
+                    }
+                }.buttonStyle(.plain).disabled(preparing)
+                PhotosPicker(selection:$selection,matching:.images,photoLibrary:.shared()){
+                    Label(preparing ? "Preparing your picture…":draft.photo==nil ? "Choose a photo":"Choose a different photo",systemImage:"photo.on.rectangle")
+                        .font(.system(size:14,weight:.semibold))
+                        .foregroundColor(Palette.violet)
+                        .frame(maxWidth:.infinity).frame(height:44)
+                        .background(.white,in:Capsule())
+                        .overlay(Capsule().stroke(Palette.lavender,lineWidth:1.2))
+                }.disabled(preparing)
+            } else {
+                Text(draft.text.isEmpty ? "Your words, kept close. ♡":"“\(draft.text)”")
+                    .font(.custom("Manrope-Regular",size:23)).lineSpacing(7).lineLimit(8)
+                    .multilineTextAlignment(.center).padding(26)
+                    .frame(maxWidth:.infinity,minHeight:190)
+                    .background(Palette.gradient,in:RoundedRectangle(cornerRadius:24,style:.continuous))
+                    .overlay(RoundedRectangle(cornerRadius:24,style:.continuous).stroke(Palette.purple.opacity(0.14),lineWidth:1))
+            }
+        }
+    }
+    var body:some View {
+        NavigationStack{ScrollView{VStack(alignment:.leading,spacing:14){
+            authorCard
+            if request.post==nil {typeSwitcher}
+            mediaCard
+            VStack(alignment:.leading,spacing:12){
+                HStack{
+                    Text(photo ? "CAPTION":"YOUR WORDS").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                    Spacer()
+                    Text("\(draft.text.count) / \(photo ? 1000:10000)").font(.caption).foregroundColor(Palette.muted)
+                }
+                TextEditor(text:$draft.text)
+                    .frame(minHeight:110)
+                    .scrollContentBackground(.hidden)
+                    .padding(10)
+                    .background(Palette.background,in:RoundedRectangle(cornerRadius:16,style:.continuous))
+                    .overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.lavender,lineWidth:1))
+                    .accessibilityLabel(photo ? "Post caption":"Quote text")
+                if !photo {
+                    Text("LITTLE NOTE").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple).padding(.top,2)
+                    TextField("A little note · optional",text:$draft.note,axis:.vertical)
+                        .lineLimit(2...5).padding(12)
+                        .background(Palette.background,in:RoundedRectangle(cornerRadius:16,style:.continuous))
+                        .overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.lavender,lineWidth:1))
+                }
+                DatePicker("A day to remember",selection:$draft.date,displayedComponents:.date)
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal,14).padding(.vertical,10)
+                    .background(Palette.background,in:RoundedRectangle(cornerRadius:16,style:.continuous))
+            }
+            .padding(16)
+            .background(.white,in:RoundedRectangle(cornerRadius:22,style:.continuous))
+            .overlay(RoundedRectangle(cornerRadius:22,style:.continuous).stroke(Palette.lavender,lineWidth:1))
+            Text("Saved on your phone first. Shared with both of us when connected.").font(.caption).foregroundColor(Palette.muted).padding(.horizontal,4)
             if let failure {Text(failure).font(.subheadline).foregroundColor(.red)}
-        }.padding(22)}.background(Palette.background)
-            .navigationTitle(request.post==nil ? "New post":"Edit post").navigationBarTitleDisplayMode(.inline)
+        }.padding(18)}.background(Palette.background)
+            .navigationTitle(request.post==nil ? (photo ? "New photo":"New quote"):"Edit post").navigationBarTitleDisplayMode(.inline)
             .toolbar{
                 ToolbarItem(placement:.cancellationAction){Button("Close"){persist();dismiss()}}
                 ToolbarItem(placement:.confirmationAction){Button(request.post==nil ? "Share":"Save",action:save).fontWeight(.semibold).disabled(preparing || draft.text.count>(photo ? 1000:10000) || (!photo && draft.text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty) || (photo && draft.photo==nil && request.post==nil))}

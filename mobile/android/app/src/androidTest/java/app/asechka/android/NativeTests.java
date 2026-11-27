@@ -1711,7 +1711,7 @@ public final class NativeTests extends Instrumentation {
         TextView nextMilestone = text("Next milestone");
         if (nextMilestone != null && nextMilestone.getParent() != null && nextMilestone.getParent().getParent() instanceof View) {
           View badge = (View) nextMilestone.getParent().getParent();
-          check(badge.getWidth() >= Math.round(166 * density), "Together milestone badge wider (>=166dp), got=" + (badge.getWidth() / density));
+          check(badge.getWidth() >= Math.round(128 * density) && badge.getWidth() <= Math.round(160 * density), "Together milestone badge compact (~136dp), got=" + (badge.getWidth() / density));
         }
       } catch (Exception e) { throw new RuntimeException(e); }
     });

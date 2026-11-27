@@ -280,39 +280,40 @@ struct HomeHub:View {
         Button{Touch.tap();open(BookRoute(personal:true,chapter:0))}label:{
             Group{
                 if let since=universe.keepsakes["since"] as? [String:Any],let start=BookDates.instant(since["startedAt"] as? String ?? "") {
-                    TimelineView(.periodic(from:.now,by:1)){context in
-                        let elapsed=max(0,Int(context.date.timeIntervalSince(start)))
-                        let days=elapsed/86400
-                        let m=togetherMilestone(days:days)
-                        HStack(alignment:.center,spacing:10){
-                            VStack(alignment:.leading,spacing:3){
-                                Text("Together ♡").font(.system(size:11.5,weight:.semibold)).foregroundColor(Palette.purple)
-                                Text("\(days) days · "+String(format:"%02d:%02d:%02d",elapsed/3600%24,elapsed/60%60,elapsed%60))
+                    let days=max(0,Int(Date().timeIntervalSince(start)))/86400
+                    let m=togetherMilestone(days:days)
+                    HStack(alignment:.center,spacing:8){
+                        VStack(alignment:.leading,spacing:3){
+                            Text("Together ♡").font(.system(size:11.5,weight:.semibold)).foregroundColor(Palette.purple)
+                            TimelineView(.periodic(from:.now,by:1)){context in
+                                let elapsed=max(0,Int(context.date.timeIntervalSince(start)))
+                                let d=elapsed/86400
+                                Text("\(d) days · "+String(format:"%02d:%02d:%02d",elapsed/3600%24,elapsed/60%60,elapsed%60))
                                     .font(.system(size:18,weight:.bold)).monospacedDigit().foregroundColor(Palette.ink)
                                     .lineLimit(1).minimumScaleFactor(0.85)
-                                Text("Since "+BookDates.shortDisplay(start)+" · ET")
-                                    .font(.system(size:10)).foregroundColor(Palette.muted)
-                                    .lineLimit(1).minimumScaleFactor(0.8)
                             }
-                            Spacer(minLength:6)
-                            HStack(spacing:10){
-                                ZStack{
-                                    Circle().stroke(Palette.purple.opacity(0.16),lineWidth:4.2)
-                                    Circle().trim(from:0,to:m.progress)
-                                        .stroke(Palette.violet,style:StrokeStyle(lineWidth:4.2,lineCap:.round))
-                                        .rotationEffect(.degrees(-90))
-                                    Text(m.label).font(.system(size:11,weight:.bold)).foregroundColor(Palette.ink)
-                                }.frame(width:46,height:46)
-                                VStack(alignment:.leading,spacing:2){
-                                    Text("Next milestone").font(.system(size:9.5,weight:.semibold)).foregroundColor(Palette.muted).lineLimit(1)
-                                    Text("in \(m.remaining) \(m.remaining==1 ? "day":"days")").font(.system(size:12.5,weight:.bold)).foregroundColor(Palette.violet).lineLimit(1)
-                                }
-                            }
-                            .frame(minWidth:170,alignment:.center)
-                            .padding(.horizontal,14).padding(.vertical,9)
-                            .background(Color.white.opacity(0.82),in:RoundedRectangle(cornerRadius:16,style:.continuous))
-                            .overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))
+                            Text("Since "+BookDates.shortDisplay(start)+" · ET")
+                                .font(.system(size:10)).foregroundColor(Palette.muted)
+                                .lineLimit(1).minimumScaleFactor(0.8)
                         }
+                        Spacer(minLength:6)
+                        HStack(spacing:7){
+                            ZStack{
+                                Circle().stroke(Palette.purple.opacity(0.16),lineWidth:4)
+                                Circle().trim(from:0,to:m.progress)
+                                    .stroke(Palette.violet,style:StrokeStyle(lineWidth:4,lineCap:.round))
+                                    .rotationEffect(.degrees(-90))
+                                Text(m.label).font(.system(size:10,weight:.bold)).foregroundColor(Palette.ink)
+                            }.frame(width:40,height:40)
+                            VStack(alignment:.leading,spacing:2){
+                                Text("Next milestone").font(.system(size:9,weight:.semibold)).foregroundColor(Palette.muted).lineLimit(1)
+                                Text("in \(m.remaining) \(m.remaining==1 ? "day":"days")").font(.system(size:11.5,weight:.bold)).foregroundColor(Palette.violet).lineLimit(1)
+                            }
+                        }
+                        .frame(minWidth:136,alignment:.center)
+                        .padding(.horizontal,10).padding(.vertical,8)
+                        .background(Color.white.opacity(0.82),in:RoundedRectangle(cornerRadius:16,style:.continuous))
+                        .overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))
                     }
                 } else {
                     Text("Set our beginning in Since us.").foregroundColor(Palette.muted)
