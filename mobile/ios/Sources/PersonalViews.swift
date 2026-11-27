@@ -28,7 +28,7 @@ struct SettingsView:View {
                 }}
             }
             Section{Button("Refresh our universe"){Task{await universe.forceRefresh()}};Button("Reconnect with our code"){reconnect=true};Button("Switch profile"){universe.choose("");dismiss()};Button("Lock our little door",role:.destructive){universe.lock();dismiss()}}
-            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.8.0") · made for us ♡").font(.caption)}
+            Section{Text("Photos and content save for offline use. New content checks every minute while the app is open and when the connection returns. New translations and music searches need internet.").font(.caption).foregroundColor(Palette.muted);Text("Asechka \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.9.1") · made for us ♡").font(.caption)}
         }.navigationTitle("Our little settings").toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}
             .alert("Reconnect",isPresented:$reconnect){SecureField("Our code",text:$code);Button("Open"){Task{await universe.login(code);code=""}};Button("Cancel",role:.cancel){code=""}}
         }
@@ -104,12 +104,12 @@ struct WordsView:View {
     @State private var history=false
     static let languages=[("ar-EG","Egyptian Arabic · مصري"),("ru","Russian · Русский"),("he","Hebrew · עברית"),("fr","French · Français"),("es","Spanish · Español")]
     var body:some View {
-        ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
+        ScrollViewReader{proxy in ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
             VStack(alignment:.leading,spacing:6){
                 Text("BETWEEN OUR LANGUAGES").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
                 Text("Our words.").font(.custom("Manrope-Bold",size:30))
                 Text("Written by \(universe.name), for \(universe.partner). The language roles are set for you.").foregroundColor(Palette.muted)
-            }
+            }.id("top")
             VStack(alignment:.leading,spacing:14){
                 Text("YOUR MESSAGE").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
                 TextEditor(text:$text)
@@ -129,6 +129,7 @@ struct WordsView:View {
             }.card()
             ForEach(universe.translations){translation in TranslationCard(translation:translation)}
         }.padding(.horizontal,22).padding(.top,22).padding(.bottom,112)}
+        .onReceive(NotificationCenter.default.publisher(for:.scrollToTop)){n in if (n.object as? Int)==3{withAnimation(.easeOut(duration:0.28)){proxy.scrollTo("top",anchor:.top)}}}}
         .onAppear{text=universe.vault.value("word-draft:"+universe.actor,as:String.self) ?? ""}
         .task(id:text){do{try await Task.sleep(nanoseconds:500_000_000)}catch{return};try? universe.vault.save("word-draft:"+universe.actor,text)}
         .onDisappear{try? universe.vault.save("word-draft:"+universe.actor,text)}

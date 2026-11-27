@@ -1,16 +1,24 @@
 package app.asechka.android;
 
+import android.animation.ValueAnimator;
 import android.app.*;
 import android.content.*;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.*;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.*;
 import android.text.InputType;
+import android.transition.ChangeBounds;
+import android.transition.TransitionManager;
 import android.view.*;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.PathInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import app.asechka.android.Compat.Consumer;
@@ -71,7 +79,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private ScrollView scroll;
   private FrameLayout stage, stageContent;
   private View navActivePill;
-  private int navPillWidth;
+  private NavPillView navPillView;
+  private ViewTreeObserver.OnPreDrawListener navPreDrawListener;
+  private int navPillWidth, lastNavIndex;
   private LinearLayout[] navTabs;
   private ImageView[] navIcons;
   private TextView[] navLabels;
@@ -782,6 +792,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     android.graphics.drawable.GradientDrawable circleBtnBg = u.shape(Color.WHITE, 100);
     circleBtnBg.setStroke(Math.max(1, u.dp(1)), 0x1a6b5cb5);
     envelopeWrap.setBackground(circleBtnBg);
+    envelopeWrap.setForeground(new RippleDrawable(ColorStateList.valueOf(0x1f6c5ce7), null, u.shape(Color.WHITE, 100)));
     envelopeWrap.setContentDescription("Messages");
     envelopeWrap.setOnClickListener(v -> messages.open());
     envelopeWrap.addView(Glyph.view(this, "envelope", Ui.INK), new FrameLayout.LayoutParams(u.dp(18), u.dp(18), Gravity.CENTER));
@@ -790,16 +801,19 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     android.graphics.drawable.GradientDrawable refreshBtnBg = u.shape(Color.WHITE, 100);
     refreshBtnBg.setStroke(Math.max(1, u.dp(1)), 0x1a6b5cb5);
     refreshWrap.setBackground(refreshBtnBg);
+    refreshWrap.setForeground(new RippleDrawable(ColorStateList.valueOf(0x1f6c5ce7), null, u.shape(Color.WHITE, 100)));
     refreshWrap.setContentDescription("Refresh shared memories");
     ImageView refreshGlyph = Glyph.view(this, "refresh", Ui.INK);
     refreshWrap.addView(refreshGlyph, new FrameLayout.LayoutParams(u.dp(17), u.dp(17), Gravity.CENTER));
     refreshWrap.setOnClickListener(v -> {if(motion())refreshGlyph.animate().rotationBy(360).setDuration(650).setInterpolator(Motion.EASE).start();connectionMenu();});
     actionPill.addView(refreshWrap, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
     TextView menu = SocialFeed.avatar(this, actor(), 36);
+    menu.setForeground(new RippleDrawable(ColorStateList.valueOf(0x1f6c5ce7), null, u.shape(Color.WHITE, 100)));
     menu.setContentDescription("Settings and sign out");
     menu.setOnClickListener(v -> settings(menu));
     actionPill.addView(menu, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
     toolbar.addView(actionPill);
+    Motion.install(toolbar);
     root.addView(toolbar);
 
     content = u.column();
@@ -834,15 +848,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     navPillShell.setBackground(dockBg);
     navPillShell.setClipToOutline(true);
 
-    navActivePill = new View(this);
-    android.graphics.drawable.GradientDrawable activePillBg = u.shape(0xe8ffffff, 100);
-    activePillBg.setStroke(Math.max(1, u.dp(1)), 0x266b5cb5);
-    navActivePill.setBackground(activePillBg);
-    navActivePill.setElevation(0f);
+    navPillView = new NavPillView(this);
+    navActivePill = navPillView;
     navActivePill.setVisibility(View.INVISIBLE);
     navPillWidth = 0;
     navPillShell.addView(
-        navActivePill, new FrameLayout.LayoutParams(u.dp(92), u.dp(46), Gravity.CENTER_VERTICAL | Gravity.START));
+        navActivePill, new FrameLayout.LayoutParams(-1, u.dp(46), Gravity.CENTER_VERTICAL | Gravity.START));
 
     bottom = u.row(3);
     bottom.setGravity(Gravity.CENTER_VERTICAL);
@@ -866,6 +877,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             android.content.res.ColorStateList.valueOf(0x33ffffff), orbBg, null));
     createOrb.addView(Glyph.view(this, "plus", Color.WHITE), new FrameLayout.LayoutParams(u.dp(23), u.dp(23), Gravity.CENTER));
     createOrb.setOnClickListener(v -> choosePost());
+    Motion.install(createOrb);
     navDock.addView(createOrb, new LinearLayout.LayoutParams(u.dp(60), u.dp(60)));
 
     FrameLayout.LayoutParams dockParams = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
@@ -1045,6 +1057,74 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     return inset > 0 ? u.dp(19) : u.dp(10);
   }
 
+  private final class NavPillView extends View {
+    private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF rect = new RectF();
+    private final float strokeW;
+    private float pillX, pillW;
+    private ValueAnimator animator;
+
+    NavPillView(Context context) {
+      super(context);
+      strokeW = Math.max(1f, u.dp(1));
+      fillPaint.setColor(0xebffffff);
+      fillPaint.setStyle(Paint.Style.FILL);
+      strokePaint.setColor(0x286b5cb5);
+      strokePaint.setStyle(Paint.Style.STROKE);
+      strokePaint.setStrokeWidth(strokeW);
+    }
+
+    void slideTo(float targetX, float targetW, boolean animate) {
+      if (animator != null) {
+        animator.cancel();
+        animator = null;
+      }
+      if (targetW <= 0f) return;
+      setVisibility(View.VISIBLE);
+      if (!animate || pillW <= 0f || (Math.abs(targetX - pillX) < 0.5f && Math.abs(targetW - pillW) < 0.5f)) {
+        pillX = targetX;
+        pillW = targetW;
+        invalidate();
+        return;
+      }
+      final float startX = pillX;
+      final float startW = pillW;
+      animator = ValueAnimator.ofFloat(0f, 1f);
+      animator.setDuration(260);
+      animator.setInterpolator(new PathInterpolator(0.22f, 1f, 0.36f, 1f));
+      animator.addUpdateListener(
+          a -> {
+            float t = (float) a.getAnimatedValue();
+            pillX = startX + (targetX - startX) * t;
+            pillW = startW + (targetW - startW) * t;
+            invalidate();
+          });
+      animator.start();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+      if (animator != null) {
+        animator.cancel();
+        animator = null;
+      }
+      super.onDetachedFromWindow();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+      if (pillW <= 0f || getHeight() <= 0) return;
+      float half = strokeW * 0.5f;
+      float h = getHeight() - strokeW;
+      if (h <= 0f) return;
+      float radius = h * 0.5f;
+      rect.set(pillX + half, half, pillX + pillW - half, getHeight() - half);
+      canvas.drawRoundRect(rect, radius, radius, fillPaint);
+      canvas.drawRoundRect(rect, radius, radius, strokePaint);
+    }
+  }
+
   private void buildNavTabs() {
     int[] order = {0, 1, 3, 4, 6};
     String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
@@ -1058,7 +1138,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     for (int p = 0; p < order.length; p++) {
       final int i = order[p];
       final int target = i;
-      LinearLayout tab = u.row(5);
+      LinearLayout tab = u.row(6);
       tab.setGravity(Gravity.CENTER);
       tab.setContentDescription(labels[i]);
       tab.setFocusable(true);
@@ -1079,6 +1159,27 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       label.setVisibility(View.GONE);
       tab.addView(label, new LinearLayout.LayoutParams(-2, -2));
       tab.setOnClickListener(v -> select(target));
+      tab.setOnTouchListener(
+          (v, e) -> {
+            int action = e.getActionMasked();
+            if (action == MotionEvent.ACTION_DOWN) {
+              if (motion())
+                v.animate().scaleX(0.93f).scaleY(0.93f).setDuration(90).setInterpolator(Motion.EASE).start();
+            } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+              if (action == MotionEvent.ACTION_UP
+                  && e.getX() >= 0
+                  && e.getX() < v.getWidth()
+                  && e.getY() >= 0
+                  && e.getY() < v.getHeight()) Motion.haptic(v, false);
+              v.animate()
+                  .scaleX(1f)
+                  .scaleY(1f)
+                  .setDuration(motion() ? 240 : 0)
+                  .setInterpolator(new OvershootInterpolator(1.1f))
+                  .start();
+            }
+            return false;
+          });
       Motion.customTouch(tab);
       navTabs[p] = tab;
       navIcons[p] = icon;
@@ -1090,29 +1191,162 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private void renderNav() {
     if (navTabs == null) buildNavTabs();
     int[] order = {0, 1, 3, 4, 6};
-    if (sectionChip != null) {
-      int normalized = (screen == 2 || screen == 5) ? 1 : screen;
-      if (normalized == 0) {
-        sectionChip.setVisibility(View.GONE);
-      } else {
-        sectionChip.setText(labels[normalized]);
-        sectionChip.setVisibility(View.VISIBLE);
-      }
-    }
-    final float fromX = navActivePill != null ? navActivePill.getTranslationX() : 0f;
-    final int fromW = navPillWidth;
-    final boolean hadPill = navActivePill != null && navActivePill.getVisibility() == View.VISIBLE && fromW > 0;
     int activePosition = 0;
     for (int position = 0; position < order.length; position++) {
       int i = order[position];
+      if (screen == i || (i == 1 && (screen == 2 || screen == 5))) {
+        activePosition = position;
+        break;
+      }
+    }
+    if (sectionChip != null) {
+      int normalized = (screen == 2 || screen == 5) ? 1 : screen;
+      if (normalized == 0) {
+        if (sectionChip.getVisibility() == View.VISIBLE) {
+          if (motion()) {
+            sectionChip.animate().cancel();
+            sectionChip
+                .animate()
+                .alpha(0f)
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(140)
+                .setInterpolator(Motion.EASE)
+                .withEndAction(
+                    () -> {
+                      sectionChip.setVisibility(View.GONE);
+                      sectionChip.setAlpha(1f);
+                      sectionChip.setScaleX(1f);
+                      sectionChip.setScaleY(1f);
+                    })
+                .start();
+          } else {
+            sectionChip.setVisibility(View.GONE);
+          }
+        }
+      } else {
+        boolean wasHidden = sectionChip.getVisibility() != View.VISIBLE;
+        sectionChip.animate().cancel();
+        sectionChip.setText(labels[normalized]);
+        sectionChip.setVisibility(View.VISIBLE);
+        if ((wasHidden || activePosition != lastNavIndex) && motion()) {
+          sectionChip.setAlpha(0f);
+          sectionChip.setScaleX(0.9f);
+          sectionChip.setScaleY(0.9f);
+          sectionChip
+              .animate()
+              .alpha(1f)
+              .scaleX(1f)
+              .scaleY(1f)
+              .setDuration(180)
+              .setInterpolator(Motion.EASE)
+              .start();
+        } else {
+          sectionChip.setAlpha(1f);
+          sectionChip.setScaleX(1f);
+          sectionChip.setScaleY(1f);
+        }
+      }
+    }
+    final boolean hadPill = navPillView != null && navPillView.getVisibility() == View.VISIBLE && navPillWidth > 0;
+    final int direction = Integer.compare(activePosition, lastNavIndex);
+    if (navPreDrawListener != null) {
+      bottom.getViewTreeObserver().removeOnPreDrawListener(navPreDrawListener);
+      navPreDrawListener = null;
+    }
+    final int activeIdx = activePosition;
+    if (navPillView != null) {
+      navPreDrawListener =
+          new ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+              bottom.getViewTreeObserver().removeOnPreDrawListener(this);
+              if (navPreDrawListener == this) navPreDrawListener = null;
+              View targetTab = navTabs[activeIdx];
+              int targetW = targetTab.getWidth();
+              float targetX = targetTab.getLeft();
+              if (targetW <= 0) return true;
+              navPillWidth = targetW;
+              navPillView.slideTo(targetX, targetW, hadPill && motion());
+              return true;
+            }
+          };
+      bottom.getViewTreeObserver().addOnPreDrawListener(navPreDrawListener);
+    }
+    if (bottom.isLaidOut() && hadPill && motion()) {
+      ChangeBounds cb = new ChangeBounds();
+      cb.setDuration(240);
+      cb.setInterpolator(new PathInterpolator(0.22f, 1f, 0.36f, 1f));
+      TransitionManager.beginDelayedTransition(bottom, cb);
+    }
+    for (int position = 0; position < order.length; position++) {
+      int i = order[position];
       boolean selected = screen == i || (i == 1 && (screen == 2 || screen == 5));
-      if (selected) activePosition = position;
       LinearLayout tab = navTabs[position];
+      boolean wasSelected = tab.isSelected();
       tab.setSelected(selected);
       tab.setPadding(selected ? u.dp(15) : 0, 0, selected ? u.dp(15) : 0, 0);
-      navIcons[position].setImageDrawable(selected ? navActiveGlyphs[position] : navInactiveGlyphs[position]);
-      navIcons[position].setAlpha(selected ? 1f : 0.64f);
-      navLabels[position].setVisibility(selected ? View.VISIBLE : View.GONE);
+      ImageView icon = navIcons[position];
+      icon.setImageDrawable(selected ? navActiveGlyphs[position] : navInactiveGlyphs[position]);
+      if (selected && !wasSelected && motion()) {
+        icon.animate().cancel();
+        icon.setScaleX(0.86f);
+        icon.setScaleY(0.86f);
+        icon.setAlpha(0.75f);
+        icon.animate()
+            .scaleX(1.06f)
+            .scaleY(1.06f)
+            .alpha(1f)
+            .setDuration(140)
+            .setInterpolator(Motion.EASE)
+            .withEndAction(
+                () ->
+                    icon.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(140)
+                        .setInterpolator(Motion.EASE)
+                        .start())
+            .start();
+      } else if (!selected && wasSelected && motion()) {
+        icon.animate().cancel();
+        icon.animate()
+            .scaleX(1f)
+            .scaleY(1f)
+            .alpha(0.64f)
+            .setDuration(160)
+            .setInterpolator(Motion.EASE)
+            .start();
+      } else {
+        icon.animate().cancel();
+        icon.setAlpha(selected ? 1f : 0.64f);
+        icon.setScaleX(1f);
+        icon.setScaleY(1f);
+      }
+      TextView label = navLabels[position];
+      if (selected) {
+        boolean wasVisible = label.getVisibility() == View.VISIBLE;
+        label.animate().cancel();
+        label.setVisibility(View.VISIBLE);
+        if (!wasVisible && motion() && hadPill) {
+          label.setAlpha(0f);
+          label.setTranslationX((direction >= 0 ? 1 : -1) * u.dp(5));
+          label.animate()
+              .alpha(1f)
+              .translationX(0f)
+              .setStartDelay(55)
+              .setDuration(185)
+              .setInterpolator(Motion.EASE)
+              .start();
+        } else {
+          label.setAlpha(1f);
+          label.setTranslationX(0f);
+        }
+      } else {
+        label.animate().cancel();
+        label.setAlpha(1f);
+        label.setTranslationX(0f);
+        label.setVisibility(View.GONE);
+      }
       LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tab.getLayoutParams();
       int wantWidth = selected ? -2 : 0;
       float wantWeight = selected ? 0f : 1f;
@@ -1122,44 +1356,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         tab.setLayoutParams(lp);
       }
     }
-    final int activeIdx = activePosition;
-    if (navActivePill != null) {
-      bottom.getViewTreeObserver().addOnPreDrawListener(
-          new android.view.ViewTreeObserver.OnPreDrawListener() {
-            public boolean onPreDraw() {
-              bottom.getViewTreeObserver().removeOnPreDrawListener(this);
-              View targetTab = navTabs[activeIdx];
-              int targetW = targetTab.getWidth();
-              float targetX = targetTab.getLeft();
-              if (targetW <= 0) return true;
-              navActivePill.animate().cancel();
-              FrameLayout.LayoutParams plp = (FrameLayout.LayoutParams) navActivePill.getLayoutParams();
-              if (plp.width != targetW) {
-                plp.width = targetW;
-                navActivePill.setLayoutParams(plp);
-              }
-              navPillWidth = targetW;
-              navActivePill.setVisibility(View.VISIBLE);
-              if (hadPill && motion() && Math.abs(targetX - fromX) > 0.5f) {
-                navActivePill.setPivotX(0f);
-                navActivePill.setTranslationX(fromX);
-                navActivePill.setScaleX(fromW / (float) targetW);
-                navActivePill
-                    .animate()
-                    .translationX(targetX)
-                    .scaleX(1f)
-                    .withLayer()
-                    .setDuration(220)
-                    .setInterpolator(new android.view.animation.PathInterpolator(0.22f, 1f, 0.36f, 1f))
-                    .start();
-              } else {
-                navActivePill.setTranslationX(targetX);
-                navActivePill.setScaleX(1f);
-              }
-              return true;
-            }
-          });
-    }
+    lastNavIndex = activePosition;
     if (navDock != null) navDock.bringToFront();
   }
 
@@ -1305,41 +1502,57 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     if (screen == 1) {
       u.add(intro, memoriesSwitcher(memoryFilter), 14);
       if (memoryFilter == 1) {
-        LinearLayout sections = u.row(2);sections.setBackground(u.shape(Ui.PALE,9));sections.setPadding(u.dp(2),u.dp(2),u.dp(2),u.dp(2));
+        LinearLayout sections = u.row(3);sections.setBackground(u.shape(Ui.PALE,100,0x186b5cb5));sections.setPadding(u.dp(3),u.dp(3),u.dp(3),u.dp(3));
         String[] values = {"all", "memories", "photography"};
         String[] names = {"All", "Memories", "Photography"};
         for (int i = 0; i < values.length; i++) {
           final String section = values[i];
+          boolean activeSec = section.equals(photoSection);
           Button choice = u.textButton(names[i], () -> {
             photoSection = section;
             clearFeedCache(1);
             render(false);
           });
-          choice.setTextSize(12);choice.setTextColor(Ui.INK);choice.setMinHeight(u.dp(30));choice.setMinimumHeight(u.dp(30));choice.setPadding(u.dp(4),0,u.dp(4),0);choice.setBackground(u.shape(section.equals(photoSection)?Color.WHITE:Color.TRANSPARENT,7));
+          choice.setTextSize(12);choice.setTextColor(activeSec?0xff6c5ce7:Ui.MUTED);Compat.font(choice,R.font.dm_sans,activeSec?700:600);choice.setMinHeight(u.dp(32));choice.setMinimumHeight(u.dp(32));choice.setPadding(u.dp(6),0,u.dp(6),0);choice.setBackground(u.shape(activeSec?Color.WHITE:Color.TRANSPARENT,100,activeSec?0x186b5cb5:0));
           choice.setContentDescription("Photo collection: " + names[i]);
-          choice.setSelected(section.equals(photoSection));
-          sections.addView(choice, new LinearLayout.LayoutParams(0, u.dp(30), 1));
+          choice.setSelected(activeSec);
+          sections.addView(choice, new LinearLayout.LayoutParams(0, u.dp(32), 1));
         }
         u.add(intro, sections, 8);
       }
+      LinearLayout searchWrap = u.row(8);
+      searchWrap.setGravity(Gravity.CENTER_VERTICAL);
+      searchWrap.setPadding(u.dp(12), u.dp(2), u.dp(10), u.dp(2));
+      searchWrap.setBackground(u.shape(Color.WHITE, 16, 0x1c6b5cb5));
+      searchWrap.addView(Glyph.view(this, "search", Ui.MUTED), new LinearLayout.LayoutParams(u.dp(16), u.dp(16)));
       EditText search = u.input("Search quotes, captions, dates…", memorySearch, 120, false);
       search.setSingleLine(true);
+      search.setBackgroundColor(Color.TRANSPARENT);
+      search.setPadding(0, u.dp(10), 0, u.dp(10));
+      searchWrap.addView(search, new LinearLayout.LayoutParams(0, -2, 1));
+      ImageView clearSearch = Glyph.view(this, "close", Ui.MUTED);
+      clearSearch.setContentDescription("Clear search");
+      clearSearch.setPadding(u.dp(4), u.dp(4), u.dp(4), u.dp(4));
+      clearSearch.setVisibility(memorySearch.isEmpty() ? View.GONE : View.VISIBLE);
+      clearSearch.setOnClickListener(v -> search.setText(""));
+      searchWrap.addView(clearSearch, new LinearLayout.LayoutParams(u.dp(24), u.dp(24)));
       search.addTextChangedListener(new android.text.TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         public void onTextChanged(CharSequence s, int start, int before, int count) {}
         public void afterTextChanged(android.text.Editable s) {
           memorySearch = s == null ? "" : s.toString();
+          clearSearch.setVisibility(memorySearch.isEmpty() ? View.GONE : View.VISIBLE);
           if (feed != null) {
             feed.searchQuery(memorySearch);
             feed.submit(memories, false);
           }
         }
       });
-      u.add(intro, search, 10);
+      u.add(intro, searchWrap, 10);
     }
     LinearLayout compose = u.row(12);
     compose.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
-    compose.setBackground(u.shape(Color.WHITE, 22));
+    compose.setBackground(u.shape(Color.WHITE, 22, 0x1f6b5cb5));
     compose.addView(
         SocialFeed.avatar(this, actor(), 38), new LinearLayout.LayoutParams(u.dp(38), u.dp(38)));
     compose.addView(
@@ -1513,12 +1726,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private LinearLayout memoriesSwitcher(int active) {
-    LinearLayout bar = u.row(2);
-    bar.setBackground(u.shape(Ui.PALE, 9));
-    bar.setPadding(u.dp(2), u.dp(2), u.dp(2), u.dp(2));
+    LinearLayout bar = u.row(3);
+    bar.setBackground(u.shape(Ui.PALE, 100, 0x186b5cb5));
+    bar.setPadding(u.dp(3), u.dp(3), u.dp(3), u.dp(3));
     String[] names = {"All", "Photos", "Quotes", "Music"};
     for (int i = 0; i < names.length; i++) {
       final int idx = i;
+      boolean selected = active == i;
       Button btn = u.textButton(names[i], () -> {
         if (idx == 3) {
           select(2);
@@ -1533,13 +1747,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         }
       });
       btn.setTextSize(12);
-      btn.setTextColor(Ui.INK);
-      btn.setMinHeight(u.dp(30));
-      btn.setMinimumHeight(u.dp(30));
+      btn.setTextColor(selected ? 0xff6c5ce7 : Ui.MUTED);
+      Compat.font(btn, R.font.dm_sans, selected ? 700 : 600);
+      btn.setMinHeight(u.dp(32));
+      btn.setMinimumHeight(u.dp(32));
       btn.setPadding(u.dp(4), 0, u.dp(4), 0);
-      btn.setBackground(u.shape(active == i ? Color.WHITE : Color.TRANSPARENT, 7));
-      btn.setSelected(active == i);
-      bar.addView(btn, new LinearLayout.LayoutParams(0, u.dp(30), 1));
+      btn.setBackground(u.shape(selected ? Color.WHITE : Color.TRANSPARENT, 100, selected ? 0x186b5cb5 : 0));
+      btn.setSelected(selected);
+      bar.addView(btn, new LinearLayout.LayoutParams(0, u.dp(32), 1));
     }
     return bar;
   }
@@ -3711,13 +3926,16 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           .getDecorView()
           .setOnApplyWindowInsetsListener(
               (view, insets) -> {
-                int top = insets.getSystemWindowInsetTop(),
-                    bottom = insets.getSystemWindowInsetBottom();
-                view.setPadding(
-                    insets.getSystemWindowInsetLeft(),
-                    top,
-                    insets.getSystemWindowInsetRight(),
-                    bottom);
+                if (Build.VERSION.SDK_INT >= 30) {
+                  android.graphics.Insets sys = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
+                  view.setPadding(sys.left, sys.top, sys.right, sys.bottom);
+                } else {
+                  view.setPadding(
+                      insets.getSystemWindowInsetLeft(),
+                      insets.getSystemWindowInsetTop(),
+                      insets.getSystemWindowInsetRight(),
+                      insets.getSystemWindowInsetBottom());
+                }
                 return insets;
               });
       dialog.setOnDismissListener(

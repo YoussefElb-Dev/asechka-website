@@ -326,11 +326,11 @@ final class SocialFeed extends ListView {
       root.setTag(this);
       post = u.column();
       GradientDrawable surface = u.shape(Color.WHITE, 24);
-      surface.setStroke(u.dp(1), 0xffdce4fb);
+      surface.setStroke(Math.max(1, u.dp(1)), 0x1f6b5cb5);
       post.setBackground(surface);
       post.setPadding(u.dp(1), u.dp(1), u.dp(1), u.dp(1));
       post.setClipToOutline(true);
-      post.setElevation(u.dp(2));
+      post.setElevation(0f);
       root.addView(post);
       header = u.row(11);
       header.setPadding(u.dp(14), u.dp(8), u.dp(6), u.dp(8));

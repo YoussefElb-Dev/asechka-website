@@ -19,12 +19,24 @@ enum Touch {
         if success{confirmation.notificationOccurred(.success);confirmation.prepare()}else{soft.impactOccurred();soft.prepare()}
     }
 }
+extension Notification.Name {
+    static let scrollToTop=Notification.Name("asechka.scrollToTop")
+}
 struct SoftPress:ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduced
     func makeBody(configuration:Configuration)->some View {
         configuration.label.contentShape(Rectangle()).scaleEffect(configuration.isPressed && !reduced ? 0.96:1)
             .opacity(configuration.isPressed ? 0.8:1)
             .animation(reduced ? nil:.spring(response:0.32,dampingFraction:0.65),value:configuration.isPressed)
+    }
+}
+struct NavTabButtonStyle:ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduced
+    func makeBody(configuration:Configuration)->some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduced ? 0.93:1)
+            .opacity(configuration.isPressed ? 0.88:1)
+            .animation(reduced ? nil:.spring(response:0.24,dampingFraction:0.72),value:configuration.isPressed)
     }
 }
 extension View {
@@ -87,7 +99,9 @@ struct RootView:View {
         .sheet(isPresented:$connection){ConnectionView()}
         .onOpenURL{url in
             guard let code=GamesRoom.invitationCode(url) else{return}
-            visitedTabs.insert(4);tab=4;universe.games.openInvitation(code)
+            visitedTabs.insert(4)
+            if reduced {tab=4} else {withAnimation(.spring(response:0.32,dampingFraction:0.78,blendDuration:0.1)){tab=4}}
+            universe.games.openInvitation(code)
         }
         .onAppear{
             #if DEBUG
@@ -125,10 +139,15 @@ struct RootView:View {
             .first{$0.isKeyWindow}?.safeAreaInsets.bottom ?? 0
     }
     private func switchTab(_ target:Int){
-        guard target != tab else{return}
+        if target == tab {
+            Touch.tap()
+            NotificationCenter.default.post(name:.scrollToTop,object:target)
+            return
+        }
         Touch.tap()
         visitedTabs.insert(target)
-        tab=target
+        if reduced {tab=target}
+        else {withAnimation(.spring(response:0.32,dampingFraction:0.78,blendDuration:0.1)){tab=target}}
     }
     private var topBar:some View {
         HStack(spacing:10){
@@ -141,9 +160,9 @@ struct RootView:View {
                             .foregroundColor(Palette.violet)
                             .padding(.horizontal,9).padding(.vertical,3)
                             .background(Palette.lavender,in:Capsule())
-                            .transition(.opacity.combined(with:.scale(scale:0.9)))
+                            .transition(.opacity.combined(with:.scale(scale:0.88,anchor:.leading)))
                     }
-                }
+                }.animation(reduced ? nil:.spring(response:0.28,dampingFraction:0.82),value:tab)
                 Button{Touch.tap();connection=true}label:{
                     HStack(spacing:5){
                         Circle().fill(universe.online ? Color(red:46/255,green:196/255,blue:126/255):Palette.muted).frame(width:6,height:6)
@@ -220,6 +239,7 @@ struct RootView:View {
                     .zIndex(tab==4 ? 1:0)
             }
         }
+        .animation(reduced ? nil:.easeOut(duration:0.16),value:tab)
         .frame(maxWidth:.infinity,maxHeight:.infinity)
     }
     private var floatingDock:some View {
@@ -231,18 +251,19 @@ struct RootView:View {
                         ZStack{
                             if active {
                                 Capsule()
-                                    .fill(Color.white.opacity(0.86))
+                                    .fill(Color.white.opacity(0.92))
                                     .overlay(
                                         Capsule()
-                                            .strokeBorder(Palette.purple.opacity(0.16),lineWidth:1)
+                                            .strokeBorder(Palette.purple.opacity(0.18),lineWidth:1)
                                     )
-                                    .shadow(color:Palette.purple.opacity(0.14),radius:5,x:0,y:2)
+                                    .shadow(color:Palette.purple.opacity(0.15),radius:6,x:0,y:2)
                                     .matchedGeometryEffect(id:"active-nav-pill",in:tabMotion)
                             }
                             HStack(spacing:6){
                                 Image(systemName:active ? tabs[index].1 : tabs[index].0)
                                     .font(.system(size:17.5,weight:active ? .bold : .medium))
-                                    .foregroundColor(active ? Palette.violet : Palette.ink.opacity(0.66))
+                                    .foregroundColor(active ? Palette.violet : Palette.ink.opacity(0.64))
+                                    .scaleEffect(active ? 1.06 : 0.96)
                                     .frame(width:22,height:22)
                                 if active {
                                     Text(tabs[index].2)
@@ -250,7 +271,7 @@ struct RootView:View {
                                         .foregroundColor(Palette.violet)
                                         .lineLimit(1)
                                         .fixedSize(horizontal:true,vertical:false)
-                                        .transition(.opacity)
+                                        .transition(.asymmetric(insertion:.opacity.combined(with:.scale(scale:0.86,anchor:.leading)),removal:.opacity))
                                 }
                             }
                             .padding(.horizontal,active ? 15 : 0)
@@ -261,26 +282,25 @@ struct RootView:View {
                         .frame(height:46)
                         .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(NavTabButtonStyle())
                     .accessibilityLabel(tabs[index].2)
                     .accessibilityAddTraits(active ? .isSelected : [])
                 }
             }
             .padding(7)
             .frame(maxWidth:.infinity)
+            .animation(reduced ? nil:.spring(response:0.32,dampingFraction:0.78,blendDuration:0.1),value:tab)
             .background(
                 ZStack{
                     Capsule().fill(.ultraThinMaterial)
-                    Capsule().fill(LinearGradient(colors:[Palette.lavender.opacity(0.30),Palette.blue.opacity(0.24)],startPoint:.topLeading,endPoint:.bottomTrailing))
+                    Capsule().fill(LinearGradient(colors:[Palette.lavender.opacity(0.32),Palette.blue.opacity(0.26)],startPoint:.topLeading,endPoint:.bottomTrailing))
                 }
             )
             .overlay(
                 Capsule()
-                    .strokeBorder(LinearGradient(colors:[Color.white.opacity(0.88),Palette.purple.opacity(0.20)],startPoint:.top,endPoint:.bottom),lineWidth:1.2)
+                    .strokeBorder(LinearGradient(colors:[Color.white.opacity(0.90),Palette.purple.opacity(0.20)],startPoint:.top,endPoint:.bottom),lineWidth:1.2)
             )
-            .compositingGroup()
             .shadow(color:Palette.purple.opacity(0.16),radius:12,x:0,y:5)
-            .animation(reduced ? nil:.interactiveSpring(response:0.22,dampingFraction:0.86),value:tab)
 
             Button{
                 Touch.tap()

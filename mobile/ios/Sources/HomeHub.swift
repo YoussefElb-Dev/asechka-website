@@ -198,7 +198,7 @@ struct HomeHub:View {
                         Text("\(v.1) \(v.2)").font(.system(size:11,weight:.medium)).padding(.horizontal,10).padding(.vertical,6).background(.white,in:Capsule()).overlay(Capsule().stroke(Palette.purple.opacity(0.14),lineWidth:1)).foregroundColor(Palette.ink)
                     }
                 }
-            }
+            }.padding(.horizontal,2).padding(.vertical,2)
         }
     }
     private var pinnedJarCard:some View {
@@ -242,7 +242,7 @@ struct HomeHub:View {
                     TextField("Your quick answer…",text:$promptDraft).textFieldStyle(.roundedBorder).font(.system(size:13))
                     Button("Send"){
                         do{try universe.answerPrompt(promptDraft);promptDraft="";Touch.tap(true)}catch{universe.error=error.localizedDescription}
-                    }.font(.system(size:13,weight:.semibold)).padding(.horizontal,14).padding(.vertical,8).background(Palette.purple,in:Capsule()).foregroundColor(.white).disabled(promptDraft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty)
+                    }.font(.system(size:13,weight:.semibold)).padding(.horizontal,14).padding(.vertical,8).background(Palette.purple,in:Capsule()).foregroundColor(.white).opacity(promptDraft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty ? 0.48:1).disabled(promptDraft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty)
                 }
                 if otherAns?.answered == true {
                     Text("\(universe.partner) already answered · reply to reveal! ✦").font(.system(size:11,weight:.semibold)).foregroundColor(Palette.purple)
@@ -274,7 +274,7 @@ struct HomeHub:View {
         VStack(alignment:.leading,spacing:4){
             Text(universe.throwbackLabel.uppercased()).font(.system(size:10,weight:.bold)).tracking(1.6).foregroundColor(Palette.purple)
             Text("“\(universe.throwbackText)”").font(.system(size:13)).foregroundColor(Palette.ink).lineLimit(3)
-        }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(Palette.blue,in:RoundedRectangle(cornerRadius:18))
+        }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(Palette.blue,in:RoundedRectangle(cornerRadius:18)).overlay(RoundedRectangle(cornerRadius:18).stroke(Palette.purple.opacity(0.12),lineWidth:1))
     }
     private var sinceCard:some View {
         Button{Touch.tap();open(BookRoute(personal:true,chapter:0))}label:{

@@ -265,7 +265,10 @@ final class HomeExtras {
     // 1b. Standalone Vibe Row directly below Heart Card (matching iOS HomeHub)
     HorizontalScrollView vibeScroll = new HorizontalScrollView(activity);
     vibeScroll.setHorizontalScrollBarEnabled(false);
+    vibeScroll.setClipToPadding(false);
+    vibeScroll.setClipChildren(false);
     LinearLayout vibeRow = u.row(6);
+    vibeRow.setPadding(u.dp(2), u.dp(2), u.dp(2), u.dp(2));
     for (String[] vibe : VIBES) {
       final String vibeId = vibe[0], vibeSymbol = vibe[1], vibeLabel = vibe[2];
       TextView chip = u.text(vibeSymbol + " " + vibeLabel, 11, Ui.INK);
@@ -273,7 +276,9 @@ final class HomeExtras {
       chip.setPadding(u.dp(10), u.dp(6), u.dp(10), u.dp(6));
       android.graphics.drawable.GradientDrawable bg = u.shape(Color.WHITE, 100);
       bg.setStroke(u.dp(1), 0x246b5cb5);
-      chip.setBackground(bg);
+      chip.setBackground(
+          new android.graphics.drawable.RippleDrawable(
+              android.content.res.ColorStateList.valueOf(0x1f6c5ce7), bg, null));
       chip.setContentDescription("Send heart vibe: " + vibeLabel);
       chip.setOnClickListener(
           v -> {
@@ -283,6 +288,7 @@ final class HomeExtras {
           });
       vibeRow.addView(chip);
     }
+    Motion.install(vibeRow);
     vibeScroll.addView(vibeRow);
     u.add(root, vibeScroll, 10);
 
@@ -975,6 +981,7 @@ final class HomeExtras {
     if (item == null) return;
     LinearLayout card = u.card(throwbackSlot, Ui.BLUE);
     ((LinearLayout.LayoutParams) card.getLayoutParams()).topMargin = 0;
+    card.setBackground(u.shape(Ui.BLUE, 18, 0x1a6b5cb5));
     String badge = item.optString("throwbackLabel", item.optString("label", "THROWBACK"));
     u.add(card, u.label("ON THIS DAY · " + badge.toUpperCase(Locale.US)), 0);
     String text = item.optString("text", item.optString("caption", item.optString("title", "")));

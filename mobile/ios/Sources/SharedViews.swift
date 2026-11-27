@@ -9,12 +9,12 @@ struct DaysView:View {
     @State private var littleBook=false
     @State private var personalBook=false
     var body:some View {
-        ScrollView{VStack(alignment:.leading,spacing:20){
+        ScrollViewReader{proxy in ScrollView{VStack(alignment:.leading,spacing:20){
             VStack(alignment:.leading,spacing:6){
                 Text("LITTLE PLANS & WISHES").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
                 Text("Our little days.").font(.custom("Manrope-Bold",size:30))
                 Text("Places to go. Things to try. A little more us.").foregroundColor(Palette.muted)
-            }
+            }.id("top")
             HStack(spacing:12){
                 Button{littleBook=true;Touch.tap()}label:{
                     VStack(alignment:.leading,spacing:6){
@@ -54,6 +54,8 @@ struct DaysView:View {
             }
             if universe.wishes.isEmpty {Text("Our next adventure starts with a little wish.").foregroundColor(Palette.muted).padding(.vertical,25)}
         }.padding(.horizontal,22).padding(.top,22).padding(.bottom,112)}.refreshable{await universe.refresh()}
+            .onReceive(NotificationCenter.default.publisher(for:.scrollToTop)){n in if (n.object as? Int)==2{withAnimation(.easeOut(duration:0.28)){proxy.scrollTo("top",anchor:.top)}}}
+        }
             .sheet(item:$editing){selection in WishEditor(original:selection.wish)}
             .sheet(isPresented:$littleBook){BookView()}
             .sheet(isPresented:$personalBook){BookView(personal:true)}

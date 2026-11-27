@@ -13,6 +13,8 @@ struct PostDraft:Codable {
 struct ComposerView:View {
     @EnvironmentObject private var universe:UniverseStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduced
+    @Namespace private var segmentMotion
     var request:ComposeRequest
     @State private var draft=PostDraft()
     @State private var photo=true
@@ -48,12 +50,20 @@ struct ComposerView:View {
         HStack(spacing:4){
             ForEach([(true,"Photo","photo.on.rectangle"),(false,"Quote","quote.opening")],id:\.0){item in
                 let active = photo == item.0
-                Button{Touch.tap();withAnimation(.interactiveSpring(response:0.24,dampingFraction:0.84)){photo=item.0}}label:{
-                    Label(item.1,systemImage:item.2)
-                        .font(.system(size:13,weight:.semibold))
-                        .foregroundColor(active ? Palette.violet : Palette.muted)
-                        .frame(maxWidth:.infinity).frame(height:38)
-                        .background(active ? Color.white : Color.clear,in:Capsule())
+                Button{Touch.tap();if reduced{photo=item.0}else{withAnimation(.spring(response:0.28,dampingFraction:0.80)){photo=item.0}}}label:{
+                    ZStack{
+                        if active {
+                            Capsule()
+                                .fill(Color.white)
+                                .shadow(color:Palette.purple.opacity(0.10),radius:3,x:0,y:1)
+                                .matchedGeometryEffect(id:"composer-type",in:segmentMotion)
+                        }
+                        Label(item.1,systemImage:item.2)
+                            .font(.system(size:13,weight:.semibold))
+                            .foregroundColor(active ? Palette.violet : Palette.muted)
+                    }
+                    .frame(maxWidth:.infinity).frame(height:38)
+                    .contentShape(Capsule())
                 }.buttonStyle(.plain)
             }
         }
@@ -64,12 +74,20 @@ struct ComposerView:View {
         HStack(spacing:4){
             ForEach(PhotoCollection.allCases){item in
                 let active = collectionBinding.wrappedValue == item
-                Button{Touch.tap();withAnimation(.interactiveSpring(response:0.24,dampingFraction:0.84)){collectionBinding.wrappedValue=item}}label:{
-                    Text(item.title)
-                        .font(.system(size:13,weight:.semibold))
-                        .foregroundColor(active ? Palette.violet : Palette.muted)
-                        .frame(maxWidth:.infinity).frame(height:36)
-                        .background(active ? Color.white : Color.clear,in:Capsule())
+                Button{Touch.tap();if reduced{collectionBinding.wrappedValue=item}else{withAnimation(.spring(response:0.28,dampingFraction:0.80)){collectionBinding.wrappedValue=item}}}label:{
+                    ZStack{
+                        if active {
+                            Capsule()
+                                .fill(Color.white)
+                                .shadow(color:Palette.purple.opacity(0.10),radius:3,x:0,y:1)
+                                .matchedGeometryEffect(id:"composer-collection",in:segmentMotion)
+                        }
+                        Text(item.title)
+                            .font(.system(size:13,weight:.semibold))
+                            .foregroundColor(active ? Palette.violet : Palette.muted)
+                    }
+                    .frame(maxWidth:.infinity).frame(height:36)
+                    .contentShape(Capsule())
                 }.buttonStyle(.plain)
             }
         }

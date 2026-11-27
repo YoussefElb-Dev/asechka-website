@@ -160,9 +160,15 @@ final class Motion {
       view.setTranslationX(0);
       return;
     }
-    view.setAlpha(.78f);
-    view.setTranslationX(direction * 14 * view.getResources().getDisplayMetrics().density);
-    view.animate().alpha(1).translationX(0).withLayer().setDuration(200).setInterpolator(EASE).start();
+    view.setAlpha(.88f);
+    view.setTranslationX(direction * 12 * view.getResources().getDisplayMetrics().density);
+    view.animate()
+        .alpha(1)
+        .translationX(0)
+        .withLayer()
+        .setDuration(210)
+        .setInterpolator(new PathInterpolator(0.22f, 1f, 0.36f, 1f))
+        .start();
   }
 
   static void reveal(LinearLayout content, ScrollView scroll) {

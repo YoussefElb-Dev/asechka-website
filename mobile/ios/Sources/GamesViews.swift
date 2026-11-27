@@ -51,9 +51,9 @@ struct GamesView: View {
     @State private var history = false
     @State private var joining = false
     var body: some View {
-        ScrollView {
+        ScrollViewReader { proxy in ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                header
+                header.id("top")
                 GamesConnectionBanner(store: store)
                 if let room = store.selectedRoom, room.status == "lobby" {
                     Button { store.activeRoomID = nil } label: { Label("All games", systemImage: "arrow.left").frame(minHeight: 44) }
@@ -77,6 +77,8 @@ struct GamesView: View {
         .background(GamesPalette.background.ignoresSafeArea())
         .foregroundColor(GamesPalette.ink).tint(GamesPalette.lilac)
         .refreshable { store.refresh() }
+        .onReceive(NotificationCenter.default.publisher(for: .scrollToTop)) { n in if (n.object as? Int) == 4 { withAnimation(.easeOut(duration: 0.28)) { proxy.scrollTo("top", anchor: .top) } } }
+        }
         .sheet(item: $creating) { kind in GamesCreateView(store: store, kind: kind) }
         .sheet(isPresented: $preferences) { GamesPreferencesView() }
         .background(GamesPlayPresentation(store: store, universe: universe).frame(width: 0, height: 0))

@@ -54,6 +54,7 @@ struct FeedView:View {
             }.padding(.bottom,112)}
             .scrollDismissesKeyboard(.interactively)
             .refreshable{await universe.refresh()}
+            .onReceive(NotificationCenter.default.publisher(for:.scrollToTop)){n in if (n.object as? Int)==mode{withAnimation(.easeOut(duration:0.28)){proxy.scrollTo("top",anchor:.top)}}}
         }
         .sheet(item:$comments){selection in CommentsView(post:selection.post)}
         .sheet(item:$shortcut){route in BookView(personal:route.personal,initialChapter:route.chapter)}
@@ -99,7 +100,7 @@ struct FeedView:View {
                     }
                 }
                 if memoryTab != 3 {
-                    Button{create(memoryTab != 2)}label:{HStack(spacing:12){Avatar(actor:universe.actor);Text("Something to share, \(universe.name)?").font(.subheadline).foregroundColor(Palette.muted);Spacer();Image(systemName:"plus")}.padding(14).background(.white,in:RoundedRectangle(cornerRadius:22))}
+                    Button{create(memoryTab != 2)}label:{HStack(spacing:12){Avatar(actor:universe.actor);Text("Something to share, \(universe.name)?").font(.subheadline).foregroundColor(Palette.muted);Spacer();Image(systemName:"plus").foregroundColor(Palette.purple)}.padding(14).background(.white,in:RoundedRectangle(cornerRadius:22)).overlay(RoundedRectangle(cornerRadius:22).stroke(Palette.lavender,lineWidth:1))}
                 }
             }.padding(.horizontal,22)}
         }.padding(.top,home ? 10:12).padding(.bottom,home ? 0:6)
