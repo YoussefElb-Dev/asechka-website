@@ -108,7 +108,7 @@ final class GamesJourneyTests: XCTestCase {
             let card = app.buttons["games.card.\(game)"]
             // SwiftUI can report a card as hittable when only its top edge is
             // visible above the tab bar. Bring its center into the content area.
-            let top = app.buttons["Create post"].frame.maxY + 20
+            let top = app.buttons["Messages"].frame.maxY + 20
             let bottom = app.buttons["Games"].firstMatch.frame.minY - 20
             for _ in 0..<12 {
                 if card.isHittable && card.frame.midY > top && card.frame.midY < bottom { break }

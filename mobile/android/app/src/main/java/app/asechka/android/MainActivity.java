@@ -66,7 +66,8 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private final Handler main = new Handler(Looper.getMainLooper());
   private final ExecutorService work = Executors.newFixedThreadPool(4);
   private JSONObject memories, music, together, daily;
-  private LinearLayout root, content, bottom;
+  private LinearLayout root, content, bottom, navDock;
+  private TextView sectionChip;
   private ScrollView scroll;
   private FrameLayout stage;
   private SocialFeed feed;
@@ -342,13 +343,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               sys.top,
               sys.right,
               root == view ? (keyboard ? ime.bottom : 0) : Math.max(sys.bottom, ime.bottom));
-          if (root == view && bottom != null) {
-            bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-            if (bottom.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-              LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bottom.getLayoutParams();
-              lp.bottomMargin = navBottomPad(sys.bottom);
-              bottom.setLayoutParams(lp);
-            }
+          if (root == view && navDock != null) {
+            navDock.setVisibility(keyboard ? View.GONE : View.VISIBLE);
+            navDock.setPadding(u.dp(16), u.dp(14), u.dp(16), navBottomPad(sys.bottom));
           }
           return insets;
         });
@@ -365,19 +362,15 @@ public class MainActivity extends Activity implements SocialFeed.Host {
                 insets.getSystemWindowInsetRight(),
                 root == view ? (keyboard ? keyboardBottom : 0) : keyboardBottom);
             navigationInset = systemBottom;
-            if (root == view && bottom != null) {
-              bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-              if (bottom.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bottom.getLayoutParams();
-                lp.bottomMargin = navBottomPad(navigationInset);
-                bottom.setLayoutParams(lp);
-              }
+            if (root == view && navDock != null) {
+              navDock.setVisibility(keyboard ? View.GONE : View.VISIBLE);
+              navDock.setPadding(u.dp(16), u.dp(14), u.dp(16), navBottomPad(navigationInset));
             }
             return insets;
           });
     getWindow()
         .setNavigationBarColor(
-            Build.VERSION.SDK_INT < 26 ? Ui.INK : root == view ? 0xebffffff : Ui.BG);
+            Build.VERSION.SDK_INT < 26 ? Ui.INK : Ui.BG);
     setContentView(view);
     view.requestApplyInsets();
   }
@@ -703,51 +696,107 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root = u.column();
     root.setFocusableInTouchMode(true);
     root.setDescendantFocusability(android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-    LinearLayout toolbar = u.row(8);
-    toolbar.setPadding(u.dp(20), u.dp(7), u.dp(20), u.dp(7));
-    TextView brand = u.title("asechka.", 25);
-    brand.setGravity(Gravity.CENTER_VERTICAL);
-    toolbar.addView(brand, new LinearLayout.LayoutParams(0, u.dp(44), 1));
-    SocialFeed.Icon create = new SocialFeed.Icon(this, "plus.square");
-    create.setContentDescription("Create a post");
-    create.setOnClickListener(v -> choosePost());
-    toolbar.addView(create, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
-    SocialFeed.Icon envelope = new SocialFeed.Icon(this, "envelope");
-    envelope.setContentDescription("Messages");
-    envelope.setOnClickListener(v -> messages.open());
-    toolbar.addView(envelope, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
-    SocialFeed.Icon refresh = new SocialFeed.Icon(this, "refresh");
-    refresh.setOnClickListener(v -> {if(motion())refresh.animate().rotationBy(360).setDuration(650).setInterpolator(Motion.EASE).start();connectionMenu();});
-    refresh.setContentDescription("Refresh shared memories");
-    toolbar.addView(refresh, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
-    TextView menu = SocialFeed.avatar(this, actor(), 38);
-    menu.setContentDescription("Settings and sign out");
-    menu.setOnClickListener(v -> settings(menu));
-    toolbar.addView(menu, new LinearLayout.LayoutParams(u.dp(38), u.dp(38)));
-    root.addView(toolbar);
+    LinearLayout toolbar = u.row(10);
+    toolbar.setGravity(Gravity.CENTER_VERTICAL);
+    toolbar.setPadding(u.dp(18), u.dp(8), u.dp(18), u.dp(8));
+    LinearLayout brandStack = u.column();
+    LinearLayout brandRow = u.row(7);
+    brandRow.setGravity(Gravity.CENTER_VERTICAL);
+    TextView brand = u.title("asechka.", 24);
+    brandRow.addView(brand);
+    sectionChip = u.text("", 11, 0xff6c5ce7);
+    Compat.font(sectionChip, R.font.dm_sans, 700);
+    sectionChip.setPadding(u.dp(9), u.dp(3), u.dp(9), u.dp(3));
+    sectionChip.setBackground(u.shape(Ui.PALE, 100));
+    sectionChip.setVisibility(View.GONE);
+    brandRow.addView(sectionChip);
+    brandStack.addView(brandRow);
     notice = u.text(connectionMessage, 11, Ui.MUTED);
     notice.setMaxLines(1);
     notice.setEllipsize(android.text.TextUtils.TruncateAt.END);
-    notice.setPadding(u.dp(23), 0, u.dp(23), u.dp(9));
+    notice.setPadding(0, u.dp(1), 0, 0);
     notice.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     notice.setOnClickListener(v -> connectionMenu());
-    root.addView(notice);
+    brandStack.addView(notice);
+    toolbar.addView(brandStack, new LinearLayout.LayoutParams(0, -2, 1));
+
+    LinearLayout actionPill = u.row(5);
+    actionPill.setGravity(Gravity.CENTER_VERTICAL);
+    actionPill.setPadding(u.dp(4), u.dp(4), u.dp(4), u.dp(4));
+    android.graphics.drawable.GradientDrawable actionPillBg = u.shape(0xc8ffffff, 100);
+    actionPillBg.setStroke(Math.max(1, u.dp(1)), 0x1f6b5cb5);
+    actionPill.setBackground(actionPillBg);
+    FrameLayout envelopeWrap = new FrameLayout(this);
+    android.graphics.drawable.GradientDrawable circleBtnBg = u.shape(Color.WHITE, 100);
+    circleBtnBg.setStroke(Math.max(1, u.dp(1)), 0x1a6b5cb5);
+    envelopeWrap.setBackground(circleBtnBg);
+    envelopeWrap.setContentDescription("Messages");
+    envelopeWrap.setOnClickListener(v -> messages.open());
+    envelopeWrap.addView(Glyph.view(this, "envelope", Ui.INK), new FrameLayout.LayoutParams(u.dp(18), u.dp(18), Gravity.CENTER));
+    actionPill.addView(envelopeWrap, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
+    FrameLayout refreshWrap = new FrameLayout(this);
+    android.graphics.drawable.GradientDrawable refreshBtnBg = u.shape(Color.WHITE, 100);
+    refreshBtnBg.setStroke(Math.max(1, u.dp(1)), 0x1a6b5cb5);
+    refreshWrap.setBackground(refreshBtnBg);
+    refreshWrap.setContentDescription("Refresh shared memories");
+    ImageView refreshGlyph = Glyph.view(this, "refresh", Ui.INK);
+    refreshWrap.addView(refreshGlyph, new FrameLayout.LayoutParams(u.dp(17), u.dp(17), Gravity.CENTER));
+    refreshWrap.setOnClickListener(v -> {if(motion())refreshGlyph.animate().rotationBy(360).setDuration(650).setInterpolator(Motion.EASE).start();connectionMenu();});
+    actionPill.addView(refreshWrap, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
+    TextView menu = SocialFeed.avatar(this, actor(), 36);
+    menu.setContentDescription("Settings and sign out");
+    menu.setOnClickListener(v -> settings(menu));
+    actionPill.addView(menu, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
+    toolbar.addView(actionPill);
+    root.addView(toolbar);
+
     content = u.column();
-    content.setPadding(u.dp(22), u.dp(12), u.dp(22), u.dp(26));
+    content.setPadding(u.dp(22), u.dp(12), u.dp(22), u.dp(92));
     scroll = u.scroll(content);
     stage = new FrameLayout(this);
+    stage.setClipChildren(false);
+    stage.setClipToPadding(false);
     stage.addView(scroll, new FrameLayout.LayoutParams(-1, -1));
-    root.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
     feed = null;
-    bottom = u.row(4);
-    bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), u.dp(6));
-    bottom.setElevation(u.dp(8));
-    android.graphics.drawable.GradientDrawable glassCapsule = u.shape(0xebffffff, 100);
-    glassCapsule.setStroke(u.dp(1), 0x246b5cb5);
-    bottom.setBackground(glassCapsule);
-    LinearLayout.LayoutParams navParams = new LinearLayout.LayoutParams(-1, -2);
-    navParams.setMargins(u.dp(16), 0, u.dp(16), navBottomPad(navigationInset));
-    root.addView(bottom, navParams);
+
+    navDock = u.row(10);
+    navDock.setGravity(Gravity.CENTER_VERTICAL);
+    navDock.setClipChildren(false);
+    navDock.setClipToPadding(false);
+    navDock.setPadding(u.dp(16), u.dp(14), u.dp(16), navBottomPad(navigationInset));
+    navDock.setBackground(
+        new android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+            new int[] {0x00f7f9ff, 0xebf7f9ff, 0xfff7f9ff}));
+
+    bottom = u.row(2);
+    bottom.setGravity(Gravity.CENTER_VERTICAL);
+    bottom.setPadding(u.dp(6), u.dp(6), u.dp(6), u.dp(6));
+    bottom.setElevation(u.dp(10));
+    android.graphics.drawable.GradientDrawable dockBg = u.shape(0xfa1a1f36, 100);
+    dockBg.setStroke(Math.max(1, u.dp(1)), 0x33ffffff);
+    bottom.setBackground(dockBg);
+    navDock.addView(bottom, new LinearLayout.LayoutParams(0, u.dp(56), 1));
+
+    FrameLayout createOrb = new FrameLayout(this);
+    createOrb.setContentDescription("Create a post");
+    createOrb.setElevation(u.dp(10));
+    android.graphics.drawable.GradientDrawable orbBg =
+        new android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
+            new int[] {0xff6c5ce7, 0xff5a49c9});
+    orbBg.setCornerRadius(u.dp(100));
+    orbBg.setStroke(Math.max(1, u.dp(1)), 0x55ffffff);
+    createOrb.setBackground(
+        new android.graphics.drawable.RippleDrawable(
+            android.content.res.ColorStateList.valueOf(0x33ffffff), orbBg, null));
+    createOrb.addView(Glyph.view(this, "plus", Color.WHITE), new FrameLayout.LayoutParams(u.dp(22), u.dp(22), Gravity.CENTER));
+    createOrb.setOnClickListener(v -> choosePost());
+    navDock.addView(createOrb, new LinearLayout.LayoutParams(u.dp(56), u.dp(56)));
+
+    FrameLayout.LayoutParams dockParams = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
+    stage.addView(navDock, dockParams);
+    root.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
     scroll.setOnScrollChangeListener((v, x, y, oldX, oldY) -> Motion.reveal(content, scroll));
     mount(root);
     renderNav();
@@ -758,7 +807,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   void gamesFocus(boolean focused,boolean pool) {
     if(root!=null&&root.getChildCount()>0)root.getChildAt(0).setVisibility(focused?View.GONE:View.VISIBLE);
     if(notice!=null)notice.setVisibility(focused?View.GONE:View.VISIBLE);
-    if(bottom!=null)bottom.setVisibility(focused?View.GONE:View.VISIBLE);
+    if(navDock!=null)navDock.setVisibility(focused?View.GONE:View.VISIBLE);
     int orientation=pool?android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE:android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     if(getRequestedOrientation()!=orientation)setRequestedOrientation(orientation);
   }
@@ -918,54 +967,69 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private int navBottomPad(int inset) {
-    if (inset >= u.dp(36)) return inset;
-    return inset > 0 ? u.dp(10) : u.dp(4);
+    if (inset >= u.dp(36)) return inset + u.dp(4);
+    return inset > 0 ? u.dp(16) : u.dp(8);
   }
 
   private void renderNav() {
     bottom.removeAllViews();
     int[] order = {0, 1, 3, 4, 6};
-    int activeViolet = 0xff6c5ce7;
+    if (sectionChip != null) {
+      int normalized = (screen == 2 || screen == 5) ? 1 : screen;
+      if (normalized == 0) {
+        sectionChip.setVisibility(View.GONE);
+      } else {
+        sectionChip.setText(labels[normalized]);
+        sectionChip.setVisibility(View.VISIBLE);
+      }
+    }
     for (int position = 0; position < order.length; position++) {
       final int i = order[position];
       final int target = i;
       boolean selected = screen == i || (i == 1 && (screen == 2 || screen == 5));
-      LinearLayout tab = u.row(6);
+      LinearLayout tab = u.row(5);
       tab.setGravity(Gravity.CENTER);
       tab.setContentDescription(labels[i]);
       tab.setFocusable(true);
       tab.setSelected(selected);
 
       if (selected) {
-        tab.setPadding(u.dp(13), u.dp(8), u.dp(13), u.dp(8));
-        android.graphics.drawable.GradientDrawable pill = u.shape(Color.WHITE, 100);
-        pill.setStroke(u.dp(1), 0x246b5cb5);
-        tab.setBackground(pill);
+        tab.setPadding(u.dp(13), 0, u.dp(13), 0);
+        android.graphics.drawable.GradientDrawable activePill = u.shape(Color.WHITE, 100);
+        tab.setBackground(activePill);
+        tab.setElevation(u.dp(2));
       } else {
-        tab.setPadding(u.dp(10), u.dp(8), u.dp(10), u.dp(8));
+        tab.setPadding(0, 0, 0, 0);
         tab.setBackground(
             new android.graphics.drawable.RippleDrawable(
-                android.content.res.ColorStateList.valueOf(0x166c5ce7),
+                android.content.res.ColorStateList.valueOf(0x28ffffff),
                 null,
-                u.shape(Color.TRANSPARENT, 100)));
+                u.shape(Color.WHITE, 100)));
       }
 
       String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
-      ImageView icon = Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.INK);
+      ImageView icon = Glyph.view(this, tabSymbols[i], selected ? 0xff1a1f36 : Color.WHITE);
       if (!selected) icon.setAlpha(0.68f);
-      tab.addView(icon, new LinearLayout.LayoutParams(u.dp(20), u.dp(20)));
+      tab.addView(icon, new LinearLayout.LayoutParams(u.dp(18), u.dp(18)));
+      if (selected && motion()) {
+        tab.setScaleX(.92f);
+        tab.setScaleY(.92f);
+        tab.animate().scaleX(1).scaleY(1).setDuration(240)
+            .setInterpolator(new android.view.animation.OvershootInterpolator(1.15f)).start();
+      }
 
       if (selected) {
-        TextView label = u.text(labels[i], 12, activeViolet);
+        TextView label = u.text(labels[i], 12, 0xff1a1f36);
         label.setMaxLines(1);
-        label.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        label.setSingleLine(true);
         Compat.font(label, R.font.dm_sans, 700);
         tab.addView(label, new LinearLayout.LayoutParams(-2, -2));
       }
 
       tab.setOnClickListener(v -> select(target));
-      bottom.addView(tab, new LinearLayout.LayoutParams(selected ? -2 : 0, -2, selected ? 0 : 1));
+      bottom.addView(tab, new LinearLayout.LayoutParams(selected ? -2 : 0, u.dp(44), selected ? 0 : 1));
     }
+    if (navDock != null) navDock.bringToFront();
     Motion.install(bottom);
   }
 
@@ -978,8 +1042,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       if (games == null) games = new GamesView(this, api);
       if (games.getParent() != stage) {
         if (games.getParent() instanceof ViewGroup) ((ViewGroup) games.getParent()).removeView(games);
-        stage.addView(games, new FrameLayout.LayoutParams(-1, -1));
+        stage.addView(games, 0, new FrameLayout.LayoutParams(-1, -1));
       }
+      if (navDock != null) navDock.bringToFront();
       games.setVisibility(View.VISIBLE);
       if (!gameInvite.isEmpty()) { games.invitation(gameInvite); gameInvite = ""; }
       if (appUnlocked && started) games.activate();
@@ -992,8 +1057,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         if (feed != null) stage.removeView(feed);
         quoteText = quoteCounter = timer = null;
         feed = new SocialFeed(this, this, screen, feedHeader());
-        stage.addView(feed, new FrameLayout.LayoutParams(-1, -1));
+        stage.addView(feed, 0, new FrameLayout.LayoutParams(-1, -1));
       }
+      if (navDock != null) navDock.bringToFront();
       feed.setVisibility(View.VISIBLE);
       feed.savedOnly(savedPosts);
       feed.photoSection(photoSection);

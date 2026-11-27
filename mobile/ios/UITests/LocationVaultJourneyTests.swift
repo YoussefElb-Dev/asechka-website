@@ -6,7 +6,7 @@ final class LocationVaultJourneyTests:XCTestCase {
         let homeTop=XCTAttachment(screenshot:app.screenshot());homeTop.name="Home-top-dashboard";homeTop.lifetime = .keepAlways;add(homeTop)
         let winMaxY=app.windows.firstMatch.frame.maxY
         let tabMaxY=app.buttons["Home"].firstMatch.frame.maxY
-        XCTAssertLessThanOrEqual(winMaxY - tabMaxY, 26, "Bottom navigator must sit close to the bottom edge (gap=\(winMaxY - tabMaxY))")
+        XCTAssertLessThanOrEqual(winMaxY - tabMaxY, 28, "Bottom navigator must sit close to the bottom edge (gap=\(winMaxY - tabMaxY))")
         let promptField=app.textFields["Your quick answer…"].firstMatch
         if promptField.waitForExistence(timeout:3) && promptField.isHittable {
             promptField.tap()

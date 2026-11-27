@@ -1707,7 +1707,7 @@ public final class NativeTests extends Instrumentation {
         bottomBar.getLocationOnScreen(bxy);
         int gap = decor().getHeight() - (bxy[1] + bottomBar.getHeight());
         check(gap <= Math.round(20 * density), "Bottom floating capsule positioned near bottom, gap=" + gap);
-        check(bottomBar.getPaddingBottom() <= Math.round(18 * density), "Bottom bar padding compact: " + bottomBar.getPaddingBottom());
+        check(bottomBar.getPaddingBottom() <= Math.round(20 * density), "Bottom bar padding compact: " + bottomBar.getPaddingBottom());
         TextView nextMilestone = text("Next milestone");
         if (nextMilestone != null && nextMilestone.getParent() != null && nextMilestone.getParent().getParent() instanceof View) {
           View badge = (View) nextMilestone.getParent().getParent();
