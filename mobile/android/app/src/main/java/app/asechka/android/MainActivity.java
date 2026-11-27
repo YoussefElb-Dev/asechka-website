@@ -344,7 +344,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               root == view ? (keyboard ? ime.bottom : 0) : Math.max(sys.bottom, ime.bottom));
           if (root == view && bottom != null) {
             bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-            bottom.setPadding(u.dp(6), 0, u.dp(6), navBottomPad(sys.bottom));
+            if (bottom.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+              LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bottom.getLayoutParams();
+              lp.bottomMargin = navBottomPad(sys.bottom);
+              bottom.setLayoutParams(lp);
+            }
           }
           return insets;
         });
@@ -363,7 +367,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             navigationInset = systemBottom;
             if (root == view && bottom != null) {
               bottom.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-              bottom.setPadding(u.dp(6), 0, u.dp(6), navBottomPad(navigationInset));
+              if (bottom.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bottom.getLayoutParams();
+                lp.bottomMargin = navBottomPad(navigationInset);
+                bottom.setLayoutParams(lp);
+              }
             }
             return insets;
           });
@@ -731,17 +739,15 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     stage.addView(scroll, new FrameLayout.LayoutParams(-1, -1));
     root.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
     feed = null;
-    bottom = u.row(0);
-    bottom.setPadding(u.dp(6), 0, u.dp(6), navBottomPad(navigationInset));
-    bottom.setElevation(0);
-    android.graphics.drawable.LayerDrawable glassBar = new android.graphics.drawable.LayerDrawable(
-        new android.graphics.drawable.Drawable[] {
-          new android.graphics.drawable.ColorDrawable(0x246b5cb5),
-          new android.graphics.drawable.ColorDrawable(0xebffffff)
-        });
-    glassBar.setLayerInset(1, 0, Math.max(1, u.dp(1)), 0, 0);
-    bottom.setBackground(glassBar);
-    root.addView(bottom);
+    bottom = u.row(4);
+    bottom.setPadding(u.dp(8), u.dp(6), u.dp(8), u.dp(6));
+    bottom.setElevation(u.dp(8));
+    android.graphics.drawable.GradientDrawable glassCapsule = u.shape(0xebffffff, 100);
+    glassCapsule.setStroke(u.dp(1), 0x246b5cb5);
+    bottom.setBackground(glassCapsule);
+    LinearLayout.LayoutParams navParams = new LinearLayout.LayoutParams(-1, -2);
+    navParams.setMargins(u.dp(16), 0, u.dp(16), navBottomPad(navigationInset));
+    root.addView(bottom, navParams);
     scroll.setOnScrollChangeListener((v, x, y, oldX, oldY) -> Motion.reveal(content, scroll));
     mount(root);
     renderNav();
@@ -913,7 +919,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private int navBottomPad(int inset) {
     if (inset >= u.dp(36)) return inset;
-    return inset > 0 ? u.dp(15) : u.dp(4);
+    return inset > 0 ? u.dp(10) : u.dp(4);
   }
 
   private void renderNav() {
@@ -924,50 +930,41 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       final int i = order[position];
       final int target = i;
       boolean selected = screen == i || (i == 1 && (screen == 2 || screen == 5));
-      LinearLayout tab = u.column();
-      tab.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-      tab.setPadding(u.dp(2), 0, u.dp(2), 0);
+      LinearLayout tab = u.row(6);
+      tab.setGravity(Gravity.CENTER);
       tab.setContentDescription(labels[i]);
       tab.setFocusable(true);
       tab.setSelected(selected);
-      tab.setBackground(
-          new android.graphics.drawable.RippleDrawable(
-              android.content.res.ColorStateList.valueOf(0x166c5ce7),
-              null,
-              u.shape(Color.WHITE, 12)));
-      View topAccent = new View(this);
-      topAccent.setBackground(u.shape(activeViolet, 3));
-      topAccent.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
-      tab.addView(topAccent, new LinearLayout.LayoutParams(u.dp(24), Math.max(2, u.dp(2.5f))));
-      String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
-      ImageView icon = Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.MUTED);
-      LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(u.dp(20), u.dp(20));
-      iconParams.topMargin = u.dp(4);
-      tab.addView(icon, iconParams);
-      if (selected && motion()) {
-        icon.setScaleX(.88f);
-        icon.setScaleY(.88f);
-        icon
-            .animate()
-            .scaleX(1)
-            .scaleY(1)
-            .setDuration(240)
-            .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
-            .start();
+
+      if (selected) {
+        tab.setPadding(u.dp(13), u.dp(8), u.dp(13), u.dp(8));
+        android.graphics.drawable.GradientDrawable pill = u.shape(Color.WHITE, 100);
+        pill.setStroke(u.dp(1), 0x246b5cb5);
+        tab.setBackground(pill);
+      } else {
+        tab.setPadding(u.dp(10), u.dp(8), u.dp(10), u.dp(8));
+        tab.setBackground(
+            new android.graphics.drawable.RippleDrawable(
+                android.content.res.ColorStateList.valueOf(0x166c5ce7),
+                null,
+                u.shape(Color.TRANSPARENT, 100)));
       }
-      TextView label = u.text(labels[i], 10, selected ? activeViolet : Ui.MUTED);
-      if (Build.VERSION.SDK_INT >= 26)
-        label.setAutoSizeTextTypeUniformWithConfiguration(
-            8, 10, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
-      else label.setTextSize(compact() ? 8 : 10);
-      label.setMaxLines(1);
-      label.setEllipsize(android.text.TextUtils.TruncateAt.END);
-      label.setGravity(Gravity.CENTER);
-      Compat.font(label, R.font.dm_sans, selected ? 600 : 500);
-      u.add(tab, label, 2);
-      tab.setMinimumHeight(u.dp(compact() ? 38 : 40));
+
+      String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
+      ImageView icon = Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.INK);
+      if (!selected) icon.setAlpha(0.68f);
+      tab.addView(icon, new LinearLayout.LayoutParams(u.dp(20), u.dp(20)));
+
+      if (selected) {
+        TextView label = u.text(labels[i], 12, activeViolet);
+        label.setMaxLines(1);
+        label.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        Compat.font(label, R.font.dm_sans, 700);
+        tab.addView(label, new LinearLayout.LayoutParams(-2, -2));
+      }
+
       tab.setOnClickListener(v -> select(target));
-      bottom.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
+      bottom.addView(tab, new LinearLayout.LayoutParams(selected ? -2 : 0, -2, selected ? 0 : 1));
     }
     Motion.install(bottom);
   }

@@ -125,8 +125,8 @@ struct RootView:View {
     }
     private var shell:some View {
         let hasHomeBar=windowSafeBottom > 16
-        let tabBottomPad:CGFloat = hasHomeBar ? 16 : 6
-        let contentBottomPad:CGFloat = keyboardOpen ? 0 : (hasHomeBar ? 58 : 48)
+        let tabBottomPad:CGFloat = hasHomeBar ? 8 : 4
+        let contentBottomPad:CGFloat = keyboardOpen ? 0 : (hasHomeBar ? 64 : 54)
         return ZStack(alignment:.bottom){
             VStack(spacing:0){
                 HStack(spacing:8){
@@ -149,42 +149,50 @@ struct RootView:View {
             .padding(.bottom,contentBottomPad)
 
             if !keyboardOpen {
-                HStack(spacing:0){ForEach(0..<tabs.count,id:\.self){index in
+                HStack(spacing:4){ForEach(0..<tabs.count,id:\.self){index in
                     let active = tab == index
-                    Button{Touch.tap();withAnimation(reduced ? nil:.spring(response:0.26,dampingFraction:0.84)){tab=index}}label:{
-                        VStack(spacing:0){
-                            ZStack{
-                                Color.clear.frame(height:2.5)
-                                if active {
-                                    Capsule().fill(Palette.violet).frame(width:24,height:2.5)
-                                        .matchedGeometryEffect(id:"active-tab",in:tabMotion)
-                                }
-                            }
-                            Spacer().frame(height:3)
+                    Button{Touch.tap();withAnimation(reduced ? nil:.spring(response:0.32,dampingFraction:0.75)){tab=index}}label:{
+                        HStack(spacing:6){
                             Image(systemName:active ? tabs[index].1 : tabs[index].0)
-                                .font(.system(size:20,weight:active ? .semibold : .regular))
-                                .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.84))
-                                .frame(height:22)
-                            Spacer().frame(height:2)
-                            Text(tabs[index].2)
-                                .font(.system(size:10,weight:active ? .semibold : .medium))
-                                .foregroundColor(active ? Palette.violet : Palette.muted.opacity(0.84))
-                                .lineLimit(1).minimumScaleFactor(0.85)
+                                .font(.system(size:active ? 18 : 17,weight:active ? .semibold : .regular))
+                                .foregroundColor(active ? Palette.violet : Palette.ink.opacity(0.68))
+                                .frame(width:22,height:22)
+                            if active {
+                                Text(tabs[index].2)
+                                    .font(.system(size:12,weight:.bold))
+                                    .foregroundColor(Palette.violet)
+                                    .lineLimit(1)
+                                    .transition(.opacity.combined(with:.scale(scale:0.85,anchor:.leading)))
+                            }
                         }
-                        .frame(maxWidth:.infinity)
-                        .padding(.bottom,tabBottomPad)
-                        .contentShape(Rectangle())
+                        .padding(.horizontal,active ? 14 : 10)
+                        .padding(.vertical,9)
+                        .background{
+                            if active {
+                                Capsule()
+                                    .fill(Color.white)
+                                    .shadow(color:Palette.purple.opacity(0.18),radius:6,x:0,y:2)
+                                    .matchedGeometryEffect(id:"active-liquid-tab",in:tabMotion)
+                            }
+                        }
+                        .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(tabs[index].2)
                     .accessibilityAddTraits(active ? .isSelected : [])
                 }}
                 .padding(.horizontal,6)
+                .padding(.vertical,5)
                 .background(.ultraThinMaterial)
-                .background(Color.white.opacity(0.68))
-                .overlay(alignment:.top){
-                    Rectangle().fill(Palette.purple.opacity(0.14)).frame(height:0.5)
-                }
+                .background(Color.white.opacity(0.72))
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .strokeBorder(LinearGradient(colors:[Color.white.opacity(0.9),Palette.purple.opacity(0.18)],startPoint:.top,endPoint:.bottom),lineWidth:1)
+                )
+                .shadow(color:Palette.purple.opacity(0.14),radius:16,x:0,y:6)
+                .padding(.horizontal,14)
+                .padding(.bottom,tabBottomPad)
             }
         }
         .ignoresSafeArea(.container,edges:.bottom)
