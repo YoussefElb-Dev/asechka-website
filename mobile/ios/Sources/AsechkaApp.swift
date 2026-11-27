@@ -214,26 +214,26 @@ struct RootView:View {
                                             .shadow(color:Palette.purple.opacity(0.16),radius:6,x:0,y:2)
                                             .matchedGeometryEffect(id:"active-nav-pill",in:tabMotion)
                                     }
-                                    HStack(spacing:5){
+                                    HStack(spacing:6){
                                         Image(systemName:active ? tabs[index].1 : tabs[index].0)
-                                            .font(.system(size:16,weight:active ? .bold : .medium))
+                                            .font(.system(size:17.5,weight:active ? .bold : .medium))
                                             .foregroundColor(active ? Palette.violet : Palette.ink.opacity(0.62))
-                                            .frame(width:20,height:20)
+                                            .frame(width:22,height:22)
                                         if active {
                                             Text(tabs[index].2)
-                                                .font(.system(size:12,weight:.bold))
+                                                .font(.system(size:13,weight:.bold))
                                                 .foregroundColor(Palette.violet)
                                                 .lineLimit(1)
                                                 .fixedSize(horizontal:true,vertical:false)
                                                 .transition(.opacity.combined(with:.scale(scale:0.9,anchor:.leading)))
                                         }
                                     }
-                                    .padding(.horizontal,active ? 13 : 0)
+                                    .padding(.horizontal,active ? 15 : 0)
                                     .frame(maxWidth:active ? nil : .infinity)
-                                    .frame(height:42)
+                                    .frame(height:46)
                                 }
                                 .frame(maxWidth:active ? nil : .infinity)
-                                .frame(height:42)
+                                .frame(height:46)
                                 .contentShape(Capsule())
                             }
                             .buttonStyle(.plain)
@@ -241,7 +241,7 @@ struct RootView:View {
                             .accessibilityAddTraits(active ? .isSelected : [])
                         }
                     }
-                    .padding(6)
+                    .padding(7)
                     .frame(maxWidth:.infinity)
                     .background(.ultraThinMaterial,in:Capsule())
                     .background(
@@ -259,9 +259,9 @@ struct RootView:View {
                         composer=ComposeRequest(photo:!(tab==1 && memoryTab==2),collection:tab==1 ? photoSection.defaultCollection:.memories)
                     }label:{
                         Image(systemName:"plus")
-                            .font(.system(size:20,weight:.bold))
+                            .font(.system(size:22,weight:.bold))
                             .foregroundColor(.white)
-                            .frame(width:54,height:54)
+                            .frame(width:60,height:60)
                             .background(
                                 LinearGradient(colors:[Palette.violet,Palette.purple],startPoint:.topLeading,endPoint:.bottomTrailing),
                                 in:Circle()
@@ -272,14 +272,8 @@ struct RootView:View {
                     .buttonStyle(SoftPress())
                     .accessibilityLabel("Create post")
                 }
-                .padding(.horizontal,16)
-                .padding(.top,16)
+                .padding(.horizontal,14)
                 .padding(.bottom,dockBottomPad)
-                .background(alignment:.bottom){
-                    LinearGradient(colors:[Palette.background.opacity(0),Palette.background.opacity(0.96),Palette.background],startPoint:.top,endPoint:.bottom)
-                        .frame(height:104)
-                        .allowsHitTesting(false)
-                }
             }
         }
         .ignoresSafeArea(.container,edges:.bottom)

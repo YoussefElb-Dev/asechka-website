@@ -308,7 +308,7 @@ struct HomeHub:View {
                                     Text("in \(m.remaining) \(m.remaining==1 ? "day":"days")").font(.system(size:12.5,weight:.bold)).foregroundColor(Palette.violet).lineLimit(1)
                                 }
                             }
-                            .frame(minWidth:170,alignment:.leading)
+                            .frame(minWidth:170,alignment:.center)
                             .padding(.horizontal,14).padding(.vertical,9)
                             .background(Color.white.opacity(0.82),in:RoundedRectangle(cornerRadius:16,style:.continuous))
                             .overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))

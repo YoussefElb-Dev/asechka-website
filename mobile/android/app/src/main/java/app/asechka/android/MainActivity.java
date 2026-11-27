@@ -345,7 +345,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               root == view ? (keyboard ? ime.bottom : 0) : Math.max(sys.bottom, ime.bottom));
           if (root == view && navDock != null) {
             navDock.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-            navDock.setPadding(u.dp(16), u.dp(16), u.dp(16), navBottomPad(sys.bottom));
+            navDock.setPadding(u.dp(14), u.dp(4), u.dp(14), navBottomPad(sys.bottom));
           }
           return insets;
         });
@@ -364,7 +364,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             navigationInset = systemBottom;
             if (root == view && navDock != null) {
               navDock.setVisibility(keyboard ? View.GONE : View.VISIBLE);
-              navDock.setPadding(u.dp(16), u.dp(16), u.dp(16), navBottomPad(navigationInset));
+              navDock.setPadding(u.dp(14), u.dp(4), u.dp(14), navBottomPad(navigationInset));
             }
             return insets;
           });
@@ -763,16 +763,12 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     navDock.setGravity(Gravity.CENTER_VERTICAL);
     navDock.setClipChildren(false);
     navDock.setClipToPadding(false);
-    navDock.setPadding(u.dp(16), u.dp(16), u.dp(16), navBottomPad(navigationInset));
-    navDock.setBackground(
-        new android.graphics.drawable.GradientDrawable(
-            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
-            new int[] {0x00f7f9ff, 0xf2f7f9ff, 0xfff7f9ff}));
+    navDock.setPadding(u.dp(14), u.dp(4), u.dp(14), navBottomPad(navigationInset));
 
     bottom = u.row(3);
     bottom.setGravity(Gravity.CENTER_VERTICAL);
-    bottom.setPadding(u.dp(6), u.dp(6), u.dp(6), u.dp(6));
-    bottom.setElevation(u.dp(8));
+    bottom.setPadding(u.dp(7), u.dp(7), u.dp(7), u.dp(7));
+    bottom.setElevation(u.dp(10));
     android.graphics.drawable.GradientDrawable dockBg =
         new android.graphics.drawable.GradientDrawable(
             android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
@@ -780,11 +776,11 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     dockBg.setCornerRadius(u.dp(100));
     dockBg.setStroke(Math.max(1, u.dp(1.2f)), 0x386b5cb5);
     bottom.setBackground(dockBg);
-    navDock.addView(bottom, new LinearLayout.LayoutParams(0, u.dp(54), 1));
+    navDock.addView(bottom, new LinearLayout.LayoutParams(0, u.dp(60), 1));
 
     FrameLayout createOrb = new FrameLayout(this);
     createOrb.setContentDescription("Create a post");
-    createOrb.setElevation(u.dp(8));
+    createOrb.setElevation(u.dp(10));
     android.graphics.drawable.GradientDrawable orbBg =
         new android.graphics.drawable.GradientDrawable(
             android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
@@ -794,9 +790,9 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     createOrb.setBackground(
         new android.graphics.drawable.RippleDrawable(
             android.content.res.ColorStateList.valueOf(0x33ffffff), orbBg, null));
-    createOrb.addView(Glyph.view(this, "plus", Color.WHITE), new FrameLayout.LayoutParams(u.dp(21), u.dp(21), Gravity.CENTER));
+    createOrb.addView(Glyph.view(this, "plus", Color.WHITE), new FrameLayout.LayoutParams(u.dp(23), u.dp(23), Gravity.CENTER));
     createOrb.setOnClickListener(v -> choosePost());
-    navDock.addView(createOrb, new LinearLayout.LayoutParams(u.dp(54), u.dp(54)));
+    navDock.addView(createOrb, new LinearLayout.LayoutParams(u.dp(60), u.dp(60)));
 
     FrameLayout.LayoutParams dockParams = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
     stage.addView(navDock, dockParams);
@@ -999,7 +995,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       tab.setSelected(selected);
 
       if (selected) {
-        tab.setPadding(u.dp(13), 0, u.dp(13), 0);
+        tab.setPadding(u.dp(15), 0, u.dp(15), 0);
         android.graphics.drawable.GradientDrawable activePill = u.shape(Color.WHITE, 100);
         activePill.setStroke(Math.max(1, u.dp(1)), 0x266b5cb5);
         tab.setBackground(activePill);
@@ -1016,7 +1012,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
       ImageView icon = Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.INK);
       if (!selected) icon.setAlpha(0.62f);
-      tab.addView(icon, new LinearLayout.LayoutParams(u.dp(18), u.dp(18)));
+      tab.addView(icon, new LinearLayout.LayoutParams(u.dp(20), u.dp(20)));
       if (selected && motion()) {
         tab.setScaleX(.92f);
         tab.setScaleY(.92f);
@@ -1025,7 +1021,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       }
 
       if (selected) {
-        TextView label = u.text(labels[i], 12, activeViolet);
+        TextView label = u.text(labels[i], 13, activeViolet);
         label.setMaxLines(1);
         label.setSingleLine(true);
         Compat.font(label, R.font.dm_sans, 700);
@@ -1033,7 +1029,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       }
 
       tab.setOnClickListener(v -> select(target));
-      bottom.addView(tab, new LinearLayout.LayoutParams(selected ? -2 : 0, u.dp(42), selected ? 0 : 1));
+      bottom.addView(tab, new LinearLayout.LayoutParams(selected ? -2 : 0, u.dp(46), selected ? 0 : 1));
     }
     if (navDock != null) navDock.bringToFront();
     Motion.install(bottom);

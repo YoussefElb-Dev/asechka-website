@@ -284,7 +284,7 @@ final class HomeExtras {
     clockRow.addView(clockCopy, new LinearLayout.LayoutParams(0, -2, 1));
 
     LinearLayout milestoneBadge = u.row(10);
-    milestoneBadge.setGravity(Gravity.CENTER_VERTICAL);
+    milestoneBadge.setGravity(Gravity.CENTER);
     milestoneBadge.setMinimumWidth(u.dp(170));
     milestoneBadge.setPadding(u.dp(14), u.dp(9), u.dp(14), u.dp(9));
     milestoneBadge.setBackground(u.shape(0xd1ffffff, 16, 0x1a6b5cb5));
@@ -299,7 +299,7 @@ final class HomeExtras {
     Compat.font(milestoneNextText, R.font.dm_sans, 700);
     milestoneNextText.setSingleLine(true);
     u.add(milestoneCopy, milestoneNextText, 1);
-    milestoneBadge.addView(milestoneCopy, new LinearLayout.LayoutParams(0, -2, 1));
+    milestoneBadge.addView(milestoneCopy, new LinearLayout.LayoutParams(-2, -2));
     clockRow.addView(milestoneBadge, new LinearLayout.LayoutParams(-2, -2));
     clock.addView(clockRow);
     clock.setContentDescription("Our time together. Open Since us.");
