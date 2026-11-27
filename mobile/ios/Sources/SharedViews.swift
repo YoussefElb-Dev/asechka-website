@@ -53,7 +53,7 @@ struct DaysView:View {
                 }.card()
             }
             if universe.wishes.isEmpty {Text("Our next adventure starts with a little wish.").foregroundColor(Palette.muted).padding(.vertical,25)}
-        }.padding(22)}.refreshable{await universe.refresh()}
+        }.padding(.horizontal,22).padding(.top,22).padding(.bottom,112)}.refreshable{await universe.refresh()}
             .sheet(item:$editing){selection in WishEditor(original:selection.wish)}
             .sheet(isPresented:$littleBook){BookView()}
             .sheet(isPresented:$personalBook){BookView(personal:true)}

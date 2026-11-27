@@ -8,7 +8,7 @@
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowBackground">#F7F9FF</item>
         <item name="android:statusBarColor">#F7F9FF</item>
-        <item name="android:navigationBarColor">#F7F9FF</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="android:alertDialogTheme">@style/SoftDialog</item>

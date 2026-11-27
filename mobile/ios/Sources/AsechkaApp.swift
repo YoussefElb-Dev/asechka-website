@@ -51,6 +51,7 @@ struct RootView:View {
     @Environment(\.scenePhase) private var phase
     @Environment(\.accessibilityReduceMotion) private var reduced
     @State private var tab=0
+    @State private var visitedTabs:Set<Int>=[0]
     @State private var composer:ComposeRequest?
     @State private var messages=false
     @State private var settings=false
@@ -86,11 +87,11 @@ struct RootView:View {
         .sheet(isPresented:$connection){ConnectionView()}
         .onOpenURL{url in
             guard let code=GamesRoom.invitationCode(url) else{return}
-            tab=4;universe.games.openInvitation(code)
+            visitedTabs.insert(4);tab=4;universe.games.openInvitation(code)
         }
         .onAppear{
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--preview-fixture") && ProcessInfo.processInfo.arguments.contains("--games-preview"){tab=4}
+            if ProcessInfo.processInfo.arguments.contains("--preview-fixture") && ProcessInfo.processInfo.arguments.contains("--games-preview"){visitedTabs.insert(4);tab=4}
             #endif
         }
         .task(id:"\(universe.actor)|\(universe.unlocked)|\(universe.requiresCode)|\(universe.online)|\(phase == .active)"){
@@ -126,7 +127,8 @@ struct RootView:View {
     private func switchTab(_ target:Int){
         guard target != tab else{return}
         Touch.tap()
-        withAnimation(reduced ? nil:.spring(response:0.32,dampingFraction:0.8)){tab=target}
+        visitedTabs.insert(target)
+        tab=target
     }
     private var topBar:some View {
         HStack(spacing:10){
@@ -180,100 +182,137 @@ struct RootView:View {
         }
         .padding(.horizontal,18).padding(.top,8).padding(.bottom,10)
     }
+    private var tabContent:some View {
+        ZStack{
+            if visitedTabs.contains(0) {
+                FeedView(mode:0,savedOnly:$savedOnly,photoSection:$photoSection,memoryTab:$memoryTab,create:{composer=ComposeRequest(photo:$0,collection:.memories)},corner:{corner=true},openJar:{messages=true},navigate:{switchTab($0)})
+                    .opacity(tab==0 ? 1:0)
+                    .allowsHitTesting(tab==0)
+                    .accessibilityHidden(tab != 0)
+                    .zIndex(tab==0 ? 1:0)
+            }
+            if visitedTabs.contains(1) {
+                FeedView(mode:1,savedOnly:$savedOnly,photoSection:$photoSection,memoryTab:$memoryTab,create:{composer=ComposeRequest(photo:$0,collection:photoSection.defaultCollection)},corner:{corner=true},openJar:{messages=true},navigate:{switchTab($0)})
+                    .opacity(tab==1 ? 1:0)
+                    .allowsHitTesting(tab==1)
+                    .accessibilityHidden(tab != 1)
+                    .zIndex(tab==1 ? 1:0)
+            }
+            if visitedTabs.contains(2) {
+                DaysView()
+                    .opacity(tab==2 ? 1:0)
+                    .allowsHitTesting(tab==2)
+                    .accessibilityHidden(tab != 2)
+                    .zIndex(tab==2 ? 1:0)
+            }
+            if visitedTabs.contains(3) {
+                WordsView()
+                    .opacity(tab==3 ? 1:0)
+                    .allowsHitTesting(tab==3)
+                    .accessibilityHidden(tab != 3)
+                    .zIndex(tab==3 ? 1:0)
+            }
+            if visitedTabs.contains(4) {
+                GamesView(store:universe.games)
+                    .opacity(tab==4 ? 1:0)
+                    .allowsHitTesting(tab==4)
+                    .accessibilityHidden(tab != 4)
+                    .zIndex(tab==4 ? 1:0)
+            }
+        }
+        .frame(maxWidth:.infinity,maxHeight:.infinity)
+    }
+    private var floatingDock:some View {
+        HStack(spacing:10){
+            HStack(spacing:3){
+                ForEach(0..<tabs.count,id:\.self){index in
+                    let active = tab == index
+                    Button{switchTab(index)}label:{
+                        ZStack{
+                            if active {
+                                Capsule()
+                                    .fill(Color.white.opacity(0.86))
+                                    .overlay(
+                                        Capsule()
+                                            .strokeBorder(Palette.purple.opacity(0.16),lineWidth:1)
+                                    )
+                                    .shadow(color:Palette.purple.opacity(0.14),radius:5,x:0,y:2)
+                                    .matchedGeometryEffect(id:"active-nav-pill",in:tabMotion)
+                            }
+                            HStack(spacing:6){
+                                Image(systemName:active ? tabs[index].1 : tabs[index].0)
+                                    .font(.system(size:17.5,weight:active ? .bold : .medium))
+                                    .foregroundColor(active ? Palette.violet : Palette.ink.opacity(0.66))
+                                    .frame(width:22,height:22)
+                                if active {
+                                    Text(tabs[index].2)
+                                        .font(.system(size:13,weight:.bold))
+                                        .foregroundColor(Palette.violet)
+                                        .lineLimit(1)
+                                        .fixedSize(horizontal:true,vertical:false)
+                                        .transition(.opacity)
+                                }
+                            }
+                            .padding(.horizontal,active ? 15 : 0)
+                            .frame(maxWidth:active ? nil : .infinity)
+                            .frame(height:46)
+                        }
+                        .frame(maxWidth:active ? nil : .infinity)
+                        .frame(height:46)
+                        .contentShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(tabs[index].2)
+                    .accessibilityAddTraits(active ? .isSelected : [])
+                }
+            }
+            .padding(7)
+            .frame(maxWidth:.infinity)
+            .background(
+                ZStack{
+                    Capsule().fill(.ultraThinMaterial)
+                    Capsule().fill(LinearGradient(colors:[Palette.lavender.opacity(0.30),Palette.blue.opacity(0.24)],startPoint:.topLeading,endPoint:.bottomTrailing))
+                }
+            )
+            .overlay(
+                Capsule()
+                    .strokeBorder(LinearGradient(colors:[Color.white.opacity(0.88),Palette.purple.opacity(0.20)],startPoint:.top,endPoint:.bottom),lineWidth:1.2)
+            )
+            .compositingGroup()
+            .shadow(color:Palette.purple.opacity(0.16),radius:12,x:0,y:5)
+            .animation(reduced ? nil:.interactiveSpring(response:0.22,dampingFraction:0.86),value:tab)
+
+            Button{
+                Touch.tap()
+                composer=ComposeRequest(photo:!(tab==1 && memoryTab==2),collection:tab==1 ? photoSection.defaultCollection:.memories)
+            }label:{
+                Image(systemName:"plus")
+                    .font(.system(size:22,weight:.bold))
+                    .foregroundColor(.white)
+                    .frame(width:60,height:60)
+                    .background(
+                        LinearGradient(colors:[Palette.violet,Palette.purple],startPoint:.topLeading,endPoint:.bottomTrailing),
+                        in:Circle()
+                    )
+                    .overlay(Circle().strokeBorder(Color.white.opacity(0.55),lineWidth:1.4))
+                    .shadow(color:Palette.violet.opacity(0.32),radius:12,x:0,y:5)
+            }
+            .buttonStyle(SoftPress())
+            .accessibilityLabel("Create post")
+        }
+    }
     private var shell:some View {
         let hasHomeBar=windowSafeBottom > 16
-        let dockBottomPad:CGFloat = hasHomeBar ? 15 : 8
-        let contentBottomPad:CGFloat = keyboardOpen ? 0 : (hasHomeBar ? 88 : 80)
+        let dockBottomPad:CGFloat = hasHomeBar ? 17 : 10
         return ZStack(alignment:.bottom){
             VStack(spacing:0){
                 topBar
-                Group{
-                    if tab<2 {FeedView(mode:tab,savedOnly:$savedOnly,photoSection:$photoSection,memoryTab:$memoryTab,create:{composer=ComposeRequest(photo:$0,collection:tab==1 ? photoSection.defaultCollection:.memories)},corner:{corner=true},openJar:{messages=true},navigate:{switchTab($0)})}
-                    else if tab==2 {DaysView()}
-                    else if tab==3 {WordsView()}
-                    else {GamesView(store:universe.games)}
-                }.frame(maxWidth:.infinity,maxHeight:.infinity).id(tab)
-                    .transition(.opacity.combined(with:.offset(x:reduced ? 0:8)))
+                tabContent
             }
-            .padding(.bottom,contentBottomPad)
-
             if !keyboardOpen {
-                HStack(spacing:10){
-                    HStack(spacing:3){
-                        ForEach(0..<tabs.count,id:\.self){index in
-                            let active = tab == index
-                            Button{switchTab(index)}label:{
-                                ZStack{
-                                    if active {
-                                        Capsule()
-                                            .fill(Color.white)
-                                            .overlay(
-                                                Capsule()
-                                                    .strokeBorder(Palette.purple.opacity(0.18),lineWidth:1)
-                                            )
-                                            .shadow(color:Palette.purple.opacity(0.16),radius:6,x:0,y:2)
-                                            .matchedGeometryEffect(id:"active-nav-pill",in:tabMotion)
-                                    }
-                                    HStack(spacing:6){
-                                        Image(systemName:active ? tabs[index].1 : tabs[index].0)
-                                            .font(.system(size:17.5,weight:active ? .bold : .medium))
-                                            .foregroundColor(active ? Palette.violet : Palette.ink.opacity(0.62))
-                                            .frame(width:22,height:22)
-                                        if active {
-                                            Text(tabs[index].2)
-                                                .font(.system(size:13,weight:.bold))
-                                                .foregroundColor(Palette.violet)
-                                                .lineLimit(1)
-                                                .fixedSize(horizontal:true,vertical:false)
-                                                .transition(.opacity.combined(with:.scale(scale:0.9,anchor:.leading)))
-                                        }
-                                    }
-                                    .padding(.horizontal,active ? 15 : 0)
-                                    .frame(maxWidth:active ? nil : .infinity)
-                                    .frame(height:46)
-                                }
-                                .frame(maxWidth:active ? nil : .infinity)
-                                .frame(height:46)
-                                .contentShape(Capsule())
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(tabs[index].2)
-                            .accessibilityAddTraits(active ? .isSelected : [])
-                        }
-                    }
-                    .padding(7)
-                    .frame(maxWidth:.infinity)
-                    .background(.ultraThinMaterial,in:Capsule())
-                    .background(
-                        LinearGradient(colors:[Palette.lavender.opacity(0.95),Palette.blue.opacity(0.95)],startPoint:.topLeading,endPoint:.bottomTrailing),
-                        in:Capsule()
-                    )
-                    .overlay(
-                        Capsule()
-                            .strokeBorder(LinearGradient(colors:[Color.white.opacity(0.95),Palette.purple.opacity(0.24)],startPoint:.top,endPoint:.bottom),lineWidth:1.2)
-                    )
-                    .shadow(color:Palette.purple.opacity(0.18),radius:14,x:0,y:6)
-
-                    Button{
-                        Touch.tap()
-                        composer=ComposeRequest(photo:!(tab==1 && memoryTab==2),collection:tab==1 ? photoSection.defaultCollection:.memories)
-                    }label:{
-                        Image(systemName:"plus")
-                            .font(.system(size:22,weight:.bold))
-                            .foregroundColor(.white)
-                            .frame(width:60,height:60)
-                            .background(
-                                LinearGradient(colors:[Palette.violet,Palette.purple],startPoint:.topLeading,endPoint:.bottomTrailing),
-                                in:Circle()
-                            )
-                            .overlay(Circle().strokeBorder(Color.white.opacity(0.55),lineWidth:1.4))
-                            .shadow(color:Palette.violet.opacity(0.32),radius:12,x:0,y:5)
-                    }
-                    .buttonStyle(SoftPress())
-                    .accessibilityLabel("Create post")
-                }
-                .padding(.horizontal,14)
-                .padding(.bottom,dockBottomPad)
+                floatingDock
+                    .padding(.horizontal,14)
+                    .padding(.bottom,dockBottomPad)
             }
         }
         .ignoresSafeArea(.container,edges:.bottom)

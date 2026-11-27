@@ -71,7 +71,7 @@ struct GamesView: View {
                         }
                     }
                 }
-            }.padding(18).frame(maxWidth: 920)
+            }.padding(.horizontal, 18).padding(.top, 18).padding(.bottom, 112).frame(maxWidth: 920)
                 .frame(maxWidth: .infinity)
         }
         .background(GamesPalette.background.ignoresSafeArea())

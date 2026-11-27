@@ -128,7 +128,7 @@ struct WordsView:View {
                 Text("Only submitted text and language settings go to Google’s free Gemini service. Google may use free-tier content to improve products. AI translations may need a human correction.").font(.caption2).foregroundColor(Palette.muted)
             }.card()
             ForEach(universe.translations){translation in TranslationCard(translation:translation)}
-        }.padding(22)}
+        }.padding(.horizontal,22).padding(.top,22).padding(.bottom,112)}
         .onAppear{text=universe.vault.value("word-draft:"+universe.actor,as:String.self) ?? ""}
         .task(id:text){do{try await Task.sleep(nanoseconds:500_000_000)}catch{return};try? universe.vault.save("word-draft:"+universe.actor,text)}
         .onDisappear{try? universe.vault.save("word-draft:"+universe.actor,text)}

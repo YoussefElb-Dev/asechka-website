@@ -69,8 +69,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private LinearLayout root, content, bottom, navDock;
   private TextView sectionChip;
   private ScrollView scroll;
-  private FrameLayout stage;
-  private SocialFeed feed;
+  private FrameLayout stage, stageContent;
+  private View navActivePill;
+  private int navPillWidth;
+  private LinearLayout[] navTabs;
+  private ImageView[] navIcons;
+  private TextView[] navLabels;
+  private Glyph[] navActiveGlyphs, navInactiveGlyphs;
+  private SocialFeed feed, homeFeed, memoriesFeed;
   private Runnable activeConversationRefresh;
   private final ExecutorService socialWrites = Executors.newSingleThreadExecutor();
   private boolean savedPosts;
@@ -185,10 +191,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       wordDraft = state.getString("words", "");
     }
     readGameInvitation(getIntent());
-    getWindow()
-        .getDecorView()
-        .setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+    configureEdgeToEdge();
     if (hasProfile()) openStart();
     else showIdentity();
     main.post(clock);
@@ -368,11 +371,50 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             }
             return insets;
           });
-    getWindow()
-        .setNavigationBarColor(
-            Build.VERSION.SDK_INT < 26 ? Ui.INK : Ui.BG);
+    configureEdgeToEdge();
     setContentView(view);
     view.requestApplyInsets();
+  }
+
+  private void configureEdgeToEdge() {
+    android.view.Window w = getWindow();
+    w.setNavigationBarColor(Build.VERSION.SDK_INT < 26 ? Ui.INK : Color.TRANSPARENT);
+    if (Build.VERSION.SDK_INT >= 29) {
+      w.setNavigationBarContrastEnforced(false);
+    }
+    if (Build.VERSION.SDK_INT >= 30) {
+      w.setDecorFitsSystemWindows(false);
+      android.view.WindowInsetsController ctrl = w.getInsetsController();
+      if (ctrl != null) {
+        ctrl.setSystemBarsAppearance(
+            android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                | android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+            android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                | android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS);
+      }
+    } else {
+      int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+      if (Build.VERSION.SDK_INT >= 23) flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+      if (Build.VERSION.SDK_INT >= 26) flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+      w.getDecorView().setSystemUiVisibility(flags);
+    }
+  }
+
+  private void clearFeedCache(int mode) {
+    if (mode == -1 || mode == 0) {
+      if (homeFeed != null && stageContent != null) stageContent.removeView(homeFeed);
+      if (feed == homeFeed) feed = null;
+      homeFeed = null;
+    }
+    if (mode == -1 || mode == 1) {
+      if (memoriesFeed != null && stageContent != null) stageContent.removeView(memoriesFeed);
+      if (feed == memoriesFeed) feed = null;
+      memoriesFeed = null;
+    }
+    if (feed != null && (mode == -1 || feed.mode == mode)) {
+      if (stageContent != null) stageContent.removeView(feed);
+      feed = null;
+    }
   }
 
   private boolean hasProfile() {
@@ -751,13 +793,15 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root.addView(toolbar);
 
     content = u.column();
-    content.setPadding(u.dp(22), u.dp(12), u.dp(22), u.dp(102));
+    content.setPadding(u.dp(22), u.dp(12), u.dp(22), u.dp(118));
     scroll = u.scroll(content);
     stage = new FrameLayout(this);
     stage.setClipChildren(false);
     stage.setClipToPadding(false);
-    stage.addView(scroll, new FrameLayout.LayoutParams(-1, -1));
-    feed = null;
+    stageContent = new FrameLayout(this);
+    stageContent.addView(scroll, new FrameLayout.LayoutParams(-1, -1));
+    stage.addView(stageContent, new FrameLayout.LayoutParams(-1, -1));
+    feed = homeFeed = memoriesFeed = null;
 
     navDock = u.row(10);
     navDock.setGravity(Gravity.CENTER_VERTICAL);
@@ -765,18 +809,38 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     navDock.setClipToPadding(false);
     navDock.setPadding(u.dp(14), u.dp(4), u.dp(14), navBottomPad(navigationInset));
 
-    bottom = u.row(3);
-    bottom.setGravity(Gravity.CENTER_VERTICAL);
-    bottom.setPadding(u.dp(7), u.dp(7), u.dp(7), u.dp(7));
-    bottom.setElevation(u.dp(10));
+    FrameLayout navPillShell = new FrameLayout(this);
+    navPillShell.setElevation(u.dp(8));
+    if (Build.VERSION.SDK_INT >= 28) {
+      navPillShell.setOutlineAmbientShadowColor(0x226b5cb5);
+      navPillShell.setOutlineSpotShadowColor(0x2c6b5cb5);
+    }
     android.graphics.drawable.GradientDrawable dockBg =
         new android.graphics.drawable.GradientDrawable(
             android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
-            new int[] {0xf5eeebf8, 0xf5e8effc});
+            new int[] {0xb8eeebf8, 0xb4e8effc});
     dockBg.setCornerRadius(u.dp(100));
-    dockBg.setStroke(Math.max(1, u.dp(1.2f)), 0x386b5cb5);
-    bottom.setBackground(dockBg);
-    navDock.addView(bottom, new LinearLayout.LayoutParams(0, u.dp(60), 1));
+    dockBg.setStroke(Math.max(1, u.dp(1.2f)), 0xb3ffffff);
+    navPillShell.setBackground(dockBg);
+    navPillShell.setClipToOutline(true);
+
+    navActivePill = new View(this);
+    android.graphics.drawable.GradientDrawable activePillBg = u.shape(0xe8ffffff, 100);
+    activePillBg.setStroke(Math.max(1, u.dp(1)), 0x266b5cb5);
+    navActivePill.setBackground(activePillBg);
+    navActivePill.setElevation(0f);
+    navActivePill.setVisibility(View.INVISIBLE);
+    navPillWidth = 0;
+    navPillShell.addView(
+        navActivePill, new FrameLayout.LayoutParams(u.dp(92), u.dp(46), Gravity.CENTER_VERTICAL | Gravity.START));
+
+    bottom = u.row(3);
+    bottom.setGravity(Gravity.CENTER_VERTICAL);
+    bottom.setPadding(u.dp(7), u.dp(7), u.dp(7), u.dp(7));
+    bottom.setBackground(null);
+    buildNavTabs();
+    navPillShell.addView(bottom, new FrameLayout.LayoutParams(-1, -1));
+    navDock.addView(navPillShell, new LinearLayout.LayoutParams(0, u.dp(60), 1));
 
     FrameLayout createOrb = new FrameLayout(this);
     createOrb.setContentDescription("Create a post");
@@ -948,7 +1012,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     root.requestFocus();
     renderNav();
     render(false);
-    Motion.enter(stage, Integer.compare(navPosition(target), navPosition(previous)));
+    if (stageContent != null) Motion.enter(stageContent, Integer.compare(navPosition(target), navPosition(previous)));
     scroll.scrollTo(0, 0);
     scroll.clearFocus();
     root.requestFocus();
@@ -967,14 +1031,55 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private int navBottomPad(int inset) {
-    if (inset >= u.dp(36)) return inset + u.dp(4);
-    return inset > 0 ? u.dp(17) : u.dp(8);
+    if (inset >= u.dp(36)) return inset + u.dp(6);
+    return inset > 0 ? u.dp(19) : u.dp(10);
+  }
+
+  private void buildNavTabs() {
+    int[] order = {0, 1, 3, 4, 6};
+    String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
+    int activeViolet = 0xff6c5ce7;
+    navTabs = new LinearLayout[order.length];
+    navIcons = new ImageView[order.length];
+    navLabels = new TextView[order.length];
+    navActiveGlyphs = new Glyph[order.length];
+    navInactiveGlyphs = new Glyph[order.length];
+    bottom.removeAllViews();
+    for (int p = 0; p < order.length; p++) {
+      final int i = order[p];
+      final int target = i;
+      LinearLayout tab = u.row(5);
+      tab.setGravity(Gravity.CENTER);
+      tab.setContentDescription(labels[i]);
+      tab.setFocusable(true);
+      tab.setBackground(
+          new android.graphics.drawable.RippleDrawable(
+              android.content.res.ColorStateList.valueOf(0x1f6c5ce7),
+              null,
+              u.shape(Color.WHITE, 100)));
+      navActiveGlyphs[p] = new Glyph(tabSymbols[i], activeViolet);
+      navInactiveGlyphs[p] = new Glyph(tabSymbols[i], Ui.INK);
+      ImageView icon = new ImageView(this);
+      icon.setImageDrawable(navInactiveGlyphs[p]);
+      tab.addView(icon, new LinearLayout.LayoutParams(u.dp(20), u.dp(20)));
+      TextView label = u.text(labels[i], 13, activeViolet);
+      label.setMaxLines(1);
+      label.setSingleLine(true);
+      Compat.font(label, R.font.dm_sans, 700);
+      label.setVisibility(View.GONE);
+      tab.addView(label, new LinearLayout.LayoutParams(-2, -2));
+      tab.setOnClickListener(v -> select(target));
+      Motion.customTouch(tab);
+      navTabs[p] = tab;
+      navIcons[p] = icon;
+      navLabels[p] = label;
+      bottom.addView(tab, new LinearLayout.LayoutParams(0, u.dp(46), 1));
+    }
   }
 
   private void renderNav() {
-    bottom.removeAllViews();
+    if (navTabs == null) buildNavTabs();
     int[] order = {0, 1, 3, 4, 6};
-    int activeViolet = 0xff6c5ce7;
     if (sectionChip != null) {
       int normalized = (screen == 2 || screen == 5) ? 1 : screen;
       if (normalized == 0) {
@@ -984,55 +1089,68 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         sectionChip.setVisibility(View.VISIBLE);
       }
     }
+    final float fromX = navActivePill != null ? navActivePill.getTranslationX() : 0f;
+    final int fromW = navPillWidth;
+    final boolean hadPill = navActivePill != null && navActivePill.getVisibility() == View.VISIBLE && fromW > 0;
+    int activePosition = 0;
     for (int position = 0; position < order.length; position++) {
-      final int i = order[position];
-      final int target = i;
+      int i = order[position];
       boolean selected = screen == i || (i == 1 && (screen == 2 || screen == 5));
-      LinearLayout tab = u.row(5);
-      tab.setGravity(Gravity.CENTER);
-      tab.setContentDescription(labels[i]);
-      tab.setFocusable(true);
+      if (selected) activePosition = position;
+      LinearLayout tab = navTabs[position];
       tab.setSelected(selected);
-
-      if (selected) {
-        tab.setPadding(u.dp(15), 0, u.dp(15), 0);
-        android.graphics.drawable.GradientDrawable activePill = u.shape(Color.WHITE, 100);
-        activePill.setStroke(Math.max(1, u.dp(1)), 0x266b5cb5);
-        tab.setBackground(activePill);
-        tab.setElevation(u.dp(2));
-      } else {
-        tab.setPadding(0, 0, 0, 0);
-        tab.setBackground(
-            new android.graphics.drawable.RippleDrawable(
-                android.content.res.ColorStateList.valueOf(0x1f6c5ce7),
-                null,
-                u.shape(Color.WHITE, 100)));
+      tab.setPadding(selected ? u.dp(15) : 0, 0, selected ? u.dp(15) : 0, 0);
+      navIcons[position].setImageDrawable(selected ? navActiveGlyphs[position] : navInactiveGlyphs[position]);
+      navIcons[position].setAlpha(selected ? 1f : 0.64f);
+      navLabels[position].setVisibility(selected ? View.VISIBLE : View.GONE);
+      LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tab.getLayoutParams();
+      int wantWidth = selected ? -2 : 0;
+      float wantWeight = selected ? 0f : 1f;
+      if (lp.width != wantWidth || lp.weight != wantWeight) {
+        lp.width = wantWidth;
+        lp.weight = wantWeight;
+        tab.setLayoutParams(lp);
       }
-
-      String[] tabSymbols = {"home", "photos", "music", "days", "words", "quote", "games"};
-      ImageView icon = Glyph.view(this, tabSymbols[i], selected ? activeViolet : Ui.INK);
-      if (!selected) icon.setAlpha(0.62f);
-      tab.addView(icon, new LinearLayout.LayoutParams(u.dp(20), u.dp(20)));
-      if (selected && motion()) {
-        tab.setScaleX(.92f);
-        tab.setScaleY(.92f);
-        tab.animate().scaleX(1).scaleY(1).setDuration(240)
-            .setInterpolator(new android.view.animation.OvershootInterpolator(1.15f)).start();
-      }
-
-      if (selected) {
-        TextView label = u.text(labels[i], 13, activeViolet);
-        label.setMaxLines(1);
-        label.setSingleLine(true);
-        Compat.font(label, R.font.dm_sans, 700);
-        tab.addView(label, new LinearLayout.LayoutParams(-2, -2));
-      }
-
-      tab.setOnClickListener(v -> select(target));
-      bottom.addView(tab, new LinearLayout.LayoutParams(selected ? -2 : 0, u.dp(46), selected ? 0 : 1));
+    }
+    final int activeIdx = activePosition;
+    if (navActivePill != null) {
+      bottom.getViewTreeObserver().addOnPreDrawListener(
+          new android.view.ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+              bottom.getViewTreeObserver().removeOnPreDrawListener(this);
+              View targetTab = navTabs[activeIdx];
+              int targetW = targetTab.getWidth();
+              float targetX = targetTab.getLeft();
+              if (targetW <= 0) return true;
+              navActivePill.animate().cancel();
+              FrameLayout.LayoutParams plp = (FrameLayout.LayoutParams) navActivePill.getLayoutParams();
+              if (plp.width != targetW) {
+                plp.width = targetW;
+                navActivePill.setLayoutParams(plp);
+              }
+              navPillWidth = targetW;
+              navActivePill.setVisibility(View.VISIBLE);
+              if (hadPill && motion() && Math.abs(targetX - fromX) > 0.5f) {
+                navActivePill.setPivotX(0f);
+                navActivePill.setTranslationX(fromX);
+                navActivePill.setScaleX(fromW / (float) targetW);
+                navActivePill
+                    .animate()
+                    .translationX(targetX)
+                    .scaleX(1f)
+                    .withLayer()
+                    .setDuration(220)
+                    .setInterpolator(new android.view.animation.PathInterpolator(0.22f, 1f, 0.36f, 1f))
+                    .start();
+              } else {
+                navActivePill.setTranslationX(targetX);
+                navActivePill.setScaleX(1f);
+              }
+              return true;
+            }
+          });
     }
     if (navDock != null) navDock.bringToFront();
-    Motion.install(bottom);
   }
 
   private void render(boolean keepScroll) {
@@ -1040,11 +1158,13 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     if (games != null) games.setVisibility(screen == 6 ? View.VISIBLE : View.GONE);
     if (screen == 6) {
       scroll.setVisibility(View.GONE);
+      if (homeFeed != null) homeFeed.setVisibility(View.GONE);
+      if (memoriesFeed != null) memoriesFeed.setVisibility(View.GONE);
       if (feed != null) feed.setVisibility(View.GONE);
       if (games == null) games = new GamesView(this, api);
-      if (games.getParent() != stage) {
+      if (games.getParent() != stageContent) {
         if (games.getParent() instanceof ViewGroup) ((ViewGroup) games.getParent()).removeView(games);
-        stage.addView(games, 0, new FrameLayout.LayoutParams(-1, -1));
+        stageContent.addView(games, 0, new FrameLayout.LayoutParams(-1, -1));
       }
       if (navDock != null) navDock.bringToFront();
       games.setVisibility(View.VISIBLE);
@@ -1054,22 +1174,31 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     }
     if (screen == 0 || screen == 1 || screen == 5) {
       scroll.setVisibility(View.GONE);
-      boolean freshFeed = feed == null || feed.mode != screen;
+      SocialFeed targetFeed = screen == 0 ? homeFeed : (screen == 1 ? memoriesFeed : (feed != null && feed.mode == 5 ? feed : null));
+      boolean freshFeed = targetFeed == null;
       if (freshFeed) {
-        if (feed != null) stage.removeView(feed);
-        quoteText = quoteCounter = timer = null;
-        feed = new SocialFeed(this, this, screen, feedHeader());
-        stage.addView(feed, 0, new FrameLayout.LayoutParams(-1, -1));
+        if (screen == 5 && feed != null && feed != homeFeed && feed != memoriesFeed) stageContent.removeView(feed);
+        if (screen != 0) quoteText = quoteCounter = null;
+        targetFeed = new SocialFeed(this, this, screen, feedHeader());
+        stageContent.addView(targetFeed, 0, new FrameLayout.LayoutParams(-1, -1));
+        if (screen == 0) homeFeed = targetFeed;
+        else if (screen == 1) memoriesFeed = targetFeed;
       }
+      if (homeFeed != null && homeFeed != targetFeed) homeFeed.setVisibility(View.GONE);
+      if (memoriesFeed != null && memoriesFeed != targetFeed) memoriesFeed.setVisibility(View.GONE);
+      if (feed != null && feed != targetFeed) feed.setVisibility(View.GONE);
+      feed = targetFeed;
       if (navDock != null) navDock.bringToFront();
       feed.setVisibility(View.VISIBLE);
       feed.savedOnly(savedPosts);
       feed.photoSection(photoSection);
       feed.memoryFilter(screen == 1 ? memoryFilter : 0);
       feed.searchQuery(screen == 1 ? memorySearch : "");
-      feed.submit(memories, keepScroll && !freshFeed);
+      feed.submit(memories, keepScroll || !freshFeed);
       return;
     }
+    if (homeFeed != null) homeFeed.setVisibility(View.GONE);
+    if (memoriesFeed != null) memoriesFeed.setVisibility(View.GONE);
     if (feed != null) feed.setVisibility(View.GONE);
     scroll.setVisibility(View.VISIBLE);
     int y = keepScroll ? scroll.getScrollY() : 0;
@@ -1119,7 +1248,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       TextView name=u.text(titles[i],12,activeSaved ? Color.WHITE : Ui.INK);Compat.font(name,R.font.dm_sans,600);name.setSingleLine(true);pill.addView(name);
       story.addView(pill,new LinearLayout.LayoutParams(-1,u.dp(42)));
       story.setContentDescription(titles[i]);
-      story.setOnClickListener(v->{if(action==0)choosePost();if(action==1)ourCorner();if(action==2)select(3);if(action==3){savedPosts=!savedPosts;if(feed!=null){stage.removeView(feed);feed=null;}render(false);}});
+      story.setOnClickListener(v->{if(action==0)choosePost();if(action==1)ourCorner();if(action==2)select(3);if(action==3){savedPosts=!savedPosts;clearFeedCache(-1);render(false);}});
       row.addView(story,new LinearLayout.LayoutParams(0,-2,1));
     }
     header.addView(row);
@@ -1173,7 +1302,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           final String section = values[i];
           Button choice = u.textButton(names[i], () -> {
             photoSection = section;
-            if (feed != null) { stage.removeView(feed); feed = null; }
+            clearFeedCache(1);
             render(false);
           });
           choice.setTextSize(12);choice.setTextColor(Ui.INK);choice.setMinHeight(u.dp(30));choice.setMinimumHeight(u.dp(30));choice.setPadding(u.dp(4),0,u.dp(4),0);choice.setBackground(u.shape(section.equals(photoSection)?Color.WHITE:Color.TRANSPARENT,7));
@@ -1359,7 +1488,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           if (screen != 1) {
             select(1);
           } else {
-            if (feed != null) { stage.removeView(feed); feed = null; }
+            clearFeedCache(1);
             render(false);
           }
         }
