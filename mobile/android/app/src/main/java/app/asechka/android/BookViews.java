@@ -58,18 +58,25 @@ final class BookViews {
     this.personal = personal;
     manageKeepsakes = false;
     chapter = Math.max(0, Math.min(2, initialChapter));
-    window = new Dialog(activity);
+    window = u.fullScreenDialog();
     LinearLayout outer = u.column();
     outer.setBackgroundColor(Ui.BG);
-    LinearLayout header = u.row();
-    header.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(8));
-    header.addView(
-        u.title(personal ? "Since us" : "Secret vocab", 17),
-        new LinearLayout.LayoutParams(0, -2, 1));
-    header.addView(u.textButton("Done", () -> window.dismiss()));
+    u.applyWindowInsets(outer, 0, 8, 0, 0);
+    LinearLayout header = u.row(8);
+    header.setPadding(u.dp(20), u.dp(10), u.dp(20), u.dp(10));
+    header.setBackground(u.shape(Color.argb(232, 247, 249, 255), 0));
+    LinearLayout titleCol = u.column();
+    titleCol.addView(u.label(personal ? "KEEPSAKES & LETTERS" : "INSIDE JOKES & PHRASES"));
+    u.add(titleCol, u.title(personal ? "Since us" : "Secret vocab", 19), 2);
+    header.addView(titleCol, new LinearLayout.LayoutParams(0, -2, 1));
+    Button refreshBtn = u.pillButton("↻", false, this::refresh);
+    refreshBtn.setContentDescription("Refresh our pages");
+    refreshBtn.setPadding(u.dp(12), u.dp(6), u.dp(12), u.dp(6));
+    header.addView(refreshBtn);
+    header.addView(u.pillButton("Done", false, () -> window.dismiss()));
     outer.addView(header);
     content = u.column();
-    content.setPadding(u.dp(22), 0, u.dp(22), u.dp(28));
+    content.setPadding(u.dp(20), u.dp(4), u.dp(20), u.dp(32));
     outer.addView(u.scroll(content), new LinearLayout.LayoutParams(-1, 0, 1));
     window.setContentView(outer);
     window.setOnDismissListener(
@@ -78,6 +85,7 @@ final class BookViews {
           if (editor != null && editor.dialog.isShowing()) editor.dialog.dismiss();
         });
     window.show();
+    outer.requestApplyInsets();
     if (activity instanceof MainActivity) ((MainActivity) activity).raiseHearts();
     window.getWindow().setLayout(-1, -1);
     restore();
@@ -154,52 +162,85 @@ final class BookViews {
 
   void render() {
     content.removeAllViews();
-    u.add(
-        content,
-        u.title(personal ? "All the days\nthat became ours." : "Secret vocab.\nOur private dictionary.", 30),
-        15);
-    u.add(
-        content,
-        u.text(personal ? "Our beginning, Open when… letters, and little things we love." : "Every inside joke and nickname only we understand.", 16, Ui.MUTED),
-        8);
+    LinearLayout hero = u.column();
+    hero.setPadding(u.dp(20), u.dp(18), u.dp(20), u.dp(18));
+    hero.setBackground(u.shape(Color.WHITE, 26, 0x1c6b5cb5));
+    LinearLayout heroTop = u.row(8);
+    heroTop.addView(
+        u.label(personal ? "OUR LITTLE ARCHIVE" : "PRIVATE DICTIONARY"),
+        new LinearLayout.LayoutParams(0, -2, 1));
     if (personal) {
-      String[] labels = new String[] {"Since us", "Open when…", "Little things"};
-      HorizontalScrollView tabs = new HorizontalScrollView(activity);
-      tabs.setHorizontalScrollBarEnabled(false);
-      LinearLayout row = u.row(8);
-      for (int i = 0; i < labels.length; i++) {
-        final int index = i;
-        row.addView(
-            u.button(
-                labels[i],
-                chapter == i,
-                () -> {
-                  chapter = index;
-                  render();
-                }));
-      }
-      tabs.addView(row);
-      u.add(content, tabs, 18);
-      u.add(
-          content,
-          u.button(
-              manageKeepsakes ? "Hide keepsakes editing" : "Manage & edit keepsakes",
-              false,
+      Button manageBtn =
+          u.pillButton(
+              manageKeepsakes ? "Done editing" : "Edit keepsakes",
+              manageKeepsakes,
               () -> {
                 manageKeepsakes = !manageKeepsakes;
                 render();
-              }),
-          10);
+              });
+      manageBtn.setTextSize(12);
+      manageBtn.setMinHeight(u.dp(32));
+      manageBtn.setMinimumHeight(u.dp(32));
+      manageBtn.setPadding(u.dp(12), u.dp(4), u.dp(12), u.dp(4));
+      heroTop.addView(manageBtn);
+    }
+    hero.addView(heroTop);
+    u.add(
+        hero,
+        u.title(
+            personal
+                ? "All the days\nthat became ours."
+                : "Secret vocab.\nOur private dictionary.",
+            26),
+        8);
+    u.add(
+        hero,
+        u.text(
+            personal
+                ? "Our beginning, Open when… letters, and little things we love."
+                : "Every inside joke and nickname only we understand.",
+            14,
+            Ui.MUTED),
+        6);
+    if (personal) {
+      String[] labels = new String[] {"Since us", "Open when…", "Little things"};
+      LinearLayout seg = u.row(6);
+      seg.setPadding(u.dp(4), u.dp(4), u.dp(4), u.dp(4));
+      seg.setBackground(u.shape(Ui.PALE, 18, 0x166b5cb5));
+      for (int i = 0; i < labels.length; i++) {
+        final int index = i;
+        boolean active = chapter == i;
+        Button tab =
+            u.button(
+                labels[i],
+                active,
+                () -> {
+                  chapter = index;
+                  render();
+                });
+        tab.setTextSize(13);
+        tab.setMinHeight(u.dp(38));
+        tab.setMinimumHeight(u.dp(38));
+        tab.setPadding(u.dp(8), u.dp(6), u.dp(8), u.dp(6));
+        tab.setBackground(
+            u.shape(
+                active ? Ui.PRIMARY : Color.TRANSPARENT,
+                14,
+                active ? Ui.PRIMARY : Color.TRANSPARENT));
+        tab.setTextColor(active ? Color.WHITE : Ui.PURPLE);
+        seg.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
+      }
+      u.add(hero, seg, 16);
     }
     if (!writable())
       u.add(
-          content,
+          hero,
           u.text(
-              "Connect and refresh once to enable shared editing. Saved pages remain here offline.",
+              "Saved pages remain here offline. Connect and refresh once to edit together.",
               12,
               Ui.MUTED),
-          12);
-    u.add(content, u.button("Refresh our pages", false, this::refresh), 10);
+          10);
+    u.add(content, hero, 8);
     if (personal && chapter == 0) {
       since();
       return;
@@ -216,7 +257,7 @@ final class BookViews {
               true,
               () -> edit(kind, null));
       add.setEnabled(writable());
-      u.add(content, add, 18);
+      u.add(content, add, 14);
     }
     JSONArray entries = list(key);
     if (entries.length() == 0) {
@@ -224,48 +265,81 @@ final class BookViews {
       return;
     }
     if (kind.equals("Thing")) {
-      JSONObject item = entries.optJSONObject(reveal % entries.length());
-      entry(kind, item);
+      int idx = reveal % entries.length();
+      JSONObject item = entries.optJSONObject(idx);
+      LinearLayout showcase = u.card(content, Ui.PALE);
+      showcase.setBackground(u.shape(Ui.PALE, 26, 0x246b5cb5));
+      LinearLayout badgeRow = u.row(8);
+      badgeRow.addView(u.label("LITTLE THING WE LOVE"), new LinearLayout.LayoutParams(0, -2, 1));
+      TextView countPill = u.text((idx + 1) + " of " + entries.length() + " ♡", 12, Ui.PURPLE);
+      Compat.font(countPill, R.font.manrope, 700);
+      countPill.setPadding(u.dp(10), u.dp(4), u.dp(10), u.dp(4));
+      countPill.setBackground(u.shape(Color.WHITE, 999, 0x1a6b5cb5));
+      badgeRow.addView(countPill);
+      showcase.addView(badgeRow);
+      TextView quoteText = u.handwritten("“" + item.optString("text") + "”", 30);
+      quoteText.setLineSpacing(u.dp(4), 1f);
+      u.add(showcase, quoteText, 14);
+      if (item.optBoolean("pending"))
+        u.add(showcase, u.text("Saved on this phone · waiting to sync", 12, Ui.PURPLE), 8);
       u.add(
-          content,
+          showcase,
           u.button(
               "Another little thing ♡",
-              false,
+              true,
               () -> {
                 reveal = (reveal + 1) % entries.length();
                 render();
               }),
-          12);
+          18);
       if (manageKeepsakes) {
+        LinearLayout actions = u.actions();
+        Button edit = u.button("Edit", false, () -> edit(kind, item));
+        Button remove = u.button("Remove", false, () -> remove(kind, item));
+        edit.setEnabled(writable());
+        remove.setEnabled(writable());
+        actions.addView(edit, new LinearLayout.LayoutParams(0, -2, 1));
+        actions.addView(remove, new LinearLayout.LayoutParams(0, -2, 1));
+        u.add(showcase, actions, 10);
         u.add(
             content,
             u.button(
                 "Manage all little things",
                 false,
                 () -> {
-                  LinearLayout all = u.column();
+                  Ui.Sheet all = u.sheet("All the little things", "Tap any note to edit it.");
                   for (int i = 0; i < entries.length(); i++) {
                     JSONObject thing = entries.optJSONObject(i);
-                    u.add(
-                        all, u.button(thing.optString("text"), false, () -> edit("Thing", thing)), 8);
+                    all.item(thing.optString("text"), "Little thing #" + (i + 1), "♡", false, () -> edit("Thing", thing));
                   }
-                  new AlertDialog.Builder(activity)
-                      .setTitle("All the little things")
-                      .setView(u.scroll(all))
-                      .setNegativeButton("Close", null)
-                      .show();
+                  all.show();
                 }),
-            10);
+            12);
       }
       return;
     }
     if (kind.equals("Letter")) {
       for (int i = 0; i < entries.length(); i += 2) {
-        LinearLayout pair = u.row(10);
+        LinearLayout pair = u.row(12);
         for (int j = i; j < Math.min(i + 2, entries.length()); j++) {
           JSONObject item = entries.optJSONObject(j);
-          Button b = u.button("✉  " + item.optString("title"), false, () -> openLetter(item));
+          Button b =
+              u.button(
+                  "✉  " + item.optString("title") + "\nOpen with love ♡",
+                  false,
+                  () -> openLetter(item));
+          b.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+          b.setTextSize(14);
+          b.setLineSpacing(u.dp(4), 1f);
+          b.setPadding(u.dp(16), u.dp(16), u.dp(16), u.dp(16));
+          b.setMinHeight(u.dp(92));
+          b.setMinimumHeight(u.dp(92));
+          b.setBackground(u.shape(Color.WHITE, 22, 0x226b5cb5));
+          b.setTextColor(Ui.INK);
           pair.addView(b, new LinearLayout.LayoutParams(0, -2, 1));
+        }
+        if (i + 1 >= entries.length()) {
+          pair.addView(new View(activity), new LinearLayout.LayoutParams(0, 1, 1));
         }
         u.add(content, pair, 12);
       }
@@ -388,25 +462,60 @@ final class BookViews {
   }
 
   void openLetter(JSONObject item) {
-    LinearLayout body = u.column();
-    body.setPadding(u.dp(22), u.dp(12), u.dp(22), u.dp(20));
-    TextView hearts = u.handwritten("♡  ✦  ♡  ✧  ♡", 30);
+    Dialog d = new Dialog(activity);
+    d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    LinearLayout card = u.column();
+    card.setPadding(u.dp(22), u.dp(20), u.dp(22), u.dp(20));
+    card.setBackground(u.shape(Ui.BG, 28, 0x266b5cb5));
+    TextView hearts = u.handwritten("♡  ✦  ♡  ✧  ♡", 28);
     hearts.setTextColor(Ui.PURPLE);
-    u.add(body, hearts, 0);
-    TextView text = u.text(item.optString("text"), 18, Ui.INK);
+    u.add(card, hearts, 0);
+    u.add(card, u.label("OPEN WHEN LETTER"), 8);
+    u.add(card, u.title(item.optString("title"), 24), 4);
+    LinearLayout letterBox = u.column();
+    letterBox.setPadding(u.dp(18), u.dp(16), u.dp(18), u.dp(16));
+    letterBox.setBackground(u.shape(Color.WHITE, 20, 0x1a6b5cb5));
+    TextView text = u.text(item.optString("text"), 17, Ui.INK);
+    text.setLineSpacing(u.dp(5), 1f);
     text.setTextIsSelectable(true);
-    u.add(body, text, 16);
+    letterBox.addView(text);
+    ScrollView letterScroll = u.scroll(letterBox);
+    letterScroll.setFillViewport(false);
+    LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-1, 0, 1);
+    sp.topMargin = u.dp(14);
+    card.addView(letterScroll, sp);
     if (manageKeepsakes) {
-      u.add(body, u.button("Edit this letter", false, () -> edit("Letter", item)), 20);
-      u.add(body, u.button("Remove this letter", false, () -> remove("Letter", item)), 8);
+      LinearLayout editRow = u.row(10);
+      editRow.addView(
+          u.button(
+              "Edit this letter",
+              false,
+              () -> {
+                d.dismiss();
+                edit("Letter", item);
+              }),
+          new LinearLayout.LayoutParams(0, -2, 1));
+      editRow.addView(
+          u.button(
+              "Remove",
+              false,
+              () -> {
+                d.dismiss();
+                remove("Letter", item);
+              }),
+          new LinearLayout.LayoutParams(0, -2, 1));
+      u.add(card, editRow, 14);
     }
-    AlertDialog d =
-        new AlertDialog.Builder(activity)
-            .setTitle(item.optString("title"))
-            .setView(u.scroll(body))
-            .setPositiveButton("Keep it close ♡", null)
-            .create();
+    u.add(card, u.button("Keep it close ♡", true, d::dismiss), 14);
+    d.setContentView(card);
     d.show();
+    if (d.getWindow() != null) {
+      d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+      d.getWindow()
+          .setLayout(
+              Math.min(activity.getResources().getDisplayMetrics().widthPixels - u.dp(28), u.dp(520)),
+              -2);
+    }
     Motion.enter(hearts, 1);
     hearts.post(() -> Motion.hearts(hearts));
     if (Motion.enabled(activity))
@@ -490,14 +599,17 @@ final class BookViews {
     if (since == null) return;
     long started = Dates.instant(since.optString("startedAt"));
     long days = Math.max(0, (System.currentTimeMillis() - started) / 86400000L);
-    LinearLayout card = u.card(content, Ui.BLUE);
-    u.add(card, u.label("SINCE WE BECAME US"), 0);
-    u.add(card, u.handwritten(days + " days, and counting. ♡", 35), 12);
-    u.add(card, u.text(displayDate(started, true) + " · Eastern time", 14, Ui.MUTED), 8);
+    LinearLayout heroCard = u.card(content, Ui.PALE);
+    heroCard.setBackground(u.shape(Ui.PALE, 26, 0x246b5cb5));
+    u.add(heroCard, u.label("SINCE WE BECAME US"), 0);
+    u.add(heroCard, u.handwritten(days + " days, and counting. ♡", 36), 10);
+    u.add(heroCard, u.text(displayDate(started, true) + " · Eastern time", 14, Ui.MUTED), 6);
     String talking = since.optString("startedTalkingAt", "");
     if (!talking.isEmpty() && !talking.equals("null")) {
-      u.add(card, u.label("WE STARTED TALKING"), 20);
-      u.add(card, u.title(displayDate(Dates.instant(talking + "T12:00:00Z"), false), 20), 8);
+      LinearLayout talkCard = u.card(content, Color.WHITE);
+      u.add(talkCard, u.label("WE STARTED TALKING"), 0);
+      u.add(talkCard, u.title(displayDate(Dates.instant(talking + "T12:00:00Z"), false), 20), 6);
+      u.add(talkCard, u.text("The very first chapter before everything else.", 13, Ui.MUTED), 4);
     }
     Calendar start = Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
     start.setTimeInMillis(started);
@@ -516,16 +628,21 @@ final class BookViews {
         next = (Calendar) start.clone();
         next.add(yearly ? Calendar.YEAR : Calendar.MONTH, Math.max(1, count) + 1);
       }
+      LinearLayout mileCard = u.card(content, yearly ? Ui.BLUE : Color.WHITE);
+      u.add(mileCard, u.label(yearly ? "NEXT ANNIVERSARY" : "NEXT MONTH TOGETHER"), 0);
       u.add(
-          card,
-          u.text(
+          mileCard,
+          u.title(
               (yearly ? "Our next anniversary · " : "Our next month together · ")
                   + displayDate(next.getTimeInMillis(), false),
-              14,
-              Ui.PURPLE),
-          16);
+              17),
+          6);
       String message = since.optString(yearly ? "yearlyMessage" : "monthlyMessage");
-      if (!message.isEmpty()) u.add(card, u.text(message, 15, Ui.MUTED), 8);
+      if (!message.isEmpty()) {
+        TextView msg = u.text(message, 15, Ui.MUTED);
+        msg.setLineSpacing(u.dp(3), 1f);
+        u.add(mileCard, msg, 8);
+      }
     }
     if (manageKeepsakes) {
       Button edit = u.button("Edit our beginning & messages", true, () -> editSince(since));

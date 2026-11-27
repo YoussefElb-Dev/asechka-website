@@ -264,36 +264,85 @@ final class Messages {
 
   void compose() {
     Dialog dialog = new Dialog(activity);
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
     LinearLayout box = ui.column();
-    box.setPadding(ui.dp(22), ui.dp(22), ui.dp(22), ui.dp(22));
-    box.setBackground(ui.shape(Ui.BG, 26));
-    box.addView(
+    box.setPadding(ui.dp(22), ui.dp(20), ui.dp(22), ui.dp(22));
+    box.setBackground(ui.shape(Ui.BG, 28, 0x266b5cb5));
+    LinearLayout header = ui.row(8);
+    LinearLayout titleCol = ui.column();
+    titleCol.addView(ui.label("LITTLE MESSAGE"));
+    ui.add(
+        titleCol,
         ui.title(
             "Just for " + SocialFeed.nameOf(actor.get().equals("asnat") ? "youssef" : "asnat"),
-            24));
+            22),
+        2);
+    header.addView(titleCol, new LinearLayout.LayoutParams(0, -2, 1));
+    header.addView(ui.pillButton("Back", false, dialog::dismiss));
+    box.addView(header);
     TextView note = ui.text("3 per day · keep in our Love Jar or send read-once", 12, Ui.MUTED);
-    ui.add(box, note, 10);
-    CheckBox keepInJar = new CheckBox(activity);
-    keepInJar.setText("Keep in Love Jar & pin to Home ♡");
-    keepInJar.setChecked(true);
-    keepInJar.setTextColor(Ui.INK);
-    ui.add(box, keepInJar, 10);
-    EditText text = new EditText(activity);
-    text.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | android.text.InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-    text.setHint("Something only you could say…");
+    ui.add(box, note, 8);
+    final boolean[] keepInJar = {true};
+    LinearLayout seg = ui.row(6);
+    seg.setPadding(ui.dp(4), ui.dp(4), ui.dp(4), ui.dp(4));
+    seg.setBackground(ui.shape(Ui.PALE, 18, 0x166b5cb5));
+    Button jarMode = ui.button("Love Jar (keep)", true, null);
+    Button onceMode = ui.button("Read once", false, null);
+    Button send = ui.button("Drop in our Love Jar ♡", true, null);
+    Runnable updateMode =
+        () -> {
+          for (int i = 0; i < 2; i++) {
+            Button b = i == 0 ? jarMode : onceMode;
+            boolean active = (i == 0) == keepInJar[0];
+            b.setTextSize(13);
+            b.setMinHeight(ui.dp(36));
+            b.setMinimumHeight(ui.dp(36));
+            b.setPadding(ui.dp(10), ui.dp(6), ui.dp(10), ui.dp(6));
+            b.setBackground(
+                ui.shape(
+                    active ? Ui.PRIMARY : android.graphics.Color.TRANSPARENT,
+                    14,
+                    active ? Ui.PRIMARY : android.graphics.Color.TRANSPARENT));
+            b.setTextColor(active ? android.graphics.Color.WHITE : Ui.PURPLE);
+          }
+          send.setText(keepInJar[0] ? "Drop in our Love Jar ♡" : "Send read-once secret");
+        };
+    jarMode.setOnClickListener(
+        v -> {
+          keepInJar[0] = true;
+          updateMode.run();
+        });
+    onceMode.setOnClickListener(
+        v -> {
+          keepInJar[0] = false;
+          updateMode.run();
+        });
+    seg.addView(jarMode, new LinearLayout.LayoutParams(0, -2, 1));
+    seg.addView(onceMode, new LinearLayout.LayoutParams(0, -2, 1));
+    updateMode.run();
+    ui.add(box, seg, 12);
+    EditText text = ui.input("Something only you could say…", "", 1000, true);
     text.setMinLines(4);
     text.setMaxLines(8);
-    text.setGravity(Gravity.TOP);
-    text.setTextColor(Ui.INK);
-    text.setTextSize(17);
-    text.setFilters(new InputFilter[] {new InputFilter.LengthFilter(1000)});
+    text.setBackground(ui.shape(android.graphics.Color.WHITE, 18, 0x1e6b5cb5));
+    text.setPadding(ui.dp(16), ui.dp(14), ui.dp(16), ui.dp(14));
     JSONObject draft = api.store.read("message-draft:" + actor.get());
     if (draft != null) text.setText(draft.optString("text"));
     ui.add(box, text, 14);
+    LinearLayout metaRow = ui.row(8);
     TextView feedback = ui.text("", 12, Ui.PURPLE);
-    ui.add(box, feedback, 8);
-    Button send = ui.button("Drop in our Love Jar ♡", true, null);
-    keepInJar.setOnCheckedChangeListener((b, on) -> send.setText(on ? "Drop in our Love Jar ♡" : "Send read-once secret"));
+    metaRow.addView(feedback, new LinearLayout.LayoutParams(0, -2, 1));
+    TextView counter = ui.text(text.getText().length() + " / 1,000", 11, Ui.MUTED);
+    metaRow.addView(counter);
+    text.addTextChangedListener(
+        new TextWatcher() {
+          public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+          public void onTextChanged(CharSequence s, int start, int before, int count) {
+            counter.setText(s.length() + " / 1,000");
+          }
+          public void afterTextChanged(Editable s) {}
+        });
+    ui.add(box, metaRow, 8);
     send.setOnClickListener(
         v -> {
           String content = text.getText().toString().trim();
@@ -301,7 +350,7 @@ final class Messages {
             feedback.setText("Write your little note first.");
             return;
           }
-          boolean jar = keepInJar.isChecked();
+          boolean jar = keepInJar[0];
           send.setEnabled(false);
           worker.execute(
               () -> {
@@ -349,8 +398,7 @@ final class Messages {
                 }
               });
         });
-    ui.add(box, send, 12);
-    ui.add(box, ui.button("Back", false, dialog::dismiss), 8);
+    ui.add(box, send, 14);
     dialog.setOnDismissListener(
         d -> {
           String saved = text.getText().toString();
@@ -364,8 +412,14 @@ final class Messages {
         });
     dialog.setContentView(box);
     dialog.show();
-    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-    dialog.getWindow().setLayout(-1, -2);
+    if (dialog.getWindow() != null) {
+      dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+      dialog
+          .getWindow()
+          .setLayout(
+              Math.min(activity.getResources().getDisplayMetrics().widthPixels - ui.dp(28), ui.dp(500)),
+              -2);
+    }
   }
 
   void widgets() {
@@ -375,27 +429,39 @@ final class Messages {
             java.util.List<RemoteViews> previews = UniverseWidgets.previews(activity, api);
             main.post(
                 () -> {
-                  Dialog dialog = new Dialog(activity);
+                  Dialog dialog = ui.fullScreenDialog();
+                  LinearLayout outer = ui.column();
+                  outer.setBackgroundColor(Ui.BG);
+                  ui.applyWindowInsets(outer, 0, 8, 0, 0);
+                  LinearLayout header = ui.row(8);
+                  header.setPadding(ui.dp(20), ui.dp(10), ui.dp(20), ui.dp(10));
+                  LinearLayout titleCol = ui.column();
+                  titleCol.addView(ui.label("HOME SCREEN WINDOWS"));
+                  ui.add(titleCol, ui.title("Our home-screen widgets", 20), 2);
+                  header.addView(titleCol, new LinearLayout.LayoutParams(0, -2, 1));
+                  header.addView(ui.pillButton("Done", false, dialog::dismiss));
+                  outer.addView(header);
                   LinearLayout box = ui.column();
-                  box.setPadding(ui.dp(22), ui.dp(22), ui.dp(22), ui.dp(22));
-                  box.setBackgroundColor(Ui.BG);
-                  box.addView(ui.title("Our home-screen widgets", 24));
+                  box.setPadding(ui.dp(20), ui.dp(6), ui.dp(20), ui.dp(28));
+                  LinearLayout infoCard = ui.card(box, android.graphics.Color.WHITE);
+                  infoCard.addView(ui.label("HOW TO ADD"));
                   ui.add(
-                      box,
+                      infoCard,
                       ui.text(
                           "Long-press your Home Screen, choose Widgets, then find Asechka. Add any of these six little windows. Tap a widget to open the app and sync.",
                           14,
                           Ui.MUTED),
-                      14);
+                      6);
                   for (RemoteViews preview : previews) {
                     View card = preview.apply(activity, box);
                     LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, ui.dp(164));
-                    p.topMargin = ui.dp(16);
+                    p.topMargin = ui.dp(14);
                     box.addView(card, p);
                   }
-                  ui.add(box, ui.button("Done", false, dialog::dismiss), 20);
-                  dialog.setContentView(ui.scroll(box));
+                  outer.addView(ui.scroll(box), new LinearLayout.LayoutParams(-1, 0, 1));
+                  dialog.setContentView(outer);
                   dialog.show();
+                  outer.requestApplyInsets();
                   dialog.getWindow().setLayout(-1, -1);
                 });
           } catch (Exception ignored) {
@@ -411,18 +477,35 @@ final class Messages {
             String who = actor.get();
             main.post(
                 () -> {
-                  Dialog dialog = new Dialog(activity);
+                  Dialog dialog = ui.fullScreenDialog();
+                  LinearLayout outer = ui.column();
+                  outer.setBackgroundColor(Ui.BG);
+                  ui.applyWindowInsets(outer, 0, 8, 0, 0);
+                  LinearLayout header = ui.row(8);
+                  header.setPadding(ui.dp(20), ui.dp(10), ui.dp(20), ui.dp(10));
+                  LinearLayout titleCol = ui.column();
+                  titleCol.addView(ui.label("SAVED NOTES & SECRETS"));
+                  ui.add(titleCol, ui.title("Our Love Jar & history", 20), 2);
+                  header.addView(titleCol, new LinearLayout.LayoutParams(0, -2, 1));
+                  header.addView(
+                      ui.pillButton(
+                          "＋ Note",
+                          true,
+                          () -> {
+                            dialog.dismiss();
+                            compose();
+                          }));
+                  header.addView(ui.pillButton("Done", false, dialog::dismiss));
+                  outer.addView(header);
                   LinearLayout box = ui.column();
-                  box.setPadding(ui.dp(22), ui.dp(22), ui.dp(22), ui.dp(22));
-                  box.setBackgroundColor(Ui.BG);
-                  box.addView(ui.title("Our Love Jar & history", 24));
+                  box.setPadding(ui.dp(20), ui.dp(4), ui.dp(20), ui.dp(28));
                   ui.add(
                       box,
                       ui.text(
                           "Love Jar notes stay readable forever and can be pinned on Home. Read-once secrets keep only a short preview.",
                           13,
                           Ui.MUTED),
-                      12);
+                      4);
                   for (int i = items.length() - 1; i >= 0; i--) {
                     JSONObject m = items.optJSONObject(i);
                     if (m == null
@@ -431,9 +514,14 @@ final class Messages {
                     boolean isJar = "jar".equals(m.optString("mode"));
                     boolean isPinned = m.optBoolean("pinned", false);
                     LinearLayout card = ui.column();
-                    card.setPadding(ui.dp(16), ui.dp(14), ui.dp(16), ui.dp(14));
-                    card.setBackground(ui.shape(0xffffffff, 20));
-                    card.addView(
+                    card.setPadding(ui.dp(18), ui.dp(16), ui.dp(18), ui.dp(16));
+                    card.setBackground(
+                        ui.shape(
+                            isPinned ? Ui.PALE : 0xffffffff,
+                            22,
+                            isPinned ? 0x336b5cb5 : 0x1a6b5cb5));
+                    LinearLayout meta = ui.row(8);
+                    meta.addView(
                         ui.text(
                             (who.equals(m.optString("from"))
                                     ? "To " + SocialFeed.nameOf(m.optString("to"))
@@ -442,41 +530,79 @@ final class Messages {
                                 + m.optString("day")
                                 + (isPinned ? " · Pinned ♡" : ""),
                             12,
-                            Ui.PURPLE));
-                    String display = isJar && !m.optString("text").isEmpty() ? m.optString("text") : m.optString("preview");
-                    ui.add(card, ui.text(display, 16, Ui.INK), 8);
+                            Ui.PURPLE),
+                        new LinearLayout.LayoutParams(0, -2, 1));
+                    if (isJar) {
+                      String noteId = m.optString("id");
+                      Button pinBtn =
+                          ui.pillButton(
+                              isPinned ? "Unpin from Home" : "Pin to Home ♡",
+                              isPinned,
+                              () -> {
+                                worker.execute(
+                                    () -> {
+                                      try {
+                                        api.post(
+                                            "/api/together",
+                                            OfflineStore.json(
+                                                "action",
+                                                "pinMessage",
+                                                "actor",
+                                                who,
+                                                "id",
+                                                noteId,
+                                                "pinned",
+                                                !isPinned,
+                                                "operationId",
+                                                UUID.randomUUID().toString()));
+                                        main.post(
+                                            () -> {
+                                              dialog.dismiss();
+                                              if (activity instanceof MainActivity)
+                                                ((MainActivity) activity).refreshHomeExtras();
+                                              history();
+                                            });
+                                      } catch (Exception ignored) {
+                                      }
+                                    });
+                              });
+                      pinBtn.setTextSize(12);
+                      pinBtn.setMinHeight(ui.dp(30));
+                      pinBtn.setMinimumHeight(ui.dp(30));
+                      pinBtn.setPadding(ui.dp(12), ui.dp(4), ui.dp(12), ui.dp(4));
+                      meta.addView(pinBtn);
+                    }
+                    card.addView(meta);
+                    String display =
+                        isJar && !m.optString("text").isEmpty()
+                            ? m.optString("text")
+                            : m.optString("preview");
+                    TextView bodyText = ui.text(display, 16, Ui.INK);
+                    bodyText.setLineSpacing(ui.dp(3), 1f);
+                    ui.add(card, bodyText, 10);
                     ui.add(
                         card,
                         ui.text(
                             isJar
                                 ? "Kept in our Love Jar ♡"
-                                : (m.isNull("closedAt") ? "Waiting to be received" : "Read once · kept in our hearts"),
+                                : (m.isNull("closedAt")
+                                    ? "Waiting to be received"
+                                    : "Read once · kept in our hearts"),
                             11,
                             Ui.MUTED),
-                        6);
-                    if (isJar) {
-                      String noteId = m.optString("id");
-                      Button pinBtn = ui.textButton(isPinned ? "Unpin from Home" : "Pin to Home ♡", () -> {
-                        worker.execute(() -> {
-                          try {
-                            api.post("/api/together", OfflineStore.json("action", "pinMessage", "actor", who, "id", noteId, "pinned", !isPinned, "operationId", UUID.randomUUID().toString()));
-                            main.post(() -> {
-                              dialog.dismiss();
-                              if (activity instanceof MainActivity) ((MainActivity) activity).refreshHomeExtras();
-                              history();
-                            });
-                          } catch (Exception ignored) {}
-                        });
-                      });
-                      ui.add(card, pinBtn, 4);
-                    }
+                        8);
                     ui.add(box, card, 12);
                   }
                   if (items.length() == 0)
-                    ui.add(box, ui.text("Our first Love Jar note is waiting to be written. ♡", 16, Ui.MUTED), 24);
-                  ui.add(box, ui.button("Done", false, dialog::dismiss), 18);
-                  dialog.setContentView(ui.scroll(box));
+                    ui.add(
+                        box,
+                        ui.text(
+                            "Our first Love Jar note is waiting to be written. ♡", 16, Ui.MUTED),
+                        24);
+                  outer.addView(ui.scroll(box), new LinearLayout.LayoutParams(-1, 0, 1));
+                  dialog.setContentView(outer);
                   dialog.show();
+                  outer.requestApplyInsets();
                   dialog.getWindow().setLayout(-1, -1);
                 });
           } catch (Exception ignored) {

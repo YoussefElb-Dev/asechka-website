@@ -46,9 +46,17 @@ struct CornerView:View {
         NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
             Text(universe.actor=="asnat" ? "FOR ASNAT. MY ASECHKA.":"FOR US. FROM YOUSSEF.").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
             Text(universe.actor=="asnat" ? "My favorite\nlittle universe.":"Our favorite\nlittle universe.").font(.custom("Manrope-Bold",size:33))
-            Text("Of all the people, in all the places, somehow my heart keeps finding you.").foregroundColor(Palette.muted)
-            Button("Since us · letters & little things"){personalBook=true}.primary()
-            Button("Secret vocab"){littleBook=true}.primary()
+            Text(universe.actor=="asnat" ? "Of all the people, in all the places, somehow my heart keeps finding you.":"A little corner for our letters, keepsakes, and favorite days.").foregroundColor(Palette.muted)
+            HStack(spacing:10){
+                VStack(alignment:.leading,spacing:8){
+                    HStack(spacing:6){Image(systemName:"heart.text.square").font(.caption.weight(.bold));Text("KEEPSAKES").font(.system(size:10,weight:.bold)).tracking(1.6)}.foregroundColor(Palette.purple)
+                    Button("Since us · letters & little things"){personalBook=true}.font(.subheadline.weight(.bold)).foregroundColor(Palette.ink).multilineTextAlignment(.leading)
+                }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(Palette.pale).clipShape(RoundedRectangle(cornerRadius:18)).overlay(RoundedRectangle(cornerRadius:18).stroke(Palette.purple.opacity(0.22),lineWidth:1))
+                VStack(alignment:.leading,spacing:8){
+                    HStack(spacing:6){Image(systemName:"book.closed").font(.caption.weight(.bold));Text("DICTIONARY").font(.system(size:10,weight:.bold)).tracking(1.6)}.foregroundColor(Palette.purple)
+                    Button("Secret vocab"){littleBook=true}.font(.subheadline.weight(.bold)).foregroundColor(Palette.ink).multilineTextAlignment(.leading)
+                }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(Palette.card).clipShape(RoundedRectangle(cornerRadius:18)).overlay(RoundedRectangle(cornerRadius:18).stroke(Palette.purple.opacity(0.18),lineWidth:1))
+            }
             CachedPhoto(source:"assets/our-little-universe.png").aspectRatio(1.25,contentMode:.fit).clipShape(RoundedRectangle(cornerRadius:24))
             Button(universe.actor=="asnat" ? "Your letter ♡":"Letter to Asnat ♡"){letter=true}.primary()
             VStack(alignment:.leading,spacing:12){Text("A LITTLE MOMENT, JUST FOR US").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
@@ -99,12 +107,21 @@ struct WordsView:View {
                 Text("Our words.").font(.custom("Manrope-Bold",size:30))
                 Text("Written by \(universe.name), for \(universe.partner). The language roles are set for you.").foregroundColor(Palette.muted)
             }
-            VStack(alignment:.leading,spacing:15){TextEditor(text:$text).frame(minHeight:145).scrollContentBackground(.hidden);Text("\(text.count) / 1,500").font(.caption).foregroundColor(Palette.muted)
-                Picker("Source",selection:$source){Text("Detect automatically").tag("auto");Text("English").tag("en");ForEach(Self.languages,id:\.0){Text($0.1).tag($0.0)}}
-                Picker("Tone",selection:$tone){Text("Natural & everyday").tag("natural");Text("A little sweeter").tag("sweet");Text("Soft & poetic").tag("poetic")}
-                ForEach(Self.languages,id:\.0){language in Toggle(language.1,isOn:Binding(get:{targets.contains(language.0)},set:{if $0{targets.insert(language.0)}else{targets.remove(language.0)}}))}
+            VStack(alignment:.leading,spacing:14){
+                Text("YOUR MESSAGE").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                TextEditor(text:$text)
+                    .frame(minHeight:135)
+                    .padding(10)
+                    .scrollContentBackground(.hidden)
+                    .background(Palette.background,in:RoundedRectangle(cornerRadius:16))
+                    .overlay(RoundedRectangle(cornerRadius:16).stroke(Palette.lavender,lineWidth:1))
+                HStack{Spacer();Text("\(text.count) / 1,500").font(.caption).foregroundColor(Palette.muted)}
+                HStack{Text("Source").font(.subheadline.weight(.semibold));Spacer();Picker("Source",selection:$source){Text("Detect automatically").tag("auto");Text("English").tag("en");ForEach(Self.languages,id:\.0){Text($0.1).tag($0.0)}}}.padding(.horizontal,14).padding(.vertical,6).background(Palette.background,in:RoundedRectangle(cornerRadius:14))
+                HStack{Text("Tone").font(.subheadline.weight(.semibold));Spacer();Picker("Tone",selection:$tone){Text("Natural & everyday").tag("natural");Text("A little sweeter").tag("sweet");Text("Soft & poetic").tag("poetic")}}.padding(.horizontal,14).padding(.vertical,6).background(Palette.background,in:RoundedRectangle(cornerRadius:14))
+                Text("TARGET LANGUAGES").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple).padding(.top,4)
+                ForEach(Self.languages,id:\.0){language in Toggle(language.1,isOn:Binding(get:{targets.contains(language.0)},set:{if $0{targets.insert(language.0)}else{targets.remove(language.0)}})).font(.subheadline.weight(.medium)).padding(.horizontal,12).padding(.vertical,8).background(Palette.background,in:RoundedRectangle(cornerRadius:12))}
                 Button{busy=true;Task{do{try await universe.translate(text,source:source,tone:tone,targets:Self.languages.map(\.0).filter{targets.contains($0)})}catch{universe.error=error.localizedDescription};busy=false}}label:{HStack{if busy{ProgressView().tint(.white)};Text(busy ? "Finding the right words…":"Translate our words →").frame(maxWidth:.infinity)}.primary()}.disabled(busy || text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || text.count>1500 || targets.isEmpty)
-                Button("Saved translations"){history=true}
+                Button{history=true}label:{Label("Saved translations",systemImage:"clock.arrow.circlepath").font(.subheadline.weight(.semibold)).frame(maxWidth:.infinity).padding(.vertical,10).background(Palette.lavender,in:RoundedRectangle(cornerRadius:14)).foregroundColor(Palette.purple)}
                 Text("Only submitted text and language settings go to Google’s free Gemini service. Google may use free-tier content to improve products. AI translations may need a human correction.").font(.caption2).foregroundColor(Palette.muted)
             }.card()
             ForEach(universe.translations){translation in TranslationCard(translation:translation)}

@@ -69,11 +69,12 @@ struct FeedView:View {
             if home {
                 HStack(spacing:10){story("Create","plus"){create(true)};story("Our corner","heart",action:corner);story("Saved","bookmark"){savedOnly.toggle()}}.padding(.horizontal,16)
             } else {
-                ScrollView(.horizontal,showsIndicators:false){HStack(spacing:14){
-                    story("Create","plus"){create(memoryTab != 2)};story("Our corner","heart",action:corner)
+                HStack(spacing:8){
+                    story("Create","plus"){create(memoryTab != 2)}
+                    story("Our corner","heart",action:corner)
                     story("Our days","sparkles"){navigate(2)}
                     story(savedOnly ? "All posts":"Saved","bookmark"){savedOnly.toggle()}
-                }.padding(.horizontal,22).padding(.vertical,5)}
+                }.padding(.horizontal,16).padding(.vertical,4)
             }
             if mode==0 && !savedOnly {HomeHub(open:{shortcut=$0},openHistory:{heartHistory=true},openJar:openJar)}
             if !home {VStack(alignment:.leading,spacing:10){
@@ -104,9 +105,16 @@ struct FeedView:View {
         }.padding(.top,home ? 10:12).padding(.bottom,home ? 0:6)
     }
     private func story(_ text:String,_ symbol:String,action:@escaping()->Void)->some View {
-        Button{Touch.tap();action()}label:{
-            if home{Label(text,systemImage:symbol).font(.system(size:13,weight:.medium)).padding(.horizontal,6).frame(maxWidth:.infinity,minHeight:44).background(Palette.lavender,in:Capsule())}
-            else{VStack(spacing:6){Image(systemName:symbol).font(.system(size:22,weight:.light)).frame(width:56,height:56).background(Palette.gradient,in:Circle()).overlay(Circle().stroke(Palette.purple.opacity(0.25),lineWidth:2));Text(text).font(.system(size:11))}.frame(width:68)}
+        let activeSaved = (text == "Saved" || text == "All posts") && savedOnly
+        return Button{Touch.tap();action()}label:{
+            Label(text,systemImage:symbol)
+                .font(.system(size:12,weight:.semibold))
+                .lineLimit(1)
+                .padding(.horizontal,6)
+                .frame(maxWidth:.infinity,minHeight:42)
+                .background(activeSaved ? Palette.purple:.white,in:Capsule())
+                .foregroundColor(activeSaved ? .white:Palette.ink)
+                .overlay(Capsule().stroke(activeSaved ? Palette.purple:Palette.lavender,lineWidth:1))
         }
     }
 }

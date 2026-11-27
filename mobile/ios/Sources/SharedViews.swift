@@ -15,8 +15,22 @@ struct DaysView:View {
                 Text("Our little days.").font(.custom("Manrope-Bold",size:30))
                 Text("Places to go. Things to try. A little more us.").foregroundColor(Palette.muted)
             }
-            Button("Secret vocab"){littleBook=true}.primary()
-            Button("Since us · letters & little things"){personalBook=true}.primary()
+            HStack(spacing:12){
+                Button{littleBook=true;Touch.tap()}label:{
+                    VStack(alignment:.leading,spacing:6){
+                        Text("DICTIONARY").font(.system(size:10,weight:.bold)).tracking(1.6).foregroundColor(Palette.purple)
+                        Text("Secret vocab").font(.headline).foregroundColor(Palette.ink)
+                        Text("Inside jokes & words").font(.caption).foregroundColor(Palette.muted)
+                    }.frame(maxWidth:.infinity,alignment:.leading).padding(16).background(.white,in:RoundedRectangle(cornerRadius:22)).overlay(RoundedRectangle(cornerRadius:22).stroke(Palette.lavender,lineWidth:1))
+                }
+                Button{personalBook=true;Touch.tap()}label:{
+                    VStack(alignment:.leading,spacing:6){
+                        Text("KEEPSAKES").font(.system(size:10,weight:.bold)).tracking(1.6).foregroundColor(Palette.purple)
+                        Text("Since us · letters & little things").font(.headline).foregroundColor(Palette.ink).multilineTextAlignment(.leading)
+                        Text("Milestones & Open when…").font(.caption).foregroundColor(Palette.muted)
+                    }.frame(maxWidth:.infinity,alignment:.leading).padding(16).background(.white,in:RoundedRectangle(cornerRadius:22)).overlay(RoundedRectangle(cornerRadius:22).stroke(Palette.lavender,lineWidth:1))
+                }
+            }
             VStack(alignment:.leading,spacing:14){Text("Thinking of you.").font(.title3.weight(.semibold));Text("A little heart, from \(universe.name) to \(universe.partner).").foregroundColor(Palette.muted)
                 let otherKey = universe.actor == "asnat" ? "me" : "asechka"
                 if let incoming = universe.hearts[otherKey] {

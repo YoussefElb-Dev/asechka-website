@@ -1104,30 +1104,25 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     stories.setHorizontalScrollBarEnabled(false);
     stories.setClipChildren(false);
     stories.setClipToPadding(false);
-    LinearLayout row = u.row(home ? 10 : 18);
-    row.setPadding(u.dp(home ? 16 : 22), u.dp(home ? 0 : 7), u.dp(home ? 16 : 22), u.dp(home ? 8 : 14));
+    LinearLayout row = u.row(8);
+    row.setPadding(u.dp(16), u.dp(home ? 0 : 4), u.dp(16), u.dp(home ? 8 : 10));
     String[] titles = {"Create", "Our corner", "Our days", savedPosts ? "All posts" : "Saved"};
     String[] symbols = {"plus", "heart", "sparkles", "bookmark"};
     for(int i=0;i<titles.length;i++){
       if(home && i==2)continue;
       final int action=i;
       LinearLayout story=u.column();story.setGravity(Gravity.CENTER);
-      if(home){
-        LinearLayout pill=u.row(6);pill.setGravity(Gravity.CENTER);pill.setPadding(u.dp(6),0,u.dp(6),0);pill.setBackground(u.shape(Ui.PALE,100));
-        pill.addView(Glyph.view(this,symbols[i],Ui.INK),new LinearLayout.LayoutParams(u.dp(16),u.dp(16)));
-        TextView name=u.text(titles[i],13,Ui.INK);Compat.font(name,R.font.dm_sans,500);pill.addView(name);
-        story.addView(pill,new LinearLayout.LayoutParams(-1,u.dp(44)));
-      }else{
-        FrameLayout circle=new FrameLayout(this);android.graphics.drawable.GradientDrawable surface=new android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TL_BR,new int[]{Ui.PALE,Ui.BLUE});surface.setCornerRadius(u.dp(100));surface.setStroke(u.dp(2),0x406b5cb5);circle.setBackground(surface);
-        circle.addView(Glyph.view(this,symbols[i],Ui.INK),new FrameLayout.LayoutParams(u.dp(25),u.dp(25),Gravity.CENTER));
-        story.addView(circle,new LinearLayout.LayoutParams(u.dp(62),u.dp(62)));
-        TextView name=u.text(titles[i],11,Ui.INK);name.setGravity(Gravity.CENTER);u.add(story,name,8);
-      }
+      boolean activeSaved = i == 3 && savedPosts;
+      LinearLayout pill=u.row(6);pill.setGravity(Gravity.CENTER);pill.setPadding(u.dp(8),0,u.dp(8),0);
+      pill.setBackground(u.shape(activeSaved ? Ui.PRIMARY : Color.WHITE, 100, activeSaved ? Ui.PRIMARY : 0x226b5cb5));
+      pill.addView(Glyph.view(this,symbols[i],activeSaved ? Color.WHITE : Ui.PURPLE),new LinearLayout.LayoutParams(u.dp(15),u.dp(15)));
+      TextView name=u.text(titles[i],12,activeSaved ? Color.WHITE : Ui.INK);Compat.font(name,R.font.dm_sans,600);name.setSingleLine(true);pill.addView(name);
+      story.addView(pill,new LinearLayout.LayoutParams(-1,u.dp(42)));
       story.setContentDescription(titles[i]);
       story.setOnClickListener(v->{if(action==0)choosePost();if(action==1)ourCorner();if(action==2)select(3);if(action==3){savedPosts=!savedPosts;if(feed!=null){stage.removeView(feed);feed=null;}render(false);}});
-      row.addView(story,home?new LinearLayout.LayoutParams(0,-2,1):new LinearLayout.LayoutParams(u.dp(70),-2));
+      row.addView(story,new LinearLayout.LayoutParams(0,-2,1));
     }
-    if(home)header.addView(row);else{stories.addView(row);header.addView(stories);}
+    header.addView(row);
     LinearLayout intro = u.column();
     intro.setPadding(u.dp(22), u.dp(7), u.dp(22), u.dp(16));
     u.add(
@@ -1269,23 +1264,27 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   private void ourCorner() {
     LinearLayout previous = content;
     content = u.column();
-    content.setPadding(u.dp(22), u.dp(16), u.dp(22), u.dp(24));
+    content.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(28));
     home();
     LinearLayout body = content;
     content = previous;
-    Dialog dialog = new Dialog(this);
+    Dialog dialog = u.fullScreenDialog();
     LinearLayout outer = u.column();
     outer.setBackgroundColor(Ui.BG);
-    LinearLayout bar = u.row();
-    bar.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(8));
-    bar.addView(u.title("Our corner", 17), new LinearLayout.LayoutParams(0, -2, 1));
-    bar.addView(u.textButton("Done", dialog::dismiss));
+    u.applyWindowInsets(outer, 0, 8, 0, 0);
+    LinearLayout bar = u.row(8);
+    bar.setPadding(u.dp(20), u.dp(10), u.dp(20), u.dp(10));
+    LinearLayout titleCol = u.column();
+    titleCol.addView(u.label("KEEPSAKES & NOTES"));
+    u.add(titleCol, u.title("Our corner", 20), 2);
+    bar.addView(titleCol, new LinearLayout.LayoutParams(0, -2, 1));
+    bar.addView(u.pillButton("Done", false, dialog::dismiss));
     outer.addView(bar);
     outer.addView(u.scroll(body), new LinearLayout.LayoutParams(-1, 0, 1));
     dialog.setContentView(outer);
     track(dialog);
     dialog.show();
-    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    outer.requestApplyInsets();
     body.setBackgroundColor(Ui.BG);
     dialog.getWindow().setLayout(-1, -1);
   }
@@ -1523,25 +1522,43 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   public void comments(SocialFeed.Post original) {
     final String draftKey = "comment-draft:" + actor() + ":" + original.key();
     LinearLayout body = u.column();
-    body.setPadding(u.dp(20), u.dp(12), u.dp(20), u.dp(16));
-    body.setBackgroundColor(Ui.BG);
-    TextView title = u.title("A little conversation", 23);
-    u.add(body, title, 8);
-    u.add(body, u.text("On " + original.name() + "’s " + original.kind, 12, Ui.MUTED), 6);
+    body.setPadding(u.dp(18), u.dp(12), u.dp(18), u.dp(16));
+    body.setBackground(u.shape(Ui.BG, 28, 0x266b5cb5));
+    View handle = new View(this);
+    handle.setBackground(u.shape(0xffc8c8db, 3));
+    LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(u.dp(38), u.dp(4));
+    hp.gravity = Gravity.CENTER;
+    hp.bottomMargin = u.dp(12);
+    body.addView(handle, hp);
+    LinearLayout header = u.row(8);
+    LinearLayout titleCol = u.column();
+    titleCol.addView(u.title("A little conversation", 20));
+    u.add(titleCol, u.text("On " + original.name() + "’s " + original.kind, 12, Ui.MUTED), 3);
+    header.addView(titleCol, new LinearLayout.LayoutParams(0, -2, 1));
+    Button close = u.pillButton("Done", false, null);
+    header.addView(close);
+    body.addView(header);
     LinearLayout list = u.column();
+    list.setPadding(0, u.dp(6), 0, u.dp(10));
     ScrollView messages = u.scroll(list);
     body.addView(messages, new LinearLayout.LayoutParams(-1, 0, 1));
     LinearLayout entry = u.row(10);
+    entry.setPadding(u.dp(10), u.dp(8), u.dp(10), u.dp(8));
+    entry.setBackground(u.shape(Color.WHITE, 22, 0x206b5cb5));
     EditText input = u.input("Leave a little love…", "", 1000, true);
+    input.setMinLines(1);
+    input.setMaxLines(4);
+    input.setMinHeight(u.dp(40));
+    input.setBackgroundColor(Color.TRANSPARENT);
+    input.setPadding(u.dp(8), u.dp(8), u.dp(8), u.dp(8));
     JSONObject draft = api.store.read(draftKey);
     if (draft != null) input.setText(draft.optString("text"));
     entry.addView(input, new LinearLayout.LayoutParams(0, -2, 1));
-    Button send = u.button("Send", true, null);
-    entry.addView(send, new LinearLayout.LayoutParams(u.dp(76), u.dp(48)));
-    body.addView(entry);
-    Button close = u.button("Done", false, null);
-    u.add(body, close, 8);
+    Button send = u.pillButton("Send", true, null);
+    entry.addView(send);
+    u.add(body, entry, 8);
     Dialog dialog = new Dialog(this);
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
     dialog.setContentView(body);
     track(dialog);
     dialog.show();
@@ -2158,8 +2175,24 @@ public class MainActivity extends Activity implements SocialFeed.Host {
               14,
               Ui.MUTED),
           8);
-    u.add(content, u.button("Since us · letters & little things", true, () -> book.show(true)), 18);
-    u.add(content, u.button("Secret vocab", false, () -> book.show(false)), 10);
+    LinearLayout shortcutRow = u.row(10);
+    LinearLayout keepsakesCard = u.column();
+    keepsakesCard.setPadding(u.dp(14), u.dp(14), u.dp(14), u.dp(14));
+    keepsakesCard.setBackground(u.shape(Ui.PALE, 18, 0x266b5cb5));
+    TextView kLabel = u.text("KEEPSAKES", 10, Ui.PURPLE);
+    Compat.font(kLabel, R.font.dm_sans, 700);
+    keepsakesCard.addView(kLabel);
+    u.add(keepsakesCard, u.button("Since us · letters & little things", true, () -> book.show(true)), 8);
+    shortcutRow.addView(keepsakesCard, new LinearLayout.LayoutParams(0, -2, 1));
+    LinearLayout vocabCard = u.column();
+    vocabCard.setPadding(u.dp(14), u.dp(14), u.dp(14), u.dp(14));
+    vocabCard.setBackground(u.shape(Color.WHITE, 18, 0x226b5cb5));
+    TextView vLabel = u.text("DICTIONARY", 10, Ui.PURPLE);
+    Compat.font(vLabel, R.font.dm_sans, 700);
+    vocabCard.addView(vLabel);
+    u.add(vocabCard, u.button("Secret vocab", false, () -> book.show(false)), 8);
+    shortcutRow.addView(vocabCard, new LinearLayout.LayoutParams(0, -2, 1));
+    u.add(content, shortcutRow, 18);
     birthdayCard(content);
     dailyCard(content);
     u.add(content, u.label("THE LITTLE THINGS, THE BIG FEELINGS"), 28);
@@ -2357,10 +2390,19 @@ public class MainActivity extends Activity implements SocialFeed.Host {
   }
 
   private void letter() {
+    Dialog dialog = new Dialog(this);
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    LinearLayout card = u.column();
+    card.setPadding(u.dp(22), u.dp(20), u.dp(22), u.dp(20));
+    card.setBackground(u.shape(Ui.BG, 28, 0x266b5cb5));
+    TextView hearts = u.handwritten("♡  ✦  ♡  ✧  ♡", 28);
+    hearts.setTextColor(Ui.PURPLE);
+    u.add(card, hearts, 0);
+    u.add(card, u.label("A LETTER, JUST FOR YOU"), 8);
+    u.add(card, u.handwritten("Dear Asechka,", 34), 6);
     LinearLayout paper = u.column();
-    paper.setPadding(u.dp(24), u.dp(16), u.dp(24), u.dp(24));
-    u.add(paper, u.label("A LETTER, JUST FOR YOU"), 0);
-    u.add(paper, u.handwritten("Dear Asechka,", 34), 14);
+    paper.setPadding(u.dp(18), u.dp(14), u.dp(18), u.dp(16));
+    paper.setBackground(u.shape(Color.WHITE, 20, 0x1a6b5cb5));
     String[] paragraphs = {
       "Asnat to the world. Asechka to me.",
       "I wanted to make you something small, but filled with a feeling that isn’t small at all.",
@@ -2373,18 +2415,29 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       "Until then, let this be your reminder: you mean so much to me.",
       "With all my love,\nme ♡"
     };
-    for (String value : paragraphs) {
-      TextView text = u.text(value, 16, Ui.INK);
+    for (int i = 0; i < paragraphs.length; i++) {
+      TextView text = u.text(paragraphs[i], 16, Ui.INK);
+      text.setLineSpacing(u.dp(4), 1f);
       text.setTextIsSelectable(true);
-      u.add(paper, text, 18);
+      u.add(paper, text, i == 0 ? 0 : 14);
     }
-    AlertDialog dialog =
-        new AlertDialog.Builder(this)
-            .setView(u.scroll(paper))
-            .setPositiveButton("Keep it close ♡", null)
-            .create();
+    ScrollView scroller = u.scroll(paper);
+    scroller.setFillViewport(false);
+    LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-1, 0, 1);
+    sp.topMargin = u.dp(12);
+    card.addView(scroller, sp);
+    u.add(card, u.button("Keep it close ♡", true, dialog::dismiss), 14);
+    dialog.setContentView(card);
     track(dialog);
     dialog.show();
+    if (dialog.getWindow() != null) {
+      dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+      dialog
+          .getWindow()
+          .setLayout(
+              Math.min(getResources().getDisplayMetrics().widthPixels - u.dp(28), u.dp(520)),
+              (int) (getResources().getDisplayMetrics().heightPixels * .82f));
+    }
   }
 
   private void dailyCard(LinearLayout parent) {
@@ -2964,21 +3017,44 @@ public class MainActivity extends Activity implements SocialFeed.Host {
         "LITTLE PLANS & WISHES",
         "Our little days.",
         "Places to go. Things to try. A little more us.");
-    u.add(
-        content,
-        u.button("Secret vocab", true, () -> book.show(false)),
-        18);
-    u.add(
-        content, u.button("Since us · letters & little things", true, () -> book.show(true)), 20);
+    LinearLayout shortcuts = u.row(12);
+    String[][] tiles = {
+      {"Secret vocab", "Inside jokes & words"},
+      {"Since us · letters & little things", "Milestones & Open when…"}
+    };
+    for (int i = 0; i < 2; i++) {
+      final boolean isPersonal = i == 1;
+      LinearLayout tile = u.column();
+      tile.setPadding(u.dp(16), u.dp(16), u.dp(16), u.dp(16));
+      tile.setBackground(u.shape(Color.WHITE, 22, 0x226b5cb5));
+      tile.addView(u.label(i == 0 ? "DICTIONARY" : "KEEPSAKES"));
+      Button trigger =
+          u.button(
+              tiles[i][0],
+              false,
+              () -> book.show(isPersonal));
+      trigger.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+      trigger.setPadding(0, u.dp(6), 0, u.dp(2));
+      trigger.setMinHeight(0);
+      trigger.setMinimumHeight(0);
+      trigger.setBackgroundColor(Color.TRANSPARENT);
+      trigger.setTextColor(Ui.INK);
+      trigger.setTextSize(15);
+      u.add(tile, trigger, 2);
+      u.add(tile, u.text(tiles[i][1], 12, Ui.MUTED), 4);
+      tile.setOnClickListener(v -> book.show(isPersonal));
+      shortcuts.addView(tile, new LinearLayout.LayoutParams(0, -1, 1));
+    }
+    u.add(content, shortcuts, 16);
     heartCard();
     LinearLayout top = u.row();
     TextView title = u.title("Our wish list", 20);
     top.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
-    Button add = u.textButton("＋", () -> editPlan(null, false));
+    Button add = u.pillButton("＋ Add wish", true, () -> editPlan(null, false));
     add.setContentDescription("Add a wish");
     add.setEnabled(writable(together));
     top.addView(add);
-    u.add(content, top, 28);
+    u.add(content, top, 24);
     if (together == null) {
       empty(
           content,
@@ -3221,16 +3297,17 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       LinearLayout shell = u.column();
       shell.setBackgroundColor(Ui.BG);
       LinearLayout toolbar = u.row(10);
-      toolbar.setPadding(u.dp(16), u.dp(10), u.dp(16), u.dp(10));
-      Button close = u.button("×", false, null);
-      close.setTextSize(24);
+      toolbar.setPadding(u.dp(18), u.dp(10), u.dp(18), u.dp(10));
+      Button close = u.pillButton("Cancel", false, null);
       close.setContentDescription("Close post composer");
-      toolbar.addView(close, new LinearLayout.LayoutParams(u.dp(48), u.dp(48)));
+      toolbar.addView(close);
+      TextView composerTitle = u.title(original == null ? (photo ? "New photo" : "New quote") : "Edit post", 19);
+      composerTitle.setGravity(Gravity.CENTER);
       toolbar.addView(
-          u.title(original == null ? "New post" : "Edit post", 20),
+          composerTitle,
           new LinearLayout.LayoutParams(0, -2, 1));
-      share = u.button(original == null ? "Share" : "Save", true, () -> save());
-      toolbar.addView(share, new LinearLayout.LayoutParams(u.dp(84), u.dp(48)));
+      share = u.pillButton(original == null ? "Share" : "Save", true, () -> save());
+      toolbar.addView(share);
       shell.addView(toolbar);
       LinearLayout body = u.column();
       body.setPadding(u.dp(20), u.dp(8), u.dp(20), u.dp(28));
@@ -3320,7 +3397,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
       ScrollView scroller = u.scroll(body);
       shell.addView(scroller, new LinearLayout.LayoutParams(-1, 0, 1));
-      dialog = new Dialog(MainActivity.this);
+      dialog = u.fullScreenDialog();
       dialog.setContentView(shell);
       close.setOnClickListener(v -> dialog.dismiss());
       android.text.TextWatcher watcher =
@@ -3800,28 +3877,48 @@ public class MainActivity extends Activity implements SocialFeed.Host {
       "Detect the language", "English", "Egyptian Arabic", "Russian", "Hebrew", "French", "Spanish"
     };
     Spinner source = u.spinner(sources, sourceChoice);
+    u.add(c, u.label("YOUR MESSAGE"), 0);
     EditText input = u.input("A little message, a favorite phrase…", wordDraft, 1500, true);
     input.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
-    input.setMinimumHeight(u.dp(145));
-    input.setBackgroundColor(Color.TRANSPARENT);input.setPadding(0,u.dp(6),0,u.dp(6));
-    u.add(c, input, 0);
+    input.setMinimumHeight(u.dp(135));
+    input.setBackground(u.shape(Ui.BG, 16, 0x1e6b5cb5));
+    input.setPadding(u.dp(14), u.dp(12), u.dp(14), u.dp(12));
+    u.add(c, input, 8);
     TextView counter = u.text(wordDraft.length() + " / 1,500", 12, Ui.MUTED);
-
-    u.add(c, counter, 8);
-    LinearLayout sourceRow=u.row(8);sourceRow.addView(u.text("Source",15,Ui.INK));
-    sourceRow.addView(source,new LinearLayout.LayoutParams(0,-2,1));u.add(c,sourceRow,12);
-    Spinner tone=u.spinner(new String[]{"Natural & everyday","A little sweeter","Soft & poetic"},toneChoice);
-    LinearLayout toneRow=u.row(8);toneRow.addView(u.text("Tone",15,Ui.INK));toneRow.addView(tone,new LinearLayout.LayoutParams(0,-2,1));u.add(c,toneRow,15);
+    counter.setGravity(Gravity.END);
+    u.add(c, counter, 6);
+    LinearLayout sourceRow = u.row(8);
+    sourceRow.setPadding(u.dp(14), u.dp(4), u.dp(10), u.dp(4));
+    sourceRow.setBackground(u.shape(Ui.BG, 14, 0x166b5cb5));
+    sourceRow.addView(u.title("Source", 14));
+    sourceRow.addView(source, new LinearLayout.LayoutParams(0, -2, 1));
+    u.add(c, sourceRow, 12);
+    Spinner tone =
+        u.spinner(
+            new String[] {"Natural & everyday", "A little sweeter", "Soft & poetic"}, toneChoice);
+    LinearLayout toneRow = u.row(8);
+    toneRow.setPadding(u.dp(14), u.dp(4), u.dp(10), u.dp(4));
+    toneRow.setBackground(u.shape(Ui.BG, 14, 0x166b5cb5));
+    toneRow.addView(u.title("Tone", 14));
+    toneRow.addView(tone, new LinearLayout.LayoutParams(0, -2, 1));
+    u.add(c, toneRow, 10);
+    u.add(c, u.label("TARGET LANGUAGES"), 16);
     Switch[] targets = new Switch[5];
     for (int i = 0; i < 5; i++) {
       final int index = i;
       targets[i] = new Switch(this);
-      targets[i].setMinimumHeight(u.dp(48));targets[i].setSplitTrack(false);
+      targets[i].setMinimumHeight(u.dp(46));
+      targets[i].setPadding(u.dp(12), u.dp(6), u.dp(12), u.dp(6));
+      targets[i].setBackground(u.shape(Ui.BG, 12, 0x126b5cb5));
+      targets[i].setSplitTrack(false);
       targets[i].setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
-      targets[i].setTrackTintList(new android.content.res.ColorStateList(new int[][]{new int[]{android.R.attr.state_checked},new int[]{}},new int[]{0xff34c759,0xffe4e5ea}));
+      targets[i].setTrackTintList(
+          new android.content.res.ColorStateList(
+              new int[][] {new int[] {android.R.attr.state_checked}, new int[] {}},
+              new int[] {Ui.PURPLE, 0xffe4e5ea}));
       targets[i].setText(languageNames[i]);
       targets[i].setTextSize(15);
-      Compat.font(targets[i],R.font.dm_sans,400);
+      Compat.font(targets[i], R.font.dm_sans, 500);
       targets[i].setTextColor(Ui.INK);
       targets[i].setChecked(targetChoices[i]);
       targets[i].setOnCheckedChangeListener(
@@ -3829,7 +3926,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
             targetChoices[index] = checked;
             draftChanged();
           });
-      u.add(c, targets[i], 0);
+      u.add(c, targets[i], 6);
     }
     applyProfile();
     input.addTextChangedListener(
@@ -3854,8 +3951,14 @@ public class MainActivity extends Activity implements SocialFeed.Host {
     translatorStatus = u.text("Opening our little phrasebook…", 13, Ui.MUTED);
     translatorStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     u.add(c, translatorStatus, 12);
-    u.add(c, u.textButton("Check the connection", this::checkTranslator), 8);
-    u.add(c, u.textButton("Saved translations", this::translationHistory), 8);
+    LinearLayout helperBtns = u.row(8);
+    helperBtns.addView(
+        u.textButton("Check the connection", this::checkTranslator),
+        new LinearLayout.LayoutParams(0, -2, 1));
+    helperBtns.addView(
+        u.textButton("Saved translations", this::translationHistory),
+        new LinearLayout.LayoutParams(0, -2, 1));
+    u.add(c, helperBtns, 10);
     u.add(
         content,
         u.text(

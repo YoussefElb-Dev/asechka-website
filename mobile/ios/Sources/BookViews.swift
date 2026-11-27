@@ -25,16 +25,40 @@ struct BookView:View {
         query.isEmpty || ["title","meaning","story"].map{item.string($0)}.joined(separator:" ").localizedCaseInsensitiveContains(query)
     }}
     var body:some View {
-        NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
-            Text(personal ? "All the days\nthat became ours.":"Our secret vocab.").font(.custom("Manrope-Bold",size:30))
-            Text(personal ? "Our beginning, Open when letters, and the little things kept close.":"Nicknames, phrases, and inside jokes that make sense to just the two of us.").foregroundColor(Palette.muted)
-            if personal {
-                ScrollView(.horizontal,showsIndicators:false){HStack(spacing:10){ForEach(0..<3,id:\.self){index in Button{chapter=index;query="";Touch.tap()}label:{Text(["Since us","Open when…","Little things"][index]).font(.subheadline.weight(.semibold)).padding(14).background(chapter==index ? Palette.purple:Palette.lavender,in:Capsule()).foregroundColor(chapter==index ? .white:Palette.purple)}.accessibilityAddTraits(chapter==index ? .isSelected:[])}}}
-            }
+        NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:18){
+            VStack(alignment:.leading,spacing:12){
+                HStack{
+                    Text(personal ? "OUR LITTLE ARCHIVE":"PRIVATE DICTIONARY").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                    Spacer()
+                    if personal {
+                        Button(manageKeepsakes ? "Done editing":"Edit keepsakes"){manageKeepsakes.toggle();Touch.tap()}
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal,12).padding(.vertical,6)
+                            .background(manageKeepsakes ? Palette.purple:Palette.lavender,in:Capsule())
+                            .foregroundColor(manageKeepsakes ? .white:Palette.purple)
+                    }
+                }
+                Text(personal ? "All the days\nthat became ours.":"Our secret vocab.").font(.custom("Manrope-Bold",size:28))
+                Text(personal ? "Our beginning, Open when letters, and the little things kept close.":"Nicknames, phrases, and inside jokes that make sense to just the two of us.").font(.subheadline).foregroundColor(Palette.muted)
+                if personal {
+                    HStack(spacing:6){
+                        ForEach(0..<3,id:\.self){index in
+                            Button{chapter=index;query="";Touch.tap()}label:{
+                                Text(["Since us","Open when…","Little things"][index])
+                                    .font(.footnote.weight(.semibold))
+                                    .frame(maxWidth:.infinity)
+                                    .padding(.vertical,9)
+                                    .background(chapter==index ? Palette.purple:Color.clear,in:RoundedRectangle(cornerRadius:12))
+                                    .foregroundColor(chapter==index ? .white:Palette.purple)
+                            }.accessibilityAddTraits(chapter==index ? .isSelected:[])
+                        }
+                    }.padding(4).background(Palette.lavender,in:RoundedRectangle(cornerRadius:16))
+                }
+            }.card()
             if !writable{Text("Connect and refresh once to enable shared editing. Your saved pages remain here offline.").font(.caption).foregroundColor(Palette.muted)}
             if personal && chapter==0 {sinceContent}
             else {chapterContent}
-        }.padding(22)}.background(Palette.background).refreshable{await universe.refresh()}.navigationTitle(personal ? "Us & keepsakes":"Secret vocab").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}
+        }.padding(20)}.background(Palette.background).refreshable{await universe.refresh()}.navigationTitle(personal ? "Us & keepsakes":"Secret vocab").navigationBarTitleDisplayMode(.inline).toolbar{ToolbarItem(placement:.confirmationAction){Button("Done"){dismiss()}}}}
         .sheet(item:$editing){edit in BookEditor(kind:edit.kind,original:edit.entry,endpoint:endpoint)}
         .sheet(item:$letter){item in OpenWhenView(item:item,edit:{editing=BookEdit(kind:"Letter",entry:item)},remove:{removal=BookEdit(kind:"Letter",entry:item)},writable:writable && manageKeepsakes)}
         .sheet(isPresented:$beginning){BeginningEditor(original:BookEntry(fields:data["since"] as? [String:Any] ?? [:]))}
@@ -43,17 +67,29 @@ struct BookView:View {
     @ViewBuilder private var chapterContent:some View {
         if !personal {
             Button{editing=BookEdit(kind:"Joke")}label:{Label("Add to secret vocab",systemImage:"plus").frame(maxWidth:.infinity).primary()}.disabled(!writable)
-            TextField("Find one of our inside jokes…",text:$query).textFieldStyle(.roundedBorder)
+            HStack(spacing:8){
+                Image(systemName:"magnifyingglass").foregroundColor(Palette.muted)
+                TextField("Find one of our inside jokes…",text:$query)
+            }.padding(.horizontal,14).padding(.vertical,11).background(.white,in:RoundedRectangle(cornerRadius:16)).overlay(RoundedRectangle(cornerRadius:16).stroke(Palette.lavender,lineWidth:1))
         } else {
-            Toggle("Manage & edit keepsakes",isOn:$manageKeepsakes).font(.subheadline).padding(.horizontal,4)
             if manageKeepsakes {
                 Button{editing=BookEdit(kind:kind)}label:{Label(kind=="Thing" ? "Add a little thing":"Add a letter",systemImage:"plus").frame(maxWidth:.infinity).primary()}.disabled(!writable)
             }
         }
         if entries.isEmpty {Text("A little space for something only we could write.").foregroundColor(Palette.muted).padding(.vertical,24)}
-        else if kind=="Letter" {LazyVGrid(columns:[GridItem(.adaptive(minimum:145),spacing:12)],spacing:12){ForEach(entries){item in Button{letter=item;Touch.tap(true)}label:{VStack(alignment:.leading,spacing:16){Image(systemName:"envelope").font(.title2);Text(item.string("title")).font(.headline).multilineTextAlignment(.leading);Text("Open with love ♡").font(.caption)}.frame(maxWidth:.infinity,minHeight:130,alignment:.leading).padding(18).background(Palette.lavender,in:RoundedRectangle(cornerRadius:22))}}}}
+        else if kind=="Letter" {LazyVGrid(columns:[GridItem(.adaptive(minimum:145),spacing:12)],spacing:12){ForEach(entries){item in Button{letter=item;Touch.tap(true)}label:{VStack(alignment:.leading,spacing:14){HStack{Image(systemName:"envelope.fill").font(.headline).foregroundColor(Palette.purple).frame(width:36,height:36).background(Palette.lavender,in:RoundedRectangle(cornerRadius:10));Spacer()};Text(item.string("title")).font(.headline).foregroundColor(Palette.ink).multilineTextAlignment(.leading);Text("Open with love ♡").font(.caption.weight(.semibold)).foregroundColor(Palette.purple)}.frame(maxWidth:.infinity,minHeight:130,alignment:.leading).padding(16).background(.white,in:RoundedRectangle(cornerRadius:22)).overlay(RoundedRectangle(cornerRadius:22).stroke(Palette.lavender,lineWidth:1))}}}}
         else if kind=="Thing" {
-            entryCard(entries[reveal%entries.count]);Button("Another little thing ♡"){reveal=(reveal+1)%entries.count;Touch.tap()}
+            let idx=reveal%entries.count
+            let current=entries[idx]
+            VStack(alignment:.leading,spacing:16){
+                HStack{
+                    Text("LITTLE THING WE LOVE").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                    Spacer()
+                    Text("\(idx+1) of \(entries.count) ♡").font(.caption.weight(.bold)).foregroundColor(Palette.purple).padding(.horizontal,10).padding(.vertical,4).background(.white,in:Capsule())
+                }
+                Text("“\(current.string("text"))”").font(.custom("Caveat-Medium",size:30)).foregroundColor(Palette.ink).textSelection(.enabled)
+                Button{reveal=(reveal+1)%entries.count;Touch.tap()}label:{Text("Another little thing ♡").frame(maxWidth:.infinity).primary()}
+            }.padding(22).background(Palette.lavender,in:RoundedRectangle(cornerRadius:24)).overlay(RoundedRectangle(cornerRadius:24).stroke(Palette.purple.opacity(0.18),lineWidth:1))
             if manageKeepsakes {
                 ForEach(entries){item in HStack{Text(item.string("text")).font(.subheadline);Spacer();Button("Edit"){editing=BookEdit(kind:"Thing",entry:item)};Button{removal=BookEdit(kind:"Thing",entry:item)}label:{Image(systemName:"trash")}.accessibilityLabel("Remove little thing")}.padding(.vertical,10)}
             }
@@ -71,15 +107,29 @@ struct BookView:View {
     }
     @ViewBuilder private var sinceContent:some View {
         if let since=data["since"] as? [String:Any],let started=BookDates.instant(since["startedAt"] as? String ?? "") {
-            TimelineView(.periodic(from:.now,by:60)){context in VStack(alignment:.leading,spacing:15){
-                Text("SINCE WE BECAME US").font(.caption.weight(.semibold)).tracking(2).foregroundColor(Palette.purple)
-                Text("\(max(0,Int(context.date.timeIntervalSince(started)/86400))) days, and counting. ♡").font(.custom("Caveat-Medium",size:36))
-                Text(BookDates.display(started,time:true)+" · Eastern time").font(.subheadline).foregroundColor(Palette.muted)
-                if let day=since["startedTalkingAt"] as? String,let date=BookDates.day(day){Divider();Text("We started talking.").font(.headline);Text(BookDates.display(date)).foregroundColor(Palette.purple)}
-                ForEach([false,true],id:\.self){yearly in Divider();Text(yearly ? "Our next anniversary":"Our next month together").font(.headline);Text(BookDates.display(BookDates.next(started,yearly:yearly,now:context.date))).foregroundColor(Palette.purple);if let message=since[yearly ? "yearlyMessage":"monthlyMessage"] as? String,!message.isEmpty{Text(message).font(.subheadline).foregroundColor(Palette.muted)}}
-            }.card()}
-            DisclosureGroup("Settings & edit keepsakes",isExpanded:$manageKeepsakes){
-                Button("Edit our beginning & messages"){beginning=true}.primary().disabled(!writable).padding(.top,8)
+            TimelineView(.periodic(from:.now,by:60)){context in VStack(alignment:.leading,spacing:14){
+                VStack(alignment:.leading,spacing:10){
+                    Text("SINCE WE BECAME US").font(.caption.weight(.semibold)).tracking(2).foregroundColor(Palette.purple)
+                    Text("\(max(0,Int(context.date.timeIntervalSince(started)/86400))) days, and counting. ♡").font(.custom("Caveat-Medium",size:36))
+                    Text(BookDates.display(started,time:true)+" · Eastern time").font(.subheadline).foregroundColor(Palette.muted)
+                }.frame(maxWidth:.infinity,alignment:.leading).padding(22).background(Palette.lavender,in:RoundedRectangle(cornerRadius:24)).overlay(RoundedRectangle(cornerRadius:24).stroke(Palette.purple.opacity(0.18),lineWidth:1))
+                if let day=since["startedTalkingAt"] as? String,let date=BookDates.day(day){
+                    VStack(alignment:.leading,spacing:6){
+                        Text("WE STARTED TALKING").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                        Text(BookDates.display(date)).font(.title3.weight(.semibold))
+                        Text("The very first chapter before everything else.").font(.caption).foregroundColor(Palette.muted)
+                    }.card()
+                }
+                ForEach([false,true],id:\.self){yearly in
+                    VStack(alignment:.leading,spacing:8){
+                        Text(yearly ? "NEXT ANNIVERSARY":"NEXT MONTH TOGETHER").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
+                        Text((yearly ? "Our next anniversary · ":"Our next month together · ")+BookDates.display(BookDates.next(started,yearly:yearly,now:context.date))).font(.headline)
+                        if let message=since[yearly ? "yearlyMessage":"monthlyMessage"] as? String,!message.isEmpty{Text(message).font(.subheadline).foregroundColor(Palette.muted)}
+                    }.card()
+                }
+            }}
+            if manageKeepsakes {
+                Button("Edit our beginning & messages"){beginning=true}.primary().disabled(!writable).padding(.top,4)
             }
         }
     }

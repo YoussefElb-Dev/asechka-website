@@ -198,15 +198,15 @@ test('Vercel 12-function limit, version 2.8.0 (36) parity, scope rules, and JS/S
   assert.equal(vercel.ignoreCommand, 'node scripts/vercel-ignore.mjs');
   assert(vercel.rewrites.some(r => r.source === '/api/daily-memory' && r.destination.includes('__route=daily-memory')));
 
-  // Version parity 2.8.7 (43)
+  // Version parity 2.8.8 (44)
   const iosYml = await readFile(new URL('../mobile/ios/project.yml', import.meta.url), 'utf8');
   const gradle = await readFile(new URL('../mobile/android/app/build.gradle', import.meta.url), 'utf8');
   const buildPs1 = await readFile(new URL('../mobile/android/build.ps1', import.meta.url), 'utf8');
-  assert(/MARKETING_VERSION:\s*'?2\.8\.7'?/.test(iosYml));
-  assert(/CURRENT_PROJECT_VERSION:\s*'?43'?/.test(iosYml));
-  assert(gradle.includes('versionCode 43'));
-  assert(gradle.includes("versionName '2.8.7'"));
-  assert(buildPs1.includes("'43'") && buildPs1.includes("'2.8.7'"));
+  assert(/MARKETING_VERSION:\s*'?2\.8\.8'?/.test(iosYml));
+  assert(/CURRENT_PROJECT_VERSION:\s*'?44'?/.test(iosYml));
+  assert(gradle.includes('versionCode 44'));
+  assert(gradle.includes("versionName '2.8.8'"));
+  assert(buildPs1.includes("'44'") && buildPs1.includes("'2.8.8'"));
 
   // Scope check: Bucket List & Post Comments preserved; Tiny Victories & Recipes UI removed
   const togetherHtml = await readFile(new URL('../dist/together.html', import.meta.url), 'utf8');

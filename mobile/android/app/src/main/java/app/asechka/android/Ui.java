@@ -66,29 +66,31 @@ final class Ui {
             }
           };
       panel.setOrientation(LinearLayout.VERTICAL);
-      panel.setPadding(dp(16), dp(10), dp(16), dp(12));
-      panel.setBackground(shape(BG, 30));
+      panel.setPadding(dp(16), dp(10), dp(16), dp(14));
+      panel.setBackground(shape(BG, 30, 0x226b5cb5));
       panel.setClipToOutline(true);
       View handle = new View(c);
       handle.setBackground(shape(0xffc8c8db, 3));
-      LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(35), dp(4));
+      LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(38), dp(4));
       hp.gravity = Gravity.CENTER;
-      hp.bottomMargin = dp(15);
+      hp.bottomMargin = dp(14);
       panel.addView(handle, hp);
       LinearLayout heading = row(8);
-      heading.setPadding(dp(8), 0, 0, dp(4));
-      TextView sheetTitle = Ui.this.title(title, 17);
-      sheetTitle.setGravity(Gravity.CENTER);
-      heading.addView(sheetTitle, new LinearLayout.LayoutParams(0, -2, 1));
-      Button close = textButton("Done", this::dismiss);
-      heading.addView(close);
-      panel.addView(heading);
+      heading.setPadding(dp(6), 0, dp(2), dp(6));
+      LinearLayout titleBox = column();
+      TextView sheetTitle = Ui.this.title(title, 18);
+      titleBox.addView(sheetTitle);
       if (!subtitle.isEmpty()) {
         TextView help = text(subtitle, 13, MUTED);
-        help.setPadding(dp(8), dp(5), dp(8), dp(14));
-        panel.addView(help);
+        help.setLineSpacing(dp(2), 1f);
+        add(titleBox, help, 3);
       }
+      heading.addView(titleBox, new LinearLayout.LayoutParams(0, -2, 1));
+      Button close = pillButton("Done", false, this::dismiss);
+      heading.addView(close);
+      panel.addView(heading);
       items = column();
+      items.setPadding(0, dp(4), 0, dp(6));
       ScrollView scroller = scroll(items);
       scroller.setFillViewport(false);
       panel.addView(scroller, new LinearLayout.LayoutParams(-1, -2));
@@ -102,22 +104,23 @@ final class Ui {
       return super.dispatchTouchEvent(ev);
     }
 
-    Sheet section(String title){TextView label=text(title.toUpperCase(java.util.Locale.ROOT),12,MUTED);label.setPadding(dp(14),dp(20),dp(14),dp(3));add(items,label,0);return this;}
+    Sheet section(String title){TextView label=Ui.this.label(title);label.setPadding(dp(10),dp(16),dp(10),dp(2));add(items,label,0);return this;}
     Sheet toggle(String title,boolean checked,ToggleChange change){
-      Switch toggle=new Switch(c);toggle.setText(title);toggle.setTextSize(15);toggle.setTextColor(INK);Compat.font(toggle,R.font.dm_sans,400);toggle.setPadding(dp(16),dp(8),dp(16),dp(8));toggle.setMinimumHeight(dp(52));toggle.setBackground(shape(Color.WHITE,16));toggle.setSplitTrack(false);toggle.setThumbTintList(ColorStateList.valueOf(Color.WHITE));toggle.setTrackTintList(new ColorStateList(new int[][]{new int[]{android.R.attr.state_checked},new int[]{}},new int[]{0xff34c759,0xffe4e5ea}));toggle.setChecked(checked);toggle.setOnCheckedChangeListener((v,on)->change.set(on));add(items,toggle,6);return this;
+      Switch toggle=new Switch(c);toggle.setText(title);toggle.setTextSize(15);toggle.setTextColor(INK);Compat.font(toggle,R.font.dm_sans,500);toggle.setPadding(dp(16),dp(10),dp(16),dp(10));toggle.setMinimumHeight(dp(54));toggle.setBackground(shape(Color.WHITE,18,0x1a6b5cb5));toggle.setSplitTrack(false);toggle.setThumbTintList(ColorStateList.valueOf(Color.WHITE));toggle.setTrackTintList(new ColorStateList(new int[][]{new int[]{android.R.attr.state_checked},new int[]{}},new int[]{PURPLE,0xffe4e5ea}));toggle.setChecked(checked);toggle.setOnCheckedChangeListener((v,on)->change.set(on));add(items,toggle,8);return this;
     }
 
     Sheet note(String text) {
       TextView note = Ui.this.text(text, 14, INK);
-      note.setPadding(dp(15), dp(13), dp(15), dp(13));
-      note.setBackground(shape(Color.WHITE, 18));
+      note.setLineSpacing(dp(3), 1f);
+      note.setPadding(dp(16), dp(14), dp(16), dp(14));
+      note.setBackground(shape(Color.WHITE, 18, 0x1a6b5cb5));
       add(items, note, 8);
       return this;
     }
 
     Sheet item(String title, String detail, String icon, boolean destructive, Runnable action) {
       LinearLayout row = Ui.this.row(13);
-      row.setPadding(dp(14), dp(13), dp(14), dp(13));
+      row.setPadding(dp(14), dp(12), dp(14), dp(12));
       row.setMinimumHeight(dp(66));
       String glyph;
       switch(icon){
@@ -132,18 +135,22 @@ final class Ui {
         case "◉":glyph="camera";break;
         default:glyph=icon;
       }
+      FrameLayout iconBox = new FrameLayout(c);
+      iconBox.setBackground(shape(destructive ? 0x16a64e6b : PALE, 13, destructive ? 0x26a64e6b : 0x186b5cb5));
       ImageView symbol=Glyph.view(c,glyph,destructive?0xffa64e6b:PURPLE);
-      symbol.setPadding(dp(5),dp(6),dp(5),dp(6));
-      row.addView(symbol, new LinearLayout.LayoutParams(dp(32), dp(35)));
+      FrameLayout.LayoutParams sp = new FrameLayout.LayoutParams(dp(20), dp(20));
+      sp.gravity = Gravity.CENTER;
+      iconBox.addView(symbol, sp);
+      row.addView(iconBox, new LinearLayout.LayoutParams(dp(40), dp(40)));
       LinearLayout copy = column();
       TextView name = Ui.this.title(title, 15);
       name.setTextColor(destructive ? 0xffa64e6b : INK);
       copy.addView(name);
-      if (!detail.isEmpty()) add(copy, text(detail, 12, MUTED), 4);
+      if (!detail.isEmpty()) add(copy, text(detail, 12, MUTED), 3);
       row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
       row.addView(Glyph.view(c,"chevron",MUTED),new LinearLayout.LayoutParams(dp(10),dp(16)));
       row.setBackground(
-          new RippleDrawable(ColorStateList.valueOf(0x226b5cb5), shape(Color.WHITE, 20), null));
+          new RippleDrawable(ColorStateList.valueOf(0x226b5cb5), shape(Color.WHITE, 20, 0x1a6b5cb5), null));
       row.setContentDescription(title + (detail.isEmpty() ? "" : ". " + detail));
       row.setOnClickListener(
           v -> {
@@ -362,11 +369,52 @@ final class Ui {
 
   Button textButton(String title, Runnable action) {
     Button button = button(title, false, action);
-    button.setBackground(new RippleDrawable(ColorStateList.valueOf(0x126b5cb5), null, shape(Color.WHITE, 16)));
-    button.setMinHeight(dp(44));
-    button.setMinimumHeight(dp(44));
-    button.setPadding(dp(8), 0, dp(8), 0);
+    button.setBackground(new RippleDrawable(ColorStateList.valueOf(0x186b5cb5), shape(PALE, 18, 0x166b5cb5), shape(Color.WHITE, 18)));
+    button.setMinHeight(dp(38));
+    button.setMinimumHeight(dp(38));
+    button.setTextSize(14);
+    button.setPadding(dp(14), dp(6), dp(14), dp(6));
     return button;
+  }
+
+  Button pillButton(String title, boolean primary, Runnable action) {
+    Button button = button(title, primary, action);
+    button.setBackground(
+        new RippleDrawable(
+            ColorStateList.valueOf(0x226b5cb5),
+            shape(primary ? PRIMARY : PALE, 999, primary ? PRIMARY : 0x1a6b5cb5),
+            null));
+    button.setMinHeight(dp(38));
+    button.setMinimumHeight(dp(38));
+    button.setTextSize(14);
+    button.setPadding(dp(16), dp(7), dp(16), dp(7));
+    return button;
+  }
+
+  Dialog fullScreenDialog() {
+    Dialog d =
+        new Dialog(c, android.R.style.Theme_Material_Light_NoActionBar) {
+          @Override
+          public boolean dispatchTouchEvent(MotionEvent ev) {
+            dismissKeyboardOnOutsideTap(c, getWindow(), ev, getWindow() == null ? null : getWindow().getDecorView());
+            return super.dispatchTouchEvent(ev);
+          }
+        };
+    d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    return d;
+  }
+
+  void applyWindowInsets(View root, int leftDp, int topDp, int rightDp, int bottomDp) {
+    root.setPadding(dp(leftDp), dp(topDp), dp(rightDp), dp(bottomDp));
+    root.setOnApplyWindowInsetsListener(
+        (v, insets) -> {
+          v.setPadding(
+              dp(leftDp) + insets.getSystemWindowInsetLeft(),
+              dp(topDp) + insets.getSystemWindowInsetTop(),
+              dp(rightDp) + insets.getSystemWindowInsetRight(),
+              dp(bottomDp) + insets.getSystemWindowInsetBottom());
+          return insets;
+        });
   }
 
   EditText input(String hint, String value, int max, boolean multiline) {

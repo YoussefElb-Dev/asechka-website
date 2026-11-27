@@ -54,16 +54,57 @@ public final class DisposableCameraActivity extends Activity {
   private static String reactionText(JSONObject reactions, String key) { if (reactions == null) return "—"; String v = reactions.optString(key, ""); return v.isEmpty() ? "—" : v; }
   private void render() {
     if (isFinishing() || root != null && cameraDialog != null && cameraDialog.isShowing()) return;
-    root=u.column(); root.setPadding(u.dp(22),u.dp(24),u.dp(22),u.dp(30)); root.setBackgroundColor(Ui.BG);
-    LinearLayout bar=u.row();bar.addView(u.title("Our disposable camera",17),new LinearLayout.LayoutParams(0,-2,1));bar.addView(u.textButton("Done",this::finish));u.add(root,bar,0);
+    root=u.column(); root.setBackgroundColor(Ui.BG);
+    u.applyWindowInsets(root, 20, 14, 20, 28);
+    LinearLayout bar=u.row(8);
+    LinearLayout barTitle=u.column();
+    barTitle.addView(u.label("SHARED FILM ROLL"));
+    u.add(barTitle,u.title("Our disposable camera",19),2);
+    bar.addView(barTitle,new LinearLayout.LayoutParams(0,-2,1));
+    Button refreshTop=u.pillButton("↻",false,this::refresh);
+    refreshTop.setContentDescription("Refresh our camera");
+    refreshTop.setPadding(u.dp(12),u.dp(6),u.dp(12),u.dp(6));
+    bar.addView(refreshTop);
+    bar.addView(u.pillButton("Done",false,this::finish));
+    u.add(root,bar,0);
     JSONObject roll=current(); int cap=capacity(roll); int count=roll == null ? 0 : shots(roll).length();
-    u.add(root,u.title(cap+" moments.\nA little surprise.",33),18);
-    u.add(root,u.text("One camera for both of us. No previews. No retakes. Develops at "+cap+" shots or Sunday 8 PM Eastern.",16,Ui.MUTED),12);
-    LinearLayout shell=u.card(root,Ui.PALE); shell.setBackground(u.shape(Ui.PALE,24,0x1f6b5cb5));
-    u.add(shell,u.label("ASECHKA / "+cap),0);
-    TextView lens=u.text("◉    "+String.format(Locale.US,"%02d",Math.max(0,cap-count)),62,Ui.INK); lens.setGravity(Gravity.CENTER); u.add(shell,lens,14);
-    u.add(shell,u.title(roll == null ? "Our next little adventure" : roll.optString("title"),22),12);
-    u.add(shell,u.text(count+" of "+cap+" moments kept",13,Ui.MUTED),9);
+    u.add(root,u.title(cap+" moments.\nA little surprise.",28),14);
+    u.add(root,u.text("One camera for both of us. No previews. No retakes. Develops at "+cap+" shots or Sunday 8 PM Eastern.",14,Ui.MUTED),6);
+    LinearLayout shell=u.card(root,Ui.PALE); shell.setBackground(u.shape(Ui.PALE,26,0x246b5cb5));
+    LinearLayout camTop=u.row(8);
+    TextView finderBadge=u.text("VIEWFINDER",10,Ui.PURPLE);
+    Compat.font(finderBadge,R.font.manrope,700);
+    finderBadge.setPadding(u.dp(10),u.dp(5),u.dp(10),u.dp(5));
+    finderBadge.setBackground(u.shape(Color.WHITE,10,0x1a6b5cb5));
+    camTop.addView(finderBadge);
+    View camSpacer=new View(this);
+    camTop.addView(camSpacer,new LinearLayout.LayoutParams(0,1,1));
+    camTop.addView(u.label("ASECHKA / "+cap));
+    shell.addView(camTop);
+    LinearLayout camBody=u.row(16);
+    camBody.setGravity(Gravity.CENTER);
+    FrameLayout lensOuter=new FrameLayout(this);
+    lensOuter.setBackground(u.shape(Color.WHITE,999,0x266b5cb5));
+    FrameLayout lensInner=new FrameLayout(this);
+    lensInner.setBackground(u.shape(Ui.INK,999));
+    TextView lensDot=u.text("◉",30,Color.WHITE);
+    lensDot.setGravity(Gravity.CENTER);
+    lensInner.addView(lensDot,new FrameLayout.LayoutParams(-1,-1,Gravity.CENTER));
+    FrameLayout.LayoutParams lip=new FrameLayout.LayoutParams(u.dp(74),u.dp(74),Gravity.CENTER);
+    lensOuter.addView(lensInner,lip);
+    lensOuter.setOnClickListener(v -> { if (roll != null && count < cap && !busy && collection.optBoolean("writable") && pending == null) openCamera(); });
+    camBody.addView(lensOuter,new LinearLayout.LayoutParams(u.dp(98),u.dp(98)));
+    LinearLayout counterBox=u.column();
+    counterBox.setGravity(Gravity.CENTER);
+    counterBox.setPadding(u.dp(16),u.dp(12),u.dp(16),u.dp(12));
+    counterBox.setBackground(u.shape(Color.WHITE,18,0x1f6b5cb5));
+    TextView leftNum=u.title(String.format(Locale.US,"%02d",Math.max(0,cap-count)),26);
+    counterBox.addView(leftNum);
+    u.add(counterBox,u.label("LEFT"),2);
+    camBody.addView(counterBox);
+    u.add(shell,camBody,16);
+    u.add(shell,u.title(roll == null ? "Our next little adventure" : roll.optString("title"),20),14);
+    u.add(shell,u.text(count+" of "+cap+" moments kept · tap the lens or button below",13,Ui.MUTED),4);
     int rows = (cap + 7) / 8;
     for (int row=0; row<rows; row++) {
       LinearLayout strip=u.row(5);
@@ -72,13 +113,13 @@ public final class DisposableCameraActivity extends Activity {
         if (index >= cap) break;
         TextView slot=u.text(index<count ? "♡" : String.valueOf(index+1),12,index<count ? Color.WHITE : Ui.MUTED);
         slot.setGravity(Gravity.CENTER);
-        slot.setBackground(u.shape(index<count ? Ui.PURPLE : Color.WHITE,6));
+        slot.setBackground(u.shape(index<count ? Ui.PURPLE : Color.WHITE,10,0x166b5cb5));
         strip.addView(slot,new LinearLayout.LayoutParams(0,u.dp(32),1));
       }
-      u.add(shell,strip,6);
+      u.add(shell,strip,8);
     }
     if(roll == null) {
-      EditText title=u.input("Name our next roll",rollName,80,false);title.addTextChangedListener(new android.text.TextWatcher(){public void beforeTextChanged(CharSequence s,int start,int count,int after){}public void onTextChanged(CharSequence s,int start,int before,int count){rollName=s.toString();}public void afterTextChanged(android.text.Editable s){}});u.add(shell,title,15);
+      EditText title=u.input("Name our next roll",rollName,80,false);title.setBackground(u.shape(Color.WHITE,14,0x1a6b5cb5));title.addTextChangedListener(new android.text.TextWatcher(){public void beforeTextChanged(CharSequence s,int start,int count,int after){}public void onTextChanged(CharSequence s,int start,int before,int count){rollName=s.toString();}public void afterTextChanged(android.text.Editable s){}});u.add(shell,title,15);
       Button load=u.button("Load a fresh roll ↗",true,()->{String value=title.getText().toString().trim();if(value.isEmpty()){title.setError("Give our roll a name");return;}try{submit(new JSONObject().put("action","create").put("title",value).put("actor",actor()).put("operationId",createId),false);}catch(Exception e){failure(e);}});load.setEnabled(!busy && collection.optBoolean("writable") && pending==null);u.add(shell,load,12);
     } else {
       Button action=u.button(count>=cap ? "Develop our "+count+" moments ✦" : "Take a secret photo ●",true,()->{if(count>=cap){try{submit(new JSONObject().put("action","develop").put("rollId",roll.optString("id")).put("actor",actor()).put("operationId",UUID.randomUUID().toString()),false);}catch(Exception e){failure(e);}}else openCamera();});action.setEnabled(!busy && collection.optBoolean("writable") && pending==null);u.add(shell,action,16);
@@ -92,16 +133,16 @@ public final class DisposableCameraActivity extends Activity {
         u.add(shell, early, 8);
       }
       int her=0;for(int i=0;i<shots(roll).length();i++)if(shots(roll).optJSONObject(i).optString("actor").equals("asnat"))her++;
-      u.add(shell,u.text("Asnat "+her+" · Youssef "+(count-her),12,Ui.MUTED),10);
+      u.add(shell,u.text("Asnat "+her+" · Youssef "+(count-her)+" · shooting as "+person(actor()),12,Ui.MUTED),10);
     }
-    u.add(shell,u.text("Shooting as "+person(actor())+". Pictures stay sealed until developed or Sunday 8 PM Eastern.",12,Ui.MUTED),14);
-    u.add(root,u.text(notice,14,Ui.PURPLE),16);
+    u.add(root,u.text(notice,13,Ui.PURPLE),12);
     if(pending != null){Button retry=u.button("Retry saving our sealed shot",true,()->submit(pending,true));retry.setEnabled(!busy);u.add(root,retry,10);Button discard=u.button("Discard unsent shot",false,()->new AlertDialog.Builder(this).setTitle("Discard this unsent shot?").setMessage("A server copy, if already saved, stays on the roll.").setNegativeButton("Keep it",null).setPositiveButton("Discard local copy",(d,w)->{api.store.remove("film-pending");pending=null;render();refresh();}).show());discard.setEnabled(!busy);u.add(root,discard,8);}
-    u.add(root,u.button("Refresh our camera ↻",false,this::refresh),12);
-    u.add(root,u.label("OUR DEVELOPED ROLLS"),28);
-    int albums=0;for(int i=rolls().length()-1;i>=0;i--){JSONObject item=rolls().optJSONObject(i);if(item!=null&&!item.isNull("developedAt")){albums++;LinearLayout card=u.card(root,Color.WHITE);u.add(card,u.title(item.optString("title"),20),0);u.add(card,u.text(shots(item).length()+" moments · "+shortDate(item.optString("developedAt")),12,Ui.MUTED),8);u.add(card,u.button("Open our roll ↗",false,()->album(item,0)),12);}}
-    if(albums==0)u.add(root,u.text("Your first developed roll will live here.",14,Ui.MUTED),18);
-    setContentView(u.scroll(root));
+    u.add(root,u.label("OUR DEVELOPED ROLLS"),22);
+    int albums=0;for(int i=rolls().length()-1;i>=0;i--){JSONObject item=rolls().optJSONObject(i);if(item!=null&&!item.isNull("developedAt")){albums++;LinearLayout card=u.card(root,Color.WHITE);LinearLayout row=u.row(12);LinearLayout info=u.column();info.addView(u.title(item.optString("title"),18));u.add(info,u.text(shots(item).length()+" moments · "+shortDate(item.optString("developedAt")),12,Ui.MUTED),4);row.addView(info,new LinearLayout.LayoutParams(0,-2,1));row.addView(u.pillButton("Open ↗",false,()->album(item,0)));card.addView(row);card.setOnClickListener(v->album(item,0));}}
+    if(albums==0)u.add(root,u.text("Your first developed roll will live here.",14,Ui.MUTED),14);
+    ScrollView scroller=u.scroll(root);
+    setContentView(scroller);
+    root.requestApplyInsets();
   }
   private void failure(Exception error){notice=error.getMessage()==null ? "Our camera needs a moment. Try again." : error.getMessage();render();}
   private void refresh(){if(busy||!visible)return;busy=true;work.execute(()->{try{if(!api.connected())throw new Exception("Offline · showing our saved rolls. Connect to take a new shot.");JSONObject result=api.get("/api/camera");api.store.write("film-collection",result);api.store.snapshot("/api/camera",result);main.post(()->{collection=result;busy=false;if(pending==null)notice="Connected. Our ordinary, extraordinary life. ♡";render();});}catch(Exception e){main.post(()->{busy=false;failure(e);});}});}
