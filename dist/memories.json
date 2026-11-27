@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-27T05:17:16.540Z",
+  "updatedAt": "2026-11-27T07:29:53.649Z",
   "quotes": [
     {
       "id": "3745774f-430b-4e5b-aaf5-6c51d122c325",
@@ -1087,7 +1087,20 @@
       "date": "2026-11-26",
       "createdAt": "2026-11-27T05:17:16.540Z",
       "author": "youssef",
-      "text": "I would look at you the way flowers turn toward the sun, even knowing its light could leave them blind. I would find you in every sunrise, in every golden horizon, and in every ray of warmth that touches the earth. And if loving you meant standing beneath a light too beautiful to bear, I would still choose to look, because even the sun itself could never shine as beautifully as you do to me."
+      "text": "I would look at you the way flowers turn toward the sun, even knowing its light could leave them blind. I would find you in every sunrise, in every golden horizon, and in every ray of warmth that touches the earth. And if loving you meant standing beneath a light too beautiful to bear, I would still choose to look, because even the sun itself could never shine as beautifully as you do to me.",
+      "social": {
+        "likes": {
+          "youssef": true
+        },
+        "reactions": {},
+        "comments": [],
+        "receipts": [
+          {
+            "id": "d877a884-a4a3-478c-b7f8-bd84cec96839",
+            "hash": "7cfec783b7c9f027da175a4a44dbdf991d8e6afd11784d1e66ca2e85cb5706fa"
+          }
+        ]
+      }
     }
   ],
   "photos": [
