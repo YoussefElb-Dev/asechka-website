@@ -42,21 +42,24 @@ struct CornerView:View {
     @State private var littleBook=false
     @State private var personalBook=false
     private let hints=["No spoilers. Just a few butterflies.","It starts with you.","It has a little something to do with us.","Maybe there’s a question I’ve been saving…"]
+    private var cornerShortcuts:some View {
+        HStack(spacing:10){
+            VStack(alignment:.leading,spacing:8){
+                HStack(spacing:6){Image(systemName:"heart.text.square").font(.caption.weight(.bold));Text("KEEPSAKES").font(.system(size:10,weight:.bold)).tracking(1.6)}.foregroundColor(Palette.purple)
+                Button("Since us · letters & little things"){personalBook=true}.font(.subheadline.weight(.bold)).foregroundColor(Palette.ink).multilineTextAlignment(.leading)
+            }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(Palette.lavender,in:RoundedRectangle(cornerRadius:18)).overlay(RoundedRectangle(cornerRadius:18).stroke(Palette.purple.opacity(0.22),lineWidth:1))
+            VStack(alignment:.leading,spacing:8){
+                HStack(spacing:6){Image(systemName:"book.closed").font(.caption.weight(.bold));Text("DICTIONARY").font(.system(size:10,weight:.bold)).tracking(1.6)}.foregroundColor(Palette.purple)
+                Button("Secret vocab"){littleBook=true}.font(.subheadline.weight(.bold)).foregroundColor(Palette.ink).multilineTextAlignment(.leading)
+            }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(.white,in:RoundedRectangle(cornerRadius:18)).overlay(RoundedRectangle(cornerRadius:18).stroke(Palette.purple.opacity(0.18),lineWidth:1))
+        }
+    }
     var body:some View {
         NavigationStack{ScrollView(.vertical,showsIndicators:true){VStack(alignment:.leading,spacing:20){
             Text(universe.actor=="asnat" ? "FOR ASNAT. MY ASECHKA.":"FOR US. FROM YOUSSEF.").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
             Text(universe.actor=="asnat" ? "My favorite\nlittle universe.":"Our favorite\nlittle universe.").font(.custom("Manrope-Bold",size:33))
             Text(universe.actor=="asnat" ? "Of all the people, in all the places, somehow my heart keeps finding you.":"A little corner for our letters, keepsakes, and favorite days.").foregroundColor(Palette.muted)
-            HStack(spacing:10){
-                VStack(alignment:.leading,spacing:8){
-                    HStack(spacing:6){Image(systemName:"heart.text.square").font(.caption.weight(.bold));Text("KEEPSAKES").font(.system(size:10,weight:.bold)).tracking(1.6)}.foregroundColor(Palette.purple)
-                    Button("Since us · letters & little things"){personalBook=true}.font(.subheadline.weight(.bold)).foregroundColor(Palette.ink).multilineTextAlignment(.leading)
-                }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(Palette.pale).clipShape(RoundedRectangle(cornerRadius:18)).overlay(RoundedRectangle(cornerRadius:18).stroke(Palette.purple.opacity(0.22),lineWidth:1))
-                VStack(alignment:.leading,spacing:8){
-                    HStack(spacing:6){Image(systemName:"book.closed").font(.caption.weight(.bold));Text("DICTIONARY").font(.system(size:10,weight:.bold)).tracking(1.6)}.foregroundColor(Palette.purple)
-                    Button("Secret vocab"){littleBook=true}.font(.subheadline.weight(.bold)).foregroundColor(Palette.ink).multilineTextAlignment(.leading)
-                }.frame(maxWidth:.infinity,alignment:.leading).padding(14).background(Palette.card).clipShape(RoundedRectangle(cornerRadius:18)).overlay(RoundedRectangle(cornerRadius:18).stroke(Palette.purple.opacity(0.18),lineWidth:1))
-            }
+            cornerShortcuts
             CachedPhoto(source:"assets/our-little-universe.png").aspectRatio(1.25,contentMode:.fit).clipShape(RoundedRectangle(cornerRadius:24))
             Button(universe.actor=="asnat" ? "Your letter ♡":"Letter to Asnat ♡"){letter=true}.primary()
             VStack(alignment:.leading,spacing:12){Text("A LITTLE MOMENT, JUST FOR US").font(.system(size:10,weight:.bold)).tracking(2).foregroundColor(Palette.purple)
