@@ -52,7 +52,7 @@ final class HomeExtras {
     MilestoneRingView(android.content.Context c) {
       super(c);
       float d = c.getResources().getDisplayMetrics().density;
-      stroke = 3.5f * d;
+      stroke = 4.0f * d;
       trackPaint.setStyle(Paint.Style.STROKE);
       trackPaint.setStrokeWidth(stroke);
       trackPaint.setColor(0x286b5cb5);
@@ -62,7 +62,7 @@ final class HomeExtras {
       arcPaint.setColor(0xff6c5ce7);
       textPaint.setColor(Ui.INK);
       textPaint.setTextAlign(Paint.Align.CENTER);
-      textPaint.setTextSize(9.5f * d);
+      textPaint.setTextSize(10.5f * d);
       textPaint.setFakeBoldText(true);
     }
 
@@ -283,20 +283,23 @@ final class HomeExtras {
     u.add(clockCopy, sinceLabel, 3);
     clockRow.addView(clockCopy, new LinearLayout.LayoutParams(0, -2, 1));
 
-    LinearLayout milestoneBadge = u.row(7);
+    LinearLayout milestoneBadge = u.row(10);
     milestoneBadge.setGravity(Gravity.CENTER_VERTICAL);
-    milestoneBadge.setPadding(u.dp(9), u.dp(6), u.dp(9), u.dp(6));
-    milestoneBadge.setBackground(u.shape(0xc2ffffff, 14, 0x146b5cb5));
+    milestoneBadge.setMinimumWidth(u.dp(148));
+    milestoneBadge.setPadding(u.dp(13), u.dp(8), u.dp(13), u.dp(8));
+    milestoneBadge.setBackground(u.shape(0xd1ffffff, 16, 0x1a6b5cb5));
     milestoneRing = new MilestoneRingView(activity);
-    milestoneBadge.addView(milestoneRing, new LinearLayout.LayoutParams(u.dp(36), u.dp(36)));
+    milestoneBadge.addView(milestoneRing, new LinearLayout.LayoutParams(u.dp(44), u.dp(44)));
     LinearLayout milestoneCopy = u.column();
-    TextView nextWord = u.text("Next", 9, Ui.MUTED);
+    TextView nextWord = u.text("Next milestone", 10, Ui.MUTED);
     Compat.font(nextWord, R.font.dm_sans, 600);
+    nextWord.setSingleLine(true);
     milestoneCopy.addView(nextWord);
-    milestoneNextText = u.text("in 50d", 11, 0xff6c5ce7);
+    milestoneNextText = u.text("in 50 days", 12, 0xff6c5ce7);
     Compat.font(milestoneNextText, R.font.dm_sans, 700);
-    milestoneCopy.addView(milestoneNextText);
-    milestoneBadge.addView(milestoneCopy);
+    milestoneNextText.setSingleLine(true);
+    u.add(milestoneCopy, milestoneNextText, 1);
+    milestoneBadge.addView(milestoneCopy, new LinearLayout.LayoutParams(0, -2, 1));
     clockRow.addView(milestoneBadge, new LinearLayout.LayoutParams(-2, -2));
     clock.addView(clockRow);
     clock.setContentDescription("Our time together. Open Since us.");
@@ -690,7 +693,7 @@ final class HomeExtras {
                   float prog = (float) (days - prev) / (float) Math.max(1, next - prev);
                   String mLbl = next == 365 ? "1 yr" : (next % 365 == 0 ? (next / 365) + "y" : next + "d");
                   milestoneRing.setState(prog, mLbl);
-                  milestoneNextText.setText("in " + rem + "d");
+                  milestoneNextText.setText("in " + rem + (rem == 1 ? " day" : " days"));
                 }
 
                 // Dynamic 2.8.0 cards (rebuilt only when their content signature changes)

@@ -51,7 +51,8 @@ struct FeedView:View {
                     ForEach(posts){post in PostCard(post:post,backgroundIndex:backgrounds[post.key] ?? 0,comments:{comments=PostSelection(post:post)},open:{viewer=PostSelection(post:post)},edit:{edit=ComposeRequest(photo:post.isPhoto,post:post,collection:post.photoCollection)},delete:{deletion=PostSelection(post:post)})}
                     Text(posts.isEmpty ? "Our next favorite moment starts with you. ♡":"All caught up. More little moments soon. ♡").font(.footnote).foregroundColor(Palette.muted).padding(30)
                 }
-            }.padding(.bottom,12)}
+            }.padding(.bottom,16)}
+            .scrollDismissesKeyboard(.interactively)
             .refreshable{await universe.refresh()}
         }
         .sheet(item:$comments){selection in CommentsView(post:selection.post)}

@@ -369,7 +369,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
           });
     getWindow()
         .setNavigationBarColor(
-            Build.VERSION.SDK_INT < 26 ? Ui.INK : root == view ? Color.WHITE : Ui.BG);
+            Build.VERSION.SDK_INT < 26 ? Ui.INK : root == view ? 0xebffffff : Ui.BG);
     setContentView(view);
     view.requestApplyInsets();
   }
@@ -913,7 +913,7 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private int navBottomPad(int inset) {
     if (inset > u.dp(28)) return inset;
-    return Math.max(u.dp(8), Math.min(inset, u.dp(12)));
+    return u.dp(2);
   }
 
   private void renderNav() {
@@ -1979,6 +1979,22 @@ public class MainActivity extends Activity implements SocialFeed.Host {
 
   private void toast(String text) {
     Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+  }
+
+  @Override
+  public boolean dispatchTouchEvent(MotionEvent ev) {
+    if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+      View focused = getCurrentFocus();
+      if (focused instanceof EditText) {
+        Rect outRect = new Rect();
+        focused.getGlobalVisibleRect(outRect);
+        if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+          focused.clearFocus();
+          hideKeyboard();
+        }
+      }
+    }
+    return super.dispatchTouchEvent(ev);
   }
 
   private void hideKeyboard() {

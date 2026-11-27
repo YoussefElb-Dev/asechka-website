@@ -73,3 +73,45 @@ private final class DoorAnchor:UIView {
     var attached:(()->Void)?
     override func didMoveToWindow(){super.didMoveToWindow();if window != nil{attached?()}}
 }
+
+/// Dismisses the software keyboard whenever the user taps outside a text input anywhere in the app.
+struct KeyboardDismissWindow:UIViewRepresentable {
+    func makeCoordinator()->Coordinator{Coordinator()}
+    func makeUIView(context:Context)->UIView{
+        let view=DoorAnchor();view.isUserInteractionEnabled=false
+        view.attached={ [weak coordinator=context.coordinator, weak view] in coordinator?.attach(to: view?.window) }
+        return view
+    }
+    func updateUIView(_ view:UIView,context:Context){context.coordinator.attach(to: view.window)}
+    static func dismantleUIView(_ view:UIView,coordinator:Coordinator){coordinator.detach()}
+    final class Coordinator:NSObject,UIGestureRecognizerDelegate {
+        private weak var attachedWindow:UIWindow?
+        private var tap:UITapGestureRecognizer?
+        func attach(to window:UIWindow?){
+            guard let window, window !== attachedWindow else{return}
+            detach()
+            let recognizer=UITapGestureRecognizer(target:self,action:#selector(dismissKeyboard))
+            recognizer.cancelsTouchesInView=false
+            recognizer.delegate=self
+            window.addGestureRecognizer(recognizer)
+            attachedWindow=window;tap=recognizer
+        }
+        func detach(){
+            if let tap, let attachedWindow { attachedWindow.removeGestureRecognizer(tap) }
+            tap=nil;attachedWindow=nil
+        }
+        @objc private func dismissKeyboard(){
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),to:nil,from:nil,for:nil)
+            attachedWindow?.endEditing(true)
+        }
+        func gestureRecognizer(_ gestureRecognizer:UIGestureRecognizer,shouldReceive touch:UITouch)->Bool{
+            var current=touch.view
+            while let view=current {
+                if view is UITextField || view is UITextView { return false }
+                current=view.superview
+            }
+            return true
+        }
+        func gestureRecognizer(_ gestureRecognizer:UIGestureRecognizer,shouldRecognizeSimultaneouslyWith other:UIGestureRecognizer)->Bool{true}
+    }
+}

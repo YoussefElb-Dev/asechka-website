@@ -3,6 +3,20 @@ final class LocationVaultJourneyTests:XCTestCase {
     func testHomeChoicesAndLocationFitAndSharingNeedsConsent(){
         let app=XCUIApplication();app.launchArguments=["--preview-fixture"];app.launch()
         XCTAssertTrue(app.buttons["Time vault"].waitForExistence(timeout:15))
+        let homeTop=XCTAttachment(screenshot:app.screenshot());homeTop.name="Home-top-dashboard";homeTop.lifetime = .keepAlways;add(homeTop)
+        let winMaxY=app.windows.firstMatch.frame.maxY
+        let tabMaxY=app.buttons["Home"].firstMatch.frame.maxY
+        XCTAssertLessThanOrEqual(winMaxY - tabMaxY, 18, "Bottom navigator must sit close to the bottom edge (gap=\(winMaxY - tabMaxY))")
+        let promptField=app.textFields["Your quick answer…"].firstMatch
+        if promptField.waitForExistence(timeout:3) && promptField.isHittable {
+            promptField.tap()
+            if app.keyboards.firstMatch.waitForExistence(timeout:3) {
+                app.staticTexts["asechka."].firstMatch.tap()
+                let dismissed=NSPredicate(format:"exists == false")
+                let exp=XCTNSPredicateExpectation(predicate:dismissed,object:app.keyboards.firstMatch)
+                XCTAssertEqual(XCTWaiter.wait(for:[exp],timeout:3),.completed,"Tapping outside text field must dismiss keyboard")
+            }
+        }
         let map=app.buttons["Open our location map"]
         for _ in 0..<6 { if map.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(map.waitForExistence(timeout:5))

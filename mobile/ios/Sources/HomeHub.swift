@@ -295,22 +295,23 @@ struct HomeHub:View {
                                     .lineLimit(1).minimumScaleFactor(0.8)
                             }
                             Spacer(minLength:6)
-                            HStack(spacing:7){
+                            HStack(spacing:10){
                                 ZStack{
-                                    Circle().stroke(Palette.purple.opacity(0.16),lineWidth:3.5)
+                                    Circle().stroke(Palette.purple.opacity(0.16),lineWidth:4)
                                     Circle().trim(from:0,to:m.progress)
-                                        .stroke(Palette.violet,style:StrokeStyle(lineWidth:3.5,lineCap:.round))
+                                        .stroke(Palette.violet,style:StrokeStyle(lineWidth:4,lineCap:.round))
                                         .rotationEffect(.degrees(-90))
-                                    Text(m.label).font(.system(size:9.5,weight:.bold)).foregroundColor(Palette.ink)
-                                }.frame(width:36,height:36)
-                                VStack(alignment:.leading,spacing:1){
-                                    Text("Next").font(.system(size:9,weight:.semibold)).foregroundColor(Palette.muted)
-                                    Text("in \(m.remaining)d").font(.system(size:11,weight:.bold)).foregroundColor(Palette.violet)
+                                    Text(m.label).font(.system(size:10.5,weight:.bold)).foregroundColor(Palette.ink)
+                                }.frame(width:44,height:44)
+                                VStack(alignment:.leading,spacing:2){
+                                    Text("Next milestone").font(.system(size:9.5,weight:.semibold)).foregroundColor(Palette.muted).lineLimit(1)
+                                    Text("in \(m.remaining) \(m.remaining==1 ? "day":"days")").font(.system(size:12.5,weight:.bold)).foregroundColor(Palette.violet).lineLimit(1)
                                 }
                             }
-                            .padding(.horizontal,9).padding(.vertical,6)
-                            .background(Color.white.opacity(0.75),in:RoundedRectangle(cornerRadius:14,style:.continuous))
-                            .overlay(RoundedRectangle(cornerRadius:14,style:.continuous).stroke(Palette.purple.opacity(0.08),lineWidth:1))
+                            .frame(minWidth:148,alignment:.leading)
+                            .padding(.horizontal,13).padding(.vertical,8)
+                            .background(Color.white.opacity(0.82),in:RoundedRectangle(cornerRadius:16,style:.continuous))
+                            .overlay(RoundedRectangle(cornerRadius:16,style:.continuous).stroke(Palette.purple.opacity(0.10),lineWidth:1))
                         }
                     }
                 } else {

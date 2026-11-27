@@ -77,6 +77,24 @@ final class Ui {
       setCanceledOnTouchOutside(true);
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+      if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+        View focused = getCurrentFocus();
+        if (focused instanceof EditText) {
+          Rect outRect = new Rect();
+          focused.getGlobalVisibleRect(outRect);
+          if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+            focused.clearFocus();
+            android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+          }
+        }
+      }
+      return super.dispatchTouchEvent(ev);
+    }
+
     Sheet section(String title){TextView label=text(title.toUpperCase(java.util.Locale.ROOT),12,MUTED);label.setPadding(dp(14),dp(20),dp(14),dp(3));add(items,label,0);return this;}
     Sheet toggle(String title,boolean checked,ToggleChange change){
       Switch toggle=new Switch(c);toggle.setText(title);toggle.setTextSize(15);toggle.setTextColor(INK);Compat.font(toggle,R.font.dm_sans,400);toggle.setPadding(dp(16),dp(8),dp(16),dp(8));toggle.setMinimumHeight(dp(52));toggle.setBackground(shape(Color.WHITE,16));toggle.setSplitTrack(false);toggle.setThumbTintList(ColorStateList.valueOf(Color.WHITE));toggle.setTrackTintList(new ColorStateList(new int[][]{new int[]{android.R.attr.state_checked},new int[]{}},new int[]{0xff34c759,0xffe4e5ea}));toggle.setChecked(checked);toggle.setOnCheckedChangeListener((v,on)->change.set(on));add(items,toggle,6);return this;
